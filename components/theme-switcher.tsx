@@ -1,30 +1,25 @@
+import { useTheme } from "@/context/theme-context";
 import Feather from "@expo/vector-icons/Feather";
-import { useColorScheme } from "nativewind";
 import { Text, TouchableOpacity, View } from "react-native";
 
 export function ThemeSwitcher() {
-  const { colorScheme, setColorScheme } = useColorScheme();
-  const isDark = colorScheme === "dark";
-
-  const toggleTheme = () => {
-    setColorScheme(isDark ? "light" : "dark");
-  };
+  const { isDark, toggleColorScheme } = useTheme();
 
   return (
     <TouchableOpacity
-      onPress={toggleTheme}
-      className="flex-row items-center rounded-xl bg-gray-200 p-4 dark:bg-gray-800"
+      onPress={toggleColorScheme}
+      className="flex-row items-center rounded-xl bg-muted p-4"
       activeOpacity={0.8}
     >
-      <View className={`h-10 w-10 items-center justify-center rounded-full ${isDark ? "bg-gray-700" : "bg-white shadow-sm"}`}>
+      <View className={`h-10 w-10 items-center justify-center rounded-full ${isDark ? "bg-card" : "bg-background shadow-sm"}`}>
         <Feather name={isDark ? "moon" : "sun"} size={20} color={isDark ? "#60a5fa" : "#f59e0b"} />
       </View>
 
       <View className="ml-4 flex-1">
-        <Text className="text-base font-semibold text-gray-900 dark:text-gray-100">
+        <Text className="text-base font-semibold text-foreground">
           Appearance
         </Text>
-        <Text className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
+        <Text className="mt-0.5 text-sm text-muted-foreground">
           {isDark ? "Dark Theme" : "Light Theme"}
         </Text>
       </View>

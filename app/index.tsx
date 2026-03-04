@@ -1,28 +1,59 @@
-import { ThemeSwitcher } from "@/components/theme-switcher";
-import { Text, View } from "react-native";
+import { useState } from "react";
+import { LanguageModal } from "@/components/welcome/language-modal";
+import { OnboardingCarousel } from "@/components/welcome/onboarding-carousel";
+import { WelcomeHeader } from "@/components/welcome/welcome-header";
+import { languages, type LanguageCode } from "@/constants/onboarding";
+import { Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function Index() {
+export default function WelcomeScreen() {
+  const [languageModalVisible, setLanguageModalVisible] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState<LanguageCode>("en");
+
+  const currentLanguageLabel =
+    languages.find((l) => l.code === selectedLanguage)?.label ?? "English";
+
+  const handleLanguageSelect = (code: LanguageCode) => {
+    setSelectedLanguage(code);
+    setLanguageModalVisible(false);
+  };
+
+  const handleGetStarted = () => {
+    // router.push("/auth");
+  };
+
   return (
-    <View className="flex-1 bg-white px-6 py-12 dark:bg-gray-950">
-      <View className="mx-auto w-full max-w-md flex-1 justify-center">
-        <View className="mb-10 items-center">
-          <View className="mb-6 rounded-full bg-blue-100 p-4 dark:bg-blue-900/30">
-            <Text className="text-4xl font-bold tracking-tighter text-blue-600 dark:text-blue-400">
-              CF
-            </Text>
-          </View>
+    <SafeAreaView className="flex-1 bg-background">
+      {/* ── Header: Logo + Language ── */}
+      <WelcomeHeader
+        currentLanguage={currentLanguageLabel}
+        onLanguagePress={() => setLanguageModalVisible(true)}
+      />
 
-          <Text className="mb-3 text-center text-5xl font-bold text-gray-900 dark:text-white">
-            Cashflow Tracker
+      {/* ── Onboarding Carousel ── */}
+      <OnboardingCarousel />
+
+      {/* ── Bottom CTA ── */}
+      <View className="px-6 pb-3">
+        {/* Get Started button */}
+        <TouchableOpacity
+          onPress={handleGetStarted}
+          activeOpacity={0.85}
+          className="items-center rounded bg-primary py-4"
+        >
+          <Text className="text-base font-bold uppercase tracking-wider text-primary-foreground">
+            Get Started
           </Text>
-
-          <Text className="px-4 text-center text-base leading-relaxed text-gray-500 dark:text-gray-400">
-            Manage your finances with a clean and optimized mobile experience.
-          </Text>
-        </View>
-
-        <ThemeSwitcher />
+        </TouchableOpacity>
       </View>
-    </View>
+
+      {/* ── Language Modal ── */}
+      <LanguageModal
+        visible={languageModalVisible}
+        selectedLanguage={selectedLanguage}
+        onSelect={handleLanguageSelect}
+        onClose={() => setLanguageModalVisible(false)}
+      />
+    </SafeAreaView>
   );
 }
