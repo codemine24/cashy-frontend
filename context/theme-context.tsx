@@ -22,7 +22,7 @@ interface ThemeContextValue {
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
 // ─── Provider ────────────────────────────────────────────────────────
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
+export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   const [themeName, setThemeName] = useState<ThemeName>("default");
   const { colorScheme, setColorScheme } = useColorScheme();
 
