@@ -32,7 +32,7 @@ export default function WelcomeScreen() {
       <OnboardingCarousel />
 
       {/* ── Bottom CTA ── */}
-      <View className="px-6 pb-3">
+      <View className="px-6 mb-16">
         {/* Get Started button */}
         <TouchableOpacity
           onPress={() => router.push("/login-type")}

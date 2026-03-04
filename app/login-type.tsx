@@ -13,7 +13,7 @@ export default function LoginTypeScreen() {
 
       <View className="flex-1 mt-10 p-6 gap-4">
         <TouchableOpacity
-          onPress={() => router.push("/login-type")}
+          onPress={() => router.push("/auth")}
           activeOpacity={0.85}
           className="w-full items-center rounded py-4 border border-border"
         >

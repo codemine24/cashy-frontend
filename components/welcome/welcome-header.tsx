@@ -1,5 +1,5 @@
-import { useTheme } from "@/context/theme-context";
-import { ChevronDown } from "lucide-react-native";
+
+import { ChevronDown } from "@/lib/icons";
 import { Text, TouchableOpacity, View } from "react-native";
 
 interface WelcomeHeaderProps {
@@ -8,7 +8,6 @@ interface WelcomeHeaderProps {
 }
 
 export function WelcomeHeader({ currentLanguage, onLanguagePress }: WelcomeHeaderProps) {
-  const { isDark } = useTheme();
 
   return (
     <View className="flex-row items-center justify-between px-5 pt-2 pb-3">
@@ -31,7 +30,7 @@ export function WelcomeHeader({ currentLanguage, onLanguagePress }: WelcomeHeade
         <Text className="text-sm font-medium text-foreground">
           {currentLanguage}
         </Text>
-        <ChevronDown size={16} color={isDark ? "#94a3b8" : "#64748b"} />
+        <ChevronDown size={16} className="text-muted-foreground" />
       </TouchableOpacity>
     </View>
   );

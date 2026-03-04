@@ -20,6 +20,7 @@ export const RootNavigator = () => {
       >
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="login-type" options={{ headerShown: true, headerTitle: "" }} />
+        <Stack.Screen name="auth" options={{ headerShown: true, headerTitle: "" }} />
       </Stack>
     </NavThemeProvider>
   );
