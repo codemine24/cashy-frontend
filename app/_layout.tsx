@@ -1,11 +1,11 @@
 import { RootNavigator } from "@/components/root-navigator";
-import { RootProvider } from "@/components/root-provider";
+import { ThemeProvider } from "@/context/theme-context";
 import '@/styles/global.css';
 
 export default function RootLayout() {
   return (
-    <RootProvider>
+    <ThemeProvider>
       <RootNavigator />
-    </RootProvider>
+    </ThemeProvider>
   );
 }

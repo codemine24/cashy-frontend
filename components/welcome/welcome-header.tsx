@@ -1,4 +1,3 @@
-
 import { ChevronDown } from "@/lib/icons";
 import { Text, TouchableOpacity, View } from "react-native";
 
@@ -8,7 +7,6 @@ interface WelcomeHeaderProps {
 }
 
 export function WelcomeHeader({ currentLanguage, onLanguagePress }: WelcomeHeaderProps) {
-
   return (
     <View className="flex-row items-center justify-between px-5 pt-2 pb-3">
       {/* ── Logo ── */}

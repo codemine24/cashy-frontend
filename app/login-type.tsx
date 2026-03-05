@@ -1,6 +1,7 @@
 import { Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
+import { Mail } from "@/lib/icons";
 
 export default function LoginTypeScreen() {
   const router = useRouter();
@@ -15,9 +16,10 @@ export default function LoginTypeScreen() {
         <TouchableOpacity
           onPress={() => router.push("/auth")}
           activeOpacity={0.85}
-          className="w-full items-center rounded py-4 border border-border"
+          className="w-full flex-row items-center justify-center gap-3 rounded py-4 border border-border"
         >
-          <Text className="text-base font-bold uppercase tracking-wider text-primary-foreground">
+          <Mail size={20} className="text-primary" />
+          <Text className="text-base font-bold uppercase tracking-widest text-primary">
             Continue with Email
           </Text>
         </TouchableOpacity>
@@ -25,9 +27,9 @@ export default function LoginTypeScreen() {
         <TouchableOpacity
           onPress={() => router.push("/login-type")}
           activeOpacity={0.85}
-          className="w-full items-center rounded py-4 border border-primary"
+          className="w-full items-center rounded py-4 border border-border"
         >
-          <Text className="text-base font-bold uppercase tracking-wider text-primary">
+          <Text className="text-base font-bold uppercase tracking-widest text-primary">
             Continue with Google
           </Text>
         </TouchableOpacity>

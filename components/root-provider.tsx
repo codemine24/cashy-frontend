@@ -1,6 +1,7 @@
-import { ThemeProvider } from "@/context/theme-context";
+import { AuthProvider } from "@/context/auth-context";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
+import Toast from 'react-native-toast-message';
 
 export const RootProvider = ({ children }: { children: React.ReactNode }) => {
   const [queryClient] = useState(
@@ -17,9 +18,10 @@ export const RootProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
+      <AuthProvider>
         {children}
-      </ThemeProvider>
+        <Toast />
+      </AuthProvider>
     </QueryClientProvider>
   )
 }
