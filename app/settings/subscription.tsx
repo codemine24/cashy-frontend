@@ -183,16 +183,16 @@ export default function Subscription() {
           </View>
 
           {/* Subscribe Button */}
-          <TouchableOpacity
-            activeOpacity={0.8}
-            className={`rounded-full py-4 items-center justify-center ${selectedPlan === "lifetime" ? "bg-amber-500" : "bg-foreground"
-              }`}
-          >
-            <Text className={`font-bold text-lg ${selectedPlan === "lifetime" ? "text-white" : "text-background"
-              }`}>
-              {selectedPlan === "lifetime" ? "Get Started for $4.99" : "Continue with Free"}
-            </Text>
-          </TouchableOpacity>
+          {selectedPlan === "lifetime" && (
+            <TouchableOpacity
+              activeOpacity={0.8}
+              className="rounded-full py-4 items-center justify-center bg-amber-500 relative overflow-hidden"
+            >
+              <Text className="font-bold text-lg text-white">
+                Get Started for $4.99
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
 
       </ScreenContainer>
