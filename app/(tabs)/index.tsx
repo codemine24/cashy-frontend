@@ -15,6 +15,7 @@ import { WalletCard } from "@/components/wallet/wallet-card";
 import { Plus, ArrowUpDown, Search } from "@/lib/icons";
 // import { useGetAllUsers } from "@/api/user";
 import { Book } from "@/interface/book";
+import { useGetAllUsers } from "@/api/user";
 
 type SortOption = "name" | "created_at" | "updated_at";
 
@@ -38,7 +39,7 @@ export default function HomeScreen() {
   const [tempSortBy, setTempSortBy] = useState<SortOption>("updated_at");
   const [tempSortOrder, setTempSortOrder] = useState<"asc" | "desc">("desc");
 
-  // const { data: usersData, isLoading: usersLoading } = useGetAllUsers();
+  const { data: usersData, isLoading: usersLoading } = useGetAllUsers();
 
   // console.log("usersData", usersData?.data.data);
 
