@@ -41,7 +41,7 @@ export const WalletCard = ({
         router.push({
           pathname: "/book/[id]",
           params: { id: book.id },
-        } as any)
+        })
       }
       className="bg-surface rounded-2xl p-3 mt-3 border border-border active:opacity-70 flex-row items-center justify-between"
     >

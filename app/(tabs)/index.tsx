@@ -1,9 +1,12 @@
-import { useBooks } from "@/api/book";
-import { CreateWalletModal } from "@/components/wallet/create-wallet-modal";
+import { useBooks, useDeleteBook } from "@/api/book";
 import { ScreenContainer } from "@/components/screen-container";
+import { CreateWalletModal } from "@/components/wallet/create-wallet-modal";
+import { WalletCard } from "@/components/wallet/wallet-card";
+import { ArrowUpDown, Plus, Search } from "@/lib/icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
+  Alert,
   FlatList,
   Modal,
   ScrollView,
@@ -11,10 +14,9 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { WalletCard } from "@/components/wallet/wallet-card";
-import { Plus, ArrowUpDown, Search } from "@/lib/icons";
 // import { useGetAllUsers } from "@/api/user";
 import { Book } from "@/interface/book";
+import Toast from "react-native-toast-message";
 
 type SortOption = "name" | "created_at" | "updated_at";
 
@@ -38,10 +40,6 @@ export default function HomeScreen() {
   const [tempSortBy, setTempSortBy] = useState<SortOption>("updated_at");
   const [tempSortOrder, setTempSortOrder] = useState<"asc" | "desc">("desc");
 
-  // const { data: usersData, isLoading: usersLoading } = useGetAllUsers();
-
-  // console.log("usersData", usersData?.data.data);
-
   const openSortModal = () => {
     setTempSortBy(sortBy);
     setTempSortOrder(sortOrder);
@@ -49,9 +47,44 @@ export default function HomeScreen() {
   };
 
   const { data: booksData, isLoading } = useBooks({ search: "", sort: sortBy, sort_order: sortOrder });
+  const deleteBookMutation = useDeleteBook();
 
   const handleDeleteBook = (book: Book) => {
-    // Add real delete logic here later
+    Alert.alert(
+      "Delete Wallet",
+      `Are you sure you want to delete "${book.name}"? This action cannot be undone and will remove all associated transactions.`,
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              const res: any = await deleteBookMutation.mutateAsync(book.id);
+              if (res?.success) {
+                Toast.show({
+                  type: "success",
+                  text1: "Success",
+                  text2: "Wallet deleted successfully",
+                });
+              } else {
+                Toast.show({
+                  type: "error",
+                  text1: "Error",
+                  text2: res?.message || "Failed to delete wallet",
+                });
+              }
+            } catch (error: any) {
+              Toast.show({
+                type: "error",
+                text1: "Error",
+                text2: error?.message || "Something went wrong",
+              });
+            }
+          },
+        },
+      ]
+    );
   };
 
   const handleRename = (book: Book) => {
@@ -90,7 +123,7 @@ export default function HomeScreen() {
                 <ArrowUpDown size={20} className="text-muted" />
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={() => router.push("/search-wallet" as any)}
+                onPress={() => router.push("/book/search-wallet" as any)}
                 className="p-2.5 rounded-xl bg-foreground"
               >
                 <Search size={20} className="text-muted" />
@@ -138,13 +171,7 @@ export default function HomeScreen() {
       </ScreenContainer>
 
       {/* Floating Action Button */}
-      <View
-        style={{
-          position: "absolute",
-          bottom: 32,
-          right: 16,
-        }}
-      >
+      <View className="absolute bottom-8 right-4">
         <TouchableOpacity
           onPress={() => setShowCreateModal(true)}
           className="bg-primary p-4 rounded-full items-center justify-center flex-row gap-3 shadow-sm"
