@@ -4,6 +4,7 @@ import {
   useGetCategories,
   useUpdateCategory,
 } from "@/api/category";
+import { AppModal } from "@/components/app-modal";
 import { Edit3, MoreVertical, Plus, Trash2, X } from "@/lib/icons";
 import { Stack } from "expo-router";
 import React, { useState } from "react";
@@ -11,7 +12,6 @@ import {
   ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
-  Modal,
   Platform,
   ScrollView,
   Text,
@@ -67,50 +67,34 @@ export default function ManageCategoriesScreen() {
     }
 
     try {
-      let response;
       if (isEditing && editingCategoryId) {
-        response = await updateCategoryMutation.mutateAsync({
+        await updateCategoryMutation.mutateAsync({
           id: editingCategoryId,
           category: { title: categoryNameInput.trim() },
         });
       } else {
-        response = await createCategoryMutation.mutateAsync({
+        await createCategoryMutation.mutateAsync({
           title: categoryNameInput.trim(),
           color: "#00929A",
           icon: "",
         });
       }
+      setModalVisible(false);
+      setCategoryNameInput("");
 
-      if (
-        response?.data?.success ||
-        (response as any)?.success ||
-        response?.data?.id ||
-        (response as any)?.status === 200
-      ) {
+      setTimeout(() => {
         Toast.show({
           type: "success",
           text1: "Success",
-          text2: isEditing
-            ? "Category renamed successfully"
-            : "Category created successfully",
+          text2: `Category ${isEditing ? "updated" : "created"} successfully`,
         });
-        setModalVisible(false);
-        setCategoryNameInput("");
-      } else {
-        Toast.show({
-          type: "error",
-          text1: "Error",
-          text2:
-            response?.data?.message ||
-            (response as any)?.message ||
-            "Failed to save category",
-        });
-      }
-    } catch (e: any) {
+      }, 500);
+
+    } catch (error: any) {
       Toast.show({
         type: "error",
         text1: "Error",
-        text2: e?.message || "Something went wrong",
+        text2: error?.message || "Something went wrong",
       });
     }
   };
@@ -127,20 +111,13 @@ export default function ManageCategoriesScreen() {
           style: "destructive",
           onPress: async () => {
             try {
-              const res = await deleteCategoryMutation.mutateAsync(id);
-              if (res?.data?.success || (res as any)?.success || (res as any)?.status === 200) {
-                Toast.show({
-                  type: "success",
-                  text1: "Success",
-                  text2: "Category deleted",
-                });
-              } else {
-                Toast.show({
-                  type: "error",
-                  text1: "Error",
-                  text2: "Failed to delete category",
-                });
-              }
+              await deleteCategoryMutation.mutateAsync(id);
+              Toast.show({
+                type: "success",
+                text1: "Success",
+                text2: "Category deleted successfully",
+              });
+
             } catch (e: any) {
               Toast.show({
                 type: "error",
@@ -262,7 +239,7 @@ export default function ManageCategoriesScreen() {
       </View>
 
       {/* Reusable Category Form Modal */}
-      <Modal visible={modalVisible} animationType="slide" transparent>
+      <AppModal visible={modalVisible} animationType="slide" transparent>
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : undefined}
           style={{ flex: 1 }}
@@ -305,7 +282,8 @@ export default function ManageCategoriesScreen() {
               <View className="flex-row gap-4">
                 <TouchableOpacity
                   onPress={() => setModalVisible(false)}
-                  className="flex-1 bg-muted rounded-xl py-4 items-center justify-center"
+                  disabled={isSaving}
+                  className={`flex-1 bg-muted rounded-xl py-4 items-center justify-center ${isSaving ? "bg-muted/50" : "bg-muted"}`}
                 >
                   <Text className="text-foreground font-bold text-base">
                     Cancel
@@ -314,7 +292,7 @@ export default function ManageCategoriesScreen() {
                 <TouchableOpacity
                   onPress={handleSaveCategory}
                   disabled={isSaving}
-                  className={`flex-1 rounded-xl py-4 items-center justify-center ${isSaving ? "bg-primary/70" : "bg-primary"}`}
+                  className={`flex-1 rounded-xl py-4 items-center justify-center ${isSaving ? "bg-primary/50" : "bg-primary"}`}
                 >
                   {isSaving ? (
                     <ActivityIndicator color="#ffffff" size="small" />
@@ -328,7 +306,7 @@ export default function ManageCategoriesScreen() {
             </View>
           </View>
         </KeyboardAvoidingView>
-      </Modal>
+      </AppModal>
     </>
   );
 }

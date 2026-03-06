@@ -1,11 +1,11 @@
 import { useCreateCategory, useGetCategories } from "@/api/category";
+import { AppModal } from "@/components/app-modal";
 import { Check, Plus, Settings, X } from "@/lib/icons";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
-  Modal,
   Platform,
   ScrollView,
   Text,
@@ -163,7 +163,7 @@ export default function SelectCategoryScreen() {
       </View>
 
       {/* Add New Category Modal */}
-      <Modal visible={modalVisible} animationType="slide" transparent>
+      <AppModal visible={modalVisible} animationType="slide" transparent>
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : undefined}
           style={{ flex: 1 }}
@@ -229,7 +229,7 @@ export default function SelectCategoryScreen() {
             </View>
           </View>
         </KeyboardAvoidingView>
-      </Modal>
+      </AppModal>
     </>
   );
 }
