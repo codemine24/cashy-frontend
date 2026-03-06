@@ -123,7 +123,7 @@ export default function HomeScreen() {
                 <ArrowUpDown size={20} className="text-muted" />
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={() => router.push("/search-wallet" as any)}
+                onPress={() => router.push("/book/search-wallet" as any)}
                 className="p-2.5 rounded-xl bg-foreground"
               >
                 <Search size={20} className="text-muted" />
