@@ -1,6 +1,6 @@
 import { Mail, ShieldCheck } from "@/lib/icons";
 import { useRouter } from "expo-router";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Animated,
   Text,
@@ -28,6 +28,16 @@ export default function AuthScreen() {
 
   const slideAnim = useRef(new Animated.Value(0)).current;
   const fadeAnim = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    if (authReady && authState.isAuthenticated) {
+      router.replace("/(tabs)");
+    }
+  }, [authReady, authState.isAuthenticated, router]);
+
+  if (!authReady) {
+    return null;
+  }
 
   const animateToStep = (nextStep: Step) => {
     Animated.parallel([
@@ -107,7 +117,7 @@ export default function AuthScreen() {
             status: response?.data?.status,
           },
         });
-        // router.replace("/(tabs)");
+        router.replace("/(tabs)");
       } else {
         Toast.show({
           type: "error",
@@ -158,7 +168,7 @@ export default function AuthScreen() {
                 placeholder="you@example.com"
                 keyboardType="email-address"
                 autoCapitalize="none"
-                placeholderTextColor="#9ca3af"
+                placeholderClassName="text-muted-foreground"
                 autoComplete="email"
                 editable={!sentOtpMutation.isPending}
                 className="bg-foreground border border-border rounded p-4 text-background"
@@ -170,7 +180,7 @@ export default function AuthScreen() {
                 activeOpacity={0.85}
                 className={`mt-4 rounded py-4 items-center justify-center disabled:bg-muted-foreground ${email.trim() ? "bg-primary" : "bg-muted-foreground"}`}
               >
-                <Text>{sentOtpMutation.isPending ? "Sending OTP..." : "Send OTP"}</Text>
+                <Text className="text-primary-foreground">{sentOtpMutation.isPending ? "Sending OTP..." : "Send OTP"}</Text>
               </TouchableOpacity>
             </>
           ) : (
@@ -189,7 +199,7 @@ export default function AuthScreen() {
                 value={otp}
                 onChangeText={setOtp}
                 placeholder="Enter OTP"
-                placeholderTextColor="#9ca3af"
+                placeholderClassName="text-muted-foreground"
                 keyboardType="number-pad"
                 maxLength={6}
                 editable={!verifyOtpMutation.isPending}
@@ -212,7 +222,7 @@ export default function AuthScreen() {
                 activeOpacity={0.85}
                 className={`mt-4 rounded py-4 items-center justify-center disabled:bg-muted-foreground ${otp.length >= 6 ? "bg-primary" : "bg-muted-foreground"}`}
               >
-                <Text>{verifyOtpMutation.isPending ? "Verifying OTP..." : "Verify OTP"}</Text>
+                <Text className="text-primary-foreground">{verifyOtpMutation.isPending ? "Verifying OTP..." : "Verify OTP"}</Text>
               </TouchableOpacity>
             </>
           )}

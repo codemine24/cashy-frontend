@@ -1,11 +1,19 @@
 import {
     ArrowLeft,
     ArrowRight,
+    ArrowUpDown,
+    BookIcon,
     Check,
     ChevronDown,
     ChevronRight,
+    Edit3,
     Mail,
+    MoreVertical,
+    Plus,
+    Search,
     ShieldCheck,
+    Trash2,
+    UserPlus,
     X,
 } from "lucide-react-native";
 import { cssInterop } from "nativewind";
@@ -43,6 +51,14 @@ interopIcon(ChevronRight);
 interopIcon(Mail);
 interopIcon(ShieldCheck);
 interopIcon(X);
+interopIcon(Plus);
+interopIcon(ArrowUpDown);
+interopIcon(Search);
+interopIcon(BookIcon);
+interopIcon(MoreVertical);
+interopIcon(Edit3);
+interopIcon(Trash2);
+interopIcon(UserPlus);
 
 // Re-export so the rest of the app imports from here
 export {
@@ -53,6 +69,14 @@ export {
     ChevronRight,
     Mail,
     ShieldCheck,
-    X
+    X,
+    Plus,
+    ArrowUpDown,
+    Search,
+    BookIcon,
+    MoreVertical,
+    Edit3,
+    Trash2,
+    UserPlus,
 };
 

@@ -8,10 +8,10 @@ export const RootNavigator = () => {
   const { isDark } = useTheme();
 
   return (
-    <RootProvider>
-      <NavThemeProvider value={isDark ? DarkTheme : DefaultTheme}>
-        <StatusBar style={isDark ? "light" : "dark"} />
-        <ThemeVarsProvider>
+    <NavThemeProvider value={isDark ? DarkTheme : DefaultTheme}>
+      <StatusBar style={isDark ? "light" : "dark"} />
+      <ThemeVarsProvider>
+        <RootProvider>
           <Stack
             screenOptions={{
               headerShown: false,
@@ -21,12 +21,13 @@ export const RootNavigator = () => {
               headerTitleStyle: { fontSize: 17, fontWeight: "600" },
             }}
           >
-            <Stack.Screen name="index" options={{ headerShown: false }} />
-            <Stack.Screen name="login-type" options={{ headerShown: true, headerTitle: "" }} />
-            <Stack.Screen name="auth" options={{ headerShown: true, headerTitle: "" }} />
+            <Stack.Screen name="index" />
+            <Stack.Screen name="login-type" />
+            <Stack.Screen name="auth" />
+            <Stack.Screen name="(tabs)" />
           </Stack>
-        </ThemeVarsProvider>
-      </NavThemeProvider>
-    </RootProvider>
+        </RootProvider>
+      </ThemeVarsProvider>
+    </NavThemeProvider>
   );
 }

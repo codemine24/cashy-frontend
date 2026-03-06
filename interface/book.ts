@@ -1,0 +1,26 @@
+export interface Transaction {
+  id: string;
+  book_id: string;
+  category_id: string | null;
+  category?: string;
+  entry_by_id: string;
+  update_by_id: string | null;
+  amount: string | number;
+  type: "IN" | "OUT";
+  remark: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Book {
+  id: string;
+  name: string;
+  balance: number;
+  in: number;
+  out: number;
+  role: string;
+  created_at: string;
+  updated_at: string;
+  others_member: any[];
+  transactions?: Transaction[];
+}
