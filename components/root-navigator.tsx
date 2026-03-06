@@ -26,6 +26,7 @@ export const RootNavigator = () => {
             <Stack.Screen name="auth" />
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="settings/app-settings" options={{ headerShown: true }} />
+            <Stack.Screen name="settings/subscription" options={{ headerShown: true }} />
           </Stack>
         </RootProvider>
       </ThemeVarsProvider>
