@@ -33,6 +33,7 @@ export const RootNavigator = () => {
             <Stack.Screen name="book/manage-categories" options={{ headerShown: true }} />
             <Stack.Screen name="book/transaction-detail" options={{ headerShown: true }} />
             <Stack.Screen name="book/add-transaction" options={{ headerShown: true }} />
+            <Stack.Screen name="book/search-wallet" />
           </Stack>
         </RootProvider>
       </ThemeVarsProvider>
