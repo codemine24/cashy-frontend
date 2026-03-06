@@ -26,7 +26,6 @@ export const RootNavigator = () => {
             <Stack.Screen name="login-type" />
             <Stack.Screen name="auth" />
             <Stack.Screen name="(tabs)" />
-            <Stack.Screen name="settings/app-settings" />
             <Stack.Screen name="book/[id]" options={{ headerShown: true }} />
             <Stack.Screen name="book/members" options={{ headerShown: true }} />
             <Stack.Screen name="book/select-category" options={{ headerShown: true }} />
@@ -34,6 +33,8 @@ export const RootNavigator = () => {
             <Stack.Screen name="book/transaction-detail" options={{ headerShown: true }} />
             <Stack.Screen name="book/add-transaction" options={{ headerShown: true }} />
             <Stack.Screen name="book/search-wallet" />
+            <Stack.Screen name="settings/app-settings" options={{ headerShown: true }} />
+            <Stack.Screen name="settings/subscription" options={{ headerShown: true }} />
           </Stack>
         </RootProvider>
       </ThemeVarsProvider>
