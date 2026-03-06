@@ -1,9 +1,9 @@
+import { HapticTab } from "@/components/haptic-tab";
+import { TabHeader } from "@/components/tab-header";
 import { Tabs } from "expo-router";
 import { Settings, Wallet } from "lucide-react-native";
 import { Platform, View } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
-import { TabHeader } from "@/components/tab-header";
-import { HapticTab } from "@/components/haptic-tab";
 
 export default function TabLayout() {
   const insets = useSafeAreaInsets();
