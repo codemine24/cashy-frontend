@@ -58,13 +58,13 @@ export default function TabLayout() {
         /> */}
 
         {/* Tab 4: Settings */}
-        {/* <Tabs.Screen
+        <Tabs.Screen
           name="settings"
           options={{
             title: "Settings",
             tabBarIcon: ({ color, size }) => <Settings color={color} size={size} />,
           }}
-        /> */}
+        />
       </Tabs>
     </View>
     // </PrivateRoute>

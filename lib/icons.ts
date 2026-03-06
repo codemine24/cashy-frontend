@@ -1,20 +1,26 @@
 import {
-    ArrowLeft,
-    ArrowRight,
-    ArrowUpDown,
-    BookIcon,
-    Check,
-    ChevronDown,
-    ChevronRight,
-    Edit3,
-    Mail,
-    MoreVertical,
-    Plus,
-    Search,
-    ShieldCheck,
-    Trash2,
-    UserPlus,
-    X,
+  ArrowLeft,
+  ArrowRight,
+  ArrowUpDown,
+  Bell,
+  BookIcon,
+  Check,
+  ChevronDown,
+  ChevronRight,
+  Edit3,
+  Globe,
+  Info,
+  LogOut,
+  Mail,
+  MoreVertical,
+  Plus,
+  Search,
+  Settings,
+  ShieldCheck,
+  Trash2,
+  User,
+  UserPlus,
+  X,
 } from "lucide-react-native";
 import { cssInterop } from "nativewind";
 
@@ -59,24 +65,19 @@ interopIcon(MoreVertical);
 interopIcon(Edit3);
 interopIcon(Trash2);
 interopIcon(UserPlus);
+interopIcon(Info);
+interopIcon(LogOut);
+interopIcon(Settings);
+interopIcon(User);
+interopIcon(Globe);
+interopIcon(Bell);
 
 // Re-export so the rest of the app imports from here
 export {
-    ArrowLeft,
-    ArrowRight,
-    Check,
-    ChevronDown,
-    ChevronRight,
-    Mail,
-    ShieldCheck,
-    X,
-    Plus,
-    ArrowUpDown,
-    Search,
-    BookIcon,
-    MoreVertical,
-    Edit3,
-    Trash2,
-    UserPlus,
+  ArrowLeft,
+  ArrowRight, ArrowUpDown, Bell, BookIcon, Check,
+  ChevronDown,
+  ChevronRight, Edit3, Globe, Info,
+  LogOut, Mail, MoreVertical, Plus, Search, Settings, ShieldCheck, Trash2, User, UserPlus, X
 };
 

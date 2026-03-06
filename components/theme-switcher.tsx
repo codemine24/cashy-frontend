@@ -8,23 +8,22 @@ export function ThemeSwitcher() {
   return (
     <TouchableOpacity
       onPress={toggleColorScheme}
-      className="flex-row items-center rounded-xl bg-muted p-4"
-      activeOpacity={0.8}
+      activeOpacity={0.7}
+      className="flex-row items-center py-4 gap-3"
     >
-      <View className={`h-10 w-10 items-center justify-center rounded-full ${isDark ? "bg-card" : "bg-background shadow-sm"}`}>
-        <Feather name={isDark ? "moon" : "sun"} size={20} color={isDark ? "#60a5fa" : "#f59e0b"} />
+      <View className="w-11 h-11 rounded-xl items-center justify-center mr-1 bg-violet-500/10">
+        <Feather name={isDark ? "moon" : "sun"} size={22} color="#8b5cf6" />
       </View>
 
-      <View className="ml-4 flex-1">
-        <Text className="text-base font-semibold text-foreground">
-          Appearance
-        </Text>
-        <Text className="mt-0.5 text-sm text-muted-foreground">
-          {isDark ? "Dark Theme" : "Light Theme"}
-        </Text>
-      </View>
+      <Text className="flex-1 text-base font-semibold text-foreground">
+        Dark Mode
+      </Text>
 
-      <Feather name="chevron-right" size={20} color={isDark ? "#6b7280" : "#9ca3af"} />
+      <Text className="text-sm font-medium text-muted-foreground mr-1">
+        {isDark ? "On" : "Off"}
+      </Text>
+
+      <Feather name="chevron-right" size={18} color="#9ca3af" />
     </TouchableOpacity>
   );
 }
