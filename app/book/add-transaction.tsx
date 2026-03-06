@@ -178,12 +178,20 @@ export default function AddTransactionScreen() {
 
   const handleSubmit = async () => {
     if (!amount || parseFloat(amount) <= 0) {
-      Alert.alert("Error", "Please enter a valid amount");
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Please enter a valid amount",
+      });
       return;
     }
 
     if (!isDeposit && !selectedCategory) {
-      Alert.alert("Error", "Please select a category");
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Please select a category",
+      });
       return;
     }
 
@@ -198,32 +206,21 @@ export default function AddTransactionScreen() {
       } else {
         response = await createTransactionMutation.mutateAsync(buildFormData());
       }
+      Toast.show({
+        type: "success",
+        text1: "Success",
+        text2: response?.message,
+      });
 
-      if (response?.success) {
-        Toast.show({
-          type: "success",
-          text1: "Success",
-          text2: response?.message,
-        });
-        router.back();
-      } else {
-        Toast.show({
-          type: "error",
-          text1: "Error",
-          text2: response?.message || "Something went wrong",
-        });
-      }
-    } catch (e: any) {
-      console.log("ERROR DATA: ", e?.response?.data);
-      const errorMessage =
-        e?.response?.data?.message ||
-        e?.response?.data?.error ||
-        e?.message ||
-        "Failed to save transaction";
+      router.replace({
+        pathname: "/book/[id]",
+        params: { id: bookId },
+      })
+    } catch (error: any) {
       Toast.show({
         type: "error",
-        text1: "Validation Error",
-        text2: errorMessage,
+        text1: "Error",
+        text2: error?.message || "Something went wrong",
       });
     }
   };

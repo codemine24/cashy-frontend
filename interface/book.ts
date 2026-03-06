@@ -24,3 +24,15 @@ export interface Book {
   others_member: any[];
   transactions?: Transaction[];
 }
+
+export interface Member {
+  id: string;
+  role: "EDITOR" | "VIEWER" | "ADMIN";
+  name?: string;
+  email?: string;
+  user?: {
+    id: string;
+    name: string;
+    email: string;
+  };
+}
