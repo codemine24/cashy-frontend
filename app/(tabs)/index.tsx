@@ -1,9 +1,12 @@
-import { useBooks } from "@/api/book";
-import { CreateWalletModal } from "@/components/wallet/create-wallet-modal";
+import { useBooks, useDeleteBook } from "@/api/book";
 import { ScreenContainer } from "@/components/screen-container";
+import { CreateWalletModal } from "@/components/wallet/create-wallet-modal";
+import { WalletCard } from "@/components/wallet/wallet-card";
+import { ArrowUpDown, Plus, Search } from "@/lib/icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
+  Alert,
   FlatList,
   Modal,
   ScrollView,
@@ -11,10 +14,9 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { WalletCard } from "@/components/wallet/wallet-card";
-import { Plus, ArrowUpDown, Search } from "@/lib/icons";
 // import { useGetAllUsers } from "@/api/user";
 import { Book } from "@/interface/book";
+import Toast from "react-native-toast-message";
 
 type SortOption = "name" | "created_at" | "updated_at";
 
@@ -45,9 +47,44 @@ export default function HomeScreen() {
   };
 
   const { data: booksData, isLoading } = useBooks({ search: "", sort: sortBy, sort_order: sortOrder });
+  const deleteBookMutation = useDeleteBook();
 
   const handleDeleteBook = (book: Book) => {
-    // Add real delete logic here later
+    Alert.alert(
+      "Delete Wallet",
+      `Are you sure you want to delete "${book.name}"? This action cannot be undone and will remove all associated transactions.`,
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              const res: any = await deleteBookMutation.mutateAsync(book.id);
+              if (res?.success) {
+                Toast.show({
+                  type: "success",
+                  text1: "Success",
+                  text2: "Wallet deleted successfully",
+                });
+              } else {
+                Toast.show({
+                  type: "error",
+                  text1: "Error",
+                  text2: res?.message || "Failed to delete wallet",
+                });
+              }
+            } catch (error: any) {
+              Toast.show({
+                type: "error",
+                text1: "Error",
+                text2: error?.message || "Something went wrong",
+              });
+            }
+          },
+        },
+      ]
+    );
   };
 
   const handleRename = (book: Book) => {
