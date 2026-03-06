@@ -11,6 +11,7 @@ export default function BookDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { data: book, isLoading } = useBook(id!);
+
   const groupedTransactions = useMemo(() => {
     if (!book?.data?.transactions) return [];
 
