@@ -1,7 +1,7 @@
 import { themes, type ThemeName } from "@/constants/themes";
 import { useColorScheme } from "nativewind";
 import React, { createContext, useCallback, useContext, useMemo, useState } from "react";
-import { View } from "react-native";
+import { StyleProp, View, ViewStyle } from "react-native";
 
 // ─── Context type ────────────────────────────────────────────────────
 interface ThemeContextValue {
@@ -17,12 +17,14 @@ interface ThemeContextValue {
   setColorScheme: (scheme: "light" | "dark") => void;
   /** Whether the current color scheme is dark */
   isDark: boolean;
+  /** CSS variable style object – apply on a root View inside the navigation tree */
+  themeVars: StyleProp<ViewStyle>;
 }
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
-// ─── Provider ────────────────────────────────────────────────────────
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
+// ─── Provider (context only – no View wrapper) ──────────────────────
+export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   const [themeName, setThemeName] = useState<ThemeName>("default");
   const { colorScheme, setColorScheme } = useColorScheme();
 
@@ -45,16 +47,25 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       toggleColorScheme,
       setColorScheme,
       isDark: resolvedScheme === "dark",
+      themeVars,
     }),
-    [themeName, resolvedScheme, toggleColorScheme, setColorScheme],
+    [themeName, resolvedScheme, toggleColorScheme, setColorScheme, themeVars],
   );
 
   return (
     <ThemeContext.Provider value={value}>
-      <View style={themeVars} className="flex-1">
-        {children}
-      </View>
+      {children}
     </ThemeContext.Provider>
+  );
+}
+
+// ─── Wrapper that applies CSS vars (place INSIDE navigation tree) ───
+export function ThemeVarsProvider({ children }: { children: React.ReactNode }) {
+  const { themeVars } = useTheme();
+  return (
+    <View style={themeVars} className="flex-1">
+      {children}
+    </View>
   );
 }
 

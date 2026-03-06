@@ -1,6 +1,6 @@
 import { onboardingSlides, type OnboardingSlide } from "@/constants/onboarding";
-import { useTheme } from "@/context/theme-context";
-import { ChevronRight } from "lucide-react-native";
+
+import { ChevronRight } from "@/lib/icons";
 import { useCallback, useRef, useState } from "react";
 import {
   Dimensions,
@@ -16,7 +16,6 @@ const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const SLIDE_WIDTH = SCREEN_WIDTH;
 
 export function OnboardingCarousel() {
-  const { isDark } = useTheme();
   const flatListRef = useRef<FlatList<OnboardingSlide>>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -107,7 +106,7 @@ export function OnboardingCarousel() {
           activeOpacity={0.7}
           className="h-12 w-12 items-center justify-center rounded-full bg-muted"
         >
-          <ChevronRight size={22} color={isDark ? "#94a3b8" : "#64748b"} />
+          <ChevronRight size={22} className="text-muted-foreground" />
         </TouchableOpacity>
       </View>
     </View>

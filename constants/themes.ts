@@ -4,65 +4,68 @@ import { vars } from "nativewind";
  * Design tokens defined as CSS variables.
  * Each theme defines light and dark variants.
  *
- * Usage in className:  `bg-primary`, `text-foreground`, etc.
- * All colours resolve through CSS vars so switching themes is instant.
+ * ⚠️  All colour values MUST be space-separated RGB channels (e.g. "255 87 87")
+ *     so that Tailwind's opacity modifier (bg-primary/10, text-foreground/50, …)
+ *     works correctly via  rgb(var(--color-*) / <alpha-value>)
+ *
+ * Usage in className:  `bg-primary`, `bg-primary/10`, `text-foreground/80`, etc.
  */
 
 // ─── Default (Brand) theme ──────────────────────────────────────────
 const defaultLight = vars({
-  "--color-primary": "#FF5757",
-  "--color-primary-foreground": "#ffffff",
-  "--color-secondary": "#FF8C42",
-  "--color-secondary-foreground": "#ffffff",
-  "--color-accent": "#FFD700",
-  "--color-accent-foreground": "#111827",
+  "--color-primary": "255 87 87",
+  "--color-primary-foreground": "255 255 255",
+  "--color-secondary": "255 140 66",
+  "--color-secondary-foreground": "255 255 255",
+  "--color-accent": "255 215 0",
+  "--color-accent-foreground": "17 24 39",
 
-  "--color-background": "#f8fafc",
-  "--color-foreground": "#111827",
+  "--color-background": "248 250 252",
+  "--color-foreground": "17 24 39",
 
-  "--color-card": "#ffffff",
-  "--color-card-foreground": "#111827",
+  "--color-card": "255 255 255",
+  "--color-card-foreground": "17 24 39",
 
-  "--color-muted": "#f1f5f9",
-  "--color-muted-foreground": "#64748b",
+  "--color-muted": "241 245 249",
+  "--color-muted-foreground": "100 116 139",
 
-  "--color-border": "#e2e8f0",
-  "--color-input": "#e2e8f0",
-  "--color-ring": "#FF5757",
+  "--color-border": "226 232 240",
+  "--color-input": "226 232 240",
+  "--color-ring": "255 87 87",
 
-  "--color-destructive": "#ef4444",
-  "--color-destructive-foreground": "#ffffff",
+  "--color-destructive": "239 68 68",
+  "--color-destructive-foreground": "255 255 255",
 
-  "--color-success": "#22c55e",
-  "--color-success-foreground": "#ffffff",
+  "--color-success": "34 197 94",
+  "--color-success-foreground": "255 255 255",
 });
 
 const defaultDark = vars({
-  "--color-primary": "#FF6B6B",
-  "--color-primary-foreground": "#ffffff",
-  "--color-secondary": "#FFA36E",
-  "--color-secondary-foreground": "#ffffff",
-  "--color-accent": "#FFE04A",
-  "--color-accent-foreground": "#111827",
+  "--color-primary": "255 107 107",
+  "--color-primary-foreground": "255 255 255",
+  "--color-secondary": "255 163 110",
+  "--color-secondary-foreground": "255 255 255",
+  "--color-accent": "255 224 74",
+  "--color-accent-foreground": "17 24 39",
 
-  "--color-background": "#0f172a",
-  "--color-foreground": "#f8fafc",
+  "--color-background": "15 23 42",
+  "--color-foreground": "248 250 252",
 
-  "--color-card": "#1e293b",
-  "--color-card-foreground": "#f8fafc",
+  "--color-card": "30 41 59",
+  "--color-card-foreground": "248 250 252",
 
-  "--color-muted": "#1e293b",
-  "--color-muted-foreground": "#94a3b8",
+  "--color-muted": "30 41 59",
+  "--color-muted-foreground": "148 163 184",
 
-  "--color-border": "#334155",
-  "--color-input": "#334155",
-  "--color-ring": "#FF6B6B",
+  "--color-border": "51 65 85",
+  "--color-input": "51 65 85",
+  "--color-ring": "255 107 107",
 
-  "--color-destructive": "#f87171",
-  "--color-destructive-foreground": "#ffffff",
+  "--color-destructive": "248 113 113",
+  "--color-destructive-foreground": "255 255 255",
 
-  "--color-success": "#4ade80",
-  "--color-success-foreground": "#111827",
+  "--color-success": "74 222 128",
+  "--color-success-foreground": "17 24 39",
 });
 
 // ─── Theme registry ─────────────────────────────────────────────────

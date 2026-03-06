@@ -1,7 +1,8 @@
-import { useTheme } from "@/context/theme-context";
+import { ThemeVarsProvider, useTheme } from "@/context/theme-context";
 import { DarkTheme, DefaultTheme, ThemeProvider as NavThemeProvider } from "@react-navigation/native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { RootProvider } from "./root-provider";
 
 export const RootNavigator = () => {
   const { isDark } = useTheme();
@@ -9,17 +10,25 @@ export const RootNavigator = () => {
   return (
     <NavThemeProvider value={isDark ? DarkTheme : DefaultTheme}>
       <StatusBar style={isDark ? "light" : "dark"} />
-      <Stack
-        screenOptions={{
-          headerShown: false,
-          headerBackTitle: "Back",
-          headerShadowVisible: false,
-          headerStyle: { backgroundColor: isDark ? "#0f172a" : "#f8fafc" },
-          headerTitleStyle: { fontSize: 17, fontWeight: "600" },
-        }}
-      >
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-      </Stack>
+      <ThemeVarsProvider>
+        <RootProvider>
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              headerBackTitle: "Back",
+              headerShadowVisible: false,
+              headerStyle: { backgroundColor: isDark ? "#0f172a" : "#f8fafc", },
+              headerTitleStyle: { fontSize: 17, fontWeight: "600" },
+            }}
+          >
+            <Stack.Screen name="index" />
+            <Stack.Screen name="login-type" />
+            <Stack.Screen name="auth" />
+            <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="settings/app-settings" options={{ headerShown: true }} />
+          </Stack>
+        </RootProvider>
+      </ThemeVarsProvider>
     </NavThemeProvider>
   );
 }
