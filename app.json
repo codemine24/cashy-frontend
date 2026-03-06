@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "cashflow-mobile",
-    "slug": "cashflow-mobile",
+    "name": "cashy-mobile",
+    "slug": "cashy-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "cashflowmobile",
+    "scheme": "cashymobile",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
