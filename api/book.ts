@@ -38,7 +38,7 @@ export const useBook = (id: string) => {
     queryFn: async (): Promise<{ data: Book } | undefined> => {
       try {
         const response = await apiClient.get(`${BOOK_API_URL}/${id}`);
-        return response;
+        return response.data;
       } catch (error) {
         throwApiError(error);
       }
@@ -53,7 +53,7 @@ export const useCreateBook = () => {
     mutationFn: async (name: string) => {
       try {
         const response = await apiClient.post(BOOK_API_URL, { name });
-        return response;
+        return response.data;
       } catch (error) {
         throwApiError(error);
       }
@@ -70,7 +70,7 @@ export const useUpdateBook = () => {
         const response = await apiClient.patch(`${BOOK_API_URL}/${id}`, {
           name,
         });
-        return response;
+        return response.data;
       } catch (error) {
         throwApiError(error);
       }
@@ -84,8 +84,8 @@ export const useDeleteBook = () => {
   return useMutation({
     mutationFn: async (id: string) => {
       try {
-        const response = await apiClient.delete(`${BOOK_API_URL}/${id}`);
-        return response;
+        const response = await apiClient.delete(BOOK_API_URL, { data:{ ids: [id]} });
+        return response.data;
       } catch (error) {
         throwApiError(error);
       }
@@ -112,7 +112,7 @@ export const useShareBook = () => {
           email,
           role,
         });
-        return response;
+        return response.data;
       } catch (error) {
         throwApiError(error);
       }

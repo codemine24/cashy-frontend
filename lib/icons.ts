@@ -4,22 +4,30 @@ import {
   ArrowUpDown,
   Bell,
   BookIcon,
+  BookOpen,
+  Calendar,
   Check,
   ChevronDown,
   ChevronRight,
+  Clock,
+  Copy,
   Edit3,
   Globe,
   Info,
   LogOut,
   Mail,
+  MessageSquare,
   MoreVertical,
+  Paperclip,
   Plus,
   Search,
   Settings,
   ShieldCheck,
+  Tag,
   Trash2,
   User,
   UserPlus,
+  Users,
   X,
 } from "lucide-react-native";
 import { cssInterop } from "nativewind";
@@ -27,13 +35,6 @@ import { cssInterop } from "nativewind";
 /**
  * Apply NativeWind's cssInterop to Lucide icons so that they respect
  * className for color, width, and height.
- *
- * After this, you can do:
- *   <Mail className="text-primary" />
- *   <Check className="text-success" />
- *
- * Import icons from this file instead of "lucide-react-native":
- *   import { Mail, Check } from "@/lib/icons";
  */
 function interopIcon(icon: any) {
   cssInterop(icon, {
@@ -71,13 +72,34 @@ interopIcon(Settings);
 interopIcon(User);
 interopIcon(Globe);
 interopIcon(Bell);
+interopIcon(Users);
+interopIcon(Paperclip);
+interopIcon(BookOpen);
+interopIcon(Calendar);
+interopIcon(Clock);
+interopIcon(Copy);
+interopIcon(MessageSquare);
+interopIcon(Tag);
 
 // Re-export so the rest of the app imports from here
 export {
   ArrowLeft,
-  ArrowRight, ArrowUpDown, Bell, BookIcon, Check,
+  ArrowRight,
+  ArrowUpDown,
+  Bell,
+  BookIcon, BookOpen,
+  Calendar, Check,
   ChevronDown,
-  ChevronRight, Edit3, Globe, Info,
-  LogOut, Mail, MoreVertical, Plus, Search, Settings, ShieldCheck, Trash2, User, UserPlus, X
+  ChevronRight, Clock,
+  Copy, Edit3,
+  Globe,
+  Info,
+  LogOut,
+  Mail, MessageSquare, MoreVertical, Paperclip, Plus,
+  Search,
+  Settings,
+  ShieldCheck, Tag, Trash2,
+  User,
+  UserPlus, Users, X
 };
 

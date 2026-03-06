@@ -1,5 +1,5 @@
 import { Tabs } from "expo-router";
-import { BarChart2, Settings, Target, Wallet } from "lucide-react-native";
+import { Settings, Wallet } from "lucide-react-native";
 import { Platform, View } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { TabHeader } from "@/components/tab-header";
