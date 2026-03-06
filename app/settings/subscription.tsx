@@ -51,7 +51,7 @@ export default function Subscription() {
           {/* Header area */}
           <View className="items-center mb-6">
             <Text className="text-2xl font-bold text-foreground mb-2 text-center">
-              Upgrade to premium
+              Upgrade to Premium
             </Text>
             <Text className="text-sm font-medium text-muted-foreground text-center px-2">
               Grab the limited &quot;Lifetime Deal&quot; and get all premium feature and updates with no additional cost.
@@ -120,16 +120,16 @@ export default function Subscription() {
           </View>
 
           {/* Subscribe Button */}
-          <TouchableOpacity
-            activeOpacity={0.8}
-            className={`rounded-full py-4 items-center justify-center ${selectedPlan === "lifetime" ? "bg-amber-500" : "bg-foreground"
-              }`}
-          >
-            <Text className={`font-bold text-lg ${selectedPlan === "lifetime" ? "text-white" : "text-background"
-              }`}>
-              {selectedPlan === "lifetime" ? "Get Started for $4.99" : "Continue with Free"}
-            </Text>
-          </TouchableOpacity>
+          {selectedPlan === "lifetime" && (
+            <TouchableOpacity
+              activeOpacity={0.8}
+              className="rounded-full py-4 items-center justify-center bg-amber-500"
+            >
+              <Text className="font-bold text-lg text-white">
+                Get Started for $4.99
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
 
       </ScreenContainer>
