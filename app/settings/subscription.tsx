@@ -5,23 +5,30 @@ import { useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-// A small functional component for comparison rows
-function ComparisonRow({ feature, free, pro }: { feature: string; free: boolean; pro: boolean }) {
+type ComparisonProps =
+  | { type: "boolean"; free: boolean; pro: boolean }
+  | { type: "text"; free: string; pro: string };
+
+function ComparisonRow(props: { feature: string } & ComparisonProps) {
+  const { feature, type, free, pro } = props;
+
   return (
     <View className="flex-row items-center justify-between py-4 border-b border-border">
       <Text className="flex-1 text-base text-foreground font-medium pr-2">{feature}</Text>
-      <View className="w-16 items-center">
-        {free ? (
-          <Check size={20} className="text-green-500" />
+
+      <View className="w-20 items-center justify-center">
+        {type === "boolean" ? (
+          free ? <Check size={20} className="text-green-500" /> : <X size={20} className="text-muted-foreground" />
         ) : (
-          <X size={20} className="text-muted-foreground" />
+          <Text className="text-sm text-muted-foreground text-center">{free}</Text>
         )}
       </View>
-      <View className="w-16 items-center">
-        {pro ? (
-          <Check size={20} className="text-green-500" />
+
+      <View className="w-20 items-center justify-center">
+        {type === "boolean" ? (
+          pro ? <Check size={20} className="text-green-500" /> : <X size={20} className="text-muted-foreground" />
         ) : (
-          <X size={20} className="text-muted-foreground" />
+          <Text className="text-sm text-muted-foreground">{pro}</Text>
         )}
       </View>
     </View>
@@ -34,8 +41,8 @@ export default function Subscription() {
 
   return (
     <>
-      <Stack.Screen options={{ title: "Subscription" }} />
-      <ScreenContainer edges={["top"]} className="bg-background relative">
+      <Stack.Screen options={{ title: "Cashy Subscription", headerTitleAlign: "left" }} />
+      <ScreenContainer edges={[]} className="bg-background relative">
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 260 + insets.bottom }}
@@ -44,10 +51,10 @@ export default function Subscription() {
           {/* Header area */}
           <View className="items-center mb-6">
             <Text className="text-2xl font-bold text-foreground mb-2 text-center">
-              Trusted by 500,000+ users Globally
+              Upgrade to premium
             </Text>
             <Text className="text-sm font-medium text-muted-foreground text-center px-2">
-              Join thousands who have scaled their wealth and boosted productivity with Cashflow Pro.
+              Grab the limited &quot;Lifetime Deal&quot; and get all premium feature and updates with no additional cost.
             </Text>
           </View>
 
@@ -62,11 +69,11 @@ export default function Subscription() {
             </View>
 
             {/* 5 Comparisons */}
-            <ComparisonRow feature="Basic Budgeting" free={true} pro={true} />
-            <ComparisonRow feature="Unlimited Transactions" free={false} pro={true} />
-            <ComparisonRow feature="Advanced Analytics" free={false} pro={true} />
-            <ComparisonRow feature="Unlimited Categories" free={false} pro={true} />
-            <ComparisonRow feature="Cloud Backup & Sync" free={false} pro={true} />
+            <ComparisonRow feature="Number of wallet" type="text" free={"5"} pro={"Unlimited"} />
+            <ComparisonRow feature="Number of goal" type="text" free={"5"} pro={"Unlimited"} />
+            <ComparisonRow feature="Each wallet/ goal can be shared with" type="text" free={"1 member"} pro={"Unlimited"} />
+            <ComparisonRow feature="Advance analytics" type="boolean" free={false} pro={true} />
+            <ComparisonRow feature="Attach image with transaction" type="boolean" free={false} pro={true} />
           </View>
 
         </ScrollView>
