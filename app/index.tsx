@@ -1,25 +1,34 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LanguageModal } from "@/components/welcome/language-modal";
 import { OnboardingCarousel } from "@/components/welcome/onboarding-carousel";
 import { WelcomeHeader } from "@/components/welcome/welcome-header";
 import { languages, type LanguageCode } from "@/constants/onboarding";
 import { Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useRouter } from "expo-router";
+import { useAuth } from "@/context/auth-context";
 
 export default function WelcomeScreen() {
+  const router = useRouter();
   const [languageModalVisible, setLanguageModalVisible] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState<LanguageCode>("en");
+  const currentLanguageLabel = languages.find((l) => l.code === selectedLanguage)?.label ?? "English";
 
-  const currentLanguageLabel =
-    languages.find((l) => l.code === selectedLanguage)?.label ?? "English";
+  const { authState, authReady } = useAuth();
+
+  useEffect(() => {
+    if (authReady && authState.isAuthenticated) {
+      router.replace("/(tabs)");
+    }
+  }, [authReady, authState.isAuthenticated, router]);
+
+  if (!authReady) {
+    return null;
+  }
 
   const handleLanguageSelect = (code: LanguageCode) => {
     setSelectedLanguage(code);
     setLanguageModalVisible(false);
-  };
-
-  const handleGetStarted = () => {
-    // router.push("/auth");
   };
 
   return (
@@ -34,10 +43,10 @@ export default function WelcomeScreen() {
       <OnboardingCarousel />
 
       {/* ── Bottom CTA ── */}
-      <View className="px-6 pb-3">
+      <View className="px-6 mb-16">
         {/* Get Started button */}
         <TouchableOpacity
-          onPress={handleGetStarted}
+          onPress={() => router.push("/login-type")}
           activeOpacity={0.85}
           className="items-center rounded bg-primary py-4"
         >

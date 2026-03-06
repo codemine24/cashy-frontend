@@ -1,6 +1,6 @@
 import { languages, type LanguageCode } from "@/constants/onboarding";
-import { useTheme } from "@/context/theme-context";
-import { Check, X } from "lucide-react-native";
+
+import { Check, X } from "@/lib/icons";
 import { Modal, Pressable, Text, TouchableOpacity, View } from "react-native";
 
 interface LanguageModalProps {
@@ -16,7 +16,6 @@ export function LanguageModal({
   onSelect,
   onClose,
 }: LanguageModalProps) {
-  const { isDark } = useTheme();
 
   return (
     <Modal
@@ -44,7 +43,7 @@ export function LanguageModal({
             Select Language
           </Text>
           <TouchableOpacity onPress={onClose} activeOpacity={0.7}>
-            <X size={22} color={isDark ? "#94a3b8" : "#64748b"} />
+            <X size={22} className="text-muted-foreground" />
           </TouchableOpacity>
         </View>
 
@@ -70,7 +69,7 @@ export function LanguageModal({
               </View>
 
               {isSelected && (
-                <Check size={20} color={isDark ? "#FF6B6B" : "#FF5757"} />
+                <Check size={20} className="text-primary" />
               )}
             </TouchableOpacity>
           );
