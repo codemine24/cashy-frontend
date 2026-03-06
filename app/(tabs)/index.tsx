@@ -15,7 +15,6 @@ import { WalletCard } from "@/components/wallet/wallet-card";
 import { Plus, ArrowUpDown, Search } from "@/lib/icons";
 // import { useGetAllUsers } from "@/api/user";
 import { Book } from "@/interface/book";
-import { useGetAllUsers } from "@/api/user";
 
 type SortOption = "name" | "created_at" | "updated_at";
 
@@ -38,10 +37,6 @@ export default function HomeScreen() {
 
   const [tempSortBy, setTempSortBy] = useState<SortOption>("updated_at");
   const [tempSortOrder, setTempSortOrder] = useState<"asc" | "desc">("desc");
-
-  const { data: usersData, isLoading: usersLoading } = useGetAllUsers();
-
-  // console.log("usersData", usersData?.data.data);
 
   const openSortModal = () => {
     setTempSortBy(sortBy);
@@ -139,13 +134,7 @@ export default function HomeScreen() {
       </ScreenContainer>
 
       {/* Floating Action Button */}
-      <View
-        style={{
-          position: "absolute",
-          bottom: 32,
-          right: 16,
-        }}
-      >
+      <View className="absolute bottom-8 right-4">
         <TouchableOpacity
           onPress={() => setShowCreateModal(true)}
           className="bg-primary p-4 rounded-full items-center justify-center flex-row gap-3 shadow-sm"

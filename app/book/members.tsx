@@ -4,6 +4,7 @@ import { ScreenContainer } from "@/components/screen-container";
 import {
   Edit3,
   MoreVertical,
+  Plus,
   Trash2,
   User as UserIcon,
   X,
@@ -294,7 +295,18 @@ export default function MembersScreen() {
       </ScreenContainer>
 
       {/* Floating Action Button */}
-      <View
+      <View className="absolute bottom-16 right-4">
+        <TouchableOpacity
+          onPress={handleOpenAddModal}
+          className="bg-primary p-4 rounded-full items-center justify-center flex-row gap-3 shadow-sm"
+        >
+          <Plus size={20} className="text-primary-foreground" />
+          <Text className="text-primary-foreground font-bold text-xl tracking-widest text-center">
+            Add New Member
+          </Text>
+        </TouchableOpacity>
+      </View>
+      {/* <View
         style={{
           position: "absolute",
           bottom: 32,
@@ -309,7 +321,7 @@ export default function MembersScreen() {
             + Add Member
           </Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
 
       {/* Add / Edit Member Modal */}
       <Modal visible={modalVisible} transparent animationType="slide">
