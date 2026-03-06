@@ -1,8 +1,8 @@
 import { useCreateBook, useUpdateBook } from "@/api/book";
+import { AppModal } from "@/components/app-modal";
 import React, { useState } from "react";
 import {
   KeyboardAvoidingView,
-  Modal,
   Platform,
   Text,
   TextInput,
@@ -46,12 +46,22 @@ export function CreateWalletModal({ visible, onClose, editBook }: CreateBookModa
       } else {
         await createBookMutation.mutateAsync(bookName.trim());
       }
+
       setBookName("");
       onClose();
-    } catch {
+
+      setTimeout(() => {
+        Toast.show({
+          type: "success",
+          text1: "Success",
+          text2: `Wallet ${isEdit ? "updated" : "created"} successfully`,
+        });
+      }, 500);
+    } catch (error: any) {
       Toast.show({
         type: "error",
-        text1: `Failed to ${isEdit ? 'rename' : 'create'} wallet`,
+        text1: "Error",
+        text2: error?.message || "Something went wrong",
       });
     }
   };
@@ -64,8 +74,7 @@ export function CreateWalletModal({ visible, onClose, editBook }: CreateBookModa
   const isPending = createBookMutation.isPending || updateBookMutation.isPending;
 
   return (
-    // animationType="slide" makes it slide up from the bottom
-    <Modal visible={visible} animationType="slide" transparent={true}>
+    <AppModal visible={visible} animationType="slide" transparent={true}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
@@ -76,8 +85,6 @@ export function CreateWalletModal({ visible, onClose, editBook }: CreateBookModa
           activeOpacity={1}
           onPress={handleClose}
         >
-          {/* The sheet itself — mt-auto pushes it to the bottom */}
-          {/* We stop event propagation so tapping inside doesn't close it */}
           <TouchableOpacity
             activeOpacity={1}
             onPress={(e) => e.stopPropagation()}
@@ -125,7 +132,7 @@ export function CreateWalletModal({ visible, onClose, editBook }: CreateBookModa
                 disabled={isPending}
                 className={`flex-1 rounded-lg py-3 items-center justify-center ${isPending ? "bg-primary/50" : "bg-primary"}`}
               >
-                <Text className="text-background font-semibold">
+                <Text className="text-white font-semibold">
                   {isPending
                     ? (editBook ? "Renaming..." : "Creating...")
                     : (editBook ? "Rename" : "Create")}
@@ -135,6 +142,6 @@ export function CreateWalletModal({ visible, onClose, editBook }: CreateBookModa
           </TouchableOpacity>
         </TouchableOpacity>
       </KeyboardAvoidingView>
-    </Modal>
+    </AppModal>
   );
 }

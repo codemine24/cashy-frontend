@@ -84,7 +84,7 @@ export const useDeleteBook = () => {
   return useMutation({
     mutationFn: async (id: string) => {
       try {
-        const response = await apiClient.delete(BOOK_API_URL, { data: { ids: [id] } });
+        const response = await apiClient.delete(BOOK_API_URL, { data:{ ids: [id]} });
         return response.data;
       } catch (error) {
         throwApiError(error);

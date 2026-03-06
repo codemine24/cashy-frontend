@@ -1,5 +1,6 @@
 import { useBook, useShareBook } from "@/api/book";
 import { useGetAllUsers } from "@/api/user";
+import { AppModal } from "@/components/app-modal";
 import { ScreenContainer } from "@/components/screen-container";
 import {
   Edit3,
@@ -17,7 +18,6 @@ import {
   Alert,
   FlatList,
   KeyboardAvoidingView,
-  Modal,
   Platform,
   ScrollView,
   StyleSheet,
@@ -324,7 +324,7 @@ export default function MembersScreen() {
       </View> */}
 
       {/* Add / Edit Member Modal */}
-      <Modal visible={modalVisible} transparent animationType="slide">
+      <AppModal visible={modalVisible} transparent animationType="slide">
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={{ flex: 1 }}
@@ -570,7 +570,7 @@ export default function MembersScreen() {
             </TouchableOpacity>
           </TouchableOpacity>
         </KeyboardAvoidingView>
-      </Modal>
+      </AppModal>
     </>
   );
 }
