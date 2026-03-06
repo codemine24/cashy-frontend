@@ -1,9 +1,11 @@
 import { useAuth } from "@/context/auth-context";
-import { Bell, ChevronDown } from "lucide-react-native";
+import { BellIcon } from "@/icons/bell-icon";
+import { useRouter } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
 
 export function TabHeader() {
   const { authState } = useAuth();
+  const router = useRouter();
   const user = authState.user;
 
   // Get the first letter of the user's name (or email) for the avatar
@@ -23,6 +25,7 @@ export function TabHeader() {
         {/* Left: Avatar + Name + Chevron */}
         <TouchableOpacity
           activeOpacity={0.7}
+          onPress={() => router.push("/settings/subscription")}
           className="flex-row items-center gap-3"
         >
           {/* Avatar circle */}
@@ -46,26 +49,25 @@ export function TabHeader() {
           </View>
 
           {/* Name */}
-          <Text
-            className="text-foreground"
-            style={{
-              fontSize: 18,
-              fontWeight: "700",
-            }}
-          >
-            {displayName}
-          </Text>
-
-          {/* Chevron */}
-          <ChevronDown size={18} color="#6B7280" />
+          <View>
+            <Text
+              className="text-foreground"
+              style={{
+                fontSize: 18,
+                fontWeight: "700",
+              }}
+            >
+              {displayName}
+            </Text>
+            <Text className="text-sm text-muted-foreground">Free</Text>
+          </View>
         </TouchableOpacity>
 
-        {/* Right: Bell icon */}
         <TouchableOpacity
           activeOpacity={0.7}
           className="p-2"
         >
-          <Bell size={24} color="#1C1C1E" strokeWidth={1.8} />
+          <BellIcon className="text-foreground" />
         </TouchableOpacity>
       </View>
     </View>

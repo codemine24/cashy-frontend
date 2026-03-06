@@ -3,6 +3,7 @@ import { useRouter } from "expo-router";
 import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 import { useAuth } from "@/context/auth-context";
+import { PremiumIcon } from "@/icons/premium-icon";
 import {
   ChevronRight,
   Info,
@@ -100,14 +101,6 @@ export default function SettingsScreen() {
         {/* ── Main settings group ── */}
         <View className="bg-card rounded-2xl border border-border px-4 mb-4">
           <SettingsRow
-            iconBgClass="bg-violet-500/10"
-            icon={<Settings size={22} className="text-violet-500" />}
-            title="App Settings"
-            subtitle="Language, Theme, Notifications"
-            onPress={() => router.push("/settings/app-settings" as any)}
-          />
-          <Divider />
-          <SettingsRow
             iconBgClass="bg-blue-500/10"
             icon={<User size={22} className="text-blue-500" />}
             title="Your Profile"
@@ -117,7 +110,24 @@ export default function SettingsScreen() {
           <Divider />
           <SettingsRow
             iconBgClass="bg-amber-500/10"
-            icon={<Info size={22} className="text-amber-500" />}
+            icon={<PremiumIcon className="text-amber-500" />}
+            title="Subscription"
+            subtitle="Manage your subscription"
+            onPress={() => router.push("/settings/subscription" as any)}
+          />
+          <Divider />
+
+          <SettingsRow
+            iconBgClass="bg-violet-500/10"
+            icon={<Settings size={22} className="text-violet-500" />}
+            title="App Settings"
+            subtitle="Language, Theme, Notifications"
+            onPress={() => router.push("/settings/app-settings" as any)}
+          />
+          <Divider />
+          <SettingsRow
+            iconBgClass="bg-green-500/10"
+            icon={<Info size={22} className="text-green-500" />}
             title="About CashFlow"
             subtitle="Privacy Policy, T&C, About us"
             onPress={() => router.push("/settings/about" as any)}
