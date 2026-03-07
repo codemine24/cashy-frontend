@@ -1,5 +1,6 @@
 import { useBook } from "@/api/book";
 import { ScreenContainer } from "@/components/screen-container";
+import { BookDetailSkeleton } from "@/components/skeletons/book-detail-skeleton";
 
 import { UserPlus, Users } from "@/lib/icons";
 import { formatCurrency } from "@/utils";
@@ -60,11 +61,7 @@ export default function BookDetailScreen() {
   }, [book?.data?.transactions, book?.data?.balance]);
 
   if (isLoading) {
-    return (
-      <View className="bg-surface rounded-xl p-8 items-center justify-center border border-border">
-        <Text className="text-muted-foreground">Loading...</Text>
-      </View>
-    );
+    return <BookDetailSkeleton />;
   }
 
   if (!book) {

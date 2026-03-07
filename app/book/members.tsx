@@ -3,6 +3,7 @@ import { useGetAllUsers } from "@/api/user";
 import { AppModal } from "@/components/app-modal";
 import { MemberCard } from "@/components/memeber/member-card";
 import { ScreenContainer } from "@/components/screen-container";
+import { MembersSkeleton } from "@/components/skeletons/members-skeleton";
 import { Member } from "@/interface/book";
 import { Plus, X } from "@/lib/icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -130,9 +131,7 @@ export default function MembersScreen() {
       <Stack.Screen options={{ title: "Members", headerBackTitle: "Back" }} />
       <ScreenContainer edges={["left", "right"]} className="bg-background">
         {bookLoading ? (
-          <View className="flex-1 items-center justify-center">
-            <ActivityIndicator size="large" color="#fca5a5" />
-          </View>
+          <MembersSkeleton />
         ) : (
           <FlatList
             contentContainerStyle={{
