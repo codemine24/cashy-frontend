@@ -4,11 +4,12 @@ import { CreateWalletModal } from "@/components/wallet/create-wallet-modal";
 import { WalletCard } from "@/components/wallet/wallet-card";
 import { ArrowUpDown, Plus, Search, X } from "@/lib/icons";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import {
   Alert,
   FlatList,
   Modal,
+  RefreshControl,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -46,8 +47,16 @@ export default function HomeScreen() {
     setShowSortModal(true);
   };
 
-  const { data: booksData, isLoading } = useBooks({ search: "", sort: sortBy, sort_order: sortOrder });
+  const { data: booksData, isLoading, refetch } = useBooks({ search: "", sort: sortBy, sort_order: sortOrder });
   const deleteBookMutation = useDeleteBook();
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  }, [refetch]);
 
   const handleDeleteBook = (book: Book) => {
     Alert.alert(
@@ -102,7 +111,12 @@ export default function HomeScreen() {
   return (
     <>
       <ScreenContainer edges={["left", "right"]} className="p-4 bg-background">
-        <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        >
           {/* Header */}
           <View className="mb-6 flex-row items-center justify-between">
             <View className="flex-1">

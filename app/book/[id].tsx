@@ -4,13 +4,21 @@ import { ScreenContainer } from "@/components/screen-container";
 import { UserPlus, Users } from "@/lib/icons";
 import { formatCurrency } from "@/utils";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { useMemo } from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { useCallback, useMemo, useState } from "react";
+import { RefreshControl, ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 export default function BookDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
-  const { data: book, isLoading } = useBook(id!);
+  const { data: book, isLoading, refetch } = useBook(id!);
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  }, [refetch]);
 
   const groupedTransactions = useMemo(() => {
     if (!book?.data?.transactions) return [];
@@ -106,6 +114,9 @@ export default function BookDetailScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 100 }}
         className="px-4 bg-background"
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
       >
         {/* Header Card */}
         <View className="bg-card mt-4 rounded-2xl mb-6 shadow-sm border border-border">
