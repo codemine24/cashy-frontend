@@ -11,10 +11,12 @@ import {
 } from "@/lib/icons";
 import { formatCurrency } from "@/utils";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { useCallback, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
   Image,
+  RefreshControl,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -101,8 +103,16 @@ export default function TransactionDetailScreen() {
   }>();
 
   const { authState } = useAuth();
-  const { data: txData, isLoading } = useTransaction(params.transactionId!);
+  const { data: txData, isLoading, refetch } = useTransaction(params.transactionId!);
   const deleteTransaction = useDeleteTransaction();
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  }, [refetch]);
 
   const transaction = txData?.data;
   const canDelete =
@@ -254,6 +264,14 @@ export default function TransactionDetailScreen() {
             className="flex-1"
             contentContainerStyle={{ flexGrow: 1 }}
             showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                tintColor="#ffffff"
+                colors={["#ffffff"]}
+              />
+            }
           >
             {/* ── Colored Header: Amount ── */}
             <View className="items-center pt-7 pb-9 px-6">
