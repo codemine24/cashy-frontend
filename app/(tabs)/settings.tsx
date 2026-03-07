@@ -76,7 +76,7 @@ export default function SettingsScreen() {
     setAuthState({ isAuthenticated: false, user: null });
 
     // Redirect user to the login screen
-    router.replace("/auth" as any);
+    router.replace("/login-type");
   };
 
   return (
