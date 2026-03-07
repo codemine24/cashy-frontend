@@ -65,6 +65,7 @@ export function TabHeader() {
 
         <TouchableOpacity
           activeOpacity={0.7}
+          onPress={() => router.push("/notifications" as any)}
           className="p-2"
         >
           <BellIcon className="text-foreground" />
