@@ -13,16 +13,16 @@ import { formatCurrency } from "@/utils";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import {
-  ActivityIndicator,
   Alert,
   Image,
   RefreshControl,
   ScrollView,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 
+import { TransactionDetailSkeleton } from "@/components/skeletons/transaction-detail-skeleton";
 import { useAuth } from "@/context/auth-context";
 import Toast from "react-native-toast-message";
 
@@ -253,12 +253,7 @@ export default function TransactionDetailScreen() {
 
       <View className={`flex-1 ${headerBgClass}`}>
         {isLoading ? (
-          <View className="flex-1 bg-background items-center justify-center">
-            <ActivityIndicator size="large" className="text-muted-foreground" />
-            <Text className="text-muted-foreground mt-3 text-sm">
-              Loading...
-            </Text>
-          </View>
+          <TransactionDetailSkeleton />
         ) : (
           <ScrollView
             className="flex-1"

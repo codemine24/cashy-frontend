@@ -1,5 +1,6 @@
 import { useBooks, useDeleteBook } from "@/api/book";
 import { ScreenContainer } from "@/components/screen-container";
+import { WalletsSkeleton } from "@/components/skeletons/wallets-skeleton";
 import { CreateWalletModal } from "@/components/wallet/create-wallet-modal";
 import { WalletCard } from "@/components/wallet/wallet-card";
 import { ArrowUpDown, Plus, Search, X } from "@/lib/icons";
@@ -147,9 +148,7 @@ export default function HomeScreen() {
 
           {/* Books List */}
           {isLoading ? (
-            <View className="bg-surface rounded-xl p-8 items-center justify-center border border-border">
-              <Text className="text-foreground">Loading...</Text>
-            </View>
+            <WalletsSkeleton />
           ) : booksData?.data?.length === 0 ? (
             <View className="bg-surface rounded-xl p-8 items-center justify-center border border-border">
               <Text className="text-lg font-semibold text-foreground mb-2">
