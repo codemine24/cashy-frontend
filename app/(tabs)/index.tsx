@@ -2,7 +2,7 @@ import { useBooks, useDeleteBook } from "@/api/book";
 import { ScreenContainer } from "@/components/screen-container";
 import { CreateWalletModal } from "@/components/wallet/create-wallet-modal";
 import { WalletCard } from "@/components/wallet/wallet-card";
-import { ArrowUpDown, Plus, Search } from "@/lib/icons";
+import { ArrowUpDown, Plus, Search, X } from "@/lib/icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
@@ -219,7 +219,7 @@ export default function HomeScreen() {
                 onPress={() => setShowSortModal(false)}
                 className="p-1"
               >
-                <Text className="text-sm text-foreground">Close</Text>
+                <X size={20} className="text-foreground" />
               </TouchableOpacity>
             </View>
 
