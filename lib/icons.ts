@@ -6,6 +6,7 @@ import {
   BookIcon,
   BookOpen,
   Calendar,
+  Camera,
   Check,
   ChevronDown,
   ChevronRight,
@@ -53,6 +54,7 @@ function interopIcon(icon: any) {
 interopIcon(ArrowLeft);
 interopIcon(ArrowRight);
 interopIcon(Check);
+interopIcon(Camera);
 interopIcon(ChevronDown);
 interopIcon(ChevronRight);
 interopIcon(Mail);
@@ -88,7 +90,7 @@ export {
   ArrowUpDown,
   Bell,
   BookIcon, BookOpen,
-  Calendar, Check,
+  Calendar, Camera, Check,
   ChevronDown,
   ChevronRight, Clock,
   Copy, Edit3,

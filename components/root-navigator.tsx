@@ -35,6 +35,7 @@ export const RootNavigator = () => {
             <Stack.Screen name="book/search-wallet" />
             <Stack.Screen name="settings/app-settings" options={{ headerShown: true }} />
             <Stack.Screen name="settings/subscription" options={{ headerShown: true }} />
+            <Stack.Screen name="settings/profile" options={{ headerShown: true }} />
           </Stack>
         </RootProvider>
       </ThemeVarsProvider>
