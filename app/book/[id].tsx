@@ -2,18 +2,25 @@ import { useBook } from "@/api/book";
 import { ScreenContainer } from "@/components/screen-container";
 import { BookDetailSkeleton } from "@/components/skeletons/book-detail-skeleton";
 
-import { UserPlus, Users } from "@/lib/icons";
+import { useDeleteTransaction } from "@/api/transaction";
+import { useAuth } from "@/context/auth-context";
+import { Copy, Edit3, Trash2, UserPlus, Users, X } from "@/lib/icons";
 import { formatCurrency } from "@/utils";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
-import { RefreshControl, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { Alert, RefreshControl, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import Toast from "react-native-toast-message";
 
 export default function BookDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { data: book, isLoading, refetch } = useBook(id!);
 
+  const { authState } = useAuth();
+  const deleteTransaction = useDeleteTransaction();
+
   const [refreshing, setRefreshing] = useState(false);
+  const [selectedTransaction, setSelectedTransaction] = useState<any>(null);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -75,6 +82,71 @@ export default function BookDetailScreen() {
     );
   }
 
+  const handleEdit = () => {
+    if (!selectedTransaction) return;
+    router.push({
+      pathname: "/book/add-transaction",
+      params: {
+        bookId: id,
+        type: selectedTransaction.type,
+        editId: selectedTransaction.id,
+        editAmount: selectedTransaction.amount?.toString(),
+        editRemark: selectedTransaction.remark || "",
+        editType: selectedTransaction.type,
+      },
+    });
+    setSelectedTransaction(null);
+  };
+
+  const handleDuplicate = () => {
+    if (!selectedTransaction) return;
+    router.push({
+      pathname: "/book/add-transaction",
+      params: {
+        bookId: id,
+        type: selectedTransaction.type,
+        editAmount: selectedTransaction.amount?.toString(),
+        editRemark: selectedTransaction.remark || "",
+        editType: selectedTransaction.type,
+      },
+    });
+    setSelectedTransaction(null);
+  };
+
+  const handleDelete = () => {
+    if (!selectedTransaction) return;
+    Alert.alert(
+      "Delete Transaction",
+      "Are you sure you want to delete this transaction?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            const res: any = await deleteTransaction.mutateAsync(
+              selectedTransaction.id,
+            );
+
+            if (res?.success) {
+              Toast.show({
+                type: "success",
+                text1: "Transaction deleted successfully",
+              });
+              setSelectedTransaction(null);
+              refetch();
+            } else {
+              Toast.show({
+                type: "error",
+                text1: res?.message || "Failed to delete transaction",
+              });
+            }
+          },
+        },
+      ],
+    );
+  };
+
   const handleOpenTransaction = (item: any) => {
     router.push({
       pathname: "/book/transaction-detail",
@@ -89,21 +161,65 @@ export default function BookDetailScreen() {
     <>
       <Stack.Screen
         options={{
-          title: book.data.name,
+          title: selectedTransaction ? "1 Selected" : book.data.name,
           headerBackTitle: "Books",
-          headerRight: () => (
-            <TouchableOpacity
-              onPress={() =>
-                router.push({
-                  pathname: "/book/members",
-                  params: { bookId: id, bookName: book.data.name },
-                })
-              }
-              style={{ marginRight: 4, padding: 6 }}
-            >
-              <UserPlus size={22} className="text-primary" />
-            </TouchableOpacity>
-          ),
+          headerLeft: selectedTransaction
+            ? () => (
+              <TouchableOpacity
+                onPress={() => setSelectedTransaction(null)}
+                style={{ marginLeft: 8, padding: 6 }}
+              >
+                <X size={22} className="text-foreground" />
+              </TouchableOpacity>
+            )
+            : undefined,
+          headerRight: () => {
+            if (selectedTransaction) {
+              const canDelete =
+                !!authState.user?.id &&
+                authState.user.id === selectedTransaction.entry_by_id;
+              return (
+                <View className="flex-row items-center gap-1">
+                  <TouchableOpacity
+                    onPress={handleEdit}
+                    className="p-2"
+                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                  >
+                    <Edit3 size={20} className="text-foreground" />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={handleDuplicate}
+                    className="p-2"
+                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                  >
+                    <Copy size={20} className="text-foreground" />
+                  </TouchableOpacity>
+                  {canDelete && (
+                    <TouchableOpacity
+                      onPress={handleDelete}
+                      className="p-2"
+                      hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                    >
+                      <Trash2 size={20} className="text-destructive" />
+                    </TouchableOpacity>
+                  )}
+                </View>
+              );
+            }
+            return (
+              <TouchableOpacity
+                onPress={() =>
+                  router.push({
+                    pathname: "/book/members",
+                    params: { bookId: id, bookName: book.data.name },
+                  })
+                }
+                style={{ marginRight: 4, padding: 6 }}
+              >
+                <UserPlus size={22} className="text-primary" />
+              </TouchableOpacity>
+            );
+          },
         }}
       />
       {/* <ScreenContainer className="px-4"> */}
@@ -291,17 +407,26 @@ export default function BookDetailScreen() {
                   <TouchableOpacity
                     key={item.id}
                     activeOpacity={0.7}
-                    onPress={() => handleOpenTransaction(item)}
-                    className={`rounded-2xl mt-4 px-4 py-4 flex-row justify-between bg-card border border-border ${index !== group.data.length - 1
-                      ? "mb-1"
-                      : ""
-                      }`}
+                    onPress={() => {
+                      if (selectedTransaction) {
+                        setSelectedTransaction(
+                          item.id === selectedTransaction.id ? null : item
+                        );
+                      } else {
+                        handleOpenTransaction(item);
+                      }
+                    }}
+                    onLongPress={() => setSelectedTransaction(item)}
+                    className={`rounded-2xl mt-4 px-4 py-4 flex-row justify-between bg-card border ${selectedTransaction?.id === item.id
+                      ? "border-primary bg-primary/10"
+                      : "border-border"
+                      } ${index !== group.data.length - 1 ? "mb-1" : ""}`}
                   >
                     <View className="flex-1 mr-2">
                       <View className="flex-row items-center justify-between mb-2">
-                        <View className="bg-blue-500/10 px-2 py-[2px] rounded">
-                          <Text className="text-primary text-[11px] font-bold uppercase tracking-wider">
-                            {item.category || "Cash in"}
+                        <View className={`px-2 py-[2px] rounded-xl ${item.type === "IN" ? "bg-green-500/20" : "bg-red-500/20"}`}>
+                          <Text className={`text-[11px] font-bold uppercase tracking-wider ${item.type === "IN" ? "text-green-500" : "text-red-500"}`}>
+                            CASH {item.type}
                           </Text>
                         </View>
                       </View>
