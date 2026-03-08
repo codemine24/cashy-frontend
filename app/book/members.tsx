@@ -8,7 +8,7 @@ import { useDebounce } from "@/hooks/use-debounce";
 import { Member } from "@/interface/book";
 import { Plus, X } from "@/lib/icons";
 import { Stack, useLocalSearchParams } from "expo-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   ActivityIndicator,
   Alert,
