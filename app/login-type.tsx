@@ -2,9 +2,19 @@ import { Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { Mail } from "@/lib/icons";
+import { useEffect } from "react";
+import { useAuth } from "@/context/auth-context";
 
 export default function LoginTypeScreen() {
   const router = useRouter();
+  const { authReady, authState } = useAuth();
+
+  useEffect(() => {
+    if (authReady && authState.isAuthenticated) {
+      router.replace("/(tabs)");
+    }
+  }, [authReady, authState.isAuthenticated, router]);
+
   return (
     <SafeAreaView className="flex-1 bg-background">
       <View className="mt-5">

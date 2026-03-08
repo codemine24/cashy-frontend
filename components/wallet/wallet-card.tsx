@@ -43,7 +43,7 @@ export const WalletCard = ({
           params: { id: book.id },
         })
       }
-      className="bg-surface rounded-2xl p-3 mt-3 border border-border active:opacity-70 flex-row items-center justify-between"
+      className="bg-card rounded-2xl p-3 mt-3 border border-border active:opacity-70 flex-row items-center justify-between"
     >
       {/* Left: Icon and Name/Date */}
       <View className="flex-row items-center flex-1">

@@ -189,9 +189,8 @@ export default function ProfileScreen() {
           <TouchableOpacity
             onPress={handleSave}
             disabled={isSaving}
-            className={`rounded-2xl py-4 items-center justify-center ${
-              isSaving ? "bg-primary/50" : "bg-primary"
-            }`}
+            className={`rounded-2xl py-4 items-center justify-center ${isSaving ? "bg-primary/50" : "bg-primary"
+              }`}
           >
             <Text className="text-white font-bold text-base">
               {isSaving ? "Saving..." : "Save Changes"}

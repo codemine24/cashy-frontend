@@ -1,13 +1,14 @@
-import { useBook, useShareBook } from "@/api/book";
+import { useBook, useRemoveMember, useShareBook } from "@/api/book";
 import { useGetAllUsers } from "@/api/user";
 import { AppModal } from "@/components/app-modal";
 import { MemberCard } from "@/components/memeber/member-card";
 import { ScreenContainer } from "@/components/screen-container";
+import { MembersSkeleton } from "@/components/skeletons/members-skeleton";
+import { useDebounce } from "@/hooks/use-debounce";
 import { Member } from "@/interface/book";
 import { Plus, X } from "@/lib/icons";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Stack, useLocalSearchParams } from "expo-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -20,55 +21,34 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import Toast from "react-native-toast-message";
 
 export default function MembersScreen() {
   const params = useLocalSearchParams<{ bookId: string; bookName?: string }>();
   const bookId = params.bookId;
 
   const { data: bookData, isLoading: bookLoading } = useBook(bookId);
-  const queryClient = useQueryClient();
+  const removeMemberMutation = useRemoveMember();
 
   const [modalVisible, setModalVisible] = useState(false);
   const [editingMember, setEditingMember] = useState<Member | null>(null);
 
   // Form states
   const [searchValue, setSearchValue] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const debouncedSearch = useDebounce(searchValue, 500);
   const [selectedUser, setSelectedUser] = useState<any>(null);
   const [role, setRole] = useState<"EDITOR" | "VIEWER" | "ADMIN">("VIEWER");
 
   // Mock API Mutations (replace with real if defined)
   const addMemberMutation = useShareBook();
 
-  const updateRoleMutation = useMutation({
-    mutationFn: async (data: { member_id: string; role: string }) => {
-      // return apiClient.patch(`/book/${bookId}/member/${data.member_id}`, { role: data.role });
-      console.log("Updating member role:", data);
-    },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["books"] }),
-  });
-
-  const removeMemberMutation = useMutation({
-    mutationFn: async (member_id: string) => {
-      // return apiClient.delete(`/book/${bookId}/member/${member_id}`);
-      console.log("Removing member:", member_id);
-    },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["books"] }),
-  });
-
-  // Debouncing logic for the search API
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedSearch(searchValue);
-    }, 400);
-    return () => clearTimeout(handler);
-  }, [searchValue]);
 
   // Search results
   const { data: usersResponse, isFetching: searchingUsers } = useGetAllUsers({
     search: debouncedSearch,
     limit: 3,
   });
+
   const usersList = usersResponse?.data?.data || [];
 
   const handleOpenAddModal = () => {
@@ -94,32 +74,55 @@ export default function MembersScreen() {
       {
         text: "Remove",
         style: "destructive",
-        onPress: () => {
-          removeMemberMutation.mutate(member.id);
+        onPress: async () => {
+          try {
+            const response = await removeMemberMutation.mutateAsync({ book_id: bookId, user_id: member.id });
+            if (response.success) {
+              Toast.show({
+                type: "success",
+                text1: "Member removed successfully",
+              });
+            }
+          } catch (error: any) {
+            Toast.show({
+              type: "error",
+              text1: error?.message || "Failed to remove member",
+            });
+          }
         },
       },
     ]);
   };
 
-  const handleSubmitModal = () => {
-    if (editingMember) {
-      updateRoleMutation.mutate(
-        { member_id: editingMember.id, role },
-        {
-          onSuccess: () => setModalVisible(false),
-        },
-      );
-    } else {
-      if (!selectedUser) {
-        Alert.alert("Error", "Please select a user to add.");
-        return;
+  const handleSubmitModal = async () => {
+    if (!editingMember && !selectedUser) {
+      Alert.alert("Error", "Please select a user to add.");
+      return;
+    }
+
+    const payload = {
+      book_id: bookId,
+      email: editingMember ? editingMember.email : selectedUser.email,
+      role,
+    };
+
+    try {
+      const response = await addMemberMutation.mutateAsync(payload);
+
+      if (response.success) {
+        setModalVisible(false);
+        setTimeout(() => {
+          Toast.show({
+            type: "success",
+            text1: editingMember ? "Member updated successfully" : "Member added successfully",
+          });
+        }, 100);
       }
-      addMemberMutation.mutate(
-        { book_id: bookId, email: selectedUser.email, role },
-        {
-          onSuccess: () => setModalVisible(false),
-        },
-      );
+    } catch (error: any) {
+      Toast.show({
+        type: "error",
+        text1: error?.message || "Failed to add member",
+      });
     }
   };
 
@@ -130,9 +133,7 @@ export default function MembersScreen() {
       <Stack.Screen options={{ title: "Members", headerBackTitle: "Back" }} />
       <ScreenContainer edges={["left", "right"]} className="bg-background">
         {bookLoading ? (
-          <View className="flex-1 items-center justify-center">
-            <ActivityIndicator size="large" color="#fca5a5" />
-          </View>
+          <MembersSkeleton />
         ) : (
           <FlatList
             contentContainerStyle={{
@@ -172,22 +173,6 @@ export default function MembersScreen() {
           </Text>
         </TouchableOpacity>
       </View>
-      {/* <View
-        style={{
-          position: "absolute",
-          bottom: 32,
-          right: 16,
-        }}
-      >
-        <TouchableOpacity
-          onPress={handleOpenAddModal}
-          className="bg-primary px-6 py-[14px] rounded-2xl items-center justify-center flex-row shadow-sm"
-        >
-          <Text className="text-primary-foreground font-bold text-sm tracking-widest text-center">
-            + Add Member
-          </Text>
-        </TouchableOpacity>
-      </View> */}
 
       {/* Add / Edit Member Modal */}
       <AppModal visible={modalVisible} transparent animationType="slide">
@@ -412,22 +397,19 @@ export default function MembersScreen() {
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={handleSubmitModal}
-                  disabled={
-                    addMemberMutation.isPending || updateRoleMutation.isPending
-                  }
-                  className={`flex-1 rounded-xl py-4 items-center justify-center flex-row ${addMemberMutation.isPending || updateRoleMutation.isPending
+                  disabled={addMemberMutation.isPending}
+                  className={`flex-1 rounded-xl py-4 items-center justify-center flex-row ${addMemberMutation.isPending
                     ? "bg-primary/50"
                     : "bg-primary"
                     }`}
                 >
-                  {(addMemberMutation.isPending ||
-                    updateRoleMutation.isPending) && (
-                      <ActivityIndicator
-                        color="white"
-                        className="mr-2"
-                        size="small"
-                      />
-                    )}
+                  {addMemberMutation.isPending && (
+                    <ActivityIndicator
+                      color="white"
+                      className="mr-2"
+                      size="small"
+                    />
+                  )}
                   <Text className="text-primary-foreground font-bold text-base">
                     {editingMember ? "Save" : "Add"}
                   </Text>

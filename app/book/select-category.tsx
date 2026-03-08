@@ -144,7 +144,7 @@ export default function SelectCategoryScreen() {
                   <View
                     className={`h-6 w-6 rounded-full border-2 items-center justify-center ${isSelected ? "border-primary bg-primary" : "border-border"}`}
                   >
-                    {isSelected && <Check size={14} color="#ffffff" />}
+                    {isSelected && <Check size={14} className="text-foreground" />}
                   </View>
                 </TouchableOpacity>
               );
@@ -155,10 +155,11 @@ export default function SelectCategoryScreen() {
         {/* Floating Action Button */}
         <TouchableOpacity
           onPress={() => setModalVisible(true)}
-          className="absolute bottom-10 right-6 h-14 w-14 rounded-full bg-primary items-center justify-center shadow-lg shadow-primary/30"
+          className="absolute bottom-10 right-6 px-4 py-3 rounded-full bg-primary flex-row gap-3 items-center justify-center shadow-lg shadow-primary/30"
           style={{ elevation: 5 }}
         >
-          <Plus size={24} color="#ffffff" />
+          <Plus size={24} className="text-foreground" />
+          <Text className="text-primary-foreground font-bold text-xl tracking-widest text-center">Add Category</Text>
         </TouchableOpacity>
       </View>
 
@@ -176,7 +177,7 @@ export default function SelectCategoryScreen() {
             />
             <View className="bg-background rounded-t-3xl pt-2 px-6 pb-10 shadow-lg">
               <View className="items-center mb-6 mt-1">
-                <View className="h-1 w-12 bg-border rounded-full" />
+                <View className="h-1 w-12 bg-foreground rounded-full" />
               </View>
 
               <View className="flex-row items-center justify-between mb-6">
@@ -187,11 +188,11 @@ export default function SelectCategoryScreen() {
                   onPress={() => setModalVisible(false)}
                   className="bg-muted p-2 rounded-full"
                 >
-                  <X size={20} className="text-muted-foreground" />
+                  <X size={20} className="text-foreground" />
                 </TouchableOpacity>
               </View>
 
-              <Text className="text-sm font-semibold text-muted-foreground mb-2">
+              <Text className="text-sm font-semibold text-foreground mb-2">
                 Category Name
               </Text>
               <TextInput
@@ -218,9 +219,9 @@ export default function SelectCategoryScreen() {
                   className={`flex-1 rounded-xl py-4 items-center justify-center ${createCategoryMutation.isPending ? "bg-primary/70" : "bg-primary"}`}
                 >
                   {createCategoryMutation.isPending ? (
-                    <ActivityIndicator color="#ffffff" size="small" />
+                    <ActivityIndicator className="text-foreground" size="small" />
                   ) : (
-                    <Text className="text-white font-bold text-base tracking-wide">
+                    <Text className="text-foreground font-bold text-base tracking-wide">
                       Save
                     </Text>
                   )}
