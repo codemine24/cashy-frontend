@@ -120,3 +120,18 @@ export const useShareBook = () => {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: keys.all }),
   });
 };
+
+export const useRemoveMember = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ book_id, user_id }: { book_id: string; user_id: string }) => {
+      try {
+        const response = await apiClient.delete(`${BOOK_API_URL}/remove-member`, { data:{ book_id, user_id } });
+        return response.data;
+      } catch (error) {
+        throwApiError(error);
+      }
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: keys.all }),
+  });
+};

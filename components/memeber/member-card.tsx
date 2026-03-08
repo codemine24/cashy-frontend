@@ -105,7 +105,7 @@ export const MemberCard = ({ member, onEdit, onRemove }: MemberCardProps) => {
           <View className="flex flex-col gap-4">
             <TouchableOpacity
               onPress={() => handleAction(onEdit)}
-              className="flex-row items-center"
+              className="flex-row items-center disabled:opacity-40"
             >
               <Edit3 size={20} className="text-black" />
               <Text className="ml-4 text-[16px] text-black">Edit Role</Text>

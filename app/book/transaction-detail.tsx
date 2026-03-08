@@ -11,16 +11,18 @@ import {
 } from "@/lib/icons";
 import { formatCurrency } from "@/utils";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { useCallback, useState } from "react";
 import {
-  ActivityIndicator,
   Alert,
   Image,
+  RefreshControl,
   ScrollView,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 
+import { TransactionDetailSkeleton } from "@/components/skeletons/transaction-detail-skeleton";
 import { useAuth } from "@/context/auth-context";
 import Toast from "react-native-toast-message";
 
@@ -101,8 +103,16 @@ export default function TransactionDetailScreen() {
   }>();
 
   const { authState } = useAuth();
-  const { data: txData, isLoading } = useTransaction(params.transactionId!);
+  const { data: txData, isLoading, refetch } = useTransaction(params.transactionId!);
   const deleteTransaction = useDeleteTransaction();
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  }, [refetch]);
 
   const transaction = txData?.data;
   const canDelete =
@@ -243,17 +253,20 @@ export default function TransactionDetailScreen() {
 
       <View className={`flex-1 ${headerBgClass}`}>
         {isLoading ? (
-          <View className="flex-1 bg-background items-center justify-center">
-            <ActivityIndicator size="large" className="text-muted-foreground" />
-            <Text className="text-muted-foreground mt-3 text-sm">
-              Loading...
-            </Text>
-          </View>
+          <TransactionDetailSkeleton />
         ) : (
           <ScrollView
             className="flex-1"
             contentContainerStyle={{ flexGrow: 1 }}
             showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                tintColor="#ffffff"
+                colors={["#ffffff"]}
+              />
+            }
           >
             {/* ── Colored Header: Amount ── */}
             <View className="items-center pt-7 pb-9 px-6">

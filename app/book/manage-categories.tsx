@@ -5,6 +5,7 @@ import {
   useUpdateCategory,
 } from "@/api/category";
 import { AppModal } from "@/components/app-modal";
+import { ManageCategoriesSkeleton } from "@/components/skeletons/manage-categories-skeleton";
 import { Edit3, MoreVertical, Plus, Trash2, X } from "@/lib/icons";
 import { Stack } from "expo-router";
 import React, { useState } from "react";
@@ -155,9 +156,7 @@ export default function ManageCategoriesScreen() {
         </View>
 
         {isLoading ? (
-          <View className="flex-1 items-center justify-center">
-            <ActivityIndicator size="large" className="text-primary" />
-          </View>
+          <ManageCategoriesSkeleton />
         ) : categories.length === 0 ? (
           <View className="flex-1 items-center justify-center p-8">
             <Text className="text-xl font-bold text-foreground mb-2">

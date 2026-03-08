@@ -1,14 +1,16 @@
 import { useBooks, useDeleteBook } from "@/api/book";
 import { ScreenContainer } from "@/components/screen-container";
+import { WalletsSkeleton } from "@/components/skeletons/wallets-skeleton";
 import { CreateWalletModal } from "@/components/wallet/create-wallet-modal";
 import { WalletCard } from "@/components/wallet/wallet-card";
-import { ArrowUpDown, Plus, Search } from "@/lib/icons";
+import { ArrowUpDown, Plus, Search, X } from "@/lib/icons";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import {
   Alert,
   FlatList,
   Modal,
+  RefreshControl,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -46,8 +48,16 @@ export default function HomeScreen() {
     setShowSortModal(true);
   };
 
-  const { data: booksData, isLoading } = useBooks({ search: "", sort: sortBy, sort_order: sortOrder });
+  const { data: booksData, isLoading, refetch } = useBooks({ search: "", sort: sortBy, sort_order: sortOrder });
   const deleteBookMutation = useDeleteBook();
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  }, [refetch]);
 
   const handleDeleteBook = (book: Book) => {
     Alert.alert(
@@ -102,7 +112,12 @@ export default function HomeScreen() {
   return (
     <>
       <ScreenContainer edges={["left", "right"]} className="p-4 bg-background">
-        <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        >
           {/* Header */}
           <View className="mb-6 flex-row items-center justify-between">
             <View className="flex-1">
@@ -133,9 +148,7 @@ export default function HomeScreen() {
 
           {/* Books List */}
           {isLoading ? (
-            <View className="bg-surface rounded-xl p-8 items-center justify-center border border-border">
-              <Text className="text-foreground">Loading...</Text>
-            </View>
+            <WalletsSkeleton />
           ) : booksData?.data?.length === 0 ? (
             <View className="bg-surface rounded-xl p-8 items-center justify-center border border-border">
               <Text className="text-lg font-semibold text-foreground mb-2">
@@ -219,7 +232,7 @@ export default function HomeScreen() {
                 onPress={() => setShowSortModal(false)}
                 className="p-1"
               >
-                <Text className="text-sm text-foreground">Close</Text>
+                <X size={20} className="text-foreground" />
               </TouchableOpacity>
             </View>
 
