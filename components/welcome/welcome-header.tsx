@@ -8,7 +8,7 @@ export function WelcomeHeader() {
         <View className="h-10 w-10 items-center justify-center rounded-xl bg-primary">
           <Text className="text-lg font-extrabold text-white">C</Text>
         </View>
-        <Text className="text-xl font-extrabold tracking-tight text-foreground">
+        <Text className="text-xl font-extrabold tracking-tight text-primary">
           Cashy
         </Text>
       </View>

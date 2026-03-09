@@ -36,7 +36,6 @@ export default function WelcomeScreen() {
       <View className="px-6 mb-16">
         <Button
           onPress={() => router.push("/login-type")}
-          className="w-10"
         >
           Get Started
         </Button>
