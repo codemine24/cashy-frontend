@@ -77,7 +77,7 @@ export function OnboardingCarousel() {
 
       {/* Text content */}
       <View className="mt-20 px-4 pb-4">
-        <Text className="text-2xl font-bold text-foreground">
+        <Text className="text-2xl font-semibold text-foreground">
           {onboardingSlides[activeIndex].title}
         </Text>
         <Text className="mt-2 text-base text-muted-foreground leading-6">

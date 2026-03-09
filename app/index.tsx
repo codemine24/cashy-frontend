@@ -1,10 +1,11 @@
+import { Button } from "@/components/ui/button";
 import { OnboardingCarousel } from "@/components/welcome/onboarding-carousel";
 import { WelcomeHeader } from "@/components/welcome/welcome-header";
 import { languages, type LanguageCode } from "@/constants/onboarding";
 import { useAuth } from "@/context/auth-context";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function WelcomeScreen() {
@@ -33,16 +34,12 @@ export default function WelcomeScreen() {
 
       {/* ── Bottom CTA ── */}
       <View className="px-6 mb-16">
-        {/* Get Started button */}
-        <TouchableOpacity
+        <Button
           onPress={() => router.push("/login-type")}
-          activeOpacity={0.85}
-          className="items-center rounded bg-primary py-4"
+          className="w-10"
         >
-          <Text className="text-base font-bold uppercase tracking-wider text-primary-foreground">
-            Get Started
-          </Text>
-        </TouchableOpacity>
+          Get Started
+        </Button>
       </View>
     </SafeAreaView>
   );
