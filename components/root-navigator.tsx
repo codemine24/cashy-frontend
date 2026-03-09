@@ -26,6 +26,7 @@ export const RootNavigator = () => {
             <Stack.Screen name="login-type" />
             <Stack.Screen name="auth" />
             <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="goal/[id]" options={{ headerShown: true }} />
             <Stack.Screen name="book/[id]" options={{ headerShown: true }} />
             <Stack.Screen name="book/members" options={{ headerShown: true }} />
             <Stack.Screen name="book/select-category" options={{ headerShown: true }} />
