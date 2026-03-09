@@ -1,12 +1,6 @@
-import { ChevronDown } from "@/lib/icons";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Text, View } from "react-native";
 
-interface WelcomeHeaderProps {
-  currentLanguage: string;
-  onLanguagePress: () => void;
-}
-
-export function WelcomeHeader({ currentLanguage, onLanguagePress }: WelcomeHeaderProps) {
+export function WelcomeHeader() {
   return (
     <View className="flex-row items-center justify-between px-5 pt-2 pb-3">
       {/* ── Logo ── */}
@@ -15,21 +9,9 @@ export function WelcomeHeader({ currentLanguage, onLanguagePress }: WelcomeHeade
           <Text className="text-lg font-extrabold text-white">K</Text>
         </View>
         <Text className="text-xl font-extrabold tracking-tight text-foreground">
-          KAASHY
+          Cashy
         </Text>
       </View>
-
-      {/* ── Language selector ── */}
-      <TouchableOpacity
-        onPress={onLanguagePress}
-        activeOpacity={0.7}
-        className="flex-row items-center gap-1 rounded border border-border px-3 py-2"
-      >
-        <Text className="text-sm font-medium text-foreground">
-          {currentLanguage}
-        </Text>
-        <ChevronDown size={16} className="text-muted-foreground" />
-      </TouchableOpacity>
     </View>
   );
 }

@@ -1,16 +1,14 @@
-import { useEffect, useState } from "react";
-import { LanguageModal } from "@/components/welcome/language-modal";
 import { OnboardingCarousel } from "@/components/welcome/onboarding-carousel";
 import { WelcomeHeader } from "@/components/welcome/welcome-header";
 import { languages, type LanguageCode } from "@/constants/onboarding";
+import { useAuth } from "@/context/auth-context";
+import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
-import { useAuth } from "@/context/auth-context";
 
 export default function WelcomeScreen() {
   const router = useRouter();
-  const [languageModalVisible, setLanguageModalVisible] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState<LanguageCode>("en");
   const currentLanguageLabel = languages.find((l) => l.code === selectedLanguage)?.label ?? "English";
 
@@ -25,19 +23,10 @@ export default function WelcomeScreen() {
   if (!authReady) {
     return null;
   }
-
-  const handleLanguageSelect = (code: LanguageCode) => {
-    setSelectedLanguage(code);
-    setLanguageModalVisible(false);
-  };
-
   return (
     <SafeAreaView className="flex-1 bg-background">
-      {/* ── Header: Logo + Language ── */}
-      <WelcomeHeader
-        currentLanguage={currentLanguageLabel}
-        onLanguagePress={() => setLanguageModalVisible(true)}
-      />
+      {/* ── Header: Logo ── */}
+      <WelcomeHeader />
 
       {/* ── Onboarding Carousel ── */}
       <OnboardingCarousel />
@@ -55,14 +44,6 @@ export default function WelcomeScreen() {
           </Text>
         </TouchableOpacity>
       </View>
-
-      {/* ── Language Modal ── */}
-      <LanguageModal
-        visible={languageModalVisible}
-        selectedLanguage={selectedLanguage}
-        onSelect={handleLanguageSelect}
-        onClose={() => setLanguageModalVisible(false)}
-      />
     </SafeAreaView>
   );
 }
