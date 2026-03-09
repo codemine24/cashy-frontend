@@ -1,9 +1,8 @@
-import { useBooks, useDeleteBook } from "@/api/book";
+import { useBooks, useDeleteBook } from "@/api/wallet";
 import { ScreenContainer } from "@/components/screen-container";
 import { WalletsSkeleton } from "@/components/skeletons/wallets-skeleton";
 import { CreateWalletModal } from "@/components/wallet/create-wallet-modal";
 import { WalletCard } from "@/components/wallet/wallet-card";
-import { ArrowUpDown, Plus, Search, X } from "@/lib/icons";
 import { useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import {
@@ -17,13 +16,19 @@ import {
   View,
 } from "react-native";
 // import { useGetAllUsers } from "@/api/user";
-import { Book } from "@/interface/book";
+import { Button } from "@/components/ui/button";
+import { H3, Muted } from "@/components/ui/typography";
+import { CrossIcon } from "@/icons/cross-icon";
+import { FilterIcon } from "@/icons/filter-icon";
+import { PlusIcon } from "@/icons/plus-icon";
+import { SearchIcon } from "@/icons/search-icon";
+import { Book } from "@/interface/wallet";
 import Toast from "react-native-toast-message";
 
 type SortOption = "name" | "created_at" | "updated_at";
 
 const SORT_OPTIONS: { key: SortOption; label: string; order: "asc" | "desc" }[] = [
-  { key: "name", label: "Name (A-Z)", order: "asc" },
+  { key: "name", label: "Name (A-Z)", order: "desc" },
   { key: "created_at", label: "Last Created", order: "desc" },
   { key: "updated_at", label: "Last Updated", order: "desc" },
 ];
@@ -49,6 +54,7 @@ export default function HomeScreen() {
   };
 
   const { data: booksData, isLoading, refetch } = useBooks({ search: "", sort: sortBy, sort_order: sortOrder });
+
   const deleteBookMutation = useDeleteBook();
 
   const [refreshing, setRefreshing] = useState(false);
@@ -125,23 +131,23 @@ export default function HomeScreen() {
                 Wallets
               </Text>
               <Text className="text-sm text-muted-foreground mt-1">
-                Create separate wallets to organize your expenses
+                Create wallets to organize your expenses
               </Text>
             </View>
 
             {/* Sort & Search Buttons */}
-            <View className="flex-row items-center gap-1">
+            <View className="flex-row items-center">
               <TouchableOpacity
                 onPress={openSortModal}
-                className="p-2.5 rounded-xl bg-foreground"
+                className="p-2.5 rounded-xl"
               >
-                <ArrowUpDown size={20} className="text-muted" />
+                <FilterIcon className="text-primary size-6" />
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={() => router.push("/book/search-wallet" as any)}
-                className="p-2.5 rounded-xl bg-foreground"
+                onPress={() => router.push("/wallet/search-wallet" as any)}
+                className="p-2.5 rounded-xl"
               >
-                <Search size={20} className="text-muted" />
+                <SearchIcon className="text-primary size-6" />
               </TouchableOpacity>
             </View>
           </View>
@@ -184,19 +190,19 @@ export default function HomeScreen() {
       </ScreenContainer>
 
       {/* Floating Action Button */}
-      <View className="absolute bottom-8 right-4">
-        <TouchableOpacity
-          onPress={() => setShowCreateModal(true)}
-          className="bg-primary p-4 rounded-full items-center justify-center flex-row gap-3 shadow-sm"
-        >
-          <Plus size={20} className="text-primary-foreground" />
-          <Text className="text-primary-foreground font-bold text-xl tracking-widest text-center">
-            Add New Wallet
-          </Text>
-        </TouchableOpacity>
-      </View>
 
-      {/* Create / Edit Book Modal */}
+      <Button
+        onPress={() => setShowCreateModal(true)}
+        className="rounded-full py-4 absolute bottom-4 right-4"
+      >
+        <PlusIcon className="text-primary-foreground size-6" />
+        <Text className="text-primary-foreground text-lg text-center ml-2">
+          Add wallet
+        </Text>
+      </Button>
+
+
+      {/* Create / Edit Wallet Modal */}
       <CreateWalletModal
         visible={showCreateModal}
         onClose={() => {
@@ -226,13 +232,13 @@ export default function HomeScreen() {
             </View>
 
             {/* Title */}
-            <View className="flex-row items-center justify-between mb-5">
-              <Text className="text-lg font-bold text-foreground">Sort By</Text>
+            <View className="flex-row items-center justify-between mb-2  border-b border-border pb-4">
+              <H3 >Sort wallet by</H3>
               <TouchableOpacity
                 onPress={() => setShowSortModal(false)}
                 className="p-1"
               >
-                <X size={20} className="text-foreground" />
+                <CrossIcon className="size-4" />
               </TouchableOpacity>
             </View>
 
@@ -251,34 +257,29 @@ export default function HomeScreen() {
                   >
                     {/* Radio Circle */}
                     <View
-                      className={`size-5 items-center justify-center border border-foreground rounded-full mr-3 ${isActive ? "border-primary" : "border-border"}`}
+                      className={`size-4 items-center justify-center border border-foreground rounded-full mr-3 ${isActive ? "border-primary" : "border-border"}`}
                     >
                       {isActive && (
-                        <View className="size-3 rounded-full bg-primary" />
+                        <View className="size-2 rounded-full bg-primary" />
                       )}
                     </View>
-                    <Text
-                      className="text-xl font-semibold text-foreground"
-                    >
+                    <Muted>
                       {option.label}
-                    </Text>
+                    </Muted>
                   </TouchableOpacity>
                 );
               })}
             </View>
 
-            <TouchableOpacity
+            <Button
               onPress={() => {
                 setSortBy(tempSortBy);
                 setSortOrder(tempSortOrder);
                 setShowSortModal(false);
               }}
-              className="bg-primary py-4 rounded-xl items-center"
             >
-              <Text className="text-white text-base font-bold tracking-wider">
-                Apply
-              </Text>
-            </TouchableOpacity>
+              Apply
+            </Button>
           </View>
         </View>
       </Modal>

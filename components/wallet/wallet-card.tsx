@@ -1,10 +1,10 @@
+import { Book } from "@/interface/wallet";
+import { BookIcon, Edit3, MoreVertical, Trash2, UserPlus } from "@/lib/icons";
 import { formatCurrency, formatUpdateDate } from "@/utils";
-import { TouchableOpacity, Text, View } from "react-native";
-import Popover from "react-native-popover-view";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Book } from "@/interface/book";
-import { BookIcon, MoreVertical, Edit3, Trash2, UserPlus } from "@/lib/icons";
+import { Text, TouchableOpacity, View } from "react-native";
+import Popover from "react-native-popover-view";
 
 interface WalletCardProps {
   book: Book;

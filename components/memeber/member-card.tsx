@@ -1,4 +1,4 @@
-import { Member } from "@/interface/book";
+import { Member } from "@/interface/wallet";
 import {
   Edit3,
   MoreVertical,

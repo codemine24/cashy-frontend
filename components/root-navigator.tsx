@@ -27,13 +27,13 @@ export const RootNavigator = () => {
             <Stack.Screen name="auth" />
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="goal/[id]" options={{ headerShown: true }} />
-            <Stack.Screen name="book/[id]" options={{ headerShown: true }} />
-            <Stack.Screen name="book/members" options={{ headerShown: true }} />
-            <Stack.Screen name="book/select-category" options={{ headerShown: true }} />
-            <Stack.Screen name="book/manage-categories" options={{ headerShown: true }} />
-            <Stack.Screen name="book/transaction-detail" options={{ headerShown: true }} />
-            <Stack.Screen name="book/add-transaction" options={{ headerShown: true }} />
-            <Stack.Screen name="book/search-wallet" />
+            <Stack.Screen name="wallet/[id]" options={{ headerShown: true }} />
+            <Stack.Screen name="wallet/members" options={{ headerShown: true }} />
+            <Stack.Screen name="wallet/select-category" options={{ headerShown: true }} />
+            <Stack.Screen name="wallet/manage-categories" options={{ headerShown: true }} />
+            <Stack.Screen name="wallet/transaction-detail" options={{ headerShown: true }} />
+            <Stack.Screen name="wallet/add-transaction" options={{ headerShown: true }} />
+            <Stack.Screen name="wallet/search-wallet" />
             <Stack.Screen name="settings/app-settings" options={{ headerShown: true }} />
             <Stack.Screen name="settings/subscription" options={{ headerShown: true }} />
             <Stack.Screen name="settings/profile" options={{ headerShown: true }} />
