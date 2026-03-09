@@ -29,7 +29,7 @@ import {
   User,
   UserPlus,
   Users,
-  X,
+  X
 } from "lucide-react-native";
 import { cssInterop } from "nativewind";
 

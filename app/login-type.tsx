@@ -1,4 +1,7 @@
+import { BackButton } from "@/components/ui/back-button";
+import { H2, Muted } from "@/components/ui/typography";
 import { useAuth } from "@/context/auth-context";
+import { GoogleIcon } from "@/icons/google-icon";
 import { Mail } from "@/lib/icons";
 import { useRouter } from "expo-router";
 import { useEffect } from "react";
@@ -17,19 +20,21 @@ export default function LoginTypeScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-background">
-      <View className="mt-5">
-        <Text className="text-3xl font-bold text-foreground text-center">Welcome to KASSHY</Text>
-        <Text className="text-base font-bold text-muted-foreground text-center mt-3">Login/Signup to backup your data securely</Text>
+      <BackButton path="/" />
+
+      <View className="mt-8">
+        <H2 className="text-center">Welcome to Cashy</H2>
+        <Muted className="text-center mt-2">Login/Signup to backup your data securely</Muted>
       </View>
 
-      <View className="flex-1 mt-10 p-6 gap-4">
+      <View className="flex-1 mt-6 p-6 gap-4">
         <TouchableOpacity
           onPress={() => router.push("/auth")}
           activeOpacity={0.85}
-          className="w-full flex-row items-center justify-center gap-3 rounded py-4 border border-border"
+          className="w-full flex-row items-center justify-center gap-3 rounded-xl py-4 border border-border"
         >
           <Mail size={20} className="text-primary" />
-          <Text className="text-base font-bold uppercase tracking-widest text-primary">
+          <Text className="text-base font-semibold tracking-widest text-primary">
             Continue with Email
           </Text>
         </TouchableOpacity>
@@ -37,15 +42,16 @@ export default function LoginTypeScreen() {
         <TouchableOpacity
           onPress={() => router.push("/login-type")}
           activeOpacity={0.85}
-          className="w-full items-center rounded py-4 border border-border"
+          className="w-full flex-row items-center justify-center gap-3 rounded-xl py-4 border border-border"
         >
-          <Text className="text-base font-bold uppercase tracking-widest text-primary">
+          <GoogleIcon width={24} height={24} />
+          <Text className="text-base font-semibold tracking-widest text-primary">
             Continue with Google
           </Text>
         </TouchableOpacity>
 
         <View className="flex-1 mt-3">
-          <Text className="text-base font-bold text-muted-foreground text-center">By continuing, you agree to our Terms of Service and Privacy Policy</Text>
+          <Muted className="text-center text-xs">By continuing, you agree to our Terms of Service and Privacy Policy</Muted>
         </View>
       </View>
     </SafeAreaView>
