@@ -25,10 +25,12 @@ import {
   Settings,
   ShieldCheck,
   Tag,
+  Target,
   Trash2,
   User,
   UserPlus,
   Users,
+  Wallet,
   X,
 } from "lucide-react-native";
 import { cssInterop } from "nativewind";
@@ -67,6 +69,7 @@ interopIcon(BookIcon);
 interopIcon(MoreVertical);
 interopIcon(Edit3);
 interopIcon(Trash2);
+interopIcon(Target)
 interopIcon(UserPlus);
 interopIcon(Info);
 interopIcon(LogOut);
@@ -82,6 +85,7 @@ interopIcon(Clock);
 interopIcon(Copy);
 interopIcon(MessageSquare);
 interopIcon(Tag);
+interopIcon(Wallet)
 
 // Re-export so the rest of the app imports from here
 export {
@@ -100,8 +104,8 @@ export {
   Mail, MessageSquare, MoreVertical, Paperclip, Plus,
   Search,
   Settings,
-  ShieldCheck, Tag, Trash2,
+  ShieldCheck, Tag, Trash2, Target,
   User,
-  UserPlus, Users, X
+  UserPlus, Users, X, Wallet
 };
 
