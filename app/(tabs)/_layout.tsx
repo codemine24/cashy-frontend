@@ -1,7 +1,7 @@
 import { HapticTab } from "@/components/haptic-tab";
 import { TabHeader } from "@/components/tab-header";
 import { Tabs } from "expo-router";
-import { Settings, Wallet } from "lucide-react-native";
+import { Settings, Target, Wallet } from "@/lib/icons";
 import { Platform, View } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -40,13 +40,13 @@ export default function TabLayout() {
         />
 
         {/* Tab 2: Goals */}
-        {/* <Tabs.Screen
+        <Tabs.Screen
           name="goals"
           options={{
             title: "Goals",
             tabBarIcon: ({ color, size }) => <Target color={color} size={size} />,
           }}
-        /> */}
+        />
 
         {/* Tab 3: Statistics */}
         {/* <Tabs.Screen
