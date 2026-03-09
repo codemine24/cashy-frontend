@@ -1,7 +1,7 @@
+import { Book } from "@/interface/wallet";
 import apiClient from "@/lib/api-client";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Book } from "@/interface/book";
 import { throwApiError } from "@/utils/throw-api-error";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const BOOK_API_URL = "/book";
 const keys = {
@@ -84,7 +84,7 @@ export const useDeleteBook = () => {
   return useMutation({
     mutationFn: async (id: string) => {
       try {
-        const response = await apiClient.delete(BOOK_API_URL, { data:{ ids: [id]} });
+        const response = await apiClient.delete(BOOK_API_URL, { data: { ids: [id] } });
         return response.data;
       } catch (error) {
         throwApiError(error);
@@ -126,7 +126,7 @@ export const useRemoveMember = () => {
   return useMutation({
     mutationFn: async ({ book_id, user_id }: { book_id: string; user_id: string }) => {
       try {
-        const response = await apiClient.delete(`${BOOK_API_URL}/remove-member`, { data:{ book_id, user_id } });
+        const response = await apiClient.delete(`${BOOK_API_URL}/remove-member`, { data: { book_id, user_id } });
         return response.data;
       } catch (error) {
         throwApiError(error);

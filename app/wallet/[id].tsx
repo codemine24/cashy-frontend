@@ -1,8 +1,8 @@
-import { useBook } from "@/api/book";
+import { useBook } from "@/api/wallet";
 import { ScreenContainer } from "@/components/screen-container";
-import { BookDetailSkeleton } from "@/components/skeletons/book-detail-skeleton";
 
 import { useDeleteTransaction } from "@/api/transaction";
+import { BookDetailSkeleton } from "@/components/skeletons/book-detail-skeleton";
 import { useAuth } from "@/context/auth-context";
 import { Copy, Edit3, Trash2, UserPlus, Users, X } from "@/lib/icons";
 import { formatCurrency } from "@/utils";
@@ -85,7 +85,7 @@ export default function BookDetailScreen() {
   const handleEdit = () => {
     if (!selectedTransaction) return;
     router.push({
-      pathname: "/book/add-transaction",
+      pathname: "/wallet/add-transaction",
       params: {
         bookId: id,
         type: selectedTransaction.type,
@@ -101,7 +101,7 @@ export default function BookDetailScreen() {
   const handleDuplicate = () => {
     if (!selectedTransaction) return;
     router.push({
-      pathname: "/book/add-transaction",
+      pathname: "/wallet/add-transaction",
       params: {
         bookId: id,
         type: selectedTransaction.type,
@@ -149,7 +149,7 @@ export default function BookDetailScreen() {
 
   const handleOpenTransaction = (item: any) => {
     router.push({
-      pathname: "/book/transaction-detail",
+      pathname: "/wallet/transaction-detail",
       params: {
         bookId: id,
         transactionId: item.id,
@@ -210,7 +210,7 @@ export default function BookDetailScreen() {
               <TouchableOpacity
                 onPress={() =>
                   router.push({
-                    pathname: "/book/members",
+                    pathname: "/wallet/members",
                     params: { bookId: id, bookName: book.data.name },
                   })
                 }
@@ -276,7 +276,7 @@ export default function BookDetailScreen() {
                 <TouchableOpacity
                   onPress={() =>
                     router.push({
-                      pathname: "/book/members",
+                      pathname: "/wallet/members",
                       params: { bookId: id, bookName: book.data.name },
                     })
                   }
@@ -358,7 +358,7 @@ export default function BookDetailScreen() {
               <TouchableOpacity
                 onPress={() =>
                   router.push({
-                    pathname: "/book/members",
+                    pathname: "/wallet/members",
                     params: { bookId: id, bookName: book.data.name },
                   })
                 }
@@ -473,7 +473,7 @@ export default function BookDetailScreen() {
         <TouchableOpacity
           onPress={() => {
             router.push({
-              pathname: "/book/add-transaction",
+              pathname: "/wallet/add-transaction",
               params: { bookId: id, type: "IN" },
             });
           }}
@@ -487,7 +487,7 @@ export default function BookDetailScreen() {
         <TouchableOpacity
           onPress={() => {
             router.push({
-              pathname: "/book/add-transaction",
+              pathname: "/wallet/add-transaction",
               params: { bookId: id, type: "OUT" },
             });
           }}

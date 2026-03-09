@@ -1,6 +1,13 @@
-import { Mail, ShieldCheck } from "@/lib/icons";
+import { useSendOtp, useVerifyOtp } from "@/api/auth";
+import { BackButton } from "@/components/ui/back-button";
+import { Button } from "@/components/ui/button";
+import { InputError } from "@/components/ui/input-error";
+import { H2, Muted } from "@/components/ui/typography";
+import { useAuth } from "@/context/auth-context";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import {
   Animated,
   Text,
@@ -10,17 +17,38 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
-import { useSendOtp, useVerifyOtp } from "@/api/auth";
-import { useAuth } from "@/context/auth-context";
+import { z } from "zod";
+
+const emailSchema = z.object({
+  email: z.string().min(1, "Email address is required").email("Please enter a valid email address"),
+});
+
+const otpSchema = z.object({
+  email: z.string().email(),
+  otp: z.string().length(6, "OTP must be exactly 6 digits"),
+});
+
+type EmailFormValues = z.infer<typeof emailSchema>;
+type OtpFormValues = z.infer<typeof otpSchema>;
 
 type Step = "email" | "otp";
 
 export default function AuthScreen() {
   const router = useRouter();
-
   const [step, setStep] = useState<Step>("email");
-  const [email, setEmail] = useState("");
-  const [otp, setOtp] = useState("");
+
+  const emailForm = useForm<EmailFormValues>({
+    resolver: zodResolver(emailSchema),
+    defaultValues: { email: "" },
+    mode: "onBlur",
+  });
+
+  const otpForm = useForm<OtpFormValues>({
+    resolver: zodResolver(otpSchema),
+    defaultValues: { email: "", otp: "" },
+    mode: "onBlur",
+    shouldUnregister: false,
+  });
 
   const sentOtpMutation = useSendOtp();
   const verifyOtpMutation = useVerifyOtp();
@@ -69,23 +97,18 @@ export default function AuthScreen() {
     });
   };
 
-  const handleSendOtp = async () => {
-    if (!email.trim()) return;
-
+  const handleSendOtp = async (data: EmailFormValues) => {
     try {
-      const response = await sentOtpMutation.mutateAsync(email);
-      if (response?.success) {
-        Toast.show({
-          type: "success",
-          text1: response?.message || "OTP sent!",
-        });
-        animateToStep("otp");
-      } else {
-        Toast.show({
-          type: "error",
-          text1: response?.message || "Failed to send OTP",
-        });
-      }
+      const response = await sentOtpMutation.mutateAsync(data.email);
+
+      Toast.show({
+        type: "success",
+        text1: response?.message || "OTP sent!",
+      });
+
+      otpForm.setValue("email", data.email);
+      animateToStep("otp");
+
     } catch (error: any) {
       Toast.show({
         type: "error",
@@ -94,37 +117,32 @@ export default function AuthScreen() {
     }
   };
 
-  const handleVerifyOtp = async () => {
-    if (otp.length < 6) return;
-
+  const handleVerifyOtp = async (data: OtpFormValues) => {
     try {
-      const response = await verifyOtpMutation.mutateAsync({ email, otp });
+      const response = await verifyOtpMutation.mutateAsync({ email: data.email, otp: data.otp });
 
-      if (response?.success) {
-        Toast.show({
-          type: "success",
-          text1: response?.message || "Verified!",
-        });
-        setAuthState({
-          isAuthenticated: true,
-          user: {
-            id: response?.data?.id,
-            name: response?.data?.name,
-            email: response?.data?.email,
-            contact_number: response?.data?.contact_number,
-            role: response?.data?.role,
-            avatar: response?.data?.avatar,
-            status: response?.data?.status,
-          },
-        });
-        router.replace("/(tabs)");
-      } else {
-        Toast.show({
-          type: "error",
-          text1: response?.message || "Invalid OTP",
-        });
-      }
+      Toast.show({
+        type: "success",
+        text1: response?.message || "Verified!",
+      });
+
+      setAuthState({
+        isAuthenticated: true,
+        user: {
+          id: response?.data?.id,
+          name: response?.data?.name,
+          email: response?.data?.email,
+          contact_number: response?.data?.contact_number,
+          role: response?.data?.role,
+          avatar: response?.data?.avatar,
+          status: response?.data?.status,
+        },
+      });
+
+      router.replace("/(tabs)");
+
     } catch (error: any) {
+      console.error("Verify OTP Error:", error);
       Toast.show({
         type: "error",
         text1: error?.message || "Invalid OTP",
@@ -132,101 +150,117 @@ export default function AuthScreen() {
     }
   };
 
+  const handleResend = () => {
+    otpForm.reset({ email: otpForm.getValues("email"), otp: "" });
+    animateToStep("email");
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-background">
+      <BackButton
+        path={step === "otp" ? undefined : "/login-type"}
+        onPress={step === "otp" ? () => animateToStep("email") : undefined}
+      />
       <View style={{ flex: 1, paddingHorizontal: 24 }}>
+
+        {/* EMAIL STEP */}
         <Animated.View
           style={{
-            flex: 1,
-            opacity: fadeAnim,
+            opacity: step === "email" ? fadeAnim : 0,
             transform: [{ translateY: slideAnim }],
-            paddingTop: 40,
+            display: step === "email" ? "flex" : "none",
           }}
         >
-          <View className="flex-row gap-2 mb-8">
-            <View className={`h-2 rounded-full ${step === "email" ? "bg-primary w-10" : "bg-muted-foreground w-2"}`} />
-            <View className={`h-2 rounded-full ${step === "otp" ? "bg-primary w-10" : "bg-muted-foreground w-2"}`} />
+          <View className="mt-8">
+            <H2 className="text-center">Welcome!</H2>
+            <Muted className="text-center mt-2 mb-6">Login/ Signup to store your data securely.</Muted>
           </View>
 
-          {step === "email" ? (
-            <>
-              <View className="size-12 items-center justify-center rounded-2xl bg-primary/10 mb-5">
-                <Mail size={26} className="text-primary" />
+          <Controller
+            control={emailForm.control}
+            name="email"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <View>
+                <TextInput
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  placeholder="Email address"
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  textContentType="emailAddress"
+                  autoComplete="email"
+                  placeholderClassName="text-secondary"
+                  className={`border rounded-xl p-4 text-foreground ${emailForm.formState.errors.email ? "border-destructive" : "border-border"}`}
+                />
+                <InputError error={emailForm.formState.errors.email?.message} />
               </View>
+            )}
+          />
 
-              <Text className="text-2xl font-bold text-foreground tracking-tight">
-                Enter your email
-              </Text>
-
-              <Text className="mt-4 text-md text-muted-foreground leading-6 mb-4">
-                We&apos;ll send a one-time password to verify your account.
-              </Text>
-
-              <TextInput
-                value={email}
-                onChangeText={setEmail}
-                placeholder="you@example.com"
-                keyboardType="email-address"
-                autoCapitalize="none"
-                placeholderClassName="text-muted-foreground"
-                autoComplete="email"
-                editable={!sentOtpMutation.isPending}
-                className="bg-foreground border border-border rounded p-4 text-background"
-              />
-
-              <TouchableOpacity
-                onPress={handleSendOtp}
-                disabled={sentOtpMutation.isPending || !email.trim()}
-                activeOpacity={0.85}
-                className={`mt-4 rounded py-4 items-center justify-center disabled:bg-muted-foreground ${email.trim() ? "bg-primary" : "bg-muted-foreground"}`}
-              >
-                <Text className="text-primary-foreground">{sentOtpMutation.isPending ? "Sending OTP..." : "Send OTP"}</Text>
-              </TouchableOpacity>
-            </>
-          ) : (
-            <>
-              <View className="size-12 items-center justify-center rounded bg-primary/10 mb-5">
-                <ShieldCheck size={26} className="text-primary" />
-              </View>
-
-              <Text className="text-2xl font-bold text-foreground tracking-tight">Check your email</Text>
-              <Text className="text-md text-muted-foreground leading-6 mb-2">
-                We sent a code to
-              </Text>
-              <Text className="text-md text-primary mb-4">{email}</Text>
-
-              <TextInput
-                value={otp}
-                onChangeText={setOtp}
-                placeholder="Enter OTP"
-                placeholderClassName="text-muted-foreground"
-                keyboardType="number-pad"
-                maxLength={6}
-                editable={!verifyOtpMutation.isPending}
-                className="bg-foreground border border-border rounded p-4 text-background"
-              />
-
-              <TouchableOpacity
-                onPress={() => animateToStep("email")}
-                className="pt-4"
-              >
-                <Text className="text-md text-muted-foreground leading-6 mb-4">
-                  Didn&apos;t receive it?{" "}
-                  <Text className="text-md text-primary mb-4">Resend</Text>
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={handleVerifyOtp}
-                disabled={verifyOtpMutation.isPending || otp.length < 6}
-                activeOpacity={0.85}
-                className={`mt-4 rounded py-4 items-center justify-center disabled:bg-muted-foreground ${otp.length >= 6 ? "bg-primary" : "bg-muted-foreground"}`}
-              >
-                <Text className="text-primary-foreground">{verifyOtpMutation.isPending ? "Verifying OTP..." : "Verify OTP"}</Text>
-              </TouchableOpacity>
-            </>
-          )}
+          <Button
+            onPress={emailForm.handleSubmit(handleSendOtp)}
+            disabled={sentOtpMutation.isPending}
+            className="mt-6"
+          >
+            <Text className="text-primary-foreground font-semibold text-base tracking-wide">
+              {sentOtpMutation.isPending ? "Sending OTP..." : "Send OTP"}
+            </Text>
+          </Button>
         </Animated.View>
+
+        {/* OTP STEP */}
+        <Animated.View
+          style={{
+            opacity: step === "otp" ? fadeAnim : 0,
+            transform: [{ translateY: slideAnim }],
+            display: step === "otp" ? "flex" : "none",
+          }}
+        >
+          <View className="mt-8">
+            <H2 className="text-center">Check your email</H2>
+            <Muted className="text-center mt-2 mb-6">We sent a code to {otpForm.watch("email")}</Muted>
+          </View>
+
+          <Controller
+            control={otpForm.control}
+            name="otp"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <View>
+                <TextInput
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  placeholder="Enter OTP"
+                  placeholderClassName="text-secondary"
+                  keyboardType="number-pad"
+                  maxLength={6}
+                  editable={!verifyOtpMutation.isPending}
+                  className={`border rounded-xl p-4 text-foreground ${otpForm.formState.errors.otp ? "border-destructive" : "border-border"}`}
+                />
+                <InputError error={otpForm.formState.errors.otp?.message} />
+              </View>
+            )}
+          />
+
+          <TouchableOpacity onPress={handleResend} className="mt-4">
+            <Muted className="text-sm">
+              Didn&apos;t receive it? <Muted className="underline text-sm">Resend</Muted>
+            </Muted>
+          </TouchableOpacity>
+
+          <Button
+            onPress={otpForm.handleSubmit(handleVerifyOtp)}
+            disabled={verifyOtpMutation.isPending}
+            className="mt-6 "
+          >
+            <Text className="text-primary-foreground font-semibold text-base tracking-wide">
+              {verifyOtpMutation.isPending ? "Verifying OTP..." : "Verify OTP"}
+            </Text>
+          </Button>
+        </Animated.View>
+
       </View>
     </SafeAreaView>
   );

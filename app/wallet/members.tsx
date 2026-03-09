@@ -1,11 +1,11 @@
-import { useBook, useRemoveMember, useShareBook } from "@/api/book";
 import { useGetAllUsers } from "@/api/user";
+import { useBook, useRemoveMember, useShareBook } from "@/api/wallet";
 import { AppModal } from "@/components/app-modal";
 import { MemberCard } from "@/components/memeber/member-card";
 import { ScreenContainer } from "@/components/screen-container";
 import { MembersSkeleton } from "@/components/skeletons/members-skeleton";
 import { useDebounce } from "@/hooks/use-debounce";
-import { Member } from "@/interface/book";
+import { Member } from "@/interface/wallet";
 import { Plus, X } from "@/lib/icons";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
