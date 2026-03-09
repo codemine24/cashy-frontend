@@ -1,12 +1,12 @@
 import { onboardingSlides, type OnboardingSlide } from "@/constants/onboarding";
 
+import { H2, Muted } from "@/components/ui/typography";
 import { ChevronRight } from "@/lib/icons";
 import { useCallback, useRef, useState } from "react";
 import {
   Dimensions,
   FlatList,
   Image,
-  Text,
   TouchableOpacity,
   View,
   ViewToken
@@ -77,12 +77,12 @@ export function OnboardingCarousel() {
 
       {/* Text content */}
       <View className="mt-20 px-4 pb-4">
-        <Text className="text-2xl font-semibold text-foreground">
+        <H2>
           {onboardingSlides[activeIndex].title}
-        </Text>
-        <Text className="mt-2 text-base text-muted-foreground leading-6">
+        </H2>
+        <Muted className="mt-2">
           {onboardingSlides[activeIndex].subtitle}
-        </Text>
+        </Muted>
       </View>
 
       {/* Pagination dots + next arrow */}
