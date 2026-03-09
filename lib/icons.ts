@@ -104,8 +104,7 @@ export {
   Mail, MessageSquare, MoreVertical, Paperclip, Plus,
   Search,
   Settings,
-  ShieldCheck, Tag, Trash2, Target,
-  User,
-  UserPlus, Users, X, Wallet
+  ShieldCheck, Tag, Target, Trash2, User,
+  UserPlus, Users, Wallet, X
 };
 
