@@ -154,7 +154,7 @@ export default function TransactionDetailScreen() {
 
   const handleEdit = () => {
     router.push({
-      pathname: "/book/add-transaction",
+      pathname: "/wallet/add-transaction",
       params: {
         bookId: params.bookId,
         type: transaction?.type,
@@ -168,7 +168,7 @@ export default function TransactionDetailScreen() {
 
   const handleDuplicate = () => {
     router.push({
-      pathname: "/book/add-transaction",
+      pathname: "/wallet/add-transaction",
       params: {
         bookId: params.bookId,
         type: transaction?.type,

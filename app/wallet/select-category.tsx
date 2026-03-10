@@ -33,7 +33,7 @@ export default function SelectCategoryScreen() {
   const handleSelect = (categoryId: string, categoryName: string) => {
     // Navigate back to add-transaction and pass the selected category info as params
     router.navigate({
-      pathname: "/book/add-transaction",
+      pathname: "/wallet/add-transaction",
       params: {
         ...params,
         selectedCategoryId: categoryId,
@@ -103,7 +103,7 @@ export default function SelectCategoryScreen() {
           title: "Choose Category",
           headerBackTitle: "Back",
           headerRight: () => (
-            <TouchableOpacity onPress={() => router.push({ pathname: "/book/manage-categories", params: { bookId: params.bookId } })}>
+            <TouchableOpacity onPress={() => router.push({ pathname: "/wallet/manage-categories", params: { bookId: params.bookId } })}>
               <Settings size={22} className="text-foreground" />
             </TouchableOpacity>
           ),
