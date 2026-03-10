@@ -212,10 +212,7 @@ export default function AddTransactionScreen() {
         text2: response?.message,
       });
 
-      router.replace({
-        pathname: "/book/[id]",
-        params: { id: bookId },
-      })
+      router.replace(`/wallet/${bookId}` as any)
     } catch (error: any) {
       Toast.show({
         type: "error",
@@ -284,7 +281,7 @@ export default function AddTransactionScreen() {
                 <TouchableOpacity
                   onPress={() => {
                     router.push({
-                      pathname: "/book/select-category",
+                      pathname: "/wallet/select-category",
                       params: {
                         bookId: bookId,
                         currentSelectedId: selectedCategory,
