@@ -81,7 +81,7 @@ export default function SearchWalletScreen() {
 
   const handleAddMember = (book: Book) => {
     router.push({
-      pathname: "/book/members",
+      pathname: "/wallet/members",
       params: { bookId: book.id, bookName: book.name },
     } as any);
   };
