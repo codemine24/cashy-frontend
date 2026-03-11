@@ -136,6 +136,10 @@ export default function AuthScreen() {
           role: response?.data?.role,
           avatar: response?.data?.avatar,
           status: response?.data?.status,
+          theme: response?.data?.theme,
+          language: response?.data?.language,
+          currency: response?.data?.currency,
+          push_notification: response?.data?.push_notification,
         },
       });
 
