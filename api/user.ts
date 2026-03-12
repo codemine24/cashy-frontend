@@ -13,6 +13,10 @@ const keys = {
 type UpdateProfilePayload = {
   name?: string;
   contact_number?: string;
+  theme?: "LIGHT" | "DARK" | "SYSTEM";
+  language?: string;
+  currency?: string;
+  push_notification?: boolean;
   avatar?: {
     uri: string;
     name: string;
