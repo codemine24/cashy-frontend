@@ -8,6 +8,7 @@ import { setUserInfo } from "@/utils/auth";
 import Feather from "@expo/vector-icons/Feather";
 import { Stack } from "expo-router";
 import { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   Modal,
@@ -220,9 +221,10 @@ function ThemeSelector({
 
 export default function AppSettingsScreen() {
   const { authState, setAuthState } = useAuth();
-  const { setColorScheme } = useTheme();
+  const { applyUserTheme } = useTheme();
   const user = authState.user;
   const { mutate: updateProfile } = useUpdateProfile();
+  const { t } = useTranslation();
 
   // Derive display values from user
   const currentTheme = user?.theme ?? "SYSTEM";
@@ -265,10 +267,8 @@ export default function AppSettingsScreen() {
   // ── Handlers ──
   const handleThemeChange = useCallback(
     (theme: "LIGHT" | "DARK" | "SYSTEM") => {
-      // Immediately apply locally
-      if (theme === "LIGHT") setColorScheme("light");
-      else if (theme === "DARK") setColorScheme("dark");
-      else setColorScheme("light"); // system default – can be expanded
+      // Immediately apply locally (resolves SYSTEM → OS preference)
+      applyUserTheme(theme);
 
       // Optimistic update
       if (user) {
@@ -279,7 +279,7 @@ export default function AppSettingsScreen() {
 
       updateSetting("theme", theme);
     },
-    [user, authState, setAuthState, setColorScheme, updateSetting],
+    [user, authState, setAuthState, applyUserTheme, updateSetting],
   );
 
   const handleLanguageSelect = useCallback(
@@ -337,18 +337,18 @@ export default function AppSettingsScreen() {
           contentContainerClassName="px-5 pt-6 pb-10"
         >
           {/* ── Appearance ── */}
-          <SectionLabel>Appearance</SectionLabel>
+          <SectionLabel>{t("settings.appearance")}</SectionLabel>
           <View className="bg-card rounded-2xl border border-border px-4 mb-6">
             <ThemeSelector selected={currentTheme} onSelect={handleThemeChange} />
           </View>
 
           {/* ── Localisation ── */}
-          <SectionLabel>Localisation</SectionLabel>
+          <SectionLabel>{t("settings.localisation")}</SectionLabel>
           <View className="bg-card rounded-2xl border border-border px-4 mb-6">
             <SelectRow
               iconBgClass="bg-blue-500/10"
               icon={<Globe size={22} className="text-blue-500" />}
-              label="Language"
+              label={t("settings.language")}
               value={languageLabel}
               onPress={() => setLanguageModalVisible(true)}
             />
@@ -356,19 +356,19 @@ export default function AppSettingsScreen() {
             <SelectRow
               iconBgClass="bg-emerald-500/10"
               icon={<Text style={{ fontSize: 18 }}>💱</Text>}
-              label="Currency"
+              label={t("settings.currency")}
               value={currencyLabel}
               onPress={() => setCurrencyModalVisible(true)}
             />
           </View>
 
           {/* ── Notifications ── */}
-          <SectionLabel>Notifications</SectionLabel>
+          <SectionLabel>{t("settings.notifications")}</SectionLabel>
           <View className="bg-card rounded-2xl border border-border px-4 mb-8">
             <ToggleRow
               iconBgClass="bg-amber-500/10"
               icon={<Bell size={22} className="text-amber-500" />}
-              label="Push Notifications"
+              label={t("settings.pushNotifications")}
               value={pushNotification}
               onChange={handleNotificationToggle}
               loading={savingField === "push_notification"}
@@ -376,7 +376,7 @@ export default function AppSettingsScreen() {
           </View>
 
           <Text className="text-center text-xs text-muted-foreground">
-            Some settings may require a restart to take effect.
+            {t("settings.restartNote")}
           </Text>
         </ScrollView>
       </ScreenContainer>
@@ -384,7 +384,7 @@ export default function AppSettingsScreen() {
       {/* ── Modals ── */}
       <SelectionModal
         visible={languageModalVisible}
-        title="Select Language"
+        title={t("settings.selectLanguage")}
         options={languageOptions}
         selected={currentLanguage}
         onSelect={handleLanguageSelect}
@@ -393,7 +393,7 @@ export default function AppSettingsScreen() {
 
       <SelectionModal
         visible={currencyModalVisible}
-        title="Select Currency"
+        title={t("settings.selectCurrency")}
         options={currencyOptions}
         selected={currentCurrency}
         onSelect={handleCurrencySelect}
