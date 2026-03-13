@@ -1,7 +1,9 @@
 import { HapticTab } from "@/components/haptic-tab";
 import { TabHeader } from "@/components/tab-header";
+import { GoalIcon } from "@/icons/goal-icon";
+import { SettingsIcon } from "@/icons/settings-icon";
+import { WalletIcon } from "@/icons/wallet-icon";
 import { Tabs } from "expo-router";
-import { Settings, Target, Wallet } from "@/lib/icons";
 import { Platform, View } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -18,7 +20,8 @@ export default function TabLayout() {
       </SafeAreaView>
       <Tabs
         screenOptions={{
-          // tabBarActiveTintColor: ,
+          tabBarActiveTintColor: "rgb(2, 146, 154)",
+          tabBarInactiveTintColor: "rgb(100, 116, 139)",
           headerShown: false,
           tabBarButton: HapticTab,
           tabBarStyle: {
@@ -35,7 +38,7 @@ export default function TabLayout() {
           name="index"
           options={{
             title: "Wallets",
-            tabBarIcon: ({ color, size }) => <Wallet color={color} size={size} />,
+            tabBarIcon: ({ color }) => <WalletIcon color={color} className="size-10" />,
           }}
         />
 
@@ -44,7 +47,7 @@ export default function TabLayout() {
           name="goals"
           options={{
             title: "Goals",
-            tabBarIcon: ({ color, size }) => <Target color={color} size={size} />,
+            tabBarIcon: ({ color }) => <GoalIcon color={color} className="size-8" />,
           }}
         />
 
@@ -62,7 +65,7 @@ export default function TabLayout() {
           name="settings"
           options={{
             title: "Settings",
-            tabBarIcon: ({ color, size }) => <Settings color={color} size={size} />,
+            tabBarIcon: ({ color }) => <SettingsIcon color={color} className="size-8" />,
           }}
         />
       </Tabs>
