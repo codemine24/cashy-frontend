@@ -1,7 +1,8 @@
 import { themes, type ThemeName } from "@/constants/themes";
+import { getUserInfo } from "@/utils/auth";
 import { useColorScheme } from "nativewind";
-import React, { createContext, useCallback, useContext, useMemo, useState } from "react";
-import { StyleProp, View, ViewStyle } from "react-native";
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { Appearance, StyleProp, View, ViewStyle } from "react-native";
 
 // ─── Context type ────────────────────────────────────────────────────
 interface ThemeContextValue {
@@ -19,9 +20,19 @@ interface ThemeContextValue {
   isDark: boolean;
   /** CSS variable style object – apply on a root View inside the navigation tree */
   themeVars: StyleProp<ViewStyle>;
+  /** Apply a user theme preference (LIGHT | DARK | SYSTEM) */
+  applyUserTheme: (theme: "LIGHT" | "DARK" | "SYSTEM") => void;
 }
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
+
+// ─── Resolve user preference to actual scheme ────────────────────────
+function resolveUserTheme(pref: "LIGHT" | "DARK" | "SYSTEM"): "light" | "dark" {
+  if (pref === "LIGHT") return "light";
+  if (pref === "DARK") return "dark";
+  // SYSTEM – follow OS preference
+  return Appearance.getColorScheme() === "dark" ? "dark" : "light";
+}
 
 // ─── Provider (context only – no View wrapper) ──────────────────────
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
@@ -30,9 +41,29 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
 
   const resolvedScheme = colorScheme ?? "light";
 
+  // On mount, read the stored user preference and apply it
+  useEffect(() => {
+    const loadStoredTheme = async () => {
+      const user = await getUserInfo();
+      if (user?.theme) {
+        const scheme = resolveUserTheme(user.theme);
+        setColorScheme(scheme);
+      }
+    };
+    loadStoredTheme();
+  }, [setColorScheme]);
+
   const toggleColorScheme = useCallback(() => {
     setColorScheme(resolvedScheme === "dark" ? "light" : "dark");
   }, [resolvedScheme, setColorScheme]);
+
+  const applyUserTheme = useCallback(
+    (pref: "LIGHT" | "DARK" | "SYSTEM") => {
+      const scheme = resolveUserTheme(pref);
+      setColorScheme(scheme);
+    },
+    [setColorScheme],
+  );
 
   const themeVars = useMemo(
     () => themes[themeName][resolvedScheme],
@@ -48,8 +79,9 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
       setColorScheme,
       isDark: resolvedScheme === "dark",
       themeVars,
+      applyUserTheme,
     }),
-    [themeName, resolvedScheme, toggleColorScheme, setColorScheme, themeVars],
+    [themeName, resolvedScheme, toggleColorScheme, setColorScheme, themeVars, applyUserTheme],
   );
 
   return (
