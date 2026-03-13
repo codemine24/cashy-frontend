@@ -118,7 +118,7 @@ export default function SettingsScreen() {
           <SettingsRow
             iconBgClass="bg-amber-500/10"
             icon={<Info size={22} className="text-amber-500" />}
-            title="About CashFlow"
+            title="About Cashy"
             subtitle="Privacy Policy, T&C, About us"
             onPress={() => router.push("/settings/about" as any)}
           />
