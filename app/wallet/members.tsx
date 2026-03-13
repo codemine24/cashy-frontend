@@ -268,7 +268,7 @@ export default function MembersScreen() {
                             </View>
                             <View>
                               <Text className="font-semibold text-foreground">
-                                {usr.name || "Unknown User"}
+                                {usr.name || "No name"}
                               </Text>
                               <Text className="text-sm text-muted-foreground">
                                 {usr.email}
