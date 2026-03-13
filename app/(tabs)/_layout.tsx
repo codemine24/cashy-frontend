@@ -1,5 +1,6 @@
 import { HapticTab } from "@/components/haptic-tab";
 import { TabHeader } from "@/components/tab-header";
+import { useTheme } from "@/context/theme-context";
 import { GoalIcon } from "@/icons/goal-icon";
 import { SettingsIcon } from "@/icons/settings-icon";
 import { WalletIcon } from "@/icons/wallet-icon";
@@ -8,12 +9,15 @@ import { Platform, View } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function TabLayout() {
+  const { isDark } = useTheme();
   const insets = useSafeAreaInsets();
   const bottomPadding = Platform.OS === "web" ? 12 : Math.max(insets.bottom, 8);
   const tabBarHeight = 56 + bottomPadding;
 
+  const backgroundColor = isDark ? "rgb(15, 23, 42)" : "rgb(248, 250, 252)";
+  const borderColor = isDark ? "rgb(51, 65, 85)" : "rgb(226, 232, 240)";
+
   return (
-    // <PrivateRoute>
     <View className="flex-1 bg-background">
       <SafeAreaView edges={["top"]} className="bg-background">
         <TabHeader />
@@ -25,11 +29,11 @@ export default function TabLayout() {
           headerShown: false,
           tabBarButton: HapticTab,
           tabBarStyle: {
-            // paddingTop: 8,
+            backgroundColor,
+            borderTopColor: borderColor,
+            borderTopWidth: 1,
             paddingBottom: bottomPadding,
             height: tabBarHeight,
-            // borderTopColor: colors.border,
-            // borderTopWidth: 0.5,
           },
         }}
       >
@@ -70,6 +74,5 @@ export default function TabLayout() {
         />
       </Tabs>
     </View>
-    // </PrivateRoute>
   );
 }

@@ -424,8 +424,8 @@ export default function BookDetailScreen() {
                   >
                     <View className="flex-1 mr-2">
                       <View className="flex-row items-center justify-between mb-2">
-                        <View className={`px-2 py-[2px] rounded-xl ${item.type === "IN" ? "bg-green-500/20" : "bg-red-500/20"}`}>
-                          <Text className={`text-[11px] font-bold uppercase tracking-wider ${item.type === "IN" ? "text-green-500" : "text-red-500"}`}>
+                        <View className={`px-2 py-[2px] rounded-xl ${item.type === "IN" ? "bg-green-600/20" : "bg-red-600/20"}`}>
+                          <Text className={`text-[11px] font-bold uppercase tracking-wider ${item.type === "IN" ? "text-green-600" : "text-red-600"}`}>
                             CASH {item.type}
                           </Text>
                         </View>

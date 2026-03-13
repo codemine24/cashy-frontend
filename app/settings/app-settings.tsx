@@ -169,18 +169,17 @@ function SelectionModal<T extends string>({
 
 // ─── Theme selector (3-state: LIGHT / DARK / SYSTEM) ────────────────
 
-const THEME_OPTIONS: { value: "LIGHT" | "DARK" | "SYSTEM"; label: string; icon: string }[] = [
+const THEME_OPTIONS: { value: "LIGHT" | "DARK"; label: string; icon: string }[] = [
   { value: "LIGHT", label: "Light", icon: "sun" },
   { value: "DARK", label: "Dark", icon: "moon" },
-  { value: "SYSTEM", label: "System", icon: "smartphone" },
 ];
 
 function ThemeSelector({
   selected,
   onSelect,
 }: {
-  selected: "LIGHT" | "DARK" | "SYSTEM";
-  onSelect: (theme: "LIGHT" | "DARK" | "SYSTEM") => void;
+  selected: "LIGHT" | "DARK";
+  onSelect: (theme: "LIGHT" | "DARK") => void;
 }) {
   return (
     <View className="flex-row items-center py-4 gap-3">
@@ -227,7 +226,7 @@ export default function AppSettingsScreen() {
   const { t } = useTranslation();
 
   // Derive display values from user
-  const currentTheme = user?.theme ?? "SYSTEM";
+  const currentTheme = user?.theme ?? "LIGHT";
   const currentLanguage = user?.language ?? "en";
   const currentCurrency = user?.currency ?? "USD";
   const pushNotification = user?.push_notification ?? true;
@@ -266,7 +265,7 @@ export default function AppSettingsScreen() {
 
   // ── Handlers ──
   const handleThemeChange = useCallback(
-    (theme: "LIGHT" | "DARK" | "SYSTEM") => {
+    (theme: "LIGHT" | "DARK") => {
       // Immediately apply locally (resolves SYSTEM → OS preference)
       applyUserTheme(theme);
 
@@ -351,14 +350,6 @@ export default function AppSettingsScreen() {
               label={t("settings.language")}
               value={languageLabel}
               onPress={() => setLanguageModalVisible(true)}
-            />
-            <Divider />
-            <SelectRow
-              iconBgClass="bg-emerald-500/10"
-              icon={<Text style={{ fontSize: 18 }}>💱</Text>}
-              label={t("settings.currency")}
-              value={currencyLabel}
-              onPress={() => setCurrencyModalVisible(true)}
             />
           </View>
 

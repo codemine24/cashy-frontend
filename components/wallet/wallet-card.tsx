@@ -62,10 +62,10 @@ export const WalletCard = ({
 
       {/* Right: Amount and Options Menu */}
       <View className="flex-row items-center">
-        <Text className={`font-semibold mr-1 ${book.balance > 0 ? "text-green-500" : "text-red-500"
+        <Text className={`font-semibold mr-1 ${book.balance > 0 ? "text-green-600" : "text-red-600"
           }`}
         >
-          {formatCurrency(book.balance, "BDT")}
+          {book.balance}
         </Text>
 
         {showMenu && (

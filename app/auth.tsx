@@ -147,7 +147,7 @@ export default function AuthScreen() {
       });
 
       // Apply theme immediately on login
-      const userTheme = response?.data?.theme ?? "SYSTEM";
+      const userTheme = response?.data?.theme ?? "LIGHT";
       applyUserTheme(userTheme);
 
       router.replace("/(tabs)");
