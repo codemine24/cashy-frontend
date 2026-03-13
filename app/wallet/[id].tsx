@@ -3,6 +3,7 @@ import { ScreenContainer } from "@/components/screen-container";
 
 import { useDeleteTransaction } from "@/api/transaction";
 import { BookDetailSkeleton } from "@/components/skeletons/book-detail-skeleton";
+import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth-context";
 import { Copy, Edit3, Trash2, UserPlus, Users, X } from "@/lib/icons";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
@@ -17,7 +18,7 @@ export default function BookDetailScreen() {
 
   const { authState } = useAuth();
 
-  console.log(JSON.stringify(book?.data, null, 2), "others members.......");
+  console.log(JSON.stringify(book?.data, null, 2), "book data..........");
   console.log(authState, "authState.......");
   const deleteTransaction = useDeleteTransaction();
 
@@ -264,10 +265,10 @@ export default function BookDetailScreen() {
         </View>
 
         {/* Members Section */}
-        {book?.data?.others_member?.length > 1 && authState.user?.id === book.data.others_member.find((member) => member.role === "OWNER")?.id && (
+        {book?.data?.others_member?.length > 1 && authState.user?.id === book.data.created_by && (
           <View className="bg-card rounded-2xl mb-6 border border-border shadow-sm">
             {/* Header */}
-            <View className="px-4 py-3 flex-row items-center justify-between border-b border-border">
+            <View className="px-4 py-2 flex-row items-center justify-between border-b border-border">
               <View className="flex-row items-center gap-2">
                 <Users size={16} className="text-muted-foreground" />
                 <Text className="text-foreground font-bold text-[14px] ml-2">
@@ -294,14 +295,14 @@ export default function BookDetailScreen() {
             {book.data.others_member
               .slice(0, 2)
               .map((member: any, index: number) => {
-                const name = member.name || "Anonymous";
+                const name = member.name || "No name";
                 const email = member.email;
                 const role: string = member.role || "";
                 const initial = name.charAt(0).toUpperCase();
                 return (
                   <View
                     key={member.id || index}
-                    className={`px-4 py-3 flex-row items-center justify-between ${index !== Math.min(book.data.others_member.length, 2) - 1
+                    className={`px-4 py-2 flex-row items-center justify-between ${index !== Math.min(book.data.others_member.length, 2) - 1
                       ? "border-b border-border"
                       : ""
                       }`}
@@ -333,20 +334,10 @@ export default function BookDetailScreen() {
                     </View>
                     {/* Role badge */}
                     <View
-                      className={`px-2 py-1 rounded-md ${role === "EDITOR"
-                        ? "bg-blue-500/10"
-                        : role === "ADMIN"
-                          ? "bg-purple-500/10"
-                          : "bg-surface"
-                        }`}
+                      className={`px-2 py-1 rounded-lg bg-blue-500/10`}
                     >
                       <Text
-                        className={`text-[11px] font-bold ${role === "EDITOR"
-                          ? "text-blue-500"
-                          : role === "ADMIN"
-                            ? "text-purple-500"
-                            : "text-muted-foreground"
-                          }`}
+                        className={`text-[11px] font-bold text-muted-foreground lowercase`}
                       >
                         {role}
                       </Text>
@@ -472,33 +463,33 @@ export default function BookDetailScreen() {
       <View
         className="absolute bottom-0 left-0 right-0 flex-row px-4 pb-8 pt-3 bg-card border-t border-border shadow-sm gap-3"
       >
-        <TouchableOpacity
+        <Button
           onPress={() => {
             router.push({
               pathname: "/wallet/add-transaction",
               params: { bookId: id, type: "IN" },
             });
           }}
-          className="flex-1 rounded-2xl bg-success py-3.5 items-center justify-center"
+          className="flex-1 bg-success"
         >
           <Text className="text-success-foreground font-bold text-[14px] tracking-widest">
             + CASH IN
           </Text>
-        </TouchableOpacity>
+        </Button>
 
-        <TouchableOpacity
+        <Button
           onPress={() => {
             router.push({
               pathname: "/wallet/add-transaction",
               params: { bookId: id, type: "OUT" },
             });
           }}
-          className="flex-1 rounded-2xl bg-destructive py-3.5 items-center justify-center"
+          className="flex-1 bg-destructive"
         >
-          <Text className="text-destructive-foreground font-bold text-[14px] tracking-widest">
+          <Text className="text-success-foreground font-bold text-[14px]">
             - CASH OUT
           </Text>
-        </TouchableOpacity>
+        </Button>
       </View>
     </>
   );

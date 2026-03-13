@@ -23,7 +23,7 @@ export const MemberCard = ({ member, onEdit, onRemove }: MemberCardProps) => {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
 
   // Extract display values depending on structure
-  const name = member.name || member.user?.name || "Unknown User";
+  const name = member.name || member.user?.name || "No name";
   const email = member.email || member.user?.email || "";
   const role = member.role;
 
@@ -59,20 +59,10 @@ export const MemberCard = ({ member, onEdit, onRemove }: MemberCardProps) => {
       {/* Right */}
       <View className="flex-row items-center">
         <View
-          className={`mr-2 px-2 py-1 rounded-md ${role === "EDITOR"
-            ? "bg-blue-500/10"
-            : role === "ADMIN"
-              ? "bg-purple-500/10"
-              : "bg-surface"
-            }`}
+          className={`px-2 py-1 rounded-lg bg-blue-500/10`}
         >
           <Text
-            className={`text-[12px] font-semibold ${role === "EDITOR"
-              ? "text-blue-500"
-              : role === "ADMIN"
-                ? "text-purple-500"
-                : "text-muted-foreground"
-              }`}
+            className={`text-[11px] font-bold text-muted-foreground lowercase`}
           >
             {role}
           </Text>
