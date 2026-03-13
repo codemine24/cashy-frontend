@@ -19,7 +19,7 @@ const getNotificationIcon = (type: string) => {
   // Using title for now or defaulting to Bell.
   const title = type.toLowerCase();
   if (title.includes("success") || title.includes("completed")) {
-    return <Check size={20} className="text-green-500" />;
+    return <Check size={20} className="text-green-600" />;
   }
   if (title.includes("warning") || title.includes("alert")) {
     return <Info size={20} className="text-amber-500" />;
@@ -109,16 +109,14 @@ export default function NotificationsScreen() {
               }
               renderItem={({ item }: { item: Notification }) => (
                 <View
-                  className={`flex-row p-4 rounded-2xl border ${
-                    item.is_read
+                  className={`flex-row p-4 rounded-2xl border ${item.is_read
                       ? "bg-surface/50 border-border/50"
                       : "bg-surface border-border shadow-sm"
-                  }`}
+                    }`}
                 >
                   <View
-                    className={`size-10 rounded-full items-center justify-center mr-4 ${
-                      item.is_read ? "bg-background" : "bg-primary/10"
-                    }`}
+                    className={`size-10 rounded-full items-center justify-center mr-4 ${item.is_read ? "bg-background" : "bg-primary/10"
+                      }`}
                   >
                     {getNotificationIcon(item.title)}
                   </View>

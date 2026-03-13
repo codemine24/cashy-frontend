@@ -6,7 +6,7 @@ export interface User {
     role: string;
     avatar: string;
     status: string;
-    theme: "LIGHT" | "DARK" | "SYSTEM";
+    theme: "LIGHT" | "DARK";
     language: string;
     currency: string;
     push_notification: boolean;

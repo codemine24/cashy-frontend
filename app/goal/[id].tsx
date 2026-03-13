@@ -3,7 +3,6 @@ import { useDeleteGoalTransaction } from "@/api/goal-transaction";
 import { ScreenContainer } from "@/components/screen-container";
 import { GoalDetailSkeleton } from "@/components/skeletons/goal-detail-skeleton";
 import { Edit3, Trash2, X } from "@/lib/icons";
-import { formatCurrency } from "@/utils";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -142,10 +141,10 @@ export default function GoalDetailScreen() {
             <Text
               className={`text-4xl font-bold text-center mb-1 ${isComplete ? "text-success" : "text-primary"}`}
             >
-              {formatCurrency(goal.data.balance)}
+              {goal.data.balance}
             </Text>
             <Text className="text-sm text-muted-foreground text-center mb-5">
-              of {formatCurrency(goal.data.target_amount)} target
+              of {goal.data.target_amount} target
             </Text>
 
             {/* Progress bar */}
@@ -165,9 +164,7 @@ export default function GoalDetailScreen() {
               </Text>
               {!isComplete && (
                 <Text className="text-sm text-muted-foreground">
-                  {formatCurrency(
-                    Math.max(goal.data.target_amount - goal.data.balance, 0),
-                  )}{" "}
+                  {Math.max(goal.data.target_amount - goal.data.balance, 0)}{" "}
                   remaining
                 </Text>
               )}
@@ -185,7 +182,7 @@ export default function GoalDetailScreen() {
                   Total Added
                 </Text>
                 <Text className="text-base font-bold text-success">
-                  {formatCurrency(goal.data.in)}
+                  {goal.data.in}
                 </Text>
               </View>
               <View className="flex-1 bg-background rounded-lg p-3 border border-border items-center">
@@ -193,7 +190,7 @@ export default function GoalDetailScreen() {
                   Withdrawn
                 </Text>
                 <Text className="text-base font-bold text-destructive">
-                  {formatCurrency(goal.data.out)}
+                  {goal.data.out}
                 </Text>
               </View>
             </View>
@@ -248,7 +245,7 @@ export default function GoalDetailScreen() {
                     className={`text-lg font-bold ${item.type === "IN" ? "text-success" : "text-destructive"}`}
                   >
                     {item.type === "IN" ? "+" : "-"}
-                    {formatCurrency(item.amount)}
+                    {item.amount}
                   </Text>
                 </TouchableOpacity>
               )}

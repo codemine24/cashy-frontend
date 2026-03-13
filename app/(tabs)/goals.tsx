@@ -2,7 +2,6 @@ import { useDeleteGoal, useGoals } from "@/api/goal";
 import { CreateGoalModal } from "@/components/goal/create-goal-modal";
 import { ScreenContainer } from "@/components/screen-container";
 import { GoalsSkeleton } from "@/components/skeletons/goals-skeleton";
-import { formatCurrency } from "@/utils";
 import { useRouter } from "expo-router";
 import { Plus } from "lucide-react-native";
 import { useState } from "react";
@@ -153,7 +152,7 @@ export default function GoalsScreen() {
                           Saved
                         </Text>
                         <Text className="text-lg font-bold text-success">
-                          {formatCurrency(goal.balance)}
+                          {goal.balance}
                         </Text>
                       </View>
                       <View className="items-end">
@@ -161,7 +160,7 @@ export default function GoalsScreen() {
                           Target
                         </Text>
                         <Text className="text-lg font-bold text-foreground">
-                          {formatCurrency(goal.target_amount)}
+                          {goal.target_amount}
                         </Text>
                       </View>
                     </View>
