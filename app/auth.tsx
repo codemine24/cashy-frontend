@@ -2,8 +2,10 @@ import { useSendOtp, useVerifyOtp } from "@/api/auth";
 import { BackButton } from "@/components/ui/back-button";
 import { Button } from "@/components/ui/button";
 import { InputError } from "@/components/ui/input-error";
+import { InputField } from "@/components/ui/input-field";
 import { H2, Muted } from "@/components/ui/typography";
 import { useAuth } from "@/context/auth-context";
+import { useTheme } from "@/context/theme-context";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
@@ -53,6 +55,7 @@ export default function AuthScreen() {
   const sentOtpMutation = useSendOtp();
   const verifyOtpMutation = useVerifyOtp();
   const { setAuthState, authState, authReady } = useAuth();
+  const { applyUserTheme } = useTheme();
 
   const slideAnim = useRef(new Animated.Value(0)).current;
   const fadeAnim = useRef(new Animated.Value(1)).current;
@@ -143,6 +146,10 @@ export default function AuthScreen() {
         },
       });
 
+      // Apply theme immediately on login
+      const userTheme = response?.data?.theme ?? "SYSTEM";
+      applyUserTheme(userTheme);
+
       router.replace("/(tabs)");
 
     } catch (error: any) {
@@ -185,7 +192,7 @@ export default function AuthScreen() {
             name="email"
             render={({ field: { onChange, onBlur, value } }) => (
               <View>
-                <TextInput
+                <InputField
                   value={value}
                   onChangeText={onChange}
                   onBlur={onBlur}
@@ -195,8 +202,7 @@ export default function AuthScreen() {
                   autoCorrect={false}
                   textContentType="emailAddress"
                   autoComplete="email"
-                  placeholderClassName="text-secondary"
-                  className={`border rounded-xl p-4 text-foreground ${emailForm.formState.errors.email ? "border-destructive" : "border-border"}`}
+                  className={`${emailForm.formState.errors.email ? "border-destructive" : "border-border"}`}
                 />
                 <InputError error={emailForm.formState.errors.email?.message} />
               </View>

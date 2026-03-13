@@ -37,6 +37,10 @@ export const onboardingSlides: OnboardingSlide[] = [
 export const languages = [
   { code: "en", label: "English", nativeLabel: "English" },
   { code: "bn", label: "Bangla", nativeLabel: "বাংলা" },
+  // { code: "hi", label: "Hindi", nativeLabel: "हिंदी" },
+  // { code: "de", label: "German", nativeLabel: "Deutsch" },
+  // { code: "fr", label: "French", nativeLabel: "Français" },
+  // { code: "es", label: "Spanish", nativeLabel: "Español" },
 ] as const;
 
 export type LanguageCode = (typeof languages)[number]["code"];
