@@ -36,7 +36,7 @@ export const useVerifyOtp = () => {
                 role: data?.data?.role,
                 avatar: data?.data?.avatar,
                 status: data?.data?.status,
-                theme: data?.data?.theme ?? "SYSTEM",
+                theme: data?.data?.theme ?? "LIGHT",
                 language: data?.data?.language ?? "en",
                 currency: data?.data?.currency ?? "USD",
                 push_notification: data?.data?.push_notification ?? true,

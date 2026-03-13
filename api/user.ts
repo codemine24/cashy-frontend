@@ -13,7 +13,7 @@ const keys = {
 type UpdateProfilePayload = {
   name?: string;
   contact_number?: string;
-  theme?: "LIGHT" | "DARK" | "SYSTEM";
+  theme?: "LIGHT" | "DARK";
   language?: string;
   currency?: string;
   push_notification?: boolean;

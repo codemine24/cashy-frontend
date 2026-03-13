@@ -18,7 +18,7 @@ function ComparisonRow(props: { feature: string } & ComparisonProps) {
 
       <View className="w-20 items-center justify-center">
         {type === "boolean" ? (
-          free ? <Check size={20} className="text-green-500" /> : <X size={20} className="text-muted-foreground" />
+          free ? <Check size={20} className="text-green-600" /> : <X size={20} className="text-muted-foreground" />
         ) : (
           <Text className="text-sm text-muted-foreground text-center">{free}</Text>
         )}
@@ -26,7 +26,7 @@ function ComparisonRow(props: { feature: string } & ComparisonProps) {
 
       <View className="w-20 items-center justify-center">
         {type === "boolean" ? (
-          pro ? <Check size={20} className="text-green-500" /> : <X size={20} className="text-muted-foreground" />
+          pro ? <Check size={20} className="text-green-600" /> : <X size={20} className="text-muted-foreground" />
         ) : (
           <Text className="text-sm text-muted-foreground">{pro}</Text>
         )}
