@@ -1,6 +1,6 @@
 import { useUpdateProfile } from "@/api/user";
 import { ScreenContainer } from "@/components/screen-container";
-import { currencies, languages } from "@/constants/onboarding";
+import { languages } from "@/constants/onboarding";
 import { useAuth } from "@/context/auth-context";
 import { useTheme } from "@/context/theme-context";
 import { Bell, Check, ChevronRight, Globe, X } from "@/lib/icons";
@@ -309,10 +309,7 @@ export default function AppSettingsScreen() {
   const languageLabel =
     languages.find((l) => l.code === currentLanguage)?.label ?? currentLanguage;
 
-  const currencyObj = currencies.find((c) => c.code === currentCurrency);
-  const currencyLabel = currencyObj
-    ? `${currencyObj.code} (${currencyObj.symbol})`
-    : currentCurrency;
+
 
   const languageOptions = languages.map((l) => ({
     code: l.code,
@@ -320,11 +317,6 @@ export default function AppSettingsScreen() {
     extra: l.nativeLabel,
   }));
 
-  const currencyOptions = currencies.map((c) => ({
-    code: c.code,
-    label: c.label,
-    extra: c.symbol,
-  }));
 
   return (
     <>
@@ -380,15 +372,6 @@ export default function AppSettingsScreen() {
         selected={currentLanguage}
         onSelect={handleLanguageSelect}
         onClose={() => setLanguageModalVisible(false)}
-      />
-
-      <SelectionModal
-        visible={currencyModalVisible}
-        title={t("settings.selectCurrency")}
-        options={currencyOptions}
-        selected={currentCurrency}
-        onSelect={handleCurrencySelect}
-        onClose={() => setCurrencyModalVisible(false)}
       />
     </>
   );

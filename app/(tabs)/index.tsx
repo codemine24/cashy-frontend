@@ -54,6 +54,8 @@ export default function HomeScreen() {
   };
 
   const { data: booksData, isLoading, refetch } = useBooks({ search: "", sort: sortBy, sort_order: sortOrder });
+  console.log('booksData................', JSON.stringify(booksData, null, 2));
+
 
   const deleteBookMutation = useDeleteBook();
 

@@ -6,6 +6,7 @@ import { BookDetailSkeleton } from "@/components/skeletons/book-detail-skeleton"
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth-context";
 import { Copy, Edit3, Trash2, UserPlus, Users, X } from "@/lib/icons";
+import { isOwner, isWalletViewer } from "@/utils/is-owner";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import { Alert, RefreshControl, ScrollView, Text, TouchableOpacity, View } from "react-native";
@@ -18,8 +19,6 @@ export default function BookDetailScreen() {
 
   const { authState } = useAuth();
 
-  console.log(JSON.stringify(book?.data, null, 2), "book data..........");
-  console.log(authState, "authState.......");
   const deleteTransaction = useDeleteTransaction();
 
   const [refreshing, setRefreshing] = useState(false);
@@ -160,6 +159,9 @@ export default function BookDetailScreen() {
     });
   };
 
+  console.log('groupedTransactions.....', JSON.stringify(groupedTransactions, null, 2));
+
+
   return (
     <>
       <Stack.Screen
@@ -187,6 +189,8 @@ export default function BookDetailScreen() {
                     onPress={handleEdit}
                     className="p-2"
                     hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                    disabled={isWalletViewer(authState.user?.id, book.data)}
+                    style={{ opacity: isWalletViewer(authState.user?.id, book.data) ? 0.4 : 1 }}
                   >
                     <Edit3 size={20} className="text-foreground" />
                   </TouchableOpacity>
@@ -194,6 +198,8 @@ export default function BookDetailScreen() {
                     onPress={handleDuplicate}
                     className="p-2"
                     hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                    disabled={isWalletViewer(authState.user?.id, book.data)}
+                    style={{ opacity: isWalletViewer(authState.user?.id, book.data) ? 0.4 : 1 }}
                   >
                     <Copy size={20} className="text-foreground" />
                   </TouchableOpacity>
@@ -202,6 +208,8 @@ export default function BookDetailScreen() {
                       onPress={handleDelete}
                       className="p-2"
                       hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                      disabled={isWalletViewer(authState.user?.id, book.data)}
+                      style={{ opacity: isWalletViewer(authState.user?.id, book.data) ? 0.4 : 1 }}
                     >
                       <Trash2 size={20} className="text-destructive" />
                     </TouchableOpacity>
@@ -217,9 +225,10 @@ export default function BookDetailScreen() {
                     params: { bookId: id, bookName: book.data.name },
                   })
                 }
-                style={{ marginRight: 4, padding: 6 }}
+                style={{ marginRight: 4, padding: 6, opacity: isOwner(authState.user?.id, book.data.created_by) ? 1 : 0.4 }}
+                disabled={!isOwner(authState.user?.id, book.data.created_by)}
               >
-                <UserPlus size={22} className="text-white" />
+                <UserPlus size={22} className="text-foreground" />
               </TouchableOpacity>
             );
           },
@@ -265,7 +274,7 @@ export default function BookDetailScreen() {
         </View>
 
         {/* Members Section */}
-        {book?.data?.others_member?.length > 1 && authState.user?.id === book.data.created_by && (
+        {book?.data?.others_member?.length > 1 && isOwner(authState.user?.id, book.data.created_by) && (
           <View className="bg-card rounded-2xl mb-6 border border-border shadow-sm">
             {/* Header */}
             <View className="px-4 py-2 flex-row items-center justify-between border-b border-border">
@@ -284,7 +293,7 @@ export default function BookDetailScreen() {
                     })
                   }
                 >
-                  <Text className="text-primary text-[13px] font-semibold">
+                  <Text className="text-primary text-[11px] font-semibold">
                     See All
                   </Text>
                 </TouchableOpacity>
@@ -355,15 +364,27 @@ export default function BookDetailScreen() {
                     params: { bookId: id, bookName: book.data.name },
                   })
                 }
-                className="px-4 py-3 border-t border-border items-center"
+                className="px-4 py-1 border-t border-border items-center"
               >
-                <Text className="text-primary text-[13px] font-semibold">
+                <Text className="text-primary text-[11px] font-semibold">
                   +{book.data.others_member.length - 2} more members
                 </Text>
               </TouchableOpacity>
             )}
           </View>
         )}
+
+        {
+          book?.data?.others_member?.length > 1 && !isOwner(authState.user?.id, book.data.created_by) && (
+            <View
+              className="bg-card rounded-xl mb-6 border border-border shadow-sm py-2"
+            >
+              <Text className="text-muted-foreground text-[11px] mt-0.5 text-center">
+                You&apos;ve been added by {book.data.others_member.find((member) => member.role === "OWNER")?.email} as {book.data.others_member.find((member) => member.id === authState.user?.id)?.role}
+              </Text>
+            </View>
+          )
+        }
 
         {/* Showing X entries */}
         <View className="flex-row items-center justify-center mb-5 px-6 rounded-2xl">
@@ -418,9 +439,12 @@ export default function BookDetailScreen() {
                     <View className="flex-1 mr-2">
                       <View className="flex-row items-center justify-between mb-2">
                         <View className={`px-2 py-[2px] rounded-xl ${item.type === "IN" ? "bg-green-600/20" : "bg-red-600/20"}`}>
-                          <Text className={`text-[11px] font-bold uppercase tracking-wider ${item.type === "IN" ? "text-green-600" : "text-red-600"}`}>
-                            CASH {item.type}
-                          </Text>
+                          {item.type === "IN" ? <Text className={`text-[11px] font-bold  tracking-wider text-green-600`}>
+                            Cash in
+                          </Text> : <Text className={`text-[11px] font-bold  tracking-wider text-red-600`}>
+                            {/* TODO: show category name  */}
+                            Cash out
+                          </Text>}
                         </View>
                       </View>
 
@@ -471,6 +495,8 @@ export default function BookDetailScreen() {
             });
           }}
           className="flex-1 bg-success"
+          disabled={isWalletViewer(authState.user?.id, book.data)}
+
         >
           <Text className="text-success-foreground font-bold text-[14px] tracking-widest">
             + CASH IN
@@ -485,6 +511,7 @@ export default function BookDetailScreen() {
             });
           }}
           className="flex-1 bg-destructive"
+          disabled={isWalletViewer(authState.user?.id, book.data)}
         >
           <Text className="text-success-foreground font-bold text-[14px]">
             - CASH OUT

@@ -1,6 +1,8 @@
+import { useAuth } from "@/context/auth-context";
 import { Book } from "@/interface/wallet";
 import { BookIcon, Edit3, MoreVertical, Trash2, UserPlus } from "@/lib/icons";
 import { formatUpdateDate } from "@/utils";
+import { isOwner } from "@/utils/is-owner";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
@@ -20,7 +22,9 @@ export const WalletCard = ({
   onDelete,
 }: WalletCardProps) => {
   const router = useRouter();
+  const { authState } = useAuth();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
+  const isCurrentUserOwner = isOwner(authState.user?.id, book.created_by);
 
   const handleAction = (action?: (book: Book) => void) => {
     setIsMenuVisible(false);
@@ -101,6 +105,8 @@ export const WalletCard = ({
                 <TouchableOpacity
                   onPress={() => handleAction(onRename)}
                   className="flex-row items-center"
+                  disabled={!isOwner}
+                  style={{ opacity: isCurrentUserOwner ? 1 : 0.4 }}
                 >
                   <Edit3 size={20} className="text-black" />
                   <Text className="ml-4 text-[16px] text-black">
@@ -113,6 +119,8 @@ export const WalletCard = ({
                 <TouchableOpacity
                   onPress={() => handleAction(onAddMember)}
                   className="flex-row items-center"
+                  disabled={!isOwner}
+                  style={{ opacity: isCurrentUserOwner ? 1 : 0.4 }}
                 >
                   <UserPlus size={20} className="text-black" />
                   <Text className="ml-4 text-[16px] text-black">
@@ -125,6 +133,8 @@ export const WalletCard = ({
                 <TouchableOpacity
                   onPress={() => handleAction(onDelete)}
                   className="flex-row items-center mt-1"
+                  disabled={!isOwner}
+                  style={{ opacity: isCurrentUserOwner ? 1 : 0.4 }}
                 >
                   <Trash2 size={20} className="text-red-500" />
                   <Text className="ml-4 text-[16px] text-red-500">
