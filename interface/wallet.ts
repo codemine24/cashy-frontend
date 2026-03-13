@@ -21,7 +21,7 @@ export interface Book {
   role: string;
   created_at: string;
   updated_at: string;
-  others_member: any[];
+  others_member: { id: string, name: string, email: string, avatar: string; role: "OWNER" | "EDITOR" | "VIEWER" }[];
   transactions?: Transaction[];
 }
 
