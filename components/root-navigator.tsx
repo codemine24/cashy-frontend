@@ -16,7 +16,7 @@ export const RootNavigator = () => {
             screenOptions={{
               headerShown: false,
               headerBackTitle: "Back",
-              headerShadowVisible: false,
+              headerShadowVisible: true,
               headerStyle: { backgroundColor: isDark ? "#0f172a" : "#f8fafc" },
               headerTintColor: isDark ? "#f8fafc" : "#111827",
               headerTitleStyle: { fontSize: 17, fontWeight: "600" },

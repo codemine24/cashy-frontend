@@ -9,7 +9,6 @@ import {
   Tag,
   Trash2,
 } from "@/lib/icons";
-import { formatCurrency } from "@/utils";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import {
@@ -275,7 +274,7 @@ export default function TransactionDetailScreen() {
               </Text>
               <Text className="text-white text-5xl font-extrabold tracking-tight">
                 {isIn ? "+" : "-"}
-                {formatCurrency(parseFloat(transaction?.amount || "0"))}
+                {transaction?.amount}
               </Text>
               <Text className="text-white/65 text-sm mt-2">
                 {formattedDate} · {formattedTime}

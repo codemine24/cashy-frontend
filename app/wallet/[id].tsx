@@ -5,7 +5,6 @@ import { useDeleteTransaction } from "@/api/transaction";
 import { BookDetailSkeleton } from "@/components/skeletons/book-detail-skeleton";
 import { useAuth } from "@/context/auth-context";
 import { Copy, Edit3, Trash2, UserPlus, Users, X } from "@/lib/icons";
-import { formatCurrency } from "@/utils";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import { Alert, RefreshControl, ScrollView, Text, TouchableOpacity, View } from "react-native";
@@ -17,6 +16,9 @@ export default function BookDetailScreen() {
   const { data: book, isLoading, refetch } = useBook(id!);
 
   const { authState } = useAuth();
+
+  console.log(JSON.stringify(book?.data, null, 2), "others members.......");
+  console.log(authState, "authState.......");
   const deleteTransaction = useDeleteTransaction();
 
   const [refreshing, setRefreshing] = useState(false);
@@ -216,7 +218,7 @@ export default function BookDetailScreen() {
                 }
                 style={{ marginRight: 4, padding: 6 }}
               >
-                <UserPlus size={22} className="text-primary" />
+                <UserPlus size={22} className="text-white" />
               </TouchableOpacity>
             );
           },
@@ -238,7 +240,7 @@ export default function BookDetailScreen() {
               Net Balance
             </Text>
             <Text className="text-foreground font-bold text-[15px]">
-              {formatCurrency(book.data.balance)}
+              {book.data.balance}
             </Text>
           </View>
           <View className="px-4 py-4">
@@ -247,7 +249,7 @@ export default function BookDetailScreen() {
                 Total In (+)
               </Text>
               <Text className="text-success font-semibold text-[13px]">
-                {formatCurrency(book.data.in)}
+                {book.data.in}
               </Text>
             </View>
             <View className="flex-row justify-between items-center">
@@ -255,14 +257,14 @@ export default function BookDetailScreen() {
                 Total Out (-)
               </Text>
               <Text className="text-destructive font-semibold text-[13px]">
-                {formatCurrency(book.data.out)}
+                {book.data.out}
               </Text>
             </View>
           </View>
         </View>
 
         {/* Members Section */}
-        {book?.data?.others_member?.length > 0 && (
+        {book?.data?.others_member?.length > 1 && authState.user?.id === book.data.others_member.find((member) => member.role === "OWNER")?.id && (
           <View className="bg-card rounded-2xl mb-6 border border-border shadow-sm">
             {/* Header */}
             <View className="px-4 py-3 flex-row items-center justify-between border-b border-border">
@@ -451,10 +453,10 @@ export default function BookDetailScreen() {
                           : "text-destructive"
                           }`}
                       >
-                        {formatCurrency(item.amount)}
+                        {item.amount}
                       </Text>
                       <Text className="text-sm text-muted-foreground">
-                        Balance: {formatCurrency(item.runningBalance)}
+                        Balance: {item.runningBalance}
                       </Text>
                     </View>
                   </TouchableOpacity>

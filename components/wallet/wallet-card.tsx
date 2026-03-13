@@ -1,6 +1,6 @@
 import { Book } from "@/interface/wallet";
 import { BookIcon, Edit3, MoreVertical, Trash2, UserPlus } from "@/lib/icons";
-import { formatCurrency, formatUpdateDate } from "@/utils";
+import { formatUpdateDate } from "@/utils";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
