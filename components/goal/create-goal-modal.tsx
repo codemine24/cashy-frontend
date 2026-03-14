@@ -48,10 +48,10 @@ export function CreateGoalModal({ visible, onClose, editGoal }: CreateGoalModalP
     const isEdit = !!editGoal;
     try {
       if (isEdit) {
-        // useUpdateGoal only updates name in api/goal.ts
         await updateGoalMutation.mutateAsync({
           id: editGoal.id,
-          name: name.trim()
+          name: name.trim(),
+          target_amount: targetAmount,
         });
       } else {
         await createGoalMutation.mutateAsync({
