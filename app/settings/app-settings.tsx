@@ -1,6 +1,6 @@
 import { useUpdateProfile } from "@/api/user";
 import { ScreenContainer } from "@/components/screen-container";
-import { currencies, languages } from "@/constants/onboarding";
+import { languages } from "@/constants/onboarding";
 import { useAuth } from "@/context/auth-context";
 import { useTheme } from "@/context/theme-context";
 import { Bell, Check, ChevronRight, Globe, X } from "@/lib/icons";
@@ -169,18 +169,17 @@ function SelectionModal<T extends string>({
 
 // ─── Theme selector (3-state: LIGHT / DARK / SYSTEM) ────────────────
 
-const THEME_OPTIONS: { value: "LIGHT" | "DARK" | "SYSTEM"; label: string; icon: string }[] = [
+const THEME_OPTIONS: { value: "LIGHT" | "DARK"; label: string; icon: string }[] = [
   { value: "LIGHT", label: "Light", icon: "sun" },
   { value: "DARK", label: "Dark", icon: "moon" },
-  { value: "SYSTEM", label: "System", icon: "smartphone" },
 ];
 
 function ThemeSelector({
   selected,
   onSelect,
 }: {
-  selected: "LIGHT" | "DARK" | "SYSTEM";
-  onSelect: (theme: "LIGHT" | "DARK" | "SYSTEM") => void;
+  selected: "LIGHT" | "DARK";
+  onSelect: (theme: "LIGHT" | "DARK") => void;
 }) {
   return (
     <View className="flex-row items-center py-4 gap-3">
@@ -227,7 +226,7 @@ export default function AppSettingsScreen() {
   const { t } = useTranslation();
 
   // Derive display values from user
-  const currentTheme = user?.theme ?? "SYSTEM";
+  const currentTheme = user?.theme ?? "LIGHT";
   const currentLanguage = user?.language ?? "en";
   const currentCurrency = user?.currency ?? "USD";
   const pushNotification = user?.push_notification ?? true;
@@ -266,7 +265,7 @@ export default function AppSettingsScreen() {
 
   // ── Handlers ──
   const handleThemeChange = useCallback(
-    (theme: "LIGHT" | "DARK" | "SYSTEM") => {
+    (theme: "LIGHT" | "DARK") => {
       // Immediately apply locally (resolves SYSTEM → OS preference)
       applyUserTheme(theme);
 
@@ -310,10 +309,7 @@ export default function AppSettingsScreen() {
   const languageLabel =
     languages.find((l) => l.code === currentLanguage)?.label ?? currentLanguage;
 
-  const currencyObj = currencies.find((c) => c.code === currentCurrency);
-  const currencyLabel = currencyObj
-    ? `${currencyObj.code} (${currencyObj.symbol})`
-    : currentCurrency;
+
 
   const languageOptions = languages.map((l) => ({
     code: l.code,
@@ -321,11 +317,6 @@ export default function AppSettingsScreen() {
     extra: l.nativeLabel,
   }));
 
-  const currencyOptions = currencies.map((c) => ({
-    code: c.code,
-    label: c.label,
-    extra: c.symbol,
-  }));
 
   return (
     <>
@@ -351,14 +342,6 @@ export default function AppSettingsScreen() {
               label={t("settings.language")}
               value={languageLabel}
               onPress={() => setLanguageModalVisible(true)}
-            />
-            <Divider />
-            <SelectRow
-              iconBgClass="bg-emerald-500/10"
-              icon={<Text style={{ fontSize: 18 }}>💱</Text>}
-              label={t("settings.currency")}
-              value={currencyLabel}
-              onPress={() => setCurrencyModalVisible(true)}
             />
           </View>
 
@@ -389,15 +372,6 @@ export default function AppSettingsScreen() {
         selected={currentLanguage}
         onSelect={handleLanguageSelect}
         onClose={() => setLanguageModalVisible(false)}
-      />
-
-      <SelectionModal
-        visible={currencyModalVisible}
-        title={t("settings.selectCurrency")}
-        options={currencyOptions}
-        selected={currentCurrency}
-        onSelect={handleCurrencySelect}
-        onClose={() => setCurrencyModalVisible(false)}
       />
     </>
   );

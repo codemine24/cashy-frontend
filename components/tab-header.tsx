@@ -8,6 +8,9 @@ export function TabHeader() {
   const router = useRouter();
   const user = authState.user;
 
+  console.log('user................', user);
+
+
   // Get the first letter of the user's name (or email) for the avatar
   const initial = (user?.name?.[0] || user?.email?.[0] || "U").toUpperCase();
   const displayName = user?.name || user?.email?.split("@")[0] || "User";

@@ -44,16 +44,3 @@ export const languages = [
 ] as const;
 
 export type LanguageCode = (typeof languages)[number]["code"];
-
-export const currencies = [
-  { code: "USD", symbol: "$", label: "US Dollar" },
-  { code: "EUR", symbol: "€", label: "Euro" },
-  { code: "GBP", symbol: "£", label: "British Pound" },
-  { code: "BDT", symbol: "৳", label: "Bangladeshi Taka" },
-  { code: "INR", symbol: "₹", label: "Indian Rupee" },
-  { code: "JPY", symbol: "¥", label: "Japanese Yen" },
-  { code: "CAD", symbol: "C$", label: "Canadian Dollar" },
-  { code: "AUD", symbol: "A$", label: "Australian Dollar" },
-] as const;
-
-export type CurrencyCode = (typeof currencies)[number]["code"];

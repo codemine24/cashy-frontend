@@ -21,17 +21,15 @@ interface ThemeContextValue {
   /** CSS variable style object – apply on a root View inside the navigation tree */
   themeVars: StyleProp<ViewStyle>;
   /** Apply a user theme preference (LIGHT | DARK | SYSTEM) */
-  applyUserTheme: (theme: "LIGHT" | "DARK" | "SYSTEM") => void;
+  applyUserTheme: (theme: "LIGHT" | "DARK") => void;
 }
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
 // ─── Resolve user preference to actual scheme ────────────────────────
-function resolveUserTheme(pref: "LIGHT" | "DARK" | "SYSTEM"): "light" | "dark" {
+function resolveUserTheme(pref: "LIGHT" | "DARK"): any {
   if (pref === "LIGHT") return "light";
   if (pref === "DARK") return "dark";
-  // SYSTEM – follow OS preference
-  return Appearance.getColorScheme() === "dark" ? "dark" : "light";
 }
 
 // ─── Provider (context only – no View wrapper) ──────────────────────
@@ -58,7 +56,7 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   }, [resolvedScheme, setColorScheme]);
 
   const applyUserTheme = useCallback(
-    (pref: "LIGHT" | "DARK" | "SYSTEM") => {
+    (pref: "LIGHT" | "DARK") => {
       const scheme = resolveUserTheme(pref);
       setColorScheme(scheme);
     },
