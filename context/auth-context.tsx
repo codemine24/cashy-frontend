@@ -1,7 +1,7 @@
 import "@/i18n"; // ensure i18n is initialized
 import { User } from "@/interface/user";
 import { getAccessToken, getUserInfo } from "@/utils/auth";
-import i18n from "i18next";
+import i18n, { changeLanguage } from "i18next";
 import { createContext, useContext, useEffect, useState } from "react";
 
 export type AuthState = {
@@ -46,7 +46,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         // Apply stored language
         if (user.language && user.language !== i18n.language) {
-          i18n.changeLanguage(user.language);
+          changeLanguage(user.language);
         }
       }
       setAuthReady(true);
@@ -58,7 +58,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const lang = authState.user?.language;
     if (lang && lang !== i18n.language) {
-      i18n.changeLanguage(lang);
+      changeLanguage(lang);
     }
   }, [authState.user?.language]);
 
