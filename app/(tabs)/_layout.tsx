@@ -3,6 +3,7 @@ import { TabHeader } from "@/components/tab-header";
 import { useTheme } from "@/context/theme-context";
 import { GoalIcon } from "@/icons/goal-icon";
 import { SettingsIcon } from "@/icons/settings-icon";
+import { StatisticsIcon } from "@/icons/statistics-icon";
 import { WalletIcon } from "@/icons/wallet-icon";
 import { Tabs } from "expo-router";
 import { Platform, View } from "react-native";
@@ -56,13 +57,13 @@ export default function TabLayout() {
         />
 
         {/* Tab 3: Statistics */}
-        {/* <Tabs.Screen
+        <Tabs.Screen
           name="statistics"
           options={{
             title: "Statistics",
-            tabBarIcon: ({ color, size }) => <BarChart2 color={color} size={size} />,
+            tabBarIcon: ({ color }) => <StatisticsIcon color={color} size={30} />,
           }}
-        /> */}
+        />
 
         {/* Tab 4: Settings */}
         <Tabs.Screen
@@ -75,4 +76,4 @@ export default function TabLayout() {
       </Tabs>
     </View>
   );
-}
+}
