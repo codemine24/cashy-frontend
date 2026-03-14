@@ -54,8 +54,6 @@ export default function HomeScreen() {
   };
 
   const { data: booksData, isLoading, refetch } = useBooks({ search: "", sort: sortBy, sort_order: sortOrder });
-  console.log('booksData................', JSON.stringify(booksData, null, 2));
-
 
   const deleteBookMutation = useDeleteBook();
 
@@ -162,14 +160,14 @@ export default function HomeScreen() {
               <Text className="text-lg font-semibold text-foreground mb-2">
                 No wallets yet
               </Text>
-              <Text className="text-sm text-muted text-center mb-4">
+              <Text className="text-sm text-foreground text-center mb-4">
                 Create your first wallet to start tracking expenses
               </Text>
               <TouchableOpacity
                 onPress={() => setShowCreateModal(true)}
                 className="bg-primary rounded-lg px-6 py-2"
               >
-                <Text className="text-foreground font-semibold">Create Wallet</Text>
+                <Text className="text-white font-semibold">Create Wallet</Text>
               </TouchableOpacity>
             </View>
           ) : (
