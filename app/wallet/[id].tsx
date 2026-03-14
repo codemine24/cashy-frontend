@@ -11,6 +11,7 @@ import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import { Alert, RefreshControl, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
+import { SearchIcon } from "@/icons/search-icon";
 
 export default function BookDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -159,9 +160,6 @@ export default function BookDetailScreen() {
     });
   };
 
-  console.log('groupedTransactions.....', JSON.stringify(groupedTransactions, null, 2));
-
-
   return (
     <>
       <Stack.Screen
@@ -234,6 +232,22 @@ export default function BookDetailScreen() {
           },
         }}
       />
+
+      <TouchableOpacity
+        onPress={() => router.push({
+          pathname: "/wallet/search-transactions",
+          params: {
+            bookId: id,
+          },
+        } as any)}
+        activeOpacity={0.7}
+        className="flex-row items-center gap-5 bg-muted/50 px-4 py-3.5 mb-6 border border-border"
+      >
+        <SearchIcon className="text-muted-foreground" />
+        <Text className="text-muted-foreground text-base">
+          Search transactions by remark and amount
+        </Text>
+      </TouchableOpacity>
       {/* <ScreenContainer className="px-4"> */}
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -410,7 +424,7 @@ export default function BookDetailScreen() {
             {groupedTransactions.map((group) => (
               <View key={group.date}>
                 {/* Date Header: Full width */}
-                <View className="bg-surface py-2 px-4 rounded-lg my-1">
+                <View className="bg-surface py-2 rounded-lg">
                   <Text className="text-muted-foreground text-[13px] font-bold tracking-wide">
                     {group.date}
                   </Text>
@@ -431,7 +445,7 @@ export default function BookDetailScreen() {
                       }
                     }}
                     onLongPress={() => setSelectedTransaction(item)}
-                    className={`rounded-2xl mt-4 px-4 py-4 flex-row justify-between bg-card border ${selectedTransaction?.id === item.id
+                    className={`rounded-2xl mt-2 px-4 py-4 flex-row justify-between bg-card border ${selectedTransaction?.id === item.id
                       ? "border-primary bg-primary/10"
                       : "border-border"
                       } ${index !== group.data.length - 1 ? "mb-1" : ""}`}

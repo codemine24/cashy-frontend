@@ -9,12 +9,29 @@ const keys = {
   detail: (id: string) => [...keys.all, "detail", id],
 };
 
-export const useTransactions = () => {
+interface GetTransactionsParams {
+  book_id: string;
+  search?: string;
+  page?: number;
+  limit?: number;
+  sort?: string;
+  sort_order?: string;
+}
+
+export const useTransactions = (searchParams: GetTransactionsParams) => {
+  const params: Record<string, string> = {};
+
+  if (searchParams.search) params.search_term = searchParams.search;
+  if (searchParams.page) params.page = searchParams.page.toString();
+  if (searchParams.limit) params.limit = searchParams.limit.toString();
+  if (searchParams.sort) params.sort = searchParams.sort;
+  if (searchParams.sort_order) params.sort_order = searchParams.sort_order;
+
   return useQuery({
-    queryKey: keys.list(),
+    queryKey: [...keys.list(), searchParams],
     queryFn: async () => {
       try {
-        const response = await apiClient.get(TRANSACTION_API_URL);
+        const response = await apiClient.get(`${TRANSACTION_API_URL}/book/${searchParams.book_id}`, { params });
         return response.data;
       } catch (error) {
         throwApiError(error);

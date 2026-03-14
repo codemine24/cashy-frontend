@@ -181,7 +181,6 @@ export default function LoansScreen() {
           renderItem={({ item }) => (
             <LoanCard
               loan={item}
-              onPress={(l) => router.push(`/loan/${l.id}` as any)}
               onEdit={handleEditLoan}
               onDelete={handleDeleteLoan}
             />

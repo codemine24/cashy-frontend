@@ -1,13 +1,13 @@
 import { Loan } from "@/interface/loan";
 import { Edit3, MoreVertical, Trash2 } from "@/lib/icons";
 import { formatCurrency, formatUpdateDate } from "@/utils";
+import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import Popover from "react-native-popover-view";
 
 interface LoanCardProps {
   loan: Loan;
-  onPress?: (loan: Loan) => void;
   onEdit?: (loan: Loan) => void;
   onDelete?: (loan: Loan) => void;
 }
@@ -18,7 +18,8 @@ const STATUS_STYLES: Record<string, { bg: string; text: string }> = {
   OVERDUE: { bg: "bg-red-500/15", text: "text-red-500" },
 };
 
-export const LoanCard = ({ loan, onPress, onEdit, onDelete }: LoanCardProps) => {
+export const LoanCard = ({ loan, onEdit, onDelete }: LoanCardProps) => {
+  const router = useRouter();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
 
   const showMenu = !!(onEdit || onDelete);
@@ -38,7 +39,7 @@ export const LoanCard = ({ loan, onPress, onEdit, onDelete }: LoanCardProps) => 
 
   return (
     <TouchableOpacity
-      onPress={() => onPress?.(loan)}
+      onPress={() => router.push(`/loan/${loan.id}` as any)}
       className="bg-card rounded-2xl p-4 mt-3 border border-border active:opacity-70"
     >
       {/* Top Row: Name, Status, Menu */}
