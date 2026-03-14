@@ -3,9 +3,10 @@ import { ScreenContainer } from "@/components/screen-container";
 
 import { useDeleteTransaction } from "@/api/transaction";
 import { BookDetailSkeleton } from "@/components/skeletons/book-detail-skeleton";
+import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth-context";
 import { Copy, Edit3, Trash2, UserPlus, Users, X } from "@/lib/icons";
-import { formatCurrency } from "@/utils";
+import { isOwner, isWalletViewer } from "@/utils/is-owner";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import { Alert, RefreshControl, ScrollView, Text, TouchableOpacity, View } from "react-native";
@@ -17,6 +18,7 @@ export default function BookDetailScreen() {
   const { data: book, isLoading, refetch } = useBook(id!);
 
   const { authState } = useAuth();
+
   const deleteTransaction = useDeleteTransaction();
 
   const [refreshing, setRefreshing] = useState(false);
@@ -157,6 +159,9 @@ export default function BookDetailScreen() {
     });
   };
 
+  console.log('groupedTransactions.....', JSON.stringify(groupedTransactions, null, 2));
+
+
   return (
     <>
       <Stack.Screen
@@ -184,6 +189,8 @@ export default function BookDetailScreen() {
                     onPress={handleEdit}
                     className="p-2"
                     hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                    disabled={isWalletViewer(authState.user?.id, book.data)}
+                    style={{ opacity: isWalletViewer(authState.user?.id, book.data) ? 0.4 : 1 }}
                   >
                     <Edit3 size={20} className="text-foreground" />
                   </TouchableOpacity>
@@ -191,6 +198,8 @@ export default function BookDetailScreen() {
                     onPress={handleDuplicate}
                     className="p-2"
                     hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                    disabled={isWalletViewer(authState.user?.id, book.data)}
+                    style={{ opacity: isWalletViewer(authState.user?.id, book.data) ? 0.4 : 1 }}
                   >
                     <Copy size={20} className="text-foreground" />
                   </TouchableOpacity>
@@ -199,6 +208,8 @@ export default function BookDetailScreen() {
                       onPress={handleDelete}
                       className="p-2"
                       hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                      disabled={isWalletViewer(authState.user?.id, book.data)}
+                      style={{ opacity: isWalletViewer(authState.user?.id, book.data) ? 0.4 : 1 }}
                     >
                       <Trash2 size={20} className="text-destructive" />
                     </TouchableOpacity>
@@ -214,9 +225,10 @@ export default function BookDetailScreen() {
                     params: { bookId: id, bookName: book.data.name },
                   })
                 }
-                style={{ marginRight: 4, padding: 6 }}
+                style={{ marginRight: 4, padding: 6, opacity: isOwner(authState.user?.id, book.data.created_by) ? 1 : 0.4 }}
+                disabled={!isOwner(authState.user?.id, book.data.created_by)}
               >
-                <UserPlus size={22} className="text-primary" />
+                <UserPlus size={22} className="text-foreground" />
               </TouchableOpacity>
             );
           },
@@ -238,7 +250,7 @@ export default function BookDetailScreen() {
               Net Balance
             </Text>
             <Text className="text-foreground font-bold text-[15px]">
-              {formatCurrency(book.data.balance)}
+              {book.data.balance}
             </Text>
           </View>
           <View className="px-4 py-4">
@@ -247,7 +259,7 @@ export default function BookDetailScreen() {
                 Total In (+)
               </Text>
               <Text className="text-success font-semibold text-[13px]">
-                {formatCurrency(book.data.in)}
+                {book.data.in}
               </Text>
             </View>
             <View className="flex-row justify-between items-center">
@@ -255,17 +267,17 @@ export default function BookDetailScreen() {
                 Total Out (-)
               </Text>
               <Text className="text-destructive font-semibold text-[13px]">
-                {formatCurrency(book.data.out)}
+                {book.data.out}
               </Text>
             </View>
           </View>
         </View>
 
         {/* Members Section */}
-        {book?.data?.others_member?.length > 0 && (
+        {book?.data?.others_member?.length > 1 && isOwner(authState.user?.id, book.data.created_by) && (
           <View className="bg-card rounded-2xl mb-6 border border-border shadow-sm">
             {/* Header */}
-            <View className="px-4 py-3 flex-row items-center justify-between border-b border-border">
+            <View className="px-4 py-2 flex-row items-center justify-between border-b border-border">
               <View className="flex-row items-center gap-2">
                 <Users size={16} className="text-muted-foreground" />
                 <Text className="text-foreground font-bold text-[14px] ml-2">
@@ -281,7 +293,7 @@ export default function BookDetailScreen() {
                     })
                   }
                 >
-                  <Text className="text-primary text-[13px] font-semibold">
+                  <Text className="text-primary text-[11px] font-semibold">
                     See All
                   </Text>
                 </TouchableOpacity>
@@ -292,14 +304,14 @@ export default function BookDetailScreen() {
             {book.data.others_member
               .slice(0, 2)
               .map((member: any, index: number) => {
-                const name = member.name || "Anonymous";
+                const name = member.name || "No name";
                 const email = member.email;
                 const role: string = member.role || "";
                 const initial = name.charAt(0).toUpperCase();
                 return (
                   <View
                     key={member.id || index}
-                    className={`px-4 py-3 flex-row items-center justify-between ${index !== Math.min(book.data.others_member.length, 2) - 1
+                    className={`px-4 py-2 flex-row items-center justify-between ${index !== Math.min(book.data.others_member.length, 2) - 1
                       ? "border-b border-border"
                       : ""
                       }`}
@@ -331,20 +343,10 @@ export default function BookDetailScreen() {
                     </View>
                     {/* Role badge */}
                     <View
-                      className={`px-2 py-1 rounded-md ${role === "EDITOR"
-                        ? "bg-blue-500/10"
-                        : role === "ADMIN"
-                          ? "bg-purple-500/10"
-                          : "bg-surface"
-                        }`}
+                      className={`px-2 py-1 rounded-lg bg-blue-500/10`}
                     >
                       <Text
-                        className={`text-[11px] font-bold ${role === "EDITOR"
-                          ? "text-blue-500"
-                          : role === "ADMIN"
-                            ? "text-purple-500"
-                            : "text-muted-foreground"
-                          }`}
+                        className={`text-[11px] font-bold text-muted-foreground lowercase`}
                       >
                         {role}
                       </Text>
@@ -362,15 +364,27 @@ export default function BookDetailScreen() {
                     params: { bookId: id, bookName: book.data.name },
                   })
                 }
-                className="px-4 py-3 border-t border-border items-center"
+                className="px-4 py-1 border-t border-border items-center"
               >
-                <Text className="text-primary text-[13px] font-semibold">
+                <Text className="text-primary text-[11px] font-semibold">
                   +{book.data.others_member.length - 2} more members
                 </Text>
               </TouchableOpacity>
             )}
           </View>
         )}
+
+        {
+          book?.data?.others_member?.length > 1 && !isOwner(authState.user?.id, book.data.created_by) && (
+            <View
+              className="bg-card rounded-xl mb-6 border border-border shadow-sm py-2"
+            >
+              <Text className="text-muted-foreground text-[11px] mt-0.5 text-center">
+                You&apos;ve been added by {book.data.others_member.find((member) => member.role === "OWNER")?.email} as {book.data.others_member.find((member) => member.id === authState.user?.id)?.role}
+              </Text>
+            </View>
+          )
+        }
 
         {/* Showing X entries */}
         <View className="flex-row items-center justify-center mb-5 px-6 rounded-2xl">
@@ -424,10 +438,13 @@ export default function BookDetailScreen() {
                   >
                     <View className="flex-1 mr-2">
                       <View className="flex-row items-center justify-between mb-2">
-                        <View className={`px-2 py-[2px] rounded-xl ${item.type === "IN" ? "bg-green-500/20" : "bg-red-500/20"}`}>
-                          <Text className={`text-[11px] font-bold uppercase tracking-wider ${item.type === "IN" ? "text-green-500" : "text-red-500"}`}>
-                            CASH {item.type}
-                          </Text>
+                        <View className={`px-2 py-[2px] rounded-xl ${item.type === "IN" ? "bg-green-600/20" : "bg-red-600/20"}`}>
+                          {item.type === "IN" ? <Text className={`text-[11px] font-bold  tracking-wider text-green-600`}>
+                            Cash in
+                          </Text> : <Text className={`text-[11px] font-bold  tracking-wider text-red-600`}>
+                            {/* TODO: show category name  */}
+                            Cash out
+                          </Text>}
                         </View>
                       </View>
 
@@ -451,10 +468,10 @@ export default function BookDetailScreen() {
                           : "text-destructive"
                           }`}
                       >
-                        {formatCurrency(item.amount)}
+                        {item.amount}
                       </Text>
                       <Text className="text-sm text-muted-foreground">
-                        Balance: {formatCurrency(item.runningBalance)}
+                        Balance: {item.runningBalance}
                       </Text>
                     </View>
                   </TouchableOpacity>
@@ -470,33 +487,36 @@ export default function BookDetailScreen() {
       <View
         className="absolute bottom-0 left-0 right-0 flex-row px-4 pb-8 pt-3 bg-card border-t border-border shadow-sm gap-3"
       >
-        <TouchableOpacity
+        <Button
           onPress={() => {
             router.push({
               pathname: "/wallet/add-transaction",
               params: { bookId: id, type: "IN" },
             });
           }}
-          className="flex-1 rounded-2xl bg-success py-3.5 items-center justify-center"
+          className="flex-1 bg-success"
+          disabled={isWalletViewer(authState.user?.id, book.data)}
+
         >
           <Text className="text-success-foreground font-bold text-[14px] tracking-widest">
             + CASH IN
           </Text>
-        </TouchableOpacity>
+        </Button>
 
-        <TouchableOpacity
+        <Button
           onPress={() => {
             router.push({
               pathname: "/wallet/add-transaction",
               params: { bookId: id, type: "OUT" },
             });
           }}
-          className="flex-1 rounded-2xl bg-destructive py-3.5 items-center justify-center"
+          className="flex-1 bg-destructive"
+          disabled={isWalletViewer(authState.user?.id, book.data)}
         >
-          <Text className="text-destructive-foreground font-bold text-[14px] tracking-widest">
+          <Text className="text-success-foreground font-bold text-[14px]">
             - CASH OUT
           </Text>
-        </TouchableOpacity>
+        </Button>
       </View>
     </>
   );
