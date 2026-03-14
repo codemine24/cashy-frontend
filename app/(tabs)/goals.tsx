@@ -97,7 +97,7 @@ export default function GoalsScreen() {
               renderItem={({ item: goal }) => (
                 <GoalCard
                   goal={goal}
-                  onRename={(g) => {
+                  onEdit={(g) => {
                     setEditGoal({
                       id: g.id,
                       name: g.name,
