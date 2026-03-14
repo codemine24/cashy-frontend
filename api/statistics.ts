@@ -13,7 +13,12 @@ const keys = {
   goalSummary: () => [...keys.all, "goalSummary"],
 };
 
-export const useStatisticsOverview = (params: { period?: string; book_id?: string } = {}) => {
+export const useStatisticsOverview = (params: {
+  period?: "all" | "day" | "week" | "month" | "year";
+  from_date?: string;
+  to_date?: string;
+  book_id?: string;
+} = {}) => {
   return useQuery({
     queryKey: keys.overview(params),
     queryFn: async () => {
