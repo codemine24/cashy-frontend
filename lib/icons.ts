@@ -14,6 +14,7 @@ import {
   Copy,
   Edit3,
   Globe,
+  HandCoins,
   Info,
   LogOut,
   Mail,
@@ -83,6 +84,7 @@ interopIcon(BookOpen);
 interopIcon(Calendar);
 interopIcon(Clock);
 interopIcon(Copy);
+interopIcon(HandCoins);
 interopIcon(MessageSquare);
 interopIcon(Tag);
 interopIcon(Wallet)
@@ -98,7 +100,7 @@ export {
   ChevronDown,
   ChevronRight, Clock,
   Copy, Edit3,
-  Globe,
+  Globe, HandCoins,
   Info,
   LogOut,
   Mail, MessageSquare, MoreVertical, Paperclip, Plus,

@@ -129,7 +129,7 @@ export default function GoalDetailScreen() {
         }}
       />
 
-      <ScreenContainer className="p-4 bg-background">
+      <ScreenContainer className="px-4 py-0 bg-background">
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 100 }}
