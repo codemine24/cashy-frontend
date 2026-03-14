@@ -4,10 +4,32 @@ import { H1, H3, Muted, P } from "@/components/ui/typography";
 import { GoalIcon } from "@/icons/goal-icon";
 import { WalletIcon } from "@/icons/wallet-icon";
 import { cn } from "@/utils/cn";
-import { ActivityIndicator, ScrollView, View } from "react-native";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { Calendar, ChevronDown, Filter } from "lucide-react-native";
+import { useState } from "react";
+import {
+  ActivityIndicator,
+  Platform,
+  Pressable,
+  ScrollView,
+  View,
+} from "react-native";
+import Popover, { PopoverPlacement } from "react-native-popover-view";
+
+type Period = "all" | "day" | "week" | "month" | "year" | "custom";
 
 export default function StatisticsPage() {
-  const { data: overview, isLoading } = useStatisticsOverview();
+  const [period, setPeriod] = useState<Period>("all");
+  const [fromDate, setFromDate] = useState<Date | null>(null);
+  const [toDate, setToDate] = useState<Date | null>(null);
+  const [showFromPicker, setShowFromPicker] = useState(false);
+  const [showToPicker, setShowToPicker] = useState(false);
+
+  const { data: overview, isLoading } = useStatisticsOverview({
+    period: period === "all" || period === "custom" ? undefined : period,
+    from_date: fromDate?.toISOString().split("T")[0],
+    to_date: toDate?.toISOString().split("T")[0],
+  });
 
   const ownBooks = overview?.data?.own_books;
   const sharedBooks = overview?.data?.shared_books;
@@ -23,6 +45,156 @@ export default function StatisticsPage() {
           <H1 className="text-4xl">Insight</H1>
           <Muted className="text-lg">Financial Overview</Muted>
         </View>
+
+        {/* Filtering Section */}
+        <View className="px-6 mb-8">
+          <View className="flex-row gap-x-3">
+            {/* Period Dropdown */}
+            <Popover
+              from={(sourceRef, showPopover) => (
+                <Pressable
+                  onPress={showPopover}
+                  ref={sourceRef as any}
+                  className={cn(
+                    "flex-1 px-5 py-4 rounded-[32px] border flex-row items-center justify-between",
+                    period !== "custom"
+                      ? "bg-primary border-primary shadow-lg shadow-primary/30"
+                      : "bg-card border-border",
+                  )}
+                >
+                  <View className="flex-row items-center gap-x-3">
+                    <Filter
+                      size={18}
+                      color={period !== "custom" ? "white" : "rgb(115, 115, 115)"}
+                    />
+                    <P
+                      className={cn(
+                        "text-sm font-bold capitalize",
+                        period !== "custom"
+                          ? "text-primary-foreground"
+                          : "text-muted-foreground",
+                      )}
+                    >
+                      {period}
+                    </P>
+                  </View>
+                  <ChevronDown
+                    size={18}
+                    color={period !== "custom" ? "white" : "rgb(115, 115, 115)"}
+                  />
+                </Pressable>
+              )}
+              placement={PopoverPlacement.BOTTOM}
+              backgroundStyle={{ backgroundColor: "rgba(0,0,0,0.1)" }}
+              popoverStyle={{
+                borderRadius: 24,
+                padding: 8,
+                backgroundColor: "white",
+                width: 200,
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 10 },
+                shadowOpacity: 0.1,
+                shadowRadius: 20,
+              }}
+            >
+              <View className="gap-y-1">
+                {(
+                  ["all", "day", "week", "month", "year", "custom"] as Period[]
+                ).map((p) => (
+                  <Pressable
+                    key={p}
+                    onPress={() => {
+                      setPeriod(p);
+                      if (p !== "custom") {
+                        setFromDate(null);
+                        setToDate(null);
+                      }
+                    }}
+                    className={cn(
+                      "px-4 py-3.5 rounded-2xl",
+                      period === p ? "bg-primary/10" : "bg-transparent",
+                    )}
+                  >
+                    <P
+                      className={cn(
+                        "text-sm capitalize font-semibold",
+                        period === p ? "text-primary" : "text-foreground",
+                      )}
+                    >
+                      {p}
+                    </P>
+                  </Pressable>
+                ))}
+              </View>
+            </Popover>
+          </View>
+
+          {/* Custom Date Inputs */}
+          {period === "custom" && (
+            <View className="flex-row gap-x-3 mt-4">
+              <Pressable
+                onPress={() => setShowFromPicker(true)}
+                className="flex-1 bg-card border border-border px-5 py-4 rounded-3xl flex-row items-center justify-between"
+              >
+                <View>
+                  <Muted className="text-[10px] font-bold uppercase mb-0.5">
+                    From
+                  </Muted>
+                  <P className="text-sm font-bold">
+                    {fromDate?.toLocaleDateString() || "Select Date"}
+                  </P>
+                </View>
+                <Calendar size={16} color="rgb(115, 115, 115)" />
+              </Pressable>
+
+              <Pressable
+                onPress={() => setShowToPicker(true)}
+                className="flex-1 bg-card border border-border px-5 py-4 rounded-3xl flex-row items-center justify-between"
+              >
+                <View>
+                  <Muted className="text-[10px] font-bold uppercase mb-0.5">
+                    To
+                  </Muted>
+                  <P className="text-sm font-bold">
+                    {toDate?.toLocaleDateString() || "Select Date"}
+                  </P>
+                </View>
+                <Calendar size={16} color="rgb(115, 115, 115)" />
+              </Pressable>
+            </View>
+          )}
+        </View>
+
+          {/* Date Pickers */}
+          {showFromPicker && (
+            <DateTimePicker
+              value={fromDate || new Date()}
+              mode="date"
+              display={Platform.OS === "ios" ? "spinner" : "default"}
+              onChange={(event, date) => {
+                setShowFromPicker(false);
+                if (date) {
+                  setFromDate(date);
+                  setPeriod("all"); // Reset period if custom date is chosen
+                  setShowToPicker(true);
+                }
+              }}
+            />
+          )}
+
+          {showToPicker && (
+            <DateTimePicker
+              value={toDate || new Date()}
+              mode="date"
+              display={Platform.OS === "ios" ? "spinner" : "default"}
+              onChange={(event, date) => {
+                setShowToPicker(false);
+                if (date) {
+                  setToDate(date);
+                }
+              }}
+            />
+          )}
 
         {isLoading ? (
           <View className="flex-1 items-center justify-center py-20">
