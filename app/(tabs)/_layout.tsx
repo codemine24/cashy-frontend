@@ -5,6 +5,7 @@ import { GoalIcon } from "@/icons/goal-icon";
 import { SettingsIcon } from "@/icons/settings-icon";
 import { WalletIcon } from "@/icons/wallet-icon";
 import { Tabs } from "expo-router";
+import { HandCoins, Settings, Target, Wallet } from "@/lib/icons";
 import { Platform, View } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -55,7 +56,16 @@ export default function TabLayout() {
           }}
         />
 
-        {/* Tab 3: Statistics */}
+        {/* Tab 3: Loans */}
+        <Tabs.Screen
+          name="loans"
+          options={{
+            title: "Loans",
+            tabBarIcon: ({ color, size }) => <HandCoins color={color} size={size} />,
+          }}
+        />
+
+        {/* Tab 4: Statistics */}
         {/* <Tabs.Screen
           name="statistics"
           options={{
