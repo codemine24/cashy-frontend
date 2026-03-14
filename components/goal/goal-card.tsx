@@ -1,17 +1,17 @@
+import { Goal } from "@/interface/goal";
 import { Edit3, MoreVertical, Target, Trash2 } from "@/lib/icons";
-import { formatUpdateDate } from "@/utils";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import Popover from "react-native-popover-view";
 
 interface GoalCardProps {
-  goal: any;
-  onRename?: (goal: any) => void;
+  goal: Goal;
+  onEdit?: (goal: Goal) => void;
   onDelete?: (goalId: string, goalName: string) => void;
 }
 
-export const GoalCard = ({ goal, onRename, onDelete }: GoalCardProps) => {
+export const GoalCard = ({ goal, onEdit, onDelete }: GoalCardProps) => {
   const router = useRouter();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
 
@@ -30,7 +30,7 @@ export const GoalCard = ({ goal, onRename, onDelete }: GoalCardProps) => {
     }
   };
 
-  const showMenu = !!(onRename || onDelete);
+  const showMenu = !!(onEdit || onDelete);
 
   return (
     <TouchableOpacity
@@ -104,13 +104,13 @@ export const GoalCard = ({ goal, onRename, onDelete }: GoalCardProps) => {
               }}
             >
               <View className="bg-surface flex flex-col gap-4">
-                {onRename && (
+                {onEdit && (
                   <TouchableOpacity
-                    onPress={() => handleAction(() => onRename(goal))}
+                    onPress={() => handleAction(() => onEdit(goal))}
                     className="flex-row items-center"
                   >
                     <Edit3 size={20} className="text-black" />
-                    <Text className="ml-4 text-[16px] text-black">Rename</Text>
+                    <Text className="ml-4 text-[16px] text-black">Edit</Text>
                   </TouchableOpacity>
                 )}
                 {onDelete && (

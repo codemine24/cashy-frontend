@@ -65,9 +65,9 @@ export const useCreateGoal = () => {
 export const useUpdateGoal = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, name }: { id: string; name: string }) => {
+    mutationFn: async ({ id, name, target_amount }: { id: string; name: string; target_amount: number }) => {
       try {
-        const response = await apiClient.put(`${GOAL_API_URL}/${id}`, { name });
+        const response = await apiClient.patch(`${GOAL_API_URL}/${id}`, { name, target_amount });
         return response.data;
       } catch (error) {
         throwApiError(error);
