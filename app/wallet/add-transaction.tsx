@@ -34,6 +34,8 @@ export default function AddTransactionScreen() {
     editAmount?: string;
     editRemark?: string;
     editType?: string;
+    editCategoryId?: string;
+    editCategoryName?: string;
     selectedCategoryId?: string;
     selectedCategoryName?: string;
   }>();
@@ -56,10 +58,13 @@ export default function AddTransactionScreen() {
   const [attachments, setAttachments] = useState<PickedFile[]>([]);
 
   useEffect(() => {
-    if (isEditing) {
-      setType((params.editType as "IN" | "OUT") || initialType);
-      setAmount(params.editAmount || "");
-      setRemark(params.editRemark || "");
+    // Populate fields from params (used for both Edit and Duplicate)
+    if (params.editType) setType(params.editType as "IN" | "OUT");
+    if (params.editAmount) setAmount(params.editAmount);
+    if (params.editRemark) setRemark(params.editRemark);
+    if (params.editCategoryId) {
+      setSelectedCategory(params.editCategoryId);
+      setSelectedCategoryName(params.editCategoryName || "Unknown Category");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
