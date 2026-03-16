@@ -1,5 +1,8 @@
+import { useAuth } from "@/context/auth-context";
 import { Goal } from "@/interface/goal";
-import { Edit3, MoreVertical, Target, Trash2 } from "@/lib/icons";
+import { Edit3, MoreVertical, Target, Trash2, UserPlus } from "@/lib/icons";
+import { formatUpdateDate } from "@/utils";
+import { isOwner } from "@/utils/is-owner";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
@@ -8,12 +11,17 @@ import Popover from "react-native-popover-view";
 interface GoalCardProps {
   goal: Goal;
   onEdit?: (goal: Goal) => void;
+  onAddMember?: (goal: Goal) => void;
   onDelete?: (goalId: string, goalName: string) => void;
 }
 
-export const GoalCard = ({ goal, onEdit, onDelete }: GoalCardProps) => {
+export const GoalCard = ({ goal, onEdit, onAddMember, onDelete }: GoalCardProps) => {
   const router = useRouter();
+  const { authState } = useAuth();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
+  const isCurrentUserOwner = isOwner(authState.user?.id, goal.created_by);
+
+  console.log("goal", goal)
 
   const progress = Math.min(
     Math.max((goal.balance / goal.target_amount) * 100, 0),
@@ -30,7 +38,7 @@ export const GoalCard = ({ goal, onEdit, onDelete }: GoalCardProps) => {
     }
   };
 
-  const showMenu = !!(onEdit || onDelete);
+  const showMenu = !!(onEdit || onAddMember || onDelete);
 
   return (
     <TouchableOpacity
@@ -56,10 +64,10 @@ export const GoalCard = ({ goal, onEdit, onDelete }: GoalCardProps) => {
               <Text className="text-sm text-muted-foreground mt-0.5">
                 {goal.total_transactions} {goal.total_transactions === 1 ? 'entry' : 'entries'}
               </Text>
-              {/* <Text className="text-sm text-muted-foreground mt-0.5">•</Text>
+              <Text className="text-sm text-muted-foreground mt-0.5">•</Text>
               <Text className="text-sm text-muted-foreground mt-0.5">
                 {formatUpdateDate(goal.updated_at)}
-              </Text> */}
+              </Text>
             </View>
           </View>
         </View>
@@ -92,7 +100,7 @@ export const GoalCard = ({ goal, onEdit, onDelete }: GoalCardProps) => {
                 backgroundColor: "#ffffff",
                 paddingVertical: 12,
                 paddingHorizontal: 16,
-                width: 200,
+                width: 220,
                 elevation: 4,
                 shadowColor: "#000",
                 shadowOpacity: 0.1,
@@ -108,15 +116,30 @@ export const GoalCard = ({ goal, onEdit, onDelete }: GoalCardProps) => {
                   <TouchableOpacity
                     onPress={() => handleAction(() => onEdit(goal))}
                     className="flex-row items-center"
+                    disabled={!isCurrentUserOwner}
+                    style={{ opacity: isCurrentUserOwner ? 1 : 0.4 }}
                   >
                     <Edit3 size={20} className="text-black" />
                     <Text className="ml-4 text-[16px] text-black">Edit</Text>
+                  </TouchableOpacity>
+                )}
+                {onAddMember && (
+                  <TouchableOpacity
+                    onPress={() => handleAction(() => onAddMember(goal))}
+                    className="flex-row items-center"
+                    disabled={!isCurrentUserOwner}
+                    style={{ opacity: isCurrentUserOwner ? 1 : 0.4 }}
+                  >
+                    <UserPlus size={20} className="text-black" />
+                    <Text className="ml-4 text-[16px] text-black">Add Members</Text>
                   </TouchableOpacity>
                 )}
                 {onDelete && (
                   <TouchableOpacity
                     onPress={() => handleAction(() => onDelete(goal.id, goal.name))}
                     className="flex-row items-center mt-1"
+                    disabled={!isCurrentUserOwner}
+                    style={{ opacity: isCurrentUserOwner ? 1 : 0.4 }}
                   >
                     <Trash2 size={20} className="text-red-500" />
                     <Text className="ml-4 text-[16px] text-red-500">Delete Goal</Text>

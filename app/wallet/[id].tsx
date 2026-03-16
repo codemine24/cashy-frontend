@@ -111,6 +111,8 @@ export default function BookDetailScreen() {
         editAmount: selectedTransaction.amount?.toString(),
         editRemark: selectedTransaction.remark || "",
         editType: selectedTransaction.type,
+        editCategoryId: selectedTransaction.category_id || "",
+        editCategoryName: selectedTransaction.category || "",
       },
     });
     setSelectedTransaction(null);

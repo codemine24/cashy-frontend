@@ -2,7 +2,9 @@ import { useGoal } from "@/api/goal";
 import { useDeleteGoalTransaction } from "@/api/goal-transaction";
 import { ScreenContainer } from "@/components/screen-container";
 import { GoalDetailSkeleton } from "@/components/skeletons/goal-detail-skeleton";
-import { Edit3, Trash2, X } from "@/lib/icons";
+import { useAuth } from "@/context/auth-context";
+import { Edit3, Trash2, UserPlus, Users, X } from "@/lib/icons";
+import { isOwner } from "@/utils/is-owner";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -21,6 +23,10 @@ export default function GoalDetailScreen() {
   const { data: goal, isLoading } = useGoal(id!);
   const deleteEntryMutation = useDeleteGoalTransaction();
   const router = useRouter();
+  const { authState } = useAuth();
+
+  const isCurrentUserOwner = isOwner(authState.user?.id, goal?.data?.created_by);
+  const isViewer = goal?.data?.others_member?.find((m: any) => m.id === authState.user?.id)?.role === "VIEWER";
 
   if (isLoading) {
     return <GoalDetailSkeleton />;
@@ -114,6 +120,8 @@ export default function GoalDetailScreen() {
                 onPress={handleEditEntry}
                 className="p-2"
                 hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                disabled={isViewer}
+                style={{ opacity: isViewer ? 0.4 : 1 }}
               >
                 <Edit3 size={20} className="text-foreground" />
               </TouchableOpacity>
@@ -121,11 +129,26 @@ export default function GoalDetailScreen() {
                 onPress={() => handleDeleteEntry(selectedEntry.id)}
                 className="p-2"
                 hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                disabled={isViewer}
+                style={{ opacity: isViewer ? 0.4 : 1 }}
               >
                 <Trash2 size={20} className="text-destructive" />
               </TouchableOpacity>
             </View>
-          ) : undefined,
+          ) : () => (
+            <TouchableOpacity
+              onPress={() =>
+                router.push({
+                  pathname: "/goal/members",
+                  params: { goalId: id, goalName: goal.data.name },
+                })
+              }
+              style={{ marginRight: 4, padding: 6, opacity: isCurrentUserOwner ? 1 : 0.4 }}
+              disabled={!isCurrentUserOwner}
+            >
+              <UserPlus size={22} className="text-foreground" />
+            </TouchableOpacity>
+          ),
         }}
       />
 
@@ -195,6 +218,107 @@ export default function GoalDetailScreen() {
               </View>
             </View>
           </View>
+
+          {/* ── Members Section ── */}
+          {goal?.data?.others_member?.length > 1 && isCurrentUserOwner && (
+            <View className="bg-card rounded-2xl mb-6 border border-border shadow-sm">
+              {/* Header */}
+              <View className="px-4 py-2 flex-row items-center justify-between border-b border-border">
+                <View className="flex-row items-center gap-2">
+                  <Users size={16} className="text-muted-foreground" />
+                  <Text className="text-foreground font-bold text-[14px] ml-2">
+                    Members
+                  </Text>
+                </View>
+                {goal.data.others_member.length > 2 && (
+                  <TouchableOpacity
+                    onPress={() =>
+                      router.push({
+                        pathname: "/goal/members",
+                        params: { goalId: id, goalName: goal.data.name },
+                      })
+                    }
+                  >
+                    <Text className="text-primary text-[11px] font-semibold">
+                      See All
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+
+              {/* Member rows */}
+              {goal.data.others_member
+                .slice(0, 2)
+                .map((member: any, index: number) => {
+                  const name = member.name || "No name";
+                  const email = member.email;
+                  const role: string = member.role || "";
+                  const initial = name.charAt(0).toUpperCase();
+                  return (
+                    <View
+                      key={member.id || index}
+                      className={`px-4 py-2 flex-row items-center justify-between ${index !== Math.min(goal.data.others_member.length, 2) - 1
+                        ? "border-b border-border"
+                        : ""
+                        }`}
+                    >
+                      <View className="flex-row items-center flex-1">
+                        <View className="w-9 h-9 rounded-xl bg-primary/10 items-center justify-center mr-3">
+                          <Text className="text-primary font-bold text-[15px]">
+                            {initial}
+                          </Text>
+                        </View>
+                        <View className="flex-1 mr-3">
+                          <Text
+                            className="text-foreground font-semibold text-[13px]"
+                            numberOfLines={1}
+                          >
+                            {name}
+                          </Text>
+                          {!!email && (
+                            <Text
+                              className="text-muted-foreground text-[11px] mt-0.5"
+                              numberOfLines={1}
+                            >
+                              {email}
+                            </Text>
+                          )}
+                        </View>
+                      </View>
+                      <View className={`px-2 py-1 rounded-lg bg-blue-500/10`}>
+                        <Text className={`text-[11px] font-bold text-muted-foreground lowercase`}>
+                          {role}
+                        </Text>
+                      </View>
+                    </View>
+                  );
+                })}
+
+              {goal.data.others_member.length > 2 && (
+                <TouchableOpacity
+                  onPress={() =>
+                    router.push({
+                      pathname: "/goal/members",
+                      params: { goalId: id, goalName: goal.data.name },
+                    })
+                  }
+                  className="px-4 py-1 border-t border-border items-center"
+                >
+                  <Text className="text-primary text-[11px] font-semibold">
+                    +{goal.data.others_member.length - 2} more members
+                  </Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          )}
+
+          {goal?.data?.others_member?.length > 1 && !isCurrentUserOwner && (
+            <View className="bg-card rounded-xl mb-6 border border-border shadow-sm py-2">
+              <Text className="text-muted-foreground text-[11px] mt-0.5 text-center">
+                You&apos;ve been added by {goal.data.others_member.find((m: any) => m.role === "OWNER")?.email || "the owner"} as {goal.data.others_member.find((m: any) => m.id === authState.user?.id)?.role}
+              </Text>
+            </View>
+          )}
 
           {/* ── Entries list ── */}
           <Text className="text-xl font-bold text-foreground mb-4">
@@ -266,6 +390,8 @@ export default function GoalDetailScreen() {
             });
           }}
           className="flex-1 rounded-2xl bg-success py-3.5 items-center justify-center"
+          disabled={isViewer}
+          style={{ opacity: isViewer ? 0.4 : 1 }}
         >
           <Text className="text-white font-bold text-sm tracking-widest">
             + ADD
@@ -280,6 +406,8 @@ export default function GoalDetailScreen() {
             });
           }}
           className="flex-1 rounded-2xl bg-destructive py-3.5 items-center justify-center"
+          disabled={isViewer}
+          style={{ opacity: isViewer ? 0.4 : 1 }}
         >
           <Text className="text-white font-bold text-sm tracking-widest">
             - WITHDRAW
