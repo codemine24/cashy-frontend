@@ -93,3 +93,45 @@ export const useDeleteGoal = () => {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: keys.all }),
   });
 };
+
+export const useShareGoal = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      goal_id,
+      email,
+      role,
+    }: {
+      goal_id: string;
+      email: string;
+      role: string;
+    }) => {
+      try {
+        const response = await apiClient.post(`${GOAL_API_URL}/share`, {
+          goal_id,
+          email,
+          role,
+        });
+        return response.data;
+      } catch (error) {
+        throwApiError(error);
+      }
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: keys.all }),
+  });
+};
+
+export const useRemoveMember = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ goal_id, user_id }: { goal_id: string; user_id: string }) => {
+      try {
+        const response = await apiClient.delete(`${GOAL_API_URL}/remove-member`, { data: { goal_id, user_id } });
+        return response.data;
+      } catch (error) {
+        throwApiError(error);
+      }
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: keys.all }),
+  });
+};

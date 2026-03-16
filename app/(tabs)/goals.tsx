@@ -3,6 +3,7 @@ import { CreateGoalModal } from "@/components/goal/create-goal-modal";
 import { GoalCard } from "@/components/goal/goal-card";
 import { ScreenContainer } from "@/components/screen-container";
 import { GoalsSkeleton } from "@/components/skeletons/goals-skeleton";
+import { useRouter } from "expo-router";
 import { Plus } from "@/lib/icons";
 import { useState } from "react";
 import {
@@ -21,6 +22,7 @@ export default function GoalsScreen() {
   const { data: goalsData, isLoading } = useGoals();
   const deleteGoalMutation = useDeleteGoal();
 
+  const router = useRouter();
   const handleDeleteGoal = (goalId: string, goalName: string) => {
     Alert.alert("Delete Goal", `Delete "${goalName}"? This cannot be undone.`, [
       { text: "Cancel", style: "cancel" },
@@ -104,6 +106,12 @@ export default function GoalsScreen() {
                       target_amount: g.target_amount,
                     });
                     setShowCreateModal(true);
+                  }}
+                  onAddMember={(g) => {
+                    router.push({
+                      pathname: "/goal/members",
+                      params: { goalId: g.id, goalName: g.name },
+                    } as any);
                   }}
                   onDelete={handleDeleteGoal}
                 />
