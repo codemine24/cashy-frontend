@@ -1,15 +1,13 @@
 import { useAuth } from "@/context/auth-context";
 import { BellIcon } from "@/icons/bell-icon";
+import { makeImageUrl } from "@/utils/helper";
 import { useRouter } from "expo-router";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Image, Text, TouchableOpacity, View } from "react-native";
 
 export function TabHeader() {
   const { authState } = useAuth();
   const router = useRouter();
   const user = authState.user;
-
-  console.log('user................', user);
-
 
   // Get the first letter of the user's name (or email) for the avatar
   const initial = (user?.name?.[0] || user?.email?.[0] || "U").toUpperCase();
@@ -32,24 +30,32 @@ export function TabHeader() {
           className="flex-row items-center gap-3"
         >
           {/* Avatar circle */}
-          <View
-            className="items-center justify-center rounded-full"
-            style={{
-              width: 42,
-              height: 42,
-              backgroundColor: "#E8E4F0",
-            }}
-          >
-            <Text
+          {user?.avatar ? (
+            <Image
+              source={{ uri: makeImageUrl(user.avatar, "user") }}
+              className="rounded-full"
+              style={{ width: 42, height: 42 }}
+            />
+          ) : (
+            <View
+              className="items-center justify-center rounded-full"
               style={{
-                fontSize: 18,
-                fontWeight: "700",
-                color: "#4A4458",
+                width: 42,
+                height: 42,
+                backgroundColor: "#E8E4F0",
               }}
             >
-              {initial}
-            </Text>
-          </View>
+              <Text
+                style={{
+                  fontSize: 18,
+                  fontWeight: "700",
+                  color: "#4A4458",
+                }}
+              >
+                {initial}
+              </Text>
+            </View>
+          )}
 
           {/* Name */}
           <View>

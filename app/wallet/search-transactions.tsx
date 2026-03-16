@@ -112,7 +112,7 @@ export default function SearchTransactionsScreen() {
                 <Search size={18} className="text-black" />
                 <TextInput
                   ref={inputRef}
-                  defaultValue={searchQuery}
+                  value={searchQuery}
                   onChangeText={setSearchQuery}
                   placeholder="Search by remark and amount..."
                   placeholderTextColor="#9CA3AF"
