@@ -8,5 +8,7 @@ export interface Goal {
   total_transactions: number;
   created_at: string;
   updated_at: string;
+  created_by: string;
+  goal_members: { id: string, name: string, email: string, avatar: string; role: "ADMIN" | "EDITOR" | "VIEWER" }[];
   transactions: Transaction[];
 }

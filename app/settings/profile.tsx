@@ -1,6 +1,8 @@
 import { useUpdateProfile } from "@/api/user";
 import { ScreenContainer } from "@/components/screen-container";
 import { useAuth } from "@/context/auth-context";
+import { setUserInfo } from "@/utils/auth";
+import { makeImageUrl } from "@/utils/helper";
 import type { ImagePickerAsset } from "expo-image-picker";
 import * as ImagePicker from "expo-image-picker";
 import { Stack } from "expo-router";
@@ -25,9 +27,7 @@ export default function ProfileScreen() {
     user?.contact_number ?? "",
   );
   const email = user?.email ?? "";
-  const [avatarUri, setAvatarUri] = useState<string>(
-    `https://uxrythodzgdirjlbmkxx.supabase.co/storage/v1/object/public/user/${user?.avatar}`,
-  );
+  const [avatarUri, setAvatarUri] = useState<string>(makeImageUrl(user?.avatar, "user"));
   const [pickedAsset, setPickedAsset] = useState<ImagePickerAsset | null>(null);
   const { mutate: updateProfile, isPending: isSaving } = useUpdateProfile();
 
@@ -88,6 +88,12 @@ export default function ProfileScreen() {
             avatar: data.data.avatar,
           },
         });
+        setUserInfo({
+          ...authState.user,
+          name: data.data.name,
+          contact_number: data.data.contact_number,
+          avatar: data.data.avatar,
+        })
         Alert.alert("Saved", "Your profile has been updated.");
       },
       onError: (error) => {

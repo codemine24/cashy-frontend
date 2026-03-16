@@ -28,6 +28,7 @@ export const RootNavigator = () => {
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="notifications" options={{ headerShown: true }} />
             <Stack.Screen name="goal/[id]" options={{ headerShown: true }} />
+            <Stack.Screen name="goal/members" options={{ headerShown: true }} />
             <Stack.Screen name="goal/add-entry" options={{ headerShown: true }} />
             <Stack.Screen name="wallet/[id]" options={{ headerShown: true }} />
             <Stack.Screen name="wallet/members" options={{ headerShown: true }} />
