@@ -12,6 +12,7 @@ import {
   ChevronRight,
   Clock,
   Copy,
+  Download,
   Edit3,
   Globe,
   HandCoins,
@@ -24,6 +25,8 @@ import {
   Plus,
   Search,
   Settings,
+  Share,
+  Share2,
   ShieldCheck,
   Tag,
   Target,
@@ -70,11 +73,14 @@ interopIcon(BookIcon);
 interopIcon(MoreVertical);
 interopIcon(Edit3);
 interopIcon(Trash2);
+interopIcon(Download);
 interopIcon(Target)
 interopIcon(UserPlus);
 interopIcon(Info);
 interopIcon(LogOut);
 interopIcon(Settings);
+interopIcon(Share);
+interopIcon(Share2);
 interopIcon(User);
 interopIcon(Globe);
 interopIcon(Bell);
@@ -99,12 +105,12 @@ export {
   Calendar, Camera, Check,
   ChevronDown,
   ChevronRight, Clock,
-  Copy, Edit3,
+  Copy, Download, Edit3,
   Globe, HandCoins,
   Info,
   LogOut,
   Mail, MessageSquare, MoreVertical, Paperclip, Plus,
-  Search,
+  Search, Share, Share2,
   Settings,
   ShieldCheck, Tag, Target, Trash2, User,
   UserPlus, Users, Wallet, X
