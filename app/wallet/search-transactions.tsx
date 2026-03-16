@@ -112,7 +112,7 @@ export default function SearchTransactionsScreen() {
                 <Search size={18} className="text-black" />
                 <TextInput
                   ref={inputRef}
-                  value={searchQuery}
+                  defaultValue={searchQuery}
                   onChangeText={setSearchQuery}
                   placeholder="Search by remark and amount..."
                   placeholderTextColor="#9CA3AF"
@@ -122,7 +122,10 @@ export default function SearchTransactionsScreen() {
                 />
                 {searchQuery.length > 0 && (
                   <TouchableOpacity
-                    onPress={() => setSearchQuery("")}
+                    onPress={() => {
+                      setSearchQuery("");
+                      inputRef.current?.clear();
+                    }}
                     className="ml-2 p-1"
                   >
                     <X size={16} color="#9CA3AF" />
