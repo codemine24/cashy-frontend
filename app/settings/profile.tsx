@@ -146,8 +146,8 @@ export default function ProfileScreen() {
           <Text className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-3 px-1">
             Account Info
           </Text>
-          <View className="bg-surface rounded-2xl border border-border px-4 mb-6">
-            <View className="py-4 border-b border-border">
+          <View className="bg-card rounded-2xl border border-border px-4 mb-6">
+            <View className="pt-4 border-b border-border">
               <Text className="text-xs text-muted-foreground mb-1">
                 Full Name
               </Text>
@@ -155,6 +155,7 @@ export default function ProfileScreen() {
                 value={name}
                 onChangeText={setName}
                 placeholder="Your name"
+                placeholderTextColor="#9CA3AF"
                 // TODO: placeholderTextColor={colors.muted}
                 className="text-base text-foreground"
               />
@@ -164,11 +165,11 @@ export default function ProfileScreen() {
             <View className="py-4 border-b border-border">
               <View className="flex-row items-center gap-2 mb-1">
                 <Text className="text-xs text-muted-foreground">Email</Text>
-                <View className="bg-background border border-border rounded-full px-2 py-0.5">
-                  <Text className="text-xs text-muted-foreground">locked</Text>
+                <View className="bg-primary border border-border rounded-full px-2 py-0.5">
+                  <Text className="text-xs text-white">locked</Text>
                 </View>
               </View>
-              <Text className="text-base text-muted-foreground">{email}</Text>
+              <Text className="text-base text-foreground">{email}</Text>
             </View>
 
             {/* ── Contact Number (editable) ── */}
@@ -182,6 +183,7 @@ export default function ProfileScreen() {
                 placeholder="Your contact number"
                 // TODO: placeholderTextColor={colors.muted}
                 keyboardType="phone-pad"
+                placeholderTextColor="#9CA3AF"
                 className="text-base text-foreground"
               />
             </View>
