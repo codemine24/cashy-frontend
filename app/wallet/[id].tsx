@@ -243,7 +243,7 @@ export default function BookDetailScreen() {
           },
         } as any)}
         activeOpacity={0.7}
-        className="flex-row items-center gap-5 bg-muted/50 px-4 py-3.5 mb-6 border border-border"
+        className="flex-row items-center gap-5 bg-muted/50 px-4 py-3.5 border border-border"
       >
         <SearchIcon className="text-muted-foreground" />
         <Text className="text-muted-foreground text-base">
@@ -260,7 +260,7 @@ export default function BookDetailScreen() {
         }
       >
         {/* Header Card */}
-        <View className="bg-card mt-4 rounded-2xl mb-6 shadow-sm border border-border">
+        <View className="bg-card mt-8 rounded-2xl mb-6 shadow-sm border border-border">
           <View className="px-4 py-4 flex-row justify-between items-center border-b border-border">
             <Text className="text-foreground font-bold text-[15px]">
               Net Balance
