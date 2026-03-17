@@ -41,6 +41,7 @@ export const RootNavigator = () => {
             <Stack.Screen name="loan/[id]" options={{ headerShown: true }} />
             <Stack.Screen name="loan/create" options={{ headerShown: true }} />
             <Stack.Screen name="loan/edit" options={{ headerShown: true }} />
+            <Stack.Screen name="settings" options={{ headerShown: true }} />
             <Stack.Screen name="settings/app-settings" options={{ headerShown: true }} />
             <Stack.Screen name="settings/subscription" options={{ headerShown: true }} />
             <Stack.Screen name="settings/profile" options={{ headerShown: true }} />

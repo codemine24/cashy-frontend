@@ -2,12 +2,10 @@ import { HapticTab } from "@/components/haptic-tab";
 import { TabHeader } from "@/components/tab-header";
 import { useTheme } from "@/context/theme-context";
 import { GoalIcon } from "@/icons/goal-icon";
-import { SettingsIcon } from "@/icons/settings-icon";
 import { StatisticsIcon } from "@/icons/statistics-icon";
 import { WalletIcon } from "@/icons/wallet-icon";
-import { ArrowLeft } from "@/lib/icons";
-import { Tabs, usePathname, useRouter } from "expo-router";
-import { Platform, TouchableOpacity, View } from "react-native";
+import { Tabs, usePathname } from "expo-router";
+import { Platform, View } from "react-native";
 import {
   SafeAreaView,
   useSafeAreaInsets,
@@ -17,7 +15,6 @@ export default function TabLayout() {
   const { isDark } = useTheme();
   const insets = useSafeAreaInsets();
   const pathname = usePathname();
-  const router = useRouter();
   const bottomPadding = Platform.OS === "web" ? 12 : Math.max(insets.bottom, 8);
   const tabBarHeight = 56 + bottomPadding;
 
@@ -88,31 +85,6 @@ export default function TabLayout() {
             title: "Statistics",
             tabBarIcon: ({ color }) => (
               <StatisticsIcon color={color} size={30} />
-            ),
-          }}
-        />
-
-        {/* Tab 4: Settings */}
-        <Tabs.Screen
-          name="settings"
-          options={{
-            title: "More",
-            headerShown: true,
-            headerStyle: { backgroundColor: isDark ? "#0f172a" : "#f8fafc" },
-            headerTintColor: isDark ? "#f8fafc" : "#111827",
-            headerTitleStyle: { fontSize: 17, fontWeight: "600" },
-            headerShadowVisible: true,
-            headerLeft: () => (
-              <TouchableOpacity
-                onPress={() => router.back()}
-                activeOpacity={0.7}
-                className="ml-4 mr-6"
-              >
-                <ArrowLeft size={24} className={isDark ? "text-slate-50" : "text-gray-900"} />
-              </TouchableOpacity>
-            ),
-            tabBarIcon: ({ color }) => (
-              <SettingsIcon color={color} className="size-8" />
             ),
           }}
         />
