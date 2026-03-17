@@ -56,7 +56,7 @@ function PremiumIcon() {
         }),
       ])
     ).start();
-  }, []);
+  }, [bounceAnim, pulseAnim, spinAnim]);
 
   const spin = spinAnim.interpolate({
     inputRange: [0, 1],
