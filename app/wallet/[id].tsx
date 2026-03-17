@@ -2,8 +2,17 @@ import { useBook } from "@/api/wallet";
 import { ScreenContainer } from "@/components/screen-container";
 
 import { useDeleteTransaction } from "@/api/transaction";
+import { useGetCategories } from "@/api/category";
 import { BookDetailSkeleton } from "@/components/skeletons/book-detail-skeleton";
 import { Button } from "@/components/ui/button";
+import {
+  TransactionFilters,
+  DEFAULT_FILTERS,
+  buildFilterParams,
+  type TransactionFilterValues,
+  type MemberOption,
+  type CategoryOption,
+} from "@/components/wallet/transaction-filters";
 import { useAuth } from "@/context/auth-context";
 import { Copy, Edit3, Trash2, UserPlus, Users, X } from "@/lib/icons";
 import { isOwner, isWalletViewer } from "@/utils/is-owner";
@@ -24,6 +33,33 @@ export default function BookDetailScreen() {
 
   const [refreshing, setRefreshing] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<any>(null);
+  const [filters, setFilters] = useState<TransactionFilterValues>(DEFAULT_FILTERS);
+
+  // Fetch categories for the filter
+  const { data: categoriesData } = useGetCategories();
+
+  // Build members list from book data for the filter
+  const filterMembers: MemberOption[] = useMemo(() => {
+    if (!book?.data?.others_member) return [];
+    return book.data.others_member.map((m: any) => ({
+      id: m.id,
+      name: m.name || "",
+      email: m.email || "",
+    }));
+  }, [book?.data?.others_member]);
+
+  // Build categories list for the filter
+  const filterCategories: CategoryOption[] = useMemo(() => {
+    if (!categoriesData?.data) return [];
+    return categoriesData.data.map((c: any) => ({
+      id: c.id,
+      title: c.title || "",
+    }));
+  }, [categoriesData?.data]);
+
+  // Filter params ready for API integration
+  // TODO: pass these to your useTransactions / useBook query when backend supports it
+  const _filterParams = useMemo(() => buildFilterParams(filters), [filters]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -235,6 +271,7 @@ export default function BookDetailScreen() {
         }}
       />
 
+      {/* Search Transactions */}
       <TouchableOpacity
         onPress={() => router.push({
           pathname: "/wallet/search-transactions",
@@ -250,6 +287,15 @@ export default function BookDetailScreen() {
           Search transactions by remark and amount
         </Text>
       </TouchableOpacity>
+
+      {/* Filter Chips */}
+      <TransactionFilters
+        filters={filters}
+        onApplyFilters={setFilters}
+        members={filterMembers}
+        categories={filterCategories}
+      />
+
       {/* <ScreenContainer className="px-4"> */}
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -260,7 +306,7 @@ export default function BookDetailScreen() {
         }
       >
         {/* Header Card */}
-        <View className="bg-card mt-8 rounded-2xl mb-6 shadow-sm border border-border">
+        <View className="bg-card mt-2 rounded-2xl mb-6 shadow-sm border border-border">
           <View className="px-4 py-4 flex-row justify-between items-center border-b border-border">
             <Text className="text-foreground font-bold text-[15px]">
               Net Balance
