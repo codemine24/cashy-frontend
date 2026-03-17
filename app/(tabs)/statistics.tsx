@@ -3,6 +3,7 @@ import { useBooks } from "@/api/wallet";
 import { ScreenContainer } from "@/components/screen-container";
 import { H1, H3, P } from "@/components/ui/typography";
 import { cn } from "@/utils/cn";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { Filter } from "lucide-react-native";
 import { useState } from "react";
 import {
@@ -28,8 +29,11 @@ const { width: SCREEN_WIDTH } = Dimensions.get("window");
 type Period = "week" | "month" | "year";
 
 export default function StatisticsPage() {
+  const router = useRouter();
+  const { book_id } = useLocalSearchParams<{ book_id?: string }>();
   const [period, setPeriod] = useState<Period>("month");
-  const [activeBookId, setActiveBookId] = useState<string | "all">("all");
+
+  const activeBookId = book_id || "all";
 
   const { data: booksData } = useBooks();
   const { data: walletStatsResponse, isLoading: isStatsLoading } =
@@ -68,7 +72,7 @@ export default function StatisticsPage() {
             contentContainerStyle={{ paddingHorizontal: 24, gap: 12 }}
           >
             <Pressable
-              onPress={() => setActiveBookId("all")}
+              onPress={() => router.setParams({ book_id: "all" })}
               className={cn(
                 "px-5 py-2.5 rounded-full border",
                 activeBookId === "all"
@@ -90,7 +94,7 @@ export default function StatisticsPage() {
             {books.map((book) => (
               <Pressable
                 key={book.id}
-                onPress={() => setActiveBookId(book.id)}
+                onPress={() => router.setParams({ book_id: book.id })}
                 className={cn(
                   "px-5 py-2.5 rounded-full border",
                   activeBookId === book.id
