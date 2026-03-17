@@ -14,10 +14,12 @@ import {
   Copy,
   Download,
   Edit3,
+  FileText,
   Globe,
   HandCoins,
   Info,
   LogOut,
+  LayoutList,
   Mail,
   MessageSquare,
   MoreVertical,
@@ -72,6 +74,8 @@ interopIcon(Search);
 interopIcon(BookIcon);
 interopIcon(MoreVertical);
 interopIcon(Edit3);
+interopIcon(FileText);
+interopIcon(LayoutList);
 interopIcon(Trash2);
 interopIcon(Download);
 interopIcon(Target)
@@ -106,10 +110,10 @@ export {
   ChevronDown,
   ChevronRight, Clock,
   Copy, Download, Edit3,
-  Globe, HandCoins,
+  FileText, Globe, HandCoins,
   Info,
   LogOut,
-  Mail, MessageSquare, MoreVertical, Paperclip, Plus,
+  LayoutList, Mail, MessageSquare, MoreVertical, Paperclip, Plus,
   Search, Share, Share2,
   Settings,
   ShieldCheck, Tag, Target, Trash2, User,
