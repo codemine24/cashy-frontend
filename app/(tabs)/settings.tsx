@@ -89,7 +89,7 @@ export default function SettingsScreen() {
           paddingBottom: 40,
         }}
       >
-        {/* ── Header ── */}
+
         <View className="mb-6">
           <Text className="text-3xl font-bold text-foreground">Settings</Text>
           <Text className="text-sm text-muted-foreground mt-1">

@@ -21,6 +21,7 @@ import {
   LogOut,
   LayoutList,
   Mail,
+  Menu,
   MessageSquare,
   MoreVertical,
   Paperclip,
@@ -98,6 +99,7 @@ interopIcon(HandCoins);
 interopIcon(MessageSquare);
 interopIcon(Tag);
 interopIcon(Wallet)
+interopIcon(Menu)
 
 // Re-export so the rest of the app imports from here
 export {
@@ -117,6 +119,6 @@ export {
   Search, Share, Share2,
   Settings,
   ShieldCheck, Tag, Target, Trash2, User,
-  UserPlus, Users, Wallet, X
+  UserPlus, Users, Wallet, X, Menu
 };
 
