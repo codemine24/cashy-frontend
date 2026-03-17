@@ -21,11 +21,16 @@ import { useCallback, useMemo, useState } from "react";
 import { Alert, RefreshControl, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
 import { SearchIcon } from "@/icons/search-icon";
+import { ReportModal, ReportType } from "@/components/wallet/report-modal";
 
 export default function BookDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { data: book, isLoading, refetch } = useBook(id!);
+
+  const [reportModalVisible, setReportModalVisible] = useState(false);
+  const [selectedReport, setSelectedReport] = useState<ReportType>("all-entries");
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
   const { authState } = useAuth();
 
@@ -105,6 +110,13 @@ export default function BookDetailScreen() {
 
     return groups;
   }, [book?.data?.transactions, book?.data?.balance]);
+
+  const handleGeneratePdf = async () => {
+    setIsGeneratingPdf(true);
+    // TODO: call your PDF generation logic with `selectedReport` and `id`
+    setIsGeneratingPdf(false);
+    setReportModalVisible(false);
+  };
 
   if (isLoading) {
     return <BookDetailSkeleton />;
@@ -280,7 +292,7 @@ export default function BookDetailScreen() {
           },
         } as any)}
         activeOpacity={0.7}
-        className="flex-row items-center gap-5 bg-muted/50 px-4 py-3.5 border border-border"
+        className="flex-row items-center gap-5 bg-card px-4 py-3.5 border border-border"
       >
         <SearchIcon className="text-muted-foreground" />
         <Text className="text-muted-foreground text-base">
@@ -332,6 +344,12 @@ export default function BookDetailScreen() {
                 {book.data.out}
               </Text>
             </View>
+          </View>
+
+          <View className="flex-row justify-between items-center border-t border-border">
+            <TouchableOpacity onPress={() => setReportModalVisible(true)} className="flex-1 items-center py-3">
+              <Text className="text-primary font-semibold text-xl">View Reports</Text>
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -580,6 +598,15 @@ export default function BookDetailScreen() {
           </Text>
         </Button>
       </View>
+
+      <ReportModal
+        visible={reportModalVisible}
+        selectedReport={selectedReport}
+        onSelectReport={setSelectedReport}
+        onGeneratePdf={handleGeneratePdf}
+        onClose={() => setReportModalVisible(false)}
+        isGenerating={isGeneratingPdf}
+      />
     </>
   );
 }
