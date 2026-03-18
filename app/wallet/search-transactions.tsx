@@ -122,7 +122,10 @@ export default function SearchTransactionsScreen() {
                 />
                 {searchQuery.length > 0 && (
                   <TouchableOpacity
-                    onPress={() => setSearchQuery("")}
+                    onPress={() => {
+                      setSearchQuery("");
+                      inputRef.current?.clear();
+                    }}
                     className="ml-2 p-1"
                   >
                     <X size={16} color="#9CA3AF" />

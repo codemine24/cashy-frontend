@@ -4,10 +4,13 @@ import {
   Calendar,
   Clock,
   Copy,
+  Download,
   Edit3,
   MessageSquare,
+  Share2,
   Tag,
   Trash2,
+  X,
 } from "@/lib/icons";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
@@ -18,16 +21,19 @@ import {
   ScrollView,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 
 import { TransactionDetailSkeleton } from "@/components/skeletons/transaction-detail-skeleton";
+import { AppModal } from "@/components/app-modal";
 import { useAuth } from "@/context/auth-context";
+import { Paths, File as ExpoFile } from "expo-file-system";
+import * as Sharing from "expo-sharing";
+import * as MediaLibrary from "expo-media-library";
 import Toast from "react-native-toast-message";
+import { makeImageUrl } from "@/utils/helper";
 
 // ── helper: avatar (real image or initials fallback) ─────────────────────────
-const SUPABASE_AVATAR_BASE =
-  "https://uxrythodzgdirjlbmkxx.supabase.co/storage/v1/object/public/user/";
 
 function Avatar({
   name,
@@ -38,7 +44,8 @@ function Avatar({
   avatarFile?: string;
   size?: number;
 }) {
-  const uri = avatarFile ? `${SUPABASE_AVATAR_BASE}${avatarFile}` : undefined;
+  const uri = avatarFile ? makeImageUrl(avatarFile, 'user') : undefined;
+
   const initials = (name || "?")
     .split(" ")
     .map((w) => w[0])
@@ -104,8 +111,10 @@ export default function TransactionDetailScreen() {
   const { authState } = useAuth();
   const { data: txData, isLoading, refetch } = useTransaction(params.transactionId!);
   const deleteTransaction = useDeleteTransaction();
-
   const [refreshing, setRefreshing] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [showModal, setShowModal] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -208,6 +217,84 @@ export default function TransactionDetailScreen() {
         },
       ],
     );
+  };
+
+  const handleShare = async () => {
+    if (!selectedImage) return;
+
+    try {
+      const downloadRes = await ExpoFile.downloadFileAsync(
+        selectedImage,
+        Paths.cache,
+        { idempotent: true }
+      );
+
+      if (!downloadRes) throw new Error("Download failed");
+
+      const available = await Sharing.isAvailableAsync();
+
+      if (available) {
+        await Sharing.shareAsync(downloadRes.uri);
+      } else {
+        Toast.show({
+          type: "error",
+          text1: "Sharing not available",
+        });
+      }
+    } catch (error) {
+      console.log("Share error:", error);
+
+      Toast.show({
+        type: "error",
+        text1: "Failed to share attachment",
+      });
+    }
+  };
+
+  const handleDownload = async () => {
+    if (!selectedImage) return;
+
+    try {
+      setIsDownloading(true);
+
+      const permission = await MediaLibrary.requestPermissionsAsync();
+
+      if (!permission.granted) {
+        Toast.show({
+          type: "error",
+          text1: "Permission required",
+          text2: "Allow media access to download files",
+        });
+        return;
+      }
+
+      const downloadRes = await ExpoFile.downloadFileAsync(
+        selectedImage,
+        Paths.cache,
+        { idempotent: true }
+      );
+
+      if (!downloadRes) throw new Error("Download failed");
+
+      const asset = await MediaLibrary.createAssetAsync(downloadRes.uri);
+
+      await MediaLibrary.createAlbumAsync("WalletApp", asset, false);
+
+      Toast.show({
+        type: "success",
+        text1: "Download successful",
+        text2: "Saved to gallery",
+      });
+    } catch (error) {
+      console.log("Download error:", error);
+
+      Toast.show({
+        type: "error",
+        text1: "Download failed",
+      });
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   return (
@@ -385,10 +472,106 @@ export default function TransactionDetailScreen() {
                   </View>
                 </>
               )}
+
+              {transaction?.attachment?.length > 0 && (
+                <>
+                  <Divider />
+                  <View className="flex-row items-center px-5 py-3.5 gap-3.5">
+                    <View className="w-5 items-center">
+                      <BookOpen size={18} color="#6b7280" />
+                    </View>
+                    <Text className="flex-1 text-sm text-muted-foreground">Attachment</Text>
+                    <View className="items-end">
+                      <Text className="text-[11px] text-muted-foreground">
+                        {transaction.attachment.length} file(s)
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View className="flex-row items-center px-5 gap-3.5">
+                    {transaction.attachment.map((item: any, index: number) => {
+                      const imageUrl = makeImageUrl(item, 'general');
+                      return (
+                        <TouchableOpacity
+                          key={index}
+                          onPress={() => {
+                            setSelectedImage(imageUrl);
+                            setShowModal(true);
+                          }}
+                        >
+                          <Image
+                            source={{ uri: imageUrl }}
+                            className="size-16 rounded-lg bg-muted"
+                          />
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </View>
+                </>
+              )}
             </View>
           </ScrollView>
         )}
       </View>
+
+      <AppModal
+        visible={showModal}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setShowModal(false)}
+      >
+        <View className="flex-1 bg-black/90 justify-center items-center">
+          {/* Close Area */}
+          <TouchableOpacity
+            activeOpacity={1}
+            onPress={() => setShowModal(false)}
+            className="absolute inset-0"
+          />
+
+          {/* Header */}
+          <View className="absolute top-0 left-0 right-0 p-6 flex-row justify-between items-center z-10">
+            <TouchableOpacity
+              onPress={() => setShowModal(false)}
+              className="w-10 h-10 bg-white/10 rounded-full items-center justify-center"
+            >
+              <X size={24} color="#ffffff" />
+            </TouchableOpacity>
+
+            <View className="flex-row gap-4">
+              <TouchableOpacity
+                onPress={handleShare}
+                className="w-10 h-10 bg-white/10 rounded-full items-center justify-center"
+              >
+                <Share2 size={22} color="#ffffff" />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={handleDownload}
+                disabled={isDownloading}
+                className={`size-10 bg-white/10 rounded-full items-center justify-center ${isDownloading ? "opacity-50" : ""}`}
+              >
+                <Download size={22} color="#ffffff" />
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Image */}
+          {selectedImage && (
+            <Image
+              source={{ uri: selectedImage }}
+              style={{ width: "90%", height: "70%" }}
+              resizeMode="contain"
+            />
+          )}
+
+          {/* Footer/Info */}
+          <View className="absolute bottom-10 left-0 right-0 items-center">
+            <Text className="text-white/60 text-xs tracking-widest uppercase">
+              Attachment Preview
+            </Text>
+          </View>
+        </View>
+      </AppModal>
     </>
   );
 }

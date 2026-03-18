@@ -12,18 +12,24 @@ import {
   ChevronRight,
   Clock,
   Copy,
+  Download,
   Edit3,
+  FileText,
   Globe,
   HandCoins,
   Info,
   LogOut,
+  LayoutList,
   Mail,
+  Menu,
   MessageSquare,
   MoreVertical,
   Paperclip,
   Plus,
   Search,
   Settings,
+  Share,
+  Share2,
   ShieldCheck,
   Tag,
   Target,
@@ -69,12 +75,17 @@ interopIcon(Search);
 interopIcon(BookIcon);
 interopIcon(MoreVertical);
 interopIcon(Edit3);
+interopIcon(FileText);
+interopIcon(LayoutList);
 interopIcon(Trash2);
+interopIcon(Download);
 interopIcon(Target)
 interopIcon(UserPlus);
 interopIcon(Info);
 interopIcon(LogOut);
 interopIcon(Settings);
+interopIcon(Share);
+interopIcon(Share2);
 interopIcon(User);
 interopIcon(Globe);
 interopIcon(Bell);
@@ -88,6 +99,7 @@ interopIcon(HandCoins);
 interopIcon(MessageSquare);
 interopIcon(Tag);
 interopIcon(Wallet)
+interopIcon(Menu)
 
 // Re-export so the rest of the app imports from here
 export {
@@ -99,14 +111,14 @@ export {
   Calendar, Camera, Check,
   ChevronDown,
   ChevronRight, Clock,
-  Copy, Edit3,
-  Globe, HandCoins,
+  Copy, Download, Edit3,
+  FileText, Globe, HandCoins,
   Info,
   LogOut,
-  Mail, MessageSquare, MoreVertical, Paperclip, Plus,
-  Search,
+  LayoutList, Mail, MessageSquare, MoreVertical, Paperclip, Plus,
+  Search, Share, Share2,
   Settings,
   ShieldCheck, Tag, Target, Trash2, User,
-  UserPlus, Users, Wallet, X
+  UserPlus, Users, Wallet, X, Menu
 };
 

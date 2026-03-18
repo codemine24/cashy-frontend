@@ -105,7 +105,7 @@ export const WalletCard = ({
                 <TouchableOpacity
                   onPress={() => handleAction(onRename)}
                   className="flex-row items-center"
-                  disabled={!isOwner}
+                  disabled={!isCurrentUserOwner}
                   style={{ opacity: isCurrentUserOwner ? 1 : 0.4 }}
                 >
                   <Edit3 size={20} className="text-black" />
@@ -119,7 +119,7 @@ export const WalletCard = ({
                 <TouchableOpacity
                   onPress={() => handleAction(onAddMember)}
                   className="flex-row items-center"
-                  disabled={!isOwner}
+                  disabled={!isCurrentUserOwner}
                   style={{ opacity: isCurrentUserOwner ? 1 : 0.4 }}
                 >
                   <UserPlus size={20} className="text-black" />
@@ -133,7 +133,7 @@ export const WalletCard = ({
                 <TouchableOpacity
                   onPress={() => handleAction(onDelete)}
                   className="flex-row items-center mt-1"
-                  disabled={!isOwner}
+                  disabled={!isCurrentUserOwner}
                   style={{ opacity: isCurrentUserOwner ? 1 : 0.4 }}
                 >
                   <Trash2 size={20} className="text-red-500" />

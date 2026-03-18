@@ -1,4 +1,5 @@
 import { useDeleteLoan, useGetAllLoans } from "@/api/loan";
+import { formatCurrency } from "@/utils/index";
 import { LoanCard } from "@/components/loan/loan-card";
 import { ScreenContainer } from "@/components/screen-container";
 import { LoansSkeleton } from "@/components/skeletons/loans-skeleton";
@@ -27,6 +28,8 @@ export default function LoansScreen() {
   const { data, isLoading, error, refetch } = useGetAllLoans({
     type: activeTab,
   });
+
+  console.log("meta", data?.meta);
 
   const loans: Loan[] = data?.data ?? [];
 
@@ -85,6 +88,10 @@ export default function LoansScreen() {
     } as any);
   };
 
+  const meta = data?.meta as any;
+  const summary = meta?.summary;
+  const totalCount = meta?.total || 0;
+
   const renderHeader = () => (
     <>
       {/* Title */}
@@ -96,21 +103,42 @@ export default function LoansScreen() {
       </View>
 
       {/* Tabs */}
-      <View className="flex-row bg-muted rounded-2xl p-1 mb-6">
+      <View className="flex-row bg-muted rounded-2xl p-1 mb-3">
         <TabButton
-          label="Debtor"
+          label="Lent"
           subtitle="Money lent"
           active={activeTab === "GIVEN"}
           onPress={() => setActiveTab("GIVEN")}
         />
 
         <TabButton
-          label="Creditor"
+          label="Borrowed"
           subtitle="Money borrowed"
           active={activeTab === "TAKEN"}
           onPress={() => setActiveTab("TAKEN")}
         />
       </View>
+
+      {/* Summary Section */}
+      {summary && totalCount > 0 && (
+        <View className="flex-row justify-between bg-card rounded-2xl p-4 mb-1 border border-border">
+          <View className="flex-1 border-r border-border pr-2">
+            <Text className="text-sm text-muted-foreground mb-1">Total Left</Text>
+            <Text className="text-2xl font-bold text-foreground" numberOfLines={1}>
+              {formatCurrency(summary.total_remaining || 0)}
+            </Text>
+          </View>
+          <View className="flex-1 pl-4 justify-center">
+            <Text className="text-xs text-muted-foreground mb-1">Total Loans: {totalCount}</Text>
+            <View className="flex-row items-center">
+              <View className="w-2 h-2 rounded-full bg-success mr-2" />
+              <Text className="text-sm font-medium text-foreground">
+                {summary.total_fulfilled || 0} Fulfilled
+              </Text>
+            </View>
+          </View>
+        </View>
+      )}
     </>
   );
 
@@ -227,18 +255,18 @@ function TabButton({
   return (
     <TouchableOpacity
       onPress={onPress}
-      className={`flex-1 py-3 rounded-xl items-center ${active ? "bg-card shadow-sm" : ""
+      className={`flex-1 py-3 rounded-xl items-center ${active ? "bg-primary shadow-sm" : ""
         }`}
     >
       <Text
-        className={`font-semibold text-sm ${active ? "text-foreground" : "text-muted-foreground"
+        className={`font-semibold ${active ? "text-white" : "text-muted-foreground"
           }`}
       >
         {label}
       </Text>
 
       <Text
-        className={`text-[10px] mt-0.5 ${active ? "text-muted-foreground" : "text-muted-foreground/60"
+        className={`text-[10px] mt-0.5 ${active ? "text-foreground" : "text-muted-foreground/60"
           }`}
       >
         {subtitle}
