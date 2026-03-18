@@ -130,26 +130,26 @@ export default function CreateLoanScreen() {
           <View className="flex-row bg-muted rounded-2xl p-1 my-6">
             <TouchableOpacity
               onPress={() => form.setValue("type", "GIVEN", { shouldValidate: true })}
-              className={`flex-1 py-3.5 rounded-xl items-center justify-center ${isGiven ? "bg-card shadow-sm" : "bg-transparent"
+              className={`flex-1 py-3.5 rounded-xl items-center justify-center ${isGiven ? "bg-primary shadow-sm" : "bg-transparent"
                 }`}
             >
               <Text
-                className={`font-semibold text-sm ${isGiven ? "text-foreground" : "text-muted-foreground"
+                className={`font-semibold text-sm ${isGiven ? "text-white" : "text-muted-foreground"
                   }`}
               >
-                Debtor (Given)
+                Lent (Given)
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => form.setValue("type", "TAKEN", { shouldValidate: true })}
-              className={`flex-1 py-3.5 rounded-xl items-center justify-center ${!isGiven ? "bg-card shadow-sm" : "bg-transparent"
+              className={`flex-1 py-3.5 rounded-xl items-center justify-center ${!isGiven ? "bg-primary shadow-sm" : "bg-transparent"
                 }`}
             >
               <Text
-                className={`font-semibold text-sm ${!isGiven ? "text-foreground" : "text-muted-foreground"
+                className={`font-semibold text-sm ${!isGiven ? "text-white" : "text-muted-foreground"
                   }`}
               >
-                Creditor (Taken)
+                Borrowed (Taken)
               </Text>
             </TouchableOpacity>
           </View>

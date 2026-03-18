@@ -1,4 +1,5 @@
 import { useDeleteGoal, useGoals } from "@/api/goal";
+import { formatCurrency } from "@/utils/index";
 import { CreateGoalModal } from "@/components/goal/create-goal-modal";
 import { GoalCard } from "@/components/goal/goal-card";
 import { ScreenContainer } from "@/components/screen-container";
@@ -21,6 +22,10 @@ export default function GoalsScreen() {
   const [editGoal, setEditGoal] = useState<{ id: string; name: string; target_amount: number } | null>(null);
   const { data: goalsData, isLoading } = useGoals();
   const deleteGoalMutation = useDeleteGoal();
+
+  const meta = goalsData?.meta as any;
+  const summary = meta?.summary;
+  const totalCount = meta?.total || 0;
 
   const router = useRouter();
   const handleDeleteGoal = (goalId: string, goalName: string) => {
@@ -92,31 +97,54 @@ export default function GoalsScreen() {
               </TouchableOpacity>
             </View>
           ) : (
-            <FlatList
-              scrollEnabled={false}
-              data={goalsData?.data}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item: goal }) => (
-                <GoalCard
-                  goal={goal}
-                  onEdit={(g) => {
-                    setEditGoal({
-                      id: g.id,
-                      name: g.name,
-                      target_amount: g.target_amount,
-                    });
-                    setShowCreateModal(true);
-                  }}
-                  onAddMember={(g) => {
-                    router.push({
-                      pathname: "/goal/members",
-                      params: { goalId: g.id, goalName: g.name },
-                    } as any);
-                  }}
-                  onDelete={handleDeleteGoal}
-                />
+            <>
+              {/* Summary Section */}
+              {summary && totalCount > 0 && (
+                <View className="flex-row justify-between bg-card rounded-2xl p-4 mb-6 border border-border">
+                  <View className="flex-1 border-r border-border pr-2">
+                    <Text className="text-sm text-muted-foreground mb-1">Total Left</Text>
+                    <Text className="text-2xl font-bold text-foreground" numberOfLines={1}>
+                      {formatCurrency(summary.total_remaining || 0)}
+                    </Text>
+                  </View>
+                  <View className="flex-1 pl-4 justify-center">
+                    <Text className="text-xs text-muted-foreground mb-1">Total Goals: {totalCount}</Text>
+                    <View className="flex-row items-center">
+                      <View className="w-2 h-2 rounded-full bg-success mr-2" />
+                      <Text className="text-sm font-medium text-foreground">
+                        {summary.total_fulfilled || 0} Fulfilled
+                      </Text>
+                    </View>
+                  </View>
+                </View>
               )}
-            />
+
+              <FlatList
+                scrollEnabled={false}
+                data={goalsData?.data}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item: goal }) => (
+                  <GoalCard
+                    goal={goal}
+                    onEdit={(g) => {
+                      setEditGoal({
+                        id: g.id,
+                        name: g.name,
+                        target_amount: g.target_amount,
+                      });
+                      setShowCreateModal(true);
+                    }}
+                    onAddMember={(g) => {
+                      router.push({
+                        pathname: "/goal/members",
+                        params: { goalId: g.id, goalName: g.name },
+                      } as any);
+                    }}
+                    onDelete={handleDeleteGoal}
+                  />
+                )}
+              />
+            </>
           )}
         </ScrollView>
       </ScreenContainer>

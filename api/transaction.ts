@@ -1,11 +1,12 @@
 import apiClient from "@/lib/api-client";
 import { throwApiError } from "@/utils/throw-api-error";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const TRANSACTION_API_URL = "/transaction";
 const keys = {
   all: ["transactions"],
   list: () => [...keys.all, "list"],
+  infinite: (bookId: string) => [...keys.all, "infinite", bookId],
   detail: (id: string) => [...keys.all, "detail", id],
 };
 
@@ -36,6 +37,58 @@ export const useTransactions = (searchParams: GetTransactionsParams) => {
       } catch (error) {
         throwApiError(error);
       }
+    },
+  });
+};
+
+interface InfiniteTransactionsParams {
+  book_id: string;
+  search?: string;
+  sort?: string;
+  limit?: number;
+  sort_order?: string;
+  type?: string;
+  period?: string;
+  from_date?: string;
+  to_date?: string;
+  date?: string;
+  member_id?: string;
+  category_ids?: string[];
+}
+
+export const useInfiniteTransactions = (params: InfiniteTransactionsParams) => {
+  return useInfiniteQuery({
+    queryKey: [...keys.infinite(params.book_id), params],
+    queryFn: async ({ pageParam = 1 }) => {
+      try {
+        const queryParams: Record<string, string> = {
+          page: pageParam.toString(),
+          limit: params.limit?.toString() || "5",
+        };
+        if (params.search) queryParams.search_term = params.search;
+        if (params.sort) queryParams.sort = params.sort;
+        if (params.sort_order) queryParams.sort_order = params.sort_order;
+        if (params.type) queryParams.type = params.type;
+        if (params.period) queryParams.period = params.period;
+        if (params.from_date) queryParams.from_date = params.from_date;
+        if (params.to_date) queryParams.to_date = params.to_date;
+        if (params.date) queryParams.date = params.date;
+        if (params.member_id) queryParams.member_id = params.member_id;
+        if (params.category_ids) queryParams.category_ids = params.category_ids.join(",");
+
+        const response = await apiClient.get(
+          `${TRANSACTION_API_URL}/book/${params.book_id}`,
+          { params: queryParams },
+        );
+        return response.data;
+      } catch (error) {
+        throwApiError(error);
+      }
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      const txCount = lastPage?.data?.transactions?.length ?? 0;
+      return txCount < (params.limit || 5) ? undefined : allPages.length + 1;
     },
   });
 };
