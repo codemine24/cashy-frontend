@@ -47,6 +47,13 @@ interface InfiniteTransactionsParams {
   sort?: string;
   limit?: number;
   sort_order?: string;
+  type?: string;
+  period?: string;
+  from_date?: string;
+  to_date?: string;
+  date?: string;
+  member_id?: string;
+  category_ids?: string[];
 }
 
 export const useInfiniteTransactions = (params: InfiniteTransactionsParams) => {
@@ -61,6 +68,13 @@ export const useInfiniteTransactions = (params: InfiniteTransactionsParams) => {
         if (params.search) queryParams.search_term = params.search;
         if (params.sort) queryParams.sort = params.sort;
         if (params.sort_order) queryParams.sort_order = params.sort_order;
+        if (params.type) queryParams.type = params.type;
+        if (params.period) queryParams.period = params.period;
+        if (params.from_date) queryParams.from_date = params.from_date;
+        if (params.to_date) queryParams.to_date = params.to_date;
+        if (params.date) queryParams.date = params.date;
+        if (params.member_id) queryParams.member_id = params.member_id;
+        if (params.category_ids) queryParams.category_ids = params.category_ids.join(",");
 
         const response = await apiClient.get(
           `${TRANSACTION_API_URL}/book/${params.book_id}`,

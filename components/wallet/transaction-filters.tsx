@@ -22,7 +22,10 @@ export type DatePreset =
   | "yesterday"
   | "this_month"
   | "last_month"
-  | "single_day"
+  | "last_day"
+  | "last_week"
+  | "last_year"
+  | "date"
   | "date_range";
 
 export interface MemberOption {
@@ -73,36 +76,61 @@ export function buildFilterParams(filters: TransactionFilterValues) {
 
   switch (filters.datePreset) {
     case "today":
-      params.start_date = fmt(today);
-      params.end_date = fmt(today);
+      params.period = "today";
+      // params.start_date = fmt(today);
+      // params.end_date = fmt(today);
+      break;
+    case "date":
+      params.date = fmt(filters.singleDate!);
       break;
     case "yesterday": {
-      const y = new Date(today);
-      y.setDate(y.getDate() - 1);
-      params.start_date = fmt(y);
-      params.end_date = fmt(y);
+      params.period = "yesterday";
+      // const y = new Date(today);
+      // y.setDate(y.getDate() - 1);
+      // params.start_date = fmt(y);
+      // params.end_date = fmt(y);
       break;
     }
     case "this_month":
-      params.start_date = fmt(new Date(today.getFullYear(), today.getMonth(), 1));
-      params.end_date = fmt(today);
+      params.period = "this_month";
+      // params.start_date = fmt(new Date(today.getFullYear(), today.getMonth(), 1));
+      // params.end_date = fmt(today);
       break;
     case "last_month": {
-      const start = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-      const end = new Date(today.getFullYear(), today.getMonth(), 0);
-      params.start_date = fmt(start);
-      params.end_date = fmt(end);
+      params.period = "last_month";
+      // const start = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+      // const end = new Date(today.getFullYear(), today.getMonth(), 0);
+      // params.start_date = fmt(start);
+      // params.end_date = fmt(end);
       break;
     }
-    case "single_day":
-      if (filters.singleDate) {
-        params.start_date = fmt(filters.singleDate);
-        params.end_date = fmt(filters.singleDate);
-      }
+    case "last_day": {
+      params.period = "last_day";
+      // const y = new Date(today);
+      // y.setDate(y.getDate() - 1);
+      // params.start_date = fmt(y);
+      // params.end_date = fmt(y);
       break;
+    }
+    case "last_week": {
+      params.period = "last_week";
+      // const start = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
+      // const end = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      // params.start_date = fmt(start);
+      // params.end_date = fmt(end);
+      break;
+    }
+    case "last_year": {
+      params.period = "last_year";
+      // const start = new Date(today.getFullYear() - 1, today.getMonth(), 1);
+      // const end = new Date(today.getFullYear() - 1, today.getMonth(), 0);
+      // params.start_date = fmt(start);
+      // params.end_date = fmt(end);
+      break;
+    }
     case "date_range":
-      if (filters.dateRangeStart) params.start_date = fmt(filters.dateRangeStart);
-      if (filters.dateRangeEnd) params.end_date = fmt(filters.dateRangeEnd);
+      if (filters.dateRangeStart) params.from_date = fmt(filters.dateRangeStart);
+      if (filters.dateRangeEnd) params.to_date = fmt(filters.dateRangeEnd);
       break;
   }
 
@@ -164,13 +192,19 @@ export function TransactionFilters({
         return "This Month";
       case "last_month":
         return "Last Month";
-      case "single_day":
+      case "last_day":
+        return "Last Day";
+      case "last_week":
+        return "Last Week";
+      case "last_year":
+        return "Last Year";
+      case "date":
         return filters.singleDate
           ? filters.singleDate.toLocaleDateString("en-GB", {
             day: "2-digit",
             month: "short",
           })
-          : "Single Day";
+          : "Select Date";
       case "date_range": {
         const s = filters.dateRangeStart;
         const e = filters.dateRangeEnd;
@@ -530,9 +564,12 @@ const DATE_PRESETS: { key: DatePreset; label: string }[] = [
   { key: "all_time", label: "All Time" },
   { key: "today", label: "Today" },
   { key: "yesterday", label: "Yesterday" },
+  { key: "last_day", label: "Last Day" },
+  { key: "last_week", label: "Last Week" },
   { key: "this_month", label: "This Month" },
   { key: "last_month", label: "Last Month" },
-  { key: "single_day", label: "Single Day" },
+  { key: "last_year", label: "Last Year" },
+  { key: "date", label: "Specific Date" },
   { key: "date_range", label: "Date Range" },
 ];
 
@@ -607,12 +644,17 @@ function DateFilterModal({
             key={p.key}
             label={p.label}
             selected={draftPreset === p.key}
-            onPress={() => setDraftPreset(p.key)}
+            onPress={() => {
+              setDraftPreset(p.key);
+              if (p.key === "date") {
+                setShowSinglePicker(true);
+              }
+            }}
           />
         ))}
 
         {/* Single Day picker */}
-        {draftPreset === "single_day" && (
+        {draftPreset === "date" && (
           <View className="px-5 pb-3 pt-1">
             <TouchableOpacity
               onPress={() => setShowSinglePicker(true)}

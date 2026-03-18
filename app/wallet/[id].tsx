@@ -1,31 +1,35 @@
 import { useBook } from "@/api/wallet";
 import { ScreenContainer } from "@/components/screen-container";
 
-import { useDeleteTransaction, useInfiniteTransactions } from "@/api/transaction";
 import { useGetCategories } from "@/api/category";
+import { useDeleteTransaction, useInfiniteTransactions } from "@/api/transaction";
 import { BookDetailSkeleton } from "@/components/skeletons/book-detail-skeleton";
 import { Button } from "@/components/ui/button";
+import { ReportModal, ReportType } from "@/components/wallet/report-modal";
 import {
-  TransactionFilters,
   DEFAULT_FILTERS,
+  TransactionFilters,
   buildFilterParams,
-  type TransactionFilterValues,
-  type MemberOption,
   type CategoryOption,
+  type MemberOption,
+  type TransactionFilterValues,
 } from "@/components/wallet/transaction-filters";
 import { useAuth } from "@/context/auth-context";
+import { SearchIcon } from "@/icons/search-icon";
 import { Copy, Edit3, Trash2, UserPlus, Users, X } from "@/lib/icons";
 import { isOwner, isWalletViewer } from "@/utils/is-owner";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import { ActivityIndicator, Alert, RefreshControl, SectionList, Text, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
-import { SearchIcon } from "@/icons/search-icon";
-import { ReportModal, ReportType } from "@/components/wallet/report-modal";
 
 export default function BookDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+
+  const [filters, setFilters] = useState<TransactionFilterValues>(DEFAULT_FILTERS);
+  const _filterParams = useMemo(() => buildFilterParams(filters), [filters]);
+
   const { data: book, isLoading, refetch } = useBook(id!);
   const {
     data: txPages,
@@ -34,7 +38,7 @@ export default function BookDetailScreen() {
     hasNextPage,
     isFetchingNextPage,
     refetch: refetchTransactions,
-  } = useInfiniteTransactions({ book_id: id!, limit: 10 });
+  } = useInfiniteTransactions({ book_id: id!, limit: 10, ..._filterParams });
 
   // Flatten all pages into a single transaction list
   const allTransactions = useMemo(
@@ -52,7 +56,6 @@ export default function BookDetailScreen() {
 
   const [refreshing, setRefreshing] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<any>(null);
-  const [filters, setFilters] = useState<TransactionFilterValues>(DEFAULT_FILTERS);
 
   // Fetch categories for the filter
   const { data: categoriesData } = useGetCategories();
@@ -75,10 +78,6 @@ export default function BookDetailScreen() {
       title: c.title || "",
     }));
   }, [categoriesData?.data]);
-
-  // Filter params ready for API integration
-  // TODO: pass these to your useTransactions / useBook query when backend supports it
-  const _filterParams = useMemo(() => buildFilterParams(filters), [filters]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -535,7 +534,7 @@ export default function BookDetailScreen() {
                 <View className={`px-2 py-[2px] rounded-xl ${item.type === "IN" ? "bg-green-600/20" : "bg-red-600/20"}`}>
                   {item.type === "IN" ? <Text className={`text-[11px] font-bold  tracking-wider text-green-600`}>
                     Cash in
-                  </Text> : <Text className={`text-[11px] font-bold  tracking-wider text-red-600`}>
+                  </Text> : <Text className={`text-[11px] font-bold  tracking-wider text-red-500`}>
                     Cash out
                   </Text>}
                 </View>
@@ -570,7 +569,7 @@ export default function BookDetailScreen() {
           </TouchableOpacity>
         )}
         ListEmptyComponent={
-          <View className="mx-4 bg-card rounded-xl p-8 items-center justify-center border border-border">
+          <View className="bg-card rounded-xl p-8 items-center justify-center border border-border">
             <Text className="text-lg font-semibold text-foreground mb-2">
               No transactions
             </Text>

@@ -88,22 +88,12 @@ export default function TabLayout() {
         </SafeAreaView>
       )}
 
-      {/*
-        ┌─────────────────────────────────────────────────────────┐
-        │  PagerView renders every screen in a horizontal strip.  │
-        │  While you drag, both the current AND next screen are   │
-        │  visible simultaneously — no white flash at all.        │
-        │                                                         │
-        │  offscreenPageLimit={1}  →  keeps the immediate left   │
-        │  and right neighbours mounted so they appear instantly. │
-        └─────────────────────────────────────────────────────────┘
-      */}
       <PagerView
         ref={pagerRef}
         style={{ flex: 1 }}
         initialPage={0}
-        overdrag                    // rubber-band at first / last tab
-        offscreenPageLimit={1}      // mount adjacent screens in advance
+        overdrag
+        offscreenPageLimit={1}
         onPageSelected={handlePageSelected}
       >
         {TABS.map(({ name, Screen }) => (
@@ -114,7 +104,6 @@ export default function TabLayout() {
       </PagerView>
 
       <BottomTabBar activeIndex={activeIndex} onPress={handleTabPress} />
-
     </View>
   );
 }

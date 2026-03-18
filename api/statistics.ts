@@ -15,6 +15,29 @@ const keys = {
   ],
   loanSummary: () => [...keys.all, "loanSummary"],
   goalSummary: () => [...keys.all, "goalSummary"],
+  walletStats: (params: any) => [...keys.all, "walletStats", params],
+};
+
+export const useWalletStats = (
+  params: {
+    period?: "week" | "month" | "year";
+    book_id?: string;
+  } = {},
+) => {
+  return useQuery({
+    queryKey: keys.walletStats(params),
+    queryFn: async () => {
+      try {
+        const response = await apiClient.get(
+          `${STATISTICS_API_URL}/wallet-stats`,
+          { params },
+        );
+        return response.data;
+      } catch (error) {
+        throwApiError(error);
+      }
+    },
+  });
 };
 
 export const useBookOverview = (
