@@ -18,9 +18,21 @@ import { useAuth } from "@/context/auth-context";
 import { SearchIcon } from "@/icons/search-icon";
 import { Copy, Edit3, Trash2, UserPlus, Users, X } from "@/lib/icons";
 import { isOwner, isWalletViewer } from "@/utils/is-owner";
+import { getAccessToken } from "@/utils/auth";
+import { Paths, File as ExpoFile } from "expo-file-system";
+import * as Sharing from "expo-sharing";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
-import { ActivityIndicator, Alert, RefreshControl, SectionList, Text, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  Alert,
+  Platform,
+  RefreshControl,
+  SectionList,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import Toast from "react-native-toast-message";
 
 export default function BookDetailScreen() {
@@ -137,10 +149,70 @@ export default function BookDetailScreen() {
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const handleGeneratePdf = async () => {
-    setIsGeneratingPdf(true);
-    // TODO: call your PDF generation logic with `selectedReport` and `id`
-    setIsGeneratingPdf(false);
-    setReportModalVisible(false);
+    try {
+      setIsGeneratingPdf(true);
+
+      const reportTypeMap: Record<ReportType, string> = {
+        "all-entries": "all",
+        "day-wise": "day_wise",
+        "category-wise": "category_wise",
+      };
+
+      const mappedType = reportTypeMap[selectedReport];
+      const baseUrl = process.env.EXPO_PUBLIC_SERVER_URL;
+      const url = `${baseUrl}/transaction/book/${id}/export-pdf?report_type=${mappedType}`;
+
+      if (Platform.OS === "web") {
+        window.open(url, "_blank");
+        setIsGeneratingPdf(false);
+        setReportModalVisible(false);
+        return;
+      }
+
+      const token = await getAccessToken();
+      if (!token) {
+        Toast.show({
+          type: "error",
+          text1: "Authentication error",
+          text2: "Please log in again",
+        });
+        setIsGeneratingPdf(false);
+        return;
+      }
+
+      const fileName = `report_${selectedReport}_${Date.now()}.pdf`;
+      const file = new ExpoFile(Paths.cache, fileName);
+
+      const downloadRes = await ExpoFile.downloadFileAsync(url, file, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (downloadRes) {
+        await Sharing.shareAsync(downloadRes.uri, {
+          mimeType: "application/pdf",
+          dialogTitle: "Download Report",
+          UTI: "com.adobe.pdf",
+        });
+        setReportModalVisible(false);
+      } else {
+        Toast.show({
+          type: "error",
+          text1: "Failed to generate PDF",
+          text2: "Download was unsuccessful",
+        });
+      }
+    } catch (error) {
+      console.error("[PDF Export Error]", error);
+      Toast.show({
+        type: "error",
+        text1: "An error occurred",
+        text2: "Failed to export PDF report",
+      });
+    } finally {
+      setIsGeneratingPdf(false);
+    }
   };
 
   if (isLoading || transactionsLoading) {
