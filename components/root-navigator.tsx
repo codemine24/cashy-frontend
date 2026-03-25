@@ -1,5 +1,9 @@
 import { ThemeVarsProvider, useTheme } from "@/context/theme-context";
-import { DarkTheme, DefaultTheme, ThemeProvider as NavThemeProvider } from "@react-navigation/native";
+import {
+    DarkTheme,
+    DefaultTheme,
+    ThemeProvider as NavThemeProvider,
+} from "@react-navigation/native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { RootProvider } from "./root-provider";
@@ -9,7 +13,11 @@ export const RootNavigator = () => {
 
   return (
     <NavThemeProvider value={isDark ? DarkTheme : DefaultTheme}>
-      <StatusBar style={isDark ? "light" : "dark"} />
+      <StatusBar
+        style={isDark ? "light" : "dark"}
+        translucent={true}
+        backgroundColor="transparent"
+      />
       <ThemeVarsProvider>
         <RootProvider>
           <Stack
@@ -26,28 +34,61 @@ export const RootNavigator = () => {
             <Stack.Screen name="login-type" />
             <Stack.Screen name="auth" />
             <Stack.Screen name="(tabs)" />
-            <Stack.Screen name="notifications" options={{ headerShown: true }} />
+            <Stack.Screen
+              name="notifications"
+              options={{ headerShown: true }}
+            />
             <Stack.Screen name="goal/[id]" options={{ headerShown: true }} />
             <Stack.Screen name="goal/members" options={{ headerShown: true }} />
-            <Stack.Screen name="goal/add-entry" options={{ headerShown: true }} />
+            <Stack.Screen
+              name="goal/add-entry"
+              options={{ headerShown: true }}
+            />
             <Stack.Screen name="wallet/[id]" options={{ headerShown: true }} />
-            <Stack.Screen name="wallet/members" options={{ headerShown: true }} />
-            <Stack.Screen name="wallet/select-category" options={{ headerShown: true }} />
-            <Stack.Screen name="wallet/manage-categories" options={{ headerShown: true }} />
-            <Stack.Screen name="wallet/transaction-detail" options={{ headerShown: true }} />
-            <Stack.Screen name="wallet/add-transaction" options={{ headerShown: true }} />
+            <Stack.Screen
+              name="wallet/members"
+              options={{ headerShown: true }}
+            />
+            <Stack.Screen
+              name="wallet/select-category"
+              options={{ headerShown: true }}
+            />
+            <Stack.Screen
+              name="wallet/manage-categories"
+              options={{ headerShown: true }}
+            />
+            <Stack.Screen
+              name="wallet/transaction-detail"
+              options={{ headerShown: true }}
+            />
+            <Stack.Screen
+              name="wallet/add-transaction"
+              options={{ headerShown: true }}
+            />
             <Stack.Screen name="wallet/search-wallet" />
-            <Stack.Screen name="wallet/search-transactions" options={{ headerShown: true }} />
+            <Stack.Screen
+              name="wallet/search-transactions"
+              options={{ headerShown: true }}
+            />
             <Stack.Screen name="loan/[id]" options={{ headerShown: true }} />
             <Stack.Screen name="loan/create" options={{ headerShown: true }} />
             <Stack.Screen name="loan/edit" options={{ headerShown: true }} />
             {/* <Stack.Screen name="settings" options={{ headerShown: true }} /> */}
-            <Stack.Screen name="settings/app-settings" options={{ headerShown: true }} />
-            <Stack.Screen name="settings/subscription" options={{ headerShown: true }} />
-            <Stack.Screen name="settings/profile" options={{ headerShown: true }} />
+            <Stack.Screen
+              name="settings/app-settings"
+              options={{ headerShown: true }}
+            />
+            <Stack.Screen
+              name="settings/subscription"
+              options={{ headerShown: true }}
+            />
+            <Stack.Screen
+              name="settings/profile"
+              options={{ headerShown: true }}
+            />
           </Stack>
         </RootProvider>
       </ThemeVarsProvider>
     </NavThemeProvider>
   );
-}
+};
