@@ -3,7 +3,7 @@ import { View } from "react-native";
 
 export function WalletsSkeleton() {
   return (
-    <View className="gap-4">
+    <View className="gap-2">
       {[1, 2, 3].map((i) => (
         <View
           key={i}
