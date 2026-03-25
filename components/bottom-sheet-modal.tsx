@@ -1,10 +1,11 @@
 import React, { useEffect, useRef } from "react";
 import {
-    Animated,
-    ModalProps,
-    Modal as RNModal,
-    TouchableOpacity,
-    View,
+  Animated,
+  ModalProps,
+  Modal as RNModal,
+  StatusBar,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import Toast from "react-native-toast-message";
 
@@ -45,8 +46,10 @@ export function BottomSheetModal({
       animationType="none"
       transparent={true}
       onRequestClose={onClose}
+      statusBarTranslucent={true}
       {...modalProps}
     >
+      <StatusBar backgroundColor="rgba(0,0,0,0.4)" barStyle="light-content" />
       <View className="flex-1 bg-black/40">
         <TouchableOpacity
           className="flex-1"
