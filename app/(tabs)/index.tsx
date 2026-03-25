@@ -1,4 +1,5 @@
 import { useBooks, useDeleteBook } from "@/api/wallet";
+import { BottomSheetModal } from "@/components/bottom-sheet-modal";
 import { ScreenContainer } from "@/components/screen-container";
 import { WalletsSkeleton } from "@/components/skeletons/wallets-skeleton";
 import { Button } from "@/components/ui/button";
@@ -15,7 +16,6 @@ import { useCallback, useState } from "react";
 import {
   Alert,
   FlatList,
-  Modal,
   RefreshControl,
   ScrollView,
   Text,
@@ -227,77 +227,65 @@ export default function HomeScreen() {
       />
 
       {/* Sort Modal */}
-      <Modal
+      <BottomSheetModal
         visible={showSortModal}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => setShowSortModal(false)}
+        onClose={() => setShowSortModal(false)}
       >
-        <View className="flex-1 bg-black/40">
-          <TouchableOpacity
-            className="flex-1"
-            activeOpacity={1}
-            onPress={() => setShowSortModal(false)}
-          />
-          <View
-            className="bg-background rounded-t-3xl px-6 pt-3"
-            style={{ paddingBottom: 30 }}
-          >
-            {/* Handle */}
-            <View className="items-center mb-5">
-              <View className="w-10 h-1 rounded-full bg-foreground" />
-            </View>
-
-            {/* Title */}
-            <View className="flex-row items-center justify-between mb-2  border-b border-border pb-4">
-              <H3>Sort wallet by</H3>
-              <TouchableOpacity
-                onPress={() => setShowSortModal(false)}
-                className="p-1"
-              >
-                <CrossIcon className="size-4" />
-              </TouchableOpacity>
-            </View>
-
-            {/* Options */}
-            <View className="mb-5">
-              {SORT_OPTIONS.map((option, index) => {
-                const isActive = tempSortBy === option.key;
-                return (
-                  <TouchableOpacity
-                    key={option.key}
-                    onPress={() => {
-                      setTempSortBy(option.key);
-                      setTempSortOrder(option.order);
-                    }}
-                    className={`flex-row items-center py-3`}
-                  >
-                    {/* Radio Circle */}
-                    <View
-                      className={`size-4 items-center justify-center border border-foreground rounded-full mr-3 ${isActive ? "border-primary" : "border-border"}`}
-                    >
-                      {isActive && (
-                        <View className="size-2 rounded-full bg-primary" />
-                      )}
-                    </View>
-                    <Muted>{option.label}</Muted>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-
-            <Button
-              onPress={() => {
-                setSortBy(tempSortBy);
-                setSortOrder(tempSortOrder);
-                setShowSortModal(false);
-              }}
-            >
-              Apply
-            </Button>
+        <View className="px-6 pt-3" style={{ paddingBottom: 30 }}>
+          {/* Handle */}
+          <View className="items-center mb-5">
+            <View className="w-10 h-1 rounded-full bg-foreground" />
           </View>
+
+          {/* Title */}
+          <View className="flex-row items-center justify-between mb-2  border-b border-border pb-4">
+            <H3>Sort wallet by</H3>
+            <TouchableOpacity
+              onPress={() => setShowSortModal(false)}
+              className="p-1"
+            >
+              <CrossIcon className="size-4" />
+            </TouchableOpacity>
+          </View>
+
+          {/* Options */}
+          <View className="mb-5">
+            {SORT_OPTIONS.map((option, index) => {
+              const isActive = tempSortBy === option.key;
+              return (
+                <TouchableOpacity
+                  key={option.key}
+                  onPress={() => {
+                    setTempSortBy(option.key);
+                    setTempSortOrder(option.order);
+                  }}
+                  className={`flex-row items-center py-3`}
+                >
+                  {/* Radio Circle */}
+                  <View
+                    className={`size-4 items-center justify-center border border-foreground rounded-full mr-3 ${isActive ? "border-primary" : "border-border"}`}
+                  >
+                    {isActive && (
+                      <View className="size-2 rounded-full bg-primary" />
+                    )}
+                  </View>
+                  <Muted>{option.label}</Muted>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+
+          <Button
+            onPress={() => {
+              setSortBy(tempSortBy);
+              setSortOrder(tempSortOrder);
+              setShowSortModal(false);
+            }}
+          >
+            Apply
+          </Button>
         </View>
-      </Modal>
+      </BottomSheetModal>
     </>
   );
 }
