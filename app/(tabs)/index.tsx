@@ -8,6 +8,7 @@ import { WalletCard } from "@/components/wallet/wallet-card";
 import { CrossIcon } from "@/icons/cross-icon";
 import { FilterIcon } from "@/icons/filter-icon";
 import { PlusIcon } from "@/icons/plus-icon";
+import { SearchIcon } from "@/icons/search-icon";
 import { Book } from "@/interface/wallet";
 import { useRouter } from "expo-router";
 import { useCallback, useState } from "react";
@@ -134,13 +135,24 @@ export default function HomeScreen() {
         >
           {/* Search Input */}
           <View className="relative mb-4">
-            <TextInput
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              placeholder="Search wallets..."
-              placeholderTextColor="#A1A1AA"
-              className="bg-surface rounded-xl px-4 py-3 border border-red-500 text-foreground"
-            />
+            <View className="flex-row items-center bg-gray-100 rounded-xl px-3 border border-border">
+              <SearchIcon className="text-muted-foreground size-5" />
+              <TextInput
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                placeholder="Search wallets..."
+                placeholderTextColor="#9CA3AF"
+                className="flex-1 ml-2 text-base text-foreground"
+              />
+              {searchQuery.length > 0 && (
+                <TouchableOpacity
+                  onPress={() => setSearchQuery("")}
+                  className="ml-2 p-1"
+                >
+                  <CrossIcon className="text-muted-foreground size-4" />
+                </TouchableOpacity>
+              )}
+            </View>
           </View>
 
           {/* Header */}
