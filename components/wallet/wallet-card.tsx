@@ -41,9 +41,7 @@ export const WalletCard = ({
 
   return (
     <TouchableOpacity
-      onPress={() =>
-        router.push(`/wallet/${book.id}` as any)
-      }
+      onPress={() => router.push(`/wallet/${book.id}` as any)}
       className="bg-card rounded-2xl p-3 mt-3 border border-border active:opacity-70 flex-row items-center justify-between"
     >
       {/* Left: Icon and Name/Date */}
@@ -52,10 +50,7 @@ export const WalletCard = ({
           <BookIcon size={26} className="text-primary" />
         </View>
         <View className="flex-1 mr-4">
-          <Text
-            className="text-foreground font-bold text-lg"
-            numberOfLines={1}
-          >
+          <Text className="text-foreground font-bold text-lg" numberOfLines={1}>
             {book.name}
           </Text>
           <Text className="text-sm text-muted-foreground mt-0.5">
@@ -66,10 +61,15 @@ export const WalletCard = ({
 
       {/* Right: Amount and Options Menu */}
       <View className="flex-row items-center">
-        <Text className={`font-semibold mr-1 ${book.balance > 0 ? "text-green-600" : "text-red-600"
+        <Text
+          className={`font-semibold mr-1 ${
+            book.balance > 0 ? "text-green-600" : "text-red-600"
           }`}
         >
-          {book.balance}
+          {new Intl.NumberFormat("en-US", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }).format(book.balance || 0)}
         </Text>
 
         {showMenu && (
@@ -109,9 +109,7 @@ export const WalletCard = ({
                   style={{ opacity: isCurrentUserOwner ? 1 : 0.4 }}
                 >
                   <Edit3 size={20} className="text-black" />
-                  <Text className="ml-4 text-[16px] text-black">
-                    Rename
-                  </Text>
+                  <Text className="ml-4 text-[16px] text-black">Rename</Text>
                 </TouchableOpacity>
               )}
 
