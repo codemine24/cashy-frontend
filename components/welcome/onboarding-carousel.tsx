@@ -9,7 +9,7 @@ import {
   Image,
   TouchableOpacity,
   View,
-  ViewToken
+  ViewToken,
 } from "react-native";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
@@ -28,18 +28,23 @@ export function OnboardingCarousel() {
     [],
   );
 
-  const viewabilityConfig = useRef({ viewAreaCoveragePercentThreshold: 50 }).current;
+  const viewabilityConfig = useRef({
+    viewAreaCoveragePercentThreshold: 50,
+  }).current;
 
   const goToNext = () => {
     if (activeIndex < onboardingSlides.length - 1) {
-      flatListRef.current?.scrollToIndex({ index: activeIndex + 1, animated: true });
+      flatListRef.current?.scrollToIndex({
+        index: activeIndex + 1,
+        animated: true,
+      });
     } else {
       flatListRef.current?.scrollToIndex({ index: 0, animated: true });
     }
   };
 
   const renderSlide = ({ item }: { item: OnboardingSlide }) => (
-    <View style={{ width: SLIDE_WIDTH }} className="items-center px-6">
+    <View style={{ width: SLIDE_WIDTH }} className="items-center">
       {/* Phone mockup image */}
       <View
         className="items-center justify-center overflow-hidden rounded-3xl"
@@ -76,26 +81,23 @@ export function OnboardingCarousel() {
       />
 
       {/* Text content */}
-      <View className="mt-20 px-4 pb-4">
-        <H2>
-          {onboardingSlides[activeIndex].title}
-        </H2>
-        <Muted className="mt-2">
-          {onboardingSlides[activeIndex].subtitle}
-        </Muted>
+      <View className="mt-20 pb-4">
+        <H2>{onboardingSlides[activeIndex].title}</H2>
+        <Muted className="mt-2">{onboardingSlides[activeIndex].subtitle}</Muted>
       </View>
 
       {/* Pagination dots + next arrow */}
-      <View className="flex-row items-center justify-between px-8 pb-6">
+      <View className="flex-row items-center justify-between pb-6">
         {/* Dots */}
         <View className="flex-row items-center gap-2">
           {onboardingSlides.map((_, index) => (
             <View
               key={index}
-              className={`rounded-full ${index === activeIndex
-                ? "h-2.5 w-2.5 bg-primary"
-                : "h-2 w-2 bg-border"
-                }`}
+              className={`rounded-full ${
+                index === activeIndex
+                  ? "h-2.5 w-2.5 bg-primary"
+                  : "h-2 w-2 bg-border"
+              }`}
             />
           ))}
         </View>
@@ -104,7 +106,7 @@ export function OnboardingCarousel() {
         <TouchableOpacity
           onPress={goToNext}
           activeOpacity={0.7}
-          className="h-12 w-12 items-center justify-center rounded-full bg-muted"
+          className="h-12 w-12 items-center justify-center rounded-full bg-primary/10"
         >
           <ChevronRight size={22} className="text-muted-foreground" />
         </TouchableOpacity>
