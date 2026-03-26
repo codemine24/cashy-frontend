@@ -1,8 +1,8 @@
 import { ThemeVarsProvider, useTheme } from "@/context/theme-context";
 import {
-    DarkTheme,
-    DefaultTheme,
-    ThemeProvider as NavThemeProvider,
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider as NavThemeProvider,
 } from "@react-navigation/native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";

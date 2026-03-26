@@ -135,13 +135,13 @@ export default function HomeScreen() {
         >
           {/* Search Input */}
           <View className="relative mb-4">
-            <View className="flex-row items-center bg-gray-100 rounded-xl px-3 border border-border">
+            <View className="flex-row items-center bg-muted rounded-xl px-3 border border-border">
               <SearchIcon className="text-muted-foreground size-5" />
               <TextInput
                 value={searchQuery}
                 onChangeText={setSearchQuery}
                 placeholder="Search wallets..."
-                placeholderTextColor="#9CA3AF"
+                placeholderClassName="text-muted-foreground"
                 className="flex-1 ml-2 text-base text-foreground"
               />
               {searchQuery.length > 0 && (
