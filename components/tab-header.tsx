@@ -1,9 +1,9 @@
 import { BellIcon } from "@/icons/bell-icon";
+import { Menu } from "@/lib/icons";
 import { useRouter } from "expo-router";
 import { useEffect, useRef } from "react";
 import { Animated, Easing, Text, TouchableOpacity, View } from "react-native";
-import { Menu } from "@/lib/icons";
-
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 function PremiumIcon() {
   const spinAnim = useRef(new Animated.Value(0)).current;
@@ -18,7 +18,7 @@ function PremiumIcon() {
         duration: 2200,
         easing: Easing.linear,
         useNativeDriver: true,
-      })
+      }),
     ).start();
 
     // Soft background breathe
@@ -36,7 +36,7 @@ function PremiumIcon() {
           easing: Easing.inOut(Easing.ease),
           useNativeDriver: true,
         }),
-      ])
+      ]),
     ).start();
 
     // Crown gentle float
@@ -54,7 +54,7 @@ function PremiumIcon() {
           easing: Easing.inOut(Easing.ease),
           useNativeDriver: true,
         }),
-      ])
+      ]),
     ).start();
   }, [bounceAnim, pulseAnim, spinAnim]);
 
@@ -73,8 +73,14 @@ function PremiumIcon() {
   });
 
   return (
-    <View style={{ width: 42, height: 42, alignItems: "center", justifyContent: "center" }}>
-
+    <View
+      style={{
+        width: 42,
+        height: 42,
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
       {/* Breathing glow background */}
       <Animated.View
         style={{
@@ -123,7 +129,10 @@ function PremiumIcon() {
       {/* Twinkling sparkle dots — staggered so they never all fire at once */}
       <SparkleDot delay={0} style={{ top: 1, left: "50%", marginLeft: -2 }} />
       <SparkleDot delay={350} style={{ right: 1, top: "50%", marginTop: -2 }} />
-      <SparkleDot delay={800} style={{ bottom: 1, left: "50%", marginLeft: -2 }} />
+      <SparkleDot
+        delay={800}
+        style={{ bottom: 1, left: "50%", marginLeft: -2 }}
+      />
       <SparkleDot delay={1200} style={{ left: 1, top: "50%", marginTop: -2 }} />
 
       {/* Crown — gently floating */}
@@ -160,7 +169,7 @@ function SparkleDot({ delay, style }: { delay: number; style: object }) {
           useNativeDriver: true,
         }),
         Animated.delay(600),
-      ])
+      ]),
     ).start();
   }, []);
 
@@ -184,6 +193,7 @@ function SparkleDot({ delay, style }: { delay: number; style: object }) {
 
 export const TabHeader = () => {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   return (
     <View
@@ -191,11 +201,10 @@ export const TabHeader = () => {
       style={{
         paddingHorizontal: 20,
         paddingBottom: 12,
-        paddingTop: 4,
+        paddingTop: insets.top + 4,
       }}
     >
       <View className="flex-row items-center justify-between">
-
         {/* Left: App Name */}
         <View>
           <Text className="text-foreground text-3xl font-bold">CASHY</Text>
@@ -203,7 +212,6 @@ export const TabHeader = () => {
 
         {/* Right: Premium + Notification + Menu */}
         <View className="flex-row items-center gap-2.5">
-
           {/* Premium animated icon */}
           <TouchableOpacity
             activeOpacity={0.75}
@@ -234,8 +242,7 @@ export const TabHeader = () => {
             <Menu size={18} className="text-foreground" />
           </TouchableOpacity>
         </View>
-
       </View>
     </View>
   );
-}
+};
