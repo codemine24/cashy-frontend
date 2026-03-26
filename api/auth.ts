@@ -16,8 +16,6 @@ export const useSendOtp = () => {
     });
 }
 
-// Check sdf
-
 export const useVerifyOtp = () => {
     return useMutation({
         mutationFn: async ({ email, otp }: { email: string, otp: string }) => {
