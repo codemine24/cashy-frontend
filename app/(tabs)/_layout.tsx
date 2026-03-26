@@ -8,10 +8,7 @@ import { usePathname } from "expo-router";
 import { useCallback, useRef, useState } from "react";
 import { Platform, Pressable, Text, View } from "react-native";
 import PagerView from "react-native-pager-view";
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 // Import each screen directly — PagerView needs to render them side-by-side
 import GoalsScreen from "./goals";
@@ -115,14 +112,7 @@ export default function TabLayout() {
   return (
     <View style={{ flex: 1 }}>
       {/* Shared header across all tabs */}
-      {!isSettings && (
-        <SafeAreaView
-          edges={["top"]}
-          style={{ backgroundColor: "transparent" }}
-        >
-          <TabHeader />
-        </SafeAreaView>
-      )}
+      {!isSettings && <TabHeader />}
 
       <PagerView
         ref={pagerRef}
