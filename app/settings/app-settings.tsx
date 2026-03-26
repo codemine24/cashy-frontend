@@ -47,10 +47,14 @@ function ToggleRow({
 }) {
   return (
     <View className="flex-row items-center py-4 gap-3">
-      <View className={`w-11 h-11 rounded-xl items-center justify-center mr-1 ${iconBgClass}`}>
+      <View
+        className={`w-11 h-11 rounded-xl items-center justify-center mr-1 ${iconBgClass}`}
+      >
         {icon}
       </View>
-      <Text className="flex-1 text-base font-semibold text-foreground">{label}</Text>
+      <Text className="flex-1 text-base font-semibold text-foreground">
+        {label}
+      </Text>
       {loading ? (
         <ActivityIndicator size="small" />
       ) : (
@@ -84,11 +88,17 @@ function SelectRow({
       activeOpacity={0.7}
       className="flex-row items-center py-4 gap-3"
     >
-      <View className={`w-11 h-11 rounded-xl items-center justify-center mr-1 ${iconBgClass}`}>
+      <View
+        className={`w-11 h-11 rounded-xl items-center justify-center mr-1 ${iconBgClass}`}
+      >
         {icon}
       </View>
-      <Text className="flex-1 text-base font-semibold text-foreground">{label}</Text>
-      <Text className="text-sm font-medium text-muted-foreground mr-1">{value}</Text>
+      <Text className="flex-1 text-base font-semibold text-foreground">
+        {label}
+      </Text>
+      <Text className="text-sm font-medium text-muted-foreground mr-1">
+        {value}
+      </Text>
       <ChevronRight size={18} className="text-muted-foreground" />
     </TouchableOpacity>
   );
@@ -116,7 +126,12 @@ function SelectionModal<T extends string>({
   onClose: () => void;
 }) {
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+    <Modal
+      visible={visible}
+      transparent
+      animationType="slide"
+      onRequestClose={onClose}
+    >
       {/* Backdrop */}
       <Pressable onPress={onClose} className="flex-1 bg-black/40" />
 
@@ -129,7 +144,9 @@ function SelectionModal<T extends string>({
 
         {/* Header */}
         <View className="mb-5 flex-row items-center justify-between">
-          <Text className="text-lg font-bold text-card-foreground">{title}</Text>
+          <Text className="text-lg font-bold text-card-foreground">
+            {title}
+          </Text>
           <TouchableOpacity onPress={onClose} activeOpacity={0.7}>
             <X size={22} className="text-muted-foreground" />
           </TouchableOpacity>
@@ -143,18 +160,22 @@ function SelectionModal<T extends string>({
               key={opt.code}
               onPress={() => onSelect(opt.code)}
               activeOpacity={0.7}
-              className={`mb-2 flex-row items-center justify-between rounded-xl px-4 py-3.5 ${isSelected ? "bg-primary/10" : "bg-muted"
-                }`}
+              className={`mb-2 flex-row items-center justify-between rounded-xl px-4 py-3.5 ${
+                isSelected ? "bg-primary/10" : "bg-muted"
+              }`}
             >
               <View className="flex-row items-center gap-3">
                 <Text
-                  className={`text-base font-semibold ${isSelected ? "text-primary" : "text-card-foreground"
-                    }`}
+                  className={`text-base font-semibold ${
+                    isSelected ? "text-primary" : "text-card-foreground"
+                  }`}
                 >
                   {opt.label}
                 </Text>
                 {opt.extra && (
-                  <Text className="text-sm text-muted-foreground">{opt.extra}</Text>
+                  <Text className="text-sm text-muted-foreground">
+                    {opt.extra}
+                  </Text>
                 )}
               </View>
 
@@ -169,7 +190,11 @@ function SelectionModal<T extends string>({
 
 // ─── Theme selector (3-state: LIGHT / DARK / SYSTEM) ────────────────
 
-const THEME_OPTIONS: { value: "LIGHT" | "DARK"; label: string; icon: string }[] = [
+const THEME_OPTIONS: {
+  value: "LIGHT" | "DARK";
+  label: string;
+  icon: string;
+}[] = [
   { value: "LIGHT", label: "Light", icon: "sun" },
   { value: "DARK", label: "Dark", icon: "moon" },
 ];
@@ -185,12 +210,20 @@ function ThemeSelector({
     <View className="flex-row items-center py-4 gap-3">
       <View className="w-11 h-11 rounded-xl items-center justify-center mr-1 bg-violet-500/10">
         <Feather
-          name={selected === "DARK" ? "moon" : selected === "LIGHT" ? "sun" : "smartphone"}
+          name={
+            selected === "DARK"
+              ? "moon"
+              : selected === "LIGHT"
+                ? "sun"
+                : "smartphone"
+          }
           size={22}
           color="#8b5cf6"
         />
       </View>
-      <Text className="flex-1 text-base font-semibold text-foreground">Theme</Text>
+      <Text className="flex-1 text-base font-semibold text-foreground">
+        Theme
+      </Text>
 
       {/* Segmented control */}
       <View className="flex-row bg-muted rounded-xl overflow-hidden">
@@ -309,14 +342,11 @@ export default function AppSettingsScreen() {
   const languageLabel =
     languages.find((l) => l.code === currentLanguage)?.label ?? currentLanguage;
 
-
-
   const languageOptions = languages.map((l) => ({
     code: l.code,
     label: l.label,
     extra: l.nativeLabel,
   }));
-
 
   return (
     <>
@@ -330,7 +360,10 @@ export default function AppSettingsScreen() {
           {/* ── Appearance ── */}
           <SectionLabel>{t("settings.appearance")}</SectionLabel>
           <View className="bg-card rounded-2xl border border-border px-4 mb-6">
-            <ThemeSelector selected={currentTheme} onSelect={handleThemeChange} />
+            <ThemeSelector
+              selected={currentTheme}
+              onSelect={handleThemeChange}
+            />
           </View>
 
           {/* ── Localisation ── */}

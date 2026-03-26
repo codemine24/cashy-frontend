@@ -3,7 +3,6 @@ import {
   Animated,
   ModalProps,
   Modal as RNModal,
-  StatusBar,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -49,7 +48,6 @@ export function BottomSheetModal({
       statusBarTranslucent={true}
       {...modalProps}
     >
-      <StatusBar backgroundColor="rgba(0,0,0,0.4)" barStyle="light-content" />
       <View className="flex-1 bg-black/40">
         <TouchableOpacity
           className="flex-1"
