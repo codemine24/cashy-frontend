@@ -6,12 +6,12 @@ import { useAuth } from "@/context/auth-context";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function WelcomeScreen() {
   const router = useRouter();
   const [selectedLanguage, setSelectedLanguage] = useState<LanguageCode>("en");
-  const currentLanguageLabel = languages.find((l) => l.code === selectedLanguage)?.label ?? "English";
+  const currentLanguageLabel =
+    languages.find((l) => l.code === selectedLanguage)?.label ?? "English";
 
   const { authState, authReady } = useAuth();
 
@@ -25,7 +25,7 @@ export default function WelcomeScreen() {
     return null;
   }
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <>
       {/* ── Header: Logo ── */}
       <WelcomeHeader />
 
@@ -34,12 +34,8 @@ export default function WelcomeScreen() {
 
       {/* ── Bottom CTA ── */}
       <View className="px-6 mb-16">
-        <Button
-          onPress={() => router.push("/login-type")}
-        >
-          Get Started
-        </Button>
+        <Button onPress={() => router.push("/login-type")}>Get Started</Button>
       </View>
-    </SafeAreaView>
+    </>
   );
 }
