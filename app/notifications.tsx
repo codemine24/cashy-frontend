@@ -41,6 +41,8 @@ export default function NotificationsScreen() {
 
   const notifications = data?.data || [];
 
+  console.log("notifications......", notifications);
+
   return (
     <>
       <Stack.Screen options={{ headerShown: false }} />
@@ -109,14 +111,16 @@ export default function NotificationsScreen() {
               }
               renderItem={({ item }: { item: Notification }) => (
                 <View
-                  className={`flex-row p-4 rounded-2xl border ${item.is_read
+                  className={`flex-row p-4 rounded-2xl border ${
+                    item.is_read
                       ? "bg-surface/50 border-border/50"
                       : "bg-surface border-border shadow-sm"
-                    }`}
+                  }`}
                 >
                   <View
-                    className={`size-10 rounded-full items-center justify-center mr-4 ${item.is_read ? "bg-background" : "bg-primary/10"
-                      }`}
+                    className={`size-10 rounded-full items-center justify-center mr-4 ${
+                      item.is_read ? "bg-background" : "bg-primary/10"
+                    }`}
                   >
                     {getNotificationIcon(item.title)}
                   </View>

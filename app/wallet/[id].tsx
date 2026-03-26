@@ -18,6 +18,7 @@ import {
   type TransactionFilterValues,
 } from "@/components/wallet/transaction-filters";
 import { useAuth } from "@/context/auth-context";
+import { useDebounce } from "@/hooks/use-debounce";
 import { SearchIcon } from "@/icons/search-icon";
 import { Copy, Edit3, Trash2, UserPlus, Users, X } from "@/lib/icons";
 import { getAccessToken } from "@/utils/auth";
@@ -33,14 +34,48 @@ import {
   RefreshControl,
   SectionList,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
 import Toast from "react-native-toast-message";
 
+// Transaction interface
+interface Transaction {
+  id: string;
+  amount: string;
+  attachment: any[];
+  book: {
+    created_at: string;
+    name: string;
+    updated_at: string;
+  };
+  book_id: string;
+  category?: {
+    title: string;
+  };
+  category_id?: string;
+  created_at: string;
+  entry_by: {
+    avatar: string;
+    email: string;
+    name: string;
+  };
+  entry_by_id: string;
+  remark: string;
+  runningBalance: number;
+  type: "IN" | "OUT";
+  update_by_id?: string;
+  updated_at: string;
+  updated_by?: any;
+}
+
 export default function BookDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const debouncedQuery = useDebounce(searchQuery, 400);
 
   const [filters, setFilters] =
     useState<TransactionFilterValues>(DEFAULT_FILTERS);
@@ -54,7 +89,12 @@ export default function BookDetailScreen() {
     hasNextPage,
     isFetchingNextPage,
     refetch: refetchTransactions,
-  } = useInfiniteTransactions({ book_id: id!, limit: 10, ..._filterParams });
+  } = useInfiniteTransactions({
+    book_id: id!,
+    limit: 10,
+    ..._filterParams,
+    search: debouncedQuery.trim() || undefined,
+  });
 
   // Flatten all pages into a single transaction list
   const allTransactions = useMemo(
@@ -73,7 +113,10 @@ export default function BookDetailScreen() {
   const deleteTransaction = useDeleteTransaction();
 
   const [refreshing, setRefreshing] = useState(false);
-  const [selectedTransaction, setSelectedTransaction] = useState<any>(null);
+  const [selectedTransaction, setSelectedTransaction] =
+    useState<Transaction | null>(null);
+
+  console.log("selectedTransaction..........", selectedTransaction);
 
   // Fetch categories for the filter
   const { data: categoriesData } = useGetCategories();
@@ -221,7 +264,7 @@ export default function BookDetailScreen() {
     }
   };
 
-  if (isLoading || transactionsLoading) {
+  if (isLoading || (transactionsLoading && !searchQuery)) {
     return <BookDetailSkeleton />;
   }
 
@@ -247,6 +290,10 @@ export default function BookDetailScreen() {
         editAmount: selectedTransaction.amount?.toString(),
         editRemark: selectedTransaction.remark || "",
         editType: selectedTransaction.type,
+        editDate: selectedTransaction.created_at,
+        editTime: selectedTransaction.created_at,
+        editCategoryId: selectedTransaction.category_id || "",
+        editCategoryName: selectedTransaction.category?.title || "",
       },
     });
     setSelectedTransaction(null);
@@ -263,7 +310,7 @@ export default function BookDetailScreen() {
         editRemark: selectedTransaction.remark || "",
         editType: selectedTransaction.type,
         editCategoryId: selectedTransaction.category_id || "",
-        editCategoryName: selectedTransaction.category || "",
+        editCategoryName: selectedTransaction.category?.title || "",
       },
     });
     setSelectedTransaction(null);
@@ -314,7 +361,7 @@ export default function BookDetailScreen() {
   };
 
   return (
-    <>
+    <View className="flex-1 bg-background px-4">
       <Stack.Screen
         options={{
           title: selectedTransaction ? "1 Selected" : book.data.name,
@@ -331,9 +378,6 @@ export default function BookDetailScreen() {
             : undefined,
           headerRight: () => {
             if (selectedTransaction) {
-              const canDelete =
-                !!authState.user?.id &&
-                authState.user.id === selectedTransaction.entry_by_id;
               return (
                 <View className="flex-row items-center gap-1">
                   <TouchableOpacity
@@ -362,21 +406,22 @@ export default function BookDetailScreen() {
                   >
                     <Copy size={20} className="text-foreground" />
                   </TouchableOpacity>
-                  {canDelete && (
-                    <TouchableOpacity
-                      onPress={handleDelete}
-                      className="p-2"
-                      hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                      disabled={isWalletViewer(authState.user?.id, book.data)}
-                      style={{
-                        opacity: isWalletViewer(authState.user?.id, book.data)
-                          ? 0.4
-                          : 1,
-                      }}
-                    >
-                      <Trash2 size={20} className="text-destructive" />
-                    </TouchableOpacity>
-                  )}
+                  {!!authState.user?.id &&
+                    authState.user.id === selectedTransaction.entry_by_id && (
+                      <TouchableOpacity
+                        onPress={handleDelete}
+                        className="p-2"
+                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                        disabled={isWalletViewer(authState.user?.id, book.data)}
+                        style={{
+                          opacity: isWalletViewer(authState.user?.id, book.data)
+                            ? 0.4
+                            : 1,
+                        }}
+                      >
+                        <Trash2 size={20} className="text-destructive" />
+                      </TouchableOpacity>
+                    )}
                 </View>
               );
             }
@@ -404,24 +449,23 @@ export default function BookDetailScreen() {
         }}
       />
 
-      {/* Search Transactions */}
-      <TouchableOpacity
-        onPress={() =>
-          router.push({
-            pathname: "/wallet/search-transactions",
-            params: {
-              bookId: id,
-            },
-          } as any)
-        }
-        activeOpacity={0.7}
-        className="flex-row items-center gap-5 bg-card px-4 py-3.5 border border-border"
-      >
-        <SearchIcon className="text-muted-foreground" />
-        <Text className="text-muted-foreground text-base">
-          Search transactions by remark and amount
-        </Text>
-      </TouchableOpacity>
+      {/* Search Bar */}
+      <View className="flex-row items-center bg-muted rounded-xl px-3 border border-border mt-2">
+        <SearchIcon className="text-muted-foreground size-5" />
+        <TextInput
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholder="Search by amount or remarks..."
+          placeholderTextColor="#9CA3AF"
+          className="flex-1 ml-2 text-base text-foreground"
+          returnKeyType="search"
+        />
+        {searchQuery.length > 0 && (
+          <TouchableOpacity onPress={() => setSearchQuery("")}>
+            <X size={16} color="#9CA3AF" />
+          </TouchableOpacity>
+        )}
+      </View>
 
       {/* Filter Chips */}
       <TransactionFilters
@@ -436,39 +480,41 @@ export default function BookDetailScreen() {
         keyExtractor={(item) => item.id}
         stickySectionHeadersEnabled={false}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 100, paddingHorizontal: 16 }}
-        className="bg-background"
+        contentContainerStyle={{ paddingBottom: 100 }}
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.3}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl
+            refreshing={refreshing && !searchQuery}
+            onRefresh={onRefresh}
+          />
         }
         ListHeaderComponent={
           <>
             {/* Header Card */}
-            <View className="bg-card mt-2 rounded-2xl mb-6 shadow-sm border border-border">
-              <View className="px-4 py-4 flex-row justify-between items-center border-b border-border">
-                <Text className="text-foreground font-bold text-[15px]">
+            <View className="bg-card mt-2 rounded-2xl mb-4 shadow-sm border border-border">
+              <View className="px-3 py-3 flex-row justify-between items-center border-b border-border">
+                <Text className="text-foreground font-bold text-[14px]">
                   Net Balance
                 </Text>
-                <Text className="text-foreground font-bold text-[15px]">
+                <Text className="text-foreground font-bold text-[14px]">
                   {book.data.balance ?? 0}
                 </Text>
               </View>
-              <View className="px-4 py-4">
-                <View className="flex-row justify-between items-center mb-3">
-                  <Text className="text-foreground font-bold text-[13px]">
+              <View className="px-3 py-3">
+                <View className="flex-row justify-between items-center mb-2">
+                  <Text className="text-foreground font-bold text-[12px]">
                     Total In (+)
                   </Text>
-                  <Text className="text-success font-semibold text-[13px]">
+                  <Text className="text-success font-semibold text-[12px]">
                     {book.data.in ?? 0}
                   </Text>
                 </View>
                 <View className="flex-row justify-between items-center">
-                  <Text className="text-foreground font-bold text-[13px]">
+                  <Text className="text-foreground font-bold text-[12px]">
                     Total Out (-)
                   </Text>
-                  <Text className="text-destructive font-semibold text-[13px]">
+                  <Text className="text-destructive font-semibold text-[12px]">
                     {book.data.out ?? 0}
                   </Text>
                 </View>
@@ -477,9 +523,9 @@ export default function BookDetailScreen() {
               <View className="flex-row justify-between items-center border-t border-border">
                 <TouchableOpacity
                   onPress={() => setReportModalVisible(true)}
-                  className="flex-1 items-center py-3 flex-row justify-center"
+                  className="flex-1 items-center py-2.5 flex-row justify-center"
                 >
-                  <Text className="text-primary font-semibold text-md">
+                  <Text className="text-primary font-semibold text-sm">
                     View Reports
                   </Text>
                 </TouchableOpacity>
@@ -489,12 +535,12 @@ export default function BookDetailScreen() {
             {/* Members Section */}
             {book?.data?.others_member?.length > 1 &&
               isOwner(authState.user?.id, book.data.created_by) && (
-                <View className="bg-card rounded-2xl mb-6 border border-border shadow-sm">
+                <View className="bg-card rounded-2xl mb-4 border border-border shadow-sm">
                   {/* Header */}
-                  <View className="px-4 py-2 flex-row items-center justify-between border-b border-border">
+                  <View className="px-3 py-2 flex-row items-center justify-between border-b border-border">
                     <View className="flex-row items-center gap-2">
                       <Users size={16} className="text-muted-foreground" />
-                      <Text className="text-foreground font-bold text-[14px] ml-2">
+                      <Text className="text-foreground font-bold text-[13px] ml-2">
                         Members
                       </Text>
                     </View>
@@ -507,7 +553,7 @@ export default function BookDetailScreen() {
                           })
                         }
                       >
-                        <Text className="text-primary text-[11px] font-semibold">
+                        <Text className="text-primary text-[10px] font-semibold">
                           See All
                         </Text>
                       </TouchableOpacity>
@@ -525,7 +571,7 @@ export default function BookDetailScreen() {
                       return (
                         <View
                           key={member.id || index}
-                          className={`px-4 py-2 flex-row items-center justify-between ${
+                          className={`px-3 py-2 flex-row items-center justify-between ${
                             index !==
                             Math.min(book.data.others_member.length, 2) - 1
                               ? "border-b border-border"
@@ -534,22 +580,22 @@ export default function BookDetailScreen() {
                         >
                           <View className="flex-row items-center flex-1">
                             {/* Avatar */}
-                            <View className="w-9 h-9 rounded-xl bg-primary/10 items-center justify-center mr-3">
-                              <Text className="text-primary font-bold text-[15px]">
+                            <View className="w-8 h-8 rounded-lg bg-primary/10 items-center justify-center mr-3">
+                              <Text className="text-primary font-bold text-[13px]">
                                 {initial}
                               </Text>
                             </View>
                             {/* Name & Email */}
                             <View className="flex-1 mr-3">
                               <Text
-                                className="text-foreground font-semibold text-[13px]"
+                                className="text-foreground font-semibold text-[12px]"
                                 numberOfLines={1}
                               >
                                 {name}
                               </Text>
                               {!!email && (
                                 <Text
-                                  className="text-muted-foreground text-[11px] mt-0.5"
+                                  className="text-muted-foreground text-[10px] mt-0.5"
                                   numberOfLines={1}
                                 >
                                   {email}
@@ -562,7 +608,7 @@ export default function BookDetailScreen() {
                             className={`px-2 py-1 rounded-lg bg-blue-500/10`}
                           >
                             <Text
-                              className={`text-[11px] font-bold text-muted-foreground lowercase`}
+                              className={`text-[10px] font-bold text-muted-foreground lowercase`}
                             >
                               {role}
                             </Text>
@@ -580,9 +626,9 @@ export default function BookDetailScreen() {
                           params: { bookId: id, bookName: book.data.name },
                         })
                       }
-                      className="px-4 py-1 border-t border-border items-center"
+                      className="px-3 py-1 border-t border-border items-center"
                     >
-                      <Text className="text-primary text-[11px] font-semibold">
+                      <Text className="text-primary text-[10px] font-semibold">
                         +{book.data.others_member.length - 2} more members
                       </Text>
                     </TouchableOpacity>
@@ -611,9 +657,9 @@ export default function BookDetailScreen() {
               )}
 
             {/* Showing X entries */}
-            <View className="flex-row items-center justify-center mb-5 px-6 rounded-2xl">
+            <View className="flex-row items-center justify-center mb-3 px-6 rounded-2xl">
               <View className="flex-1 h-[1px] bg-border" />
-              <Text className="text-muted-foreground font-medium text-[11px] mx-4 tracking-wide">
+              <Text className="text-muted-foreground font-medium text-[10px] mx-4 tracking-wide">
                 Showing {allTransactions.length} entries
               </Text>
               <View className="flex-1 h-[1px] bg-border" />
@@ -640,44 +686,49 @@ export default function BookDetailScreen() {
               }
             }}
             onLongPress={() => setSelectedTransaction(item)}
-            className={`rounded-2xl mt-2 px-4 py-4 flex-row justify-between bg-card border ${
+            className={`rounded-2xl mt-1.5 px-3 py-3 flex-row justify-between bg-card border ${
               selectedTransaction?.id === item.id
                 ? "border-primary bg-primary/10"
                 : "border-border"
             } ${index !== section.data.length - 1 ? "mb-1" : ""}`}
           >
             <View className="flex-1 mr-2">
-              <View className="flex-row items-center justify-between mb-2">
+              <View className="flex-row items-center justify-between mb-1.5">
                 <View
                   className={`px-2 py-[2px] rounded-xl ${item.type === "IN" ? "bg-green-600/20" : "bg-red-600/20"}`}
                 >
                   {item.type === "IN" ? (
                     <Text
-                      className={`text-[11px] font-bold  tracking-wider text-green-600`}
+                      className={`text-[10px] font-semibold  tracking-wider text-green-600`}
                     >
                       Cash in
                     </Text>
                   ) : (
                     <Text
-                      className={`text-[11px] font-bold  tracking-wider text-red-500`}
+                      className={`text-[10px] font-semibold  tracking-wider text-red-500`}
                     >
-                      Cash out
+                      {item.category?.title || "Cash out"}
                     </Text>
                   )}
                 </View>
               </View>
 
-              <Text className="text-sm mb-2 font-medium text-foreground">
+              <Text
+                className={`text-sm mb-1.5 font-medium ${item.remark ? "text-foreground" : "text-muted-foreground"}`}
+              >
                 {item.remark || item.category?.title || "No remark"}
               </Text>
-              <Text className="text-sm text-muted-foreground">
-                Added on{" "}
-                {new Date(item.created_at)
-                  .toLocaleTimeString("en-US", {
-                    hour: "numeric",
-                    minute: "2-digit",
-                  })
-                  .toLowerCase()}
+              <Text className="text-xs text-muted-foreground">
+                Updated:{" "}
+                {new Date(item.updated_at).toLocaleDateString("en-GB", {
+                  day: "2-digit",
+                  month: "short",
+                  year: "numeric",
+                })}{" "}
+                {new Date(item.updated_at).toLocaleTimeString("en-US", {
+                  hour: "numeric",
+                  minute: "2-digit",
+                })}
               </Text>
             </View>
             <View className="items-end justify-center">
@@ -695,14 +746,34 @@ export default function BookDetailScreen() {
           </TouchableOpacity>
         )}
         ListEmptyComponent={
-          <View className="bg-card rounded-xl p-8 items-center justify-center border border-border">
-            <Text className="text-lg font-semibold text-foreground mb-2">
-              No transactions
-            </Text>
-            <Text className="text-sm text-muted-foreground text-center">
-              Add your first transaction to start tracking
-            </Text>
-          </View>
+          transactionsLoading && searchQuery ? (
+            <View className="py-8">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <View
+                  key={i}
+                  className="bg-card rounded-2xl p-4 mb-2 border border-border"
+                >
+                  <View className="flex-row justify-between items-start mb-2">
+                    <View className="flex-1">
+                      <View className="w-20 h-4 bg-muted rounded mb-2" />
+                      <View className="w-32 h-3 bg-muted rounded" />
+                    </View>
+                    <View className="w-16 h-4 bg-muted rounded" />
+                  </View>
+                  <View className="w-24 h-3 bg-muted rounded" />
+                </View>
+              ))}
+            </View>
+          ) : (
+            <View className="bg-card rounded-2xl p-8 items-center justify-center border border-border">
+              <Text className="text-lg font-semibold text-foreground mb-2">
+                No transactions
+              </Text>
+              <Text className="text-sm text-muted-foreground text-center">
+                Add your first transaction to start tracking
+              </Text>
+            </View>
+          )
         }
         ListFooterComponent={
           isFetchingNextPage ? (
@@ -754,6 +825,6 @@ export default function BookDetailScreen() {
         onClose={() => setReportModalVisible(false)}
         isGenerating={isGeneratingPdf}
       />
-    </>
+    </View>
   );
 }

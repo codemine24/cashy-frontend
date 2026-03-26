@@ -29,8 +29,6 @@ export default function LoansScreen() {
     type: activeTab,
   });
 
-  console.log("meta", data?.meta);
-
   const loans: Loan[] = data?.data ?? [];
 
   const deleteLoanMutation = useDeleteLoan();
