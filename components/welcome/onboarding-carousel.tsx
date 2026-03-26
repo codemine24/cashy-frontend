@@ -1,6 +1,5 @@
-import { onboardingSlides, type OnboardingSlide } from "@/constants/onboarding";
-
 import { H2, Muted } from "@/components/ui/typography";
+import { onboardingSlides, type OnboardingSlide } from "@/constants/onboarding";
 import { ChevronRight } from "@/lib/icons";
 import { useCallback, useRef, useState } from "react";
 import {
@@ -44,16 +43,18 @@ export function OnboardingCarousel() {
   };
 
   const renderSlide = ({ item }: { item: OnboardingSlide }) => (
-    <View style={{ width: SLIDE_WIDTH }} className="items-center">
-      {/* Phone mockup image */}
+    <View
+      style={{ width: SLIDE_WIDTH }}
+      className="items-center justify-center"
+    >
       <View
-        className="items-center justify-center overflow-hidden rounded-3xl"
-        style={{ width: SLIDE_WIDTH * 0.7, height: SLIDE_WIDTH * 0.95 }}
+        className="overflow-hidden mr-8"
+        style={{ width: SLIDE_WIDTH * 0.7, height: SLIDE_WIDTH * 1 }}
       >
         <Image
           source={item.image}
           style={{ width: "100%", height: "100%" }}
-          resizeMode="contain"
+          resizeMode="cover"
         />
       </View>
     </View>
@@ -78,6 +79,8 @@ export function OnboardingCarousel() {
           offset: SLIDE_WIDTH * index,
           index,
         })}
+        contentContainerStyle={{ alignItems: "center" }}
+        className="flex-1"
       />
 
       {/* Text content */}
