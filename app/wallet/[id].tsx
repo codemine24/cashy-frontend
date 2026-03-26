@@ -379,7 +379,7 @@ export default function BookDetailScreen() {
           headerRight: () => {
             if (selectedTransaction) {
               return (
-                <View className="flex-row items-center gap-1">
+                <View className="flex-row items-center gap-4">
                   <TouchableOpacity
                     onPress={handleEdit}
                     className="p-2"
