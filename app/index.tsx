@@ -22,7 +22,8 @@ export default function WelcomeScreen() {
     return null;
   }
   return (
-    <ScreenWrapper className="mx-6">
+    <ScreenWrapper className="bg-background px-6 ">
+      {/* <View className="flex-1 px-6"> */}
       {/* ── Header: Logo ── */}
       <WelcomeHeader />
 
@@ -33,6 +34,7 @@ export default function WelcomeScreen() {
       <View className="mb-16">
         <Button onPress={() => router.push("/login-type")}>Get Started</Button>
       </View>
+      {/* </View> */}
     </ScreenWrapper>
   );
 }
