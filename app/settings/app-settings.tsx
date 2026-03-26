@@ -1,9 +1,8 @@
 import { useUpdateProfile } from "@/api/user";
 import { ScreenContainer } from "@/components/screen-container";
-import { languages } from "@/constants/onboarding";
 import { useAuth } from "@/context/auth-context";
 import { useTheme } from "@/context/theme-context";
-import { Bell, Check, ChevronRight, Globe, X } from "@/lib/icons";
+import { Bell } from "@/lib/icons";
 import { setUserInfo } from "@/utils/auth";
 import Feather from "@expo/vector-icons/Feather";
 import { Stack } from "expo-router";
@@ -11,13 +10,11 @@ import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
-  Modal,
-  Pressable,
   ScrollView,
   Switch,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 
 // ─── Helpers ────────────────────────────────────────────────────────
@@ -66,125 +63,6 @@ function ToggleRow({
         />
       )}
     </View>
-  );
-}
-
-function SelectRow({
-  icon,
-  iconBgClass,
-  label,
-  value,
-  onPress,
-}: {
-  icon: React.ReactNode;
-  iconBgClass: string;
-  label: string;
-  value: string;
-  onPress: () => void;
-}) {
-  return (
-    <TouchableOpacity
-      onPress={onPress}
-      activeOpacity={0.7}
-      className="flex-row items-center py-4 gap-3"
-    >
-      <View
-        className={`w-11 h-11 rounded-xl items-center justify-center mr-1 ${iconBgClass}`}
-      >
-        {icon}
-      </View>
-      <Text className="flex-1 text-base font-semibold text-foreground">
-        {label}
-      </Text>
-      <Text className="text-sm font-medium text-muted-foreground mr-1">
-        {value}
-      </Text>
-      <ChevronRight size={18} className="text-muted-foreground" />
-    </TouchableOpacity>
-  );
-}
-
-function Divider() {
-  return <View className="h-px bg-border ml-16" />;
-}
-
-// ─── Selection bottom-sheet modal ───────────────────────────────────
-
-function SelectionModal<T extends string>({
-  visible,
-  title,
-  options,
-  selected,
-  onSelect,
-  onClose,
-}: {
-  visible: boolean;
-  title: string;
-  options: { code: T; label: string; extra?: string }[];
-  selected: T;
-  onSelect: (code: T) => void;
-  onClose: () => void;
-}) {
-  return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="slide"
-      onRequestClose={onClose}
-    >
-      {/* Backdrop */}
-      <Pressable onPress={onClose} className="flex-1 bg-black/40" />
-
-      {/* Bottom sheet */}
-      <View className="rounded-t-3xl bg-card px-5 pb-10 pt-5">
-        {/* Handle bar */}
-        <View className="mb-4 items-center">
-          <View className="h-1 w-10 rounded-full bg-border" />
-        </View>
-
-        {/* Header */}
-        <View className="mb-5 flex-row items-center justify-between">
-          <Text className="text-lg font-bold text-card-foreground">
-            {title}
-          </Text>
-          <TouchableOpacity onPress={onClose} activeOpacity={0.7}>
-            <X size={22} className="text-muted-foreground" />
-          </TouchableOpacity>
-        </View>
-
-        {/* Options list */}
-        {options.map((opt) => {
-          const isSelected = opt.code === selected;
-          return (
-            <TouchableOpacity
-              key={opt.code}
-              onPress={() => onSelect(opt.code)}
-              activeOpacity={0.7}
-              className={`mb-2 flex-row items-center justify-between rounded-xl px-4 py-3.5 ${
-                isSelected ? "bg-primary/10" : "bg-muted"
-              }`}
-            >
-              <View className="flex-row items-center gap-3">
-                <Text
-                  className={`text-base font-semibold ${
-                    isSelected ? "text-primary" : "text-card-foreground"
-                  }`}
-                >
-                  {opt.label}
-                </Text>
-                {opt.extra && (
-                  <Text className="text-sm text-muted-foreground">
-                    {opt.extra}
-                  </Text>
-                )}
-              </View>
-
-              {isSelected && <Check size={20} className="text-primary" />}
-            </TouchableOpacity>
-          );
-        })}
-      </View>
-    </Modal>
   );
 }
 
@@ -260,13 +138,7 @@ export default function AppSettingsScreen() {
 
   // Derive display values from user
   const currentTheme = user?.theme ?? "LIGHT";
-  const currentLanguage = user?.language ?? "en";
-  const currentCurrency = user?.currency ?? "USD";
   const pushNotification = user?.push_notification ?? true;
-
-  // Modal visibility
-  const [languageModalVisible, setLanguageModalVisible] = useState(false);
-  const [currencyModalVisible, setCurrencyModalVisible] = useState(false);
 
   // Saving indicator per setting
   const [savingField, setSavingField] = useState<string | null>(null);
@@ -314,39 +186,12 @@ export default function AppSettingsScreen() {
     [user, authState, setAuthState, applyUserTheme, updateSetting],
   );
 
-  const handleLanguageSelect = useCallback(
-    (code: string) => {
-      setLanguageModalVisible(false);
-      updateSetting("language", code);
-    },
-    [updateSetting],
-  );
-
-  const handleCurrencySelect = useCallback(
-    (code: string) => {
-      setCurrencyModalVisible(false);
-      updateSetting("currency", code);
-    },
-    [updateSetting],
-  );
-
   const handleNotificationToggle = useCallback(
     (enabled: boolean) => {
       updateSetting("push_notification", enabled);
     },
     [updateSetting],
   );
-
-  // ── Derived display labels ──
-
-  const languageLabel =
-    languages.find((l) => l.code === currentLanguage)?.label ?? currentLanguage;
-
-  const languageOptions = languages.map((l) => ({
-    code: l.code,
-    label: l.label,
-    extra: l.nativeLabel,
-  }));
 
   return (
     <>
@@ -363,18 +208,6 @@ export default function AppSettingsScreen() {
             <ThemeSelector
               selected={currentTheme}
               onSelect={handleThemeChange}
-            />
-          </View>
-
-          {/* ── Localisation ── */}
-          <SectionLabel>{t("settings.localisation")}</SectionLabel>
-          <View className="bg-card rounded-2xl border border-border px-4 mb-6">
-            <SelectRow
-              iconBgClass="bg-blue-500/10"
-              icon={<Globe size={22} className="text-blue-500" />}
-              label={t("settings.language")}
-              value={languageLabel}
-              onPress={() => setLanguageModalVisible(true)}
             />
           </View>
 
@@ -396,16 +229,6 @@ export default function AppSettingsScreen() {
           </Text>
         </ScrollView>
       </ScreenContainer>
-
-      {/* ── Modals ── */}
-      <SelectionModal
-        visible={languageModalVisible}
-        title={t("settings.selectLanguage")}
-        options={languageOptions}
-        selected={currentLanguage}
-        onSelect={handleLanguageSelect}
-        onClose={() => setLanguageModalVisible(false)}
-      />
     </>
   );
 }
