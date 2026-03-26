@@ -15,8 +15,8 @@ export const RootNavigator = () => {
     <NavThemeProvider value={isDark ? DarkTheme : DefaultTheme}>
       <StatusBar
         style={isDark ? "light" : "dark"}
-        translucent={true}
-        backgroundColor="transparent"
+        translucent={false}
+        backgroundColor={isDark ? "#0f172a" : "#f8fafc"} // match your headerStyle colors
       />
       <ThemeVarsProvider>
         <RootProvider>
