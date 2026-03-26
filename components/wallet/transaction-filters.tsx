@@ -1,3 +1,6 @@
+import { AppModal } from "@/components/app-modal";
+import { Calendar, Check, ChevronDown, Search, X } from "@/lib/icons";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   FlatList,
@@ -8,9 +11,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { AppModal } from "@/components/app-modal";
-import { Calendar, Check, ChevronDown, Search, X } from "@/lib/icons";
-import DateTimePicker from "@react-native-community/datetimepicker";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -129,7 +129,8 @@ export function buildFilterParams(filters: TransactionFilterValues) {
       break;
     }
     case "date_range":
-      if (filters.dateRangeStart) params.from_date = fmt(filters.dateRangeStart);
+      if (filters.dateRangeStart)
+        params.from_date = fmt(filters.dateRangeStart);
       if (filters.dateRangeEnd) params.to_date = fmt(filters.dateRangeEnd);
       break;
   }
@@ -178,7 +179,9 @@ export function TransactionFilters({
 
   // ── Labels: generic default → selected value when active ──
   const entryTypeLabel = isEntryTypeActive
-    ? (filters.entryType === "IN" ? "Cash In" : "Cash Out")
+    ? filters.entryType === "IN"
+      ? "Cash In"
+      : "Cash Out"
     : "Entry Type";
 
   const dateLabel = useMemo(() => {
@@ -201,9 +204,9 @@ export function TransactionFilters({
       case "date":
         return filters.singleDate
           ? filters.singleDate.toLocaleDateString("en-GB", {
-            day: "2-digit",
-            month: "short",
-          })
+              day: "2-digit",
+              month: "short",
+            })
           : "Select Date";
       case "date_range": {
         const s = filters.dateRangeStart;
@@ -218,7 +221,13 @@ export function TransactionFilters({
       default:
         return "Select Date";
     }
-  }, [isDateActive, filters.datePreset, filters.singleDate, filters.dateRangeStart, filters.dateRangeEnd]);
+  }, [
+    isDateActive,
+    filters.datePreset,
+    filters.singleDate,
+    filters.dateRangeStart,
+    filters.dateRangeEnd,
+  ]);
 
   const memberLabel = useMemo(() => {
     if (!isMemberActive) return "Members";
@@ -242,7 +251,7 @@ export function TransactionFilters({
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 16 }}
+          contentContainerStyle={{ paddingVertical: 16 }}
         >
           <View className="flex-row items-center gap-2">
             <FilterChip
@@ -342,14 +351,14 @@ function FilterChip({
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.7}
-      className={`flex-row items-center gap-1.5 px-3.5 py-2 rounded-full border ${active
-        ? "bg-primary/10 border-primary"
-        : "bg-card border-border"
-        }`}
+      className={`flex-row items-center gap-1.5 px-3.5 py-2 rounded-full border ${
+        active ? "bg-primary/10 border-primary" : "bg-card border-border"
+      }`}
     >
       <Text
-        className={`text-[13px] font-semibold ${active ? "text-primary" : "text-foreground"
-          }`}
+        className={`text-[13px] font-semibold ${
+          active ? "text-primary" : "text-foreground"
+        }`}
         numberOfLines={1}
       >
         {label}
@@ -433,8 +442,9 @@ function RadioRow({
       className="flex-row items-center px-5 py-3.5 gap-3"
     >
       <View
-        className={`w-5 h-5 rounded-full border-2 items-center justify-center ${selected ? "border-primary bg-primary" : "border-muted-foreground"
-          }`}
+        className={`w-5 h-5 rounded-full border-2 items-center justify-center ${
+          selected ? "border-primary bg-primary" : "border-muted-foreground"
+        }`}
       >
         {selected && <Check size={12} color="#ffffff" />}
       </View>
@@ -461,8 +471,9 @@ function CheckboxRow({
       className="flex-row items-center px-5 py-3.5 gap-3"
     >
       <View
-        className={`w-5 h-5 rounded-md border-2 items-center justify-center ${checked ? "border-primary bg-primary" : "border-muted-foreground"
-          }`}
+        className={`w-5 h-5 rounded-md border-2 items-center justify-center ${
+          checked ? "border-primary bg-primary" : "border-muted-foreground"
+        }`}
       >
         {checked && <Check size={12} color="#ffffff" />}
       </View>
@@ -495,12 +506,14 @@ function ModalFooter({
         onPress={onApply}
         disabled={applyDisabled}
         activeOpacity={0.7}
-        className={`flex-1 py-3 rounded-xl items-center ${applyDisabled ? "bg-primary/30" : "bg-primary"
-          }`}
+        className={`flex-1 py-3 rounded-xl items-center ${
+          applyDisabled ? "bg-primary/30" : "bg-primary"
+        }`}
       >
         <Text
-          className={`font-bold text-[14px] ${applyDisabled ? "text-white/50" : "text-white"
-            }`}
+          className={`font-bold text-[14px] ${
+            applyDisabled ? "text-white/50" : "text-white"
+          }`}
         >
           Apply
         </Text>
@@ -548,9 +561,21 @@ function EntryTypeModal({
       }
     >
       <View className="py-2">
-        <RadioRow label="All" selected={draft === "ALL"} onPress={() => setDraft("ALL")} />
-        <RadioRow label="Cash In" selected={draft === "IN"} onPress={() => setDraft("IN")} />
-        <RadioRow label="Cash Out" selected={draft === "OUT"} onPress={() => setDraft("OUT")} />
+        <RadioRow
+          label="All"
+          selected={draft === "ALL"}
+          onPress={() => setDraft("ALL")}
+        />
+        <RadioRow
+          label="Cash In"
+          selected={draft === "IN"}
+          onPress={() => setDraft("IN")}
+        />
+        <RadioRow
+          label="Cash Out"
+          selected={draft === "OUT"}
+          onPress={() => setDraft("OUT")}
+        />
       </View>
     </BottomSheetModal>
   );
@@ -596,9 +621,15 @@ function DateFilterModal({
   ) => void;
 }) {
   const [draftPreset, setDraftPreset] = useState<DatePreset>(currentPreset);
-  const [draftSingleDate, setDraftSingleDate] = useState<Date | null>(currentSingleDate);
-  const [draftRangeStart, setDraftRangeStart] = useState<Date | null>(currentRangeStart);
-  const [draftRangeEnd, setDraftRangeEnd] = useState<Date | null>(currentRangeEnd);
+  const [draftSingleDate, setDraftSingleDate] = useState<Date | null>(
+    currentSingleDate,
+  );
+  const [draftRangeStart, setDraftRangeStart] = useState<Date | null>(
+    currentRangeStart,
+  );
+  const [draftRangeEnd, setDraftRangeEnd] = useState<Date | null>(
+    currentRangeEnd,
+  );
 
   // For native pickers
   const [showSinglePicker, setShowSinglePicker] = useState(false);
@@ -612,7 +643,13 @@ function DateFilterModal({
       setDraftRangeStart(currentRangeStart);
       setDraftRangeEnd(currentRangeEnd);
     }
-  }, [visible, currentPreset, currentSingleDate, currentRangeStart, currentRangeEnd]);
+  }, [
+    visible,
+    currentPreset,
+    currentSingleDate,
+    currentRangeStart,
+    currentRangeEnd,
+  ]);
 
   const hasChanged =
     draftPreset !== currentPreset ||
@@ -622,7 +659,11 @@ function DateFilterModal({
 
   const formatBtn = (d: Date | null, fallback: string) =>
     d
-      ? d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })
+      ? d.toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        })
       : fallback;
 
   return (
@@ -633,7 +674,14 @@ function DateFilterModal({
       footer={
         <ModalFooter
           onClear={() => onApply("all_time", null, null, null)}
-          onApply={() => onApply(draftPreset, draftSingleDate, draftRangeStart, draftRangeEnd)}
+          onApply={() =>
+            onApply(
+              draftPreset,
+              draftSingleDate,
+              draftRangeStart,
+              draftRangeEnd,
+            )
+          }
           applyDisabled={!hasChanged}
         />
       }
@@ -816,7 +864,9 @@ function MembersFilterModal({
           )}
           ListEmptyComponent={
             <View className="py-8 items-center">
-              <Text className="text-muted-foreground text-sm">No members found</Text>
+              <Text className="text-muted-foreground text-sm">
+                No members found
+              </Text>
             </View>
           }
         />
@@ -858,14 +908,11 @@ function CategoryFilterModal({
     return categories.filter((c) => c.title.toLowerCase().includes(q));
   }, [categories, search]);
 
-  const toggleId = useCallback(
-    (id: string) => {
-      setDraft((prev) =>
-        prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
-      );
-    },
-    [],
-  );
+  const toggleId = useCallback((id: string) => {
+    setDraft((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+    );
+  }, []);
 
   // Compare arrays for "has changed"
   const hasChanged = useMemo(() => {
@@ -923,7 +970,9 @@ function CategoryFilterModal({
           )}
           ListEmptyComponent={
             <View className="py-8 items-center">
-              <Text className="text-muted-foreground text-sm">No categories found</Text>
+              <Text className="text-muted-foreground text-sm">
+                No categories found
+              </Text>
             </View>
           }
         />

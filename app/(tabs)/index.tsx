@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { H3, Muted } from "@/components/ui/typography";
 import { CreateWalletModal } from "@/components/wallet/create-wallet-modal";
 import { WalletCard } from "@/components/wallet/wallet-card";
+import { useDebounce } from "@/hooks/use-debounce";
 import { CrossIcon } from "@/icons/cross-icon";
 import { FilterIcon } from "@/icons/filter-icon";
 import { PlusIcon } from "@/icons/plus-icon";
@@ -48,6 +49,7 @@ export default function HomeScreen() {
   const [sortBy, setSortBy] = useState<SortOption>("updated_at");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 400);
 
   const [tempSortBy, setTempSortBy] = useState<SortOption>("updated_at");
   const [tempSortOrder, setTempSortOrder] = useState<"asc" | "desc">("desc");
@@ -62,7 +64,11 @@ export default function HomeScreen() {
     data: booksData,
     isLoading,
     refetch,
-  } = useBooks({ search: searchQuery, sort: sortBy, sort_order: sortOrder });
+  } = useBooks({
+    search: debouncedSearchQuery.trim() || undefined,
+    sort: sortBy,
+    sort_order: sortOrder,
+  });
 
   const deleteBookMutation = useDeleteBook();
 
@@ -143,6 +149,7 @@ export default function HomeScreen() {
                 placeholder="Search wallets..."
                 placeholderClassName="text-muted-foreground"
                 className="flex-1 ml-2 text-base text-foreground"
+                placeholderTextColor="#94a3b8"
               />
               {searchQuery.length > 0 && (
                 <TouchableOpacity
@@ -169,7 +176,7 @@ export default function HomeScreen() {
           </View>
 
           {/* Books List */}
-          {isLoading ? (
+          {isLoading && !searchQuery ? (
             <WalletsSkeleton />
           ) : booksData?.data?.length === 0 ? (
             <View className="bg-surface rounded-xl p-8 items-center justify-center border border-border">

@@ -45,10 +45,10 @@ export function OnboardingCarousel() {
   const renderSlide = ({ item }: { item: OnboardingSlide }) => (
     <View
       style={{ width: SLIDE_WIDTH }}
-      className="items-center justify-center"
+      className="flex-1 items-center justify-center"
     >
       <View
-        className="overflow-hidden mr-8"
+        className="overflow-hidden rounded-xl"
         style={{ width: SLIDE_WIDTH * 0.7, height: SLIDE_WIDTH * 1 }}
       >
         <Image
@@ -79,7 +79,6 @@ export function OnboardingCarousel() {
           offset: SLIDE_WIDTH * index,
           index,
         })}
-        contentContainerStyle={{ alignItems: "center" }}
         className="flex-1"
       />
 
