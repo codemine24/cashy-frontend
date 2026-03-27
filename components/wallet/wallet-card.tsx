@@ -1,7 +1,7 @@
 import { useAuth } from "@/context/auth-context";
 import { Book } from "@/interface/wallet";
 import { BookIcon, Edit3, MoreVertical, Trash2, UserPlus } from "@/lib/icons";
-import { formatUpdateDate } from "@/utils";
+import { formatNumber, formatUpdateDate } from "@/utils";
 import { isOwner } from "@/utils/is-owner";
 import { useRouter } from "expo-router";
 import { useState } from "react";
@@ -66,10 +66,7 @@ export const WalletCard = ({
             book.balance > 0 ? "text-green-600" : "text-red-600"
           }`}
         >
-          {new Intl.NumberFormat("en-US", {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          }).format(book.balance || 0)}
+          {formatNumber(book.balance)}
         </Text>
 
         {showMenu && (

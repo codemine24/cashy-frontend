@@ -21,8 +21,6 @@ export const GoalCard = ({ goal, onEdit, onAddMember, onDelete }: GoalCardProps)
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const isCurrentUserOwner = isOwner(authState.user?.id, goal.created_by);
 
-  console.log("goal", goal)
-
   const progress = Math.min(
     Math.max((goal.balance / goal.target_amount) * 100, 0),
     100
