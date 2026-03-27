@@ -21,6 +21,7 @@ import { useAuth } from "@/context/auth-context";
 import { useDebounce } from "@/hooks/use-debounce";
 import { SearchIcon } from "@/icons/search-icon";
 import { Copy, Edit3, Trash2, UserPlus, Users, X } from "@/lib/icons";
+import { formatNumber } from "@/utils";
 import { getAccessToken } from "@/utils/auth";
 import { isOwner, isWalletViewer } from "@/utils/is-owner";
 import { File as ExpoFile, Paths } from "expo-file-system";
@@ -498,7 +499,7 @@ export default function BookDetailScreen() {
                   Net Balance
                 </Text>
                 <Text className="text-foreground font-bold text-[14px]">
-                  {book.data.balance ?? 0}
+                  {formatNumber(book.data.balance ?? 0)}
                 </Text>
               </View>
               <View className="px-3 py-3">
@@ -507,7 +508,7 @@ export default function BookDetailScreen() {
                     Total In (+)
                   </Text>
                   <Text className="text-success font-semibold text-[12px]">
-                    {book.data.in ?? 0}
+                    {formatNumber(book.data.in ?? 0)}
                   </Text>
                 </View>
                 <View className="flex-row justify-between items-center">
@@ -515,7 +516,7 @@ export default function BookDetailScreen() {
                     Total Out (-)
                   </Text>
                   <Text className="text-destructive font-semibold text-[12px]">
-                    {book.data.out ?? 0}
+                    {formatNumber(book.data.out ?? 0)}
                   </Text>
                 </View>
               </View>
@@ -737,10 +738,10 @@ export default function BookDetailScreen() {
                   item.type === "IN" ? "text-success" : "text-destructive"
                 }`}
               >
-                {item.amount}
+                {formatNumber(item.amount)}
               </Text>
               <Text className="text-sm text-muted-foreground">
-                Balance: {item.runningBalance}
+                Balance: {formatNumber(item.runningBalance)}
               </Text>
             </View>
           </TouchableOpacity>

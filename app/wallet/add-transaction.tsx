@@ -1,5 +1,6 @@
 import { useCreateTransaction, useUpdateTransaction } from "@/api/transaction";
 import { ChevronRight, Paperclip, X } from "@/lib/icons";
+import { formatDateToUTC, formatTimeToUTC } from "@/utils";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import * as ImagePicker from "expo-image-picker";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
@@ -95,20 +96,6 @@ export default function AddTransactionScreen() {
     params.selectedCategoryName,
   ]);
 
-  const formatDate = (date: Date) => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
-  };
-
-  const formatTime = (date: Date) => {
-    const hours = String(date.getHours()).padStart(2, "0");
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-    const seconds = String(date.getSeconds()).padStart(2, "0");
-    return `${hours}:${minutes}:${seconds}`;
-  };
-
   // ── Attachment picker ──────────────────────────────────────────────────────
   const pickAttachments = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -152,8 +139,8 @@ export default function AddTransactionScreen() {
               : selectedCategory
             : undefined,
           remark,
-          date: formatDate(date),
-          time: formatTime(date),
+          date: formatDateToUTC(date),
+          time: formatTimeToUTC(date),
         }
       : {
           book_id: bookId,
@@ -165,8 +152,8 @@ export default function AddTransactionScreen() {
               : selectedCategory
             : undefined,
           remark,
-          date: formatDate(date),
-          time: formatTime(date),
+          date: formatDateToUTC(date),
+          time: formatTimeToUTC(date),
         };
 
     const formData = new FormData();
@@ -182,6 +169,8 @@ export default function AddTransactionScreen() {
 
     return formData;
   };
+
+  console.log("buildFormData......", buildFormData);
 
   // ── Submit ─────────────────────────────────────────────────────────────────
   const isDeposit = type === "IN";
@@ -201,26 +190,10 @@ export default function AddTransactionScreen() {
       : "Cash Out";
 
   const handleSubmit = async () => {
-    if (!amount || parseFloat(amount) <= 0) {
-      Toast.show({
-        type: "error",
-        text1: "Error",
-        text2: "Please enter a valid amount",
-      });
-      return;
-    }
-
-    if (!isDeposit && !selectedCategory) {
-      Toast.show({
-        type: "error",
-        text1: "Error",
-        text2: "Please select a category",
-      });
-      return;
-    }
-
     try {
       let response: any;
+
+      console.log("response.....", response);
 
       if (isEditing) {
         response = await updateTransactionMutation.mutateAsync({

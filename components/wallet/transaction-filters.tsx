@@ -1,5 +1,6 @@
 import { AppModal } from "@/components/app-modal";
 import { Calendar, Check, ChevronDown, Search, X } from "@/lib/icons";
+import { formatDateToUTC } from "@/utils";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -70,68 +71,33 @@ export function buildFilterParams(filters: TransactionFilterValues) {
     params.type = filters.entryType;
   }
 
-  const today = new Date();
-  const fmt = (d: Date) =>
-    `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-
   switch (filters.datePreset) {
     case "today":
       params.period = "today";
-      // params.start_date = fmt(today);
-      // params.end_date = fmt(today);
       break;
     case "date":
-      params.date = fmt(filters.singleDate!);
+      params.date = formatDateToUTC(filters.singleDate!);
       break;
     case "yesterday": {
       params.period = "yesterday";
-      // const y = new Date(today);
-      // y.setDate(y.getDate() - 1);
-      // params.start_date = fmt(y);
-      // params.end_date = fmt(y);
       break;
     }
     case "this_month":
       params.period = "this_month";
-      // params.start_date = fmt(new Date(today.getFullYear(), today.getMonth(), 1));
-      // params.end_date = fmt(today);
       break;
     case "last_month": {
       params.period = "last_month";
-      // const start = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-      // const end = new Date(today.getFullYear(), today.getMonth(), 0);
-      // params.start_date = fmt(start);
-      // params.end_date = fmt(end);
-      break;
-    }
-    case "last_day": {
-      params.period = "last_day";
-      // const y = new Date(today);
-      // y.setDate(y.getDate() - 1);
-      // params.start_date = fmt(y);
-      // params.end_date = fmt(y);
-      break;
-    }
-    case "last_week": {
-      params.period = "last_week";
-      // const start = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
-      // const end = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-      // params.start_date = fmt(start);
-      // params.end_date = fmt(end);
       break;
     }
     case "last_year": {
       params.period = "last_year";
-      // const start = new Date(today.getFullYear() - 1, today.getMonth(), 1);
-      // const end = new Date(today.getFullYear() - 1, today.getMonth(), 0);
-      // params.start_date = fmt(start);
-      // params.end_date = fmt(end);
       break;
     }
     case "date_range":
       if (filters.dateRangeStart)
-        params.from_date = fmt(filters.dateRangeStart);
-      if (filters.dateRangeEnd) params.to_date = fmt(filters.dateRangeEnd);
+        params.from_date = formatDateToUTC(filters.dateRangeStart);
+      if (filters.dateRangeEnd)
+        params.to_date = formatDateToUTC(filters.dateRangeEnd);
       break;
   }
 
@@ -589,12 +555,9 @@ const DATE_PRESETS: { key: DatePreset; label: string }[] = [
   { key: "all_time", label: "All Time" },
   { key: "today", label: "Today" },
   { key: "yesterday", label: "Yesterday" },
-  { key: "last_day", label: "Last Day" },
-  { key: "last_week", label: "Last Week" },
   { key: "this_month", label: "This Month" },
   { key: "last_month", label: "Last Month" },
-  { key: "last_year", label: "Last Year" },
-  { key: "date", label: "Specific Date" },
+  { key: "date", label: "Single Day" },
   { key: "date_range", label: "Date Range" },
 ];
 
