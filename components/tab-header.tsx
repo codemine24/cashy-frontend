@@ -258,20 +258,6 @@ export const TabHeader = () => {
                 </View>
               )}
             </View>
-            <BellIcon className="text-foreground" />
-            {/* Red dot indicator for unread notifications */}
-            {hasUnreadNotifications && (
-              <View
-                className="absolute top-1.5 right-2 w-2 h-2 bg-red-500 rounded-full"
-                style={{
-                  shadowColor: "#000",
-                  shadowOffset: { width: 0, height: 1 },
-                  shadowOpacity: 0.2,
-                  shadowRadius: 1,
-                  elevation: 2,
-                }}
-              />
-            )}
           </TouchableOpacity>
 
           {/* Breadcrumb / Menu */}
