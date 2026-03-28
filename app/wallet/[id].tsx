@@ -710,12 +710,12 @@ export default function BookDetailScreen() {
                   }
                 }}
                 onLongPress={() => setSelectedTransaction(item)}
-                className={`px-3 py-3 flex-row justify-between ${
+                className={`px-4 py-4 flex-row justify-between ${
                   selectedTransaction?.id === item.id ? "bg-primary/10" : ""
                 } ${index !== data.length - 1 ? "border-b border-border" : ""}`}
               >
-                <View className="flex-1 mr-2">
-                  <View className="flex-row items-center justify-between mb-1.5">
+                <View className="flex-1 mr-3">
+                  <View className="flex-row items-center justify-between mb-2">
                     <View
                       className={`px-2 py-[2px] rounded-xl ${item.type === "IN" ? "bg-green-600/20" : "bg-red-600/20"}`}
                     >
@@ -736,11 +736,11 @@ export default function BookDetailScreen() {
                   </View>
 
                   <Text
-                    className={`text-sm mb-1.5 font-medium ${item.remark ? "text-foreground" : "text-muted-foreground"}`}
+                    className={`text-base mb-2 font-medium ${item.remark ? "text-foreground" : "text-muted-foreground"}`}
                   >
-                    {item.remark || item.category?.title || "No remark"}
+                    {item.remark || "No remark"}
                   </Text>
-                  <Text className="text-xs text-muted-foreground">
+                  <Text className="text-sm text-muted-foreground">
                     Updated:{" "}
                     {new Date(item.updated_at).toLocaleDateString("en-GB", {
                       day: "2-digit",
@@ -755,7 +755,7 @@ export default function BookDetailScreen() {
                 </View>
                 <View className="items-end justify-center">
                   <Text
-                    className={`text-sm font-bold mb-1 ${
+                    className={`text-base font-bold mb-2 ${
                       item.type === "IN" ? "text-success" : "text-destructive"
                     }`}
                   >

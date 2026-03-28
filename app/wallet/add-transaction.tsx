@@ -187,8 +187,6 @@ export default function AddTransactionScreen() {
           time: formatTimeToUTC(date),
         };
 
-    console.log("dataPayload.........", dataPayload);
-
     const formData = new FormData();
     formData.append("data", JSON.stringify(dataPayload));
 
@@ -323,6 +321,15 @@ export default function AddTransactionScreen() {
                       params: {
                         bookId: bookId,
                         currentSelectedId: selectedCategory,
+                        // Pass edit parameters if in edit mode
+                        editId: params.editId,
+                        editAmount: params.editAmount,
+                        editRemark: params.editRemark,
+                        editType: params.editType,
+                        editCategoryId: params.editCategoryId,
+                        editCategoryName: params.editCategoryName,
+                        editDate: params.editDate,
+                        editTime: params.editTime,
                       },
                     });
                   }}

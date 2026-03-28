@@ -1,104 +1,56 @@
-import { useCreateCategory, useGetCategories } from "@/api/category";
-import { AppModal } from "@/components/app-modal";
-import { Check, Plus, Settings, X } from "@/lib/icons";
+import { useGetCategories } from "@/api/category";
+import { CategoryModal } from "@/components/category/category-modal";
+import { Check, Plus, Settings } from "@/lib/icons";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-    ActivityIndicator,
-    KeyboardAvoidingView,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View
+  ActivityIndicator,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import Toast from "react-native-toast-message";
 
 export default function SelectCategoryScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{
     bookId: string;
     currentSelectedId?: string;
+    editId?: string;
+    editAmount?: string;
+    editRemark?: string;
+    editType?: string;
+    editCategoryId?: string;
+    editCategoryName?: string;
+    editDate?: string;
+    editTime?: string;
   }>();
 
   const [modalVisible, setModalVisible] = useState(false);
-  const [newCategoryName, setNewCategoryName] = useState("");
 
   const { data: categoriesResponse, isLoading } = useGetCategories();
   const categories = categoriesResponse?.data || [];
 
-  const createCategoryMutation = useCreateCategory();
-
   const handleSelect = (categoryId: string, categoryName: string) => {
     // Navigate back to add-transaction and pass the selected category info as params
+    // Preserve all existing edit parameters if we're in edit mode
     router.navigate({
       pathname: "/wallet/add-transaction",
       params: {
-        ...params,
+        bookId: params.bookId,
+        currentSelectedId: params.currentSelectedId,
+        // Preserve edit parameters if they exist
+        editId: params.editId,
+        editAmount: params.editAmount,
+        editRemark: params.editRemark,
+        editType: params.editType,
+        editDate: params.editDate,
+        editTime: params.editTime,
+        // Update the category selection
         selectedCategoryId: categoryId,
         selectedCategoryName: categoryName,
       },
     } as any);
-  };
-
-  const handleCreateCategory = async () => {
-    if (!newCategoryName.trim()) {
-      Toast.show({
-        type: "error",
-        text1: "Error",
-        text2: "Category name cannot be empty",
-      });
-      return;
-    }
-
-    try {
-      const payload = {
-        title: newCategoryName.trim(),
-        color: "#00929A",
-        icon: "",
-      };
-
-      const response = await createCategoryMutation.mutateAsync(payload);
-
-      if (
-        response?.data?.success ||
-        (response as any)?.success ||
-        response?.data?.id
-      ) {
-        Toast.show({
-          type: "success",
-          text1: "Success",
-          text2: "Category created successfully",
-        });
-
-        const createdCategory = response?.data?.data || response?.data;
-        const newId = createdCategory?.id || "";
-        const newName = createdCategory?.title || newCategoryName.trim();
-
-        setModalVisible(false);
-        setNewCategoryName("");
-
-        // Immediately select the new category and go back
-        if (newId) {
-          handleSelect(newId.toString(), newName);
-        }
-      } else {
-        Toast.show({
-          type: "error",
-          text1: "Error",
-          text2:
-            response?.data?.message ||
-            (response as any)?.message ||
-            "Failed to create category",
-        });
-      }
-    } catch (e: any) {
-      Toast.show({
-        type: "error",
-        text1: "Error",
-        text2: e?.message || "Something went wrong",
-      });
-    }
   };
 
   return (
@@ -148,7 +100,7 @@ export default function SelectCategoryScreen() {
               return (
                 <TouchableOpacity
                   key={cat.id}
-                  onPress={() => handleSelect(cat.id.toString(), cat.title)}
+                  onPress={() => handleSelect(cat.id, cat.title)}
                   className={`flex-row items-center justify-between p-4 mb-3 border rounded-xl ${isSelected ? "border-primary bg-primary/5" : "border-border bg-card"}`}
                 >
                   <View className="flex-row items-center">
@@ -176,84 +128,21 @@ export default function SelectCategoryScreen() {
         {/* Floating Action Button */}
         <TouchableOpacity
           onPress={() => setModalVisible(true)}
-          className="absolute bottom-10 right-6 px-4 py-3 rounded-full bg-primary flex-row gap-3 items-center justify-center shadow-lg shadow-primary/30"
-          style={{ elevation: 5 }}
+          className="rounded-full py-4 px-4 absolute bottom-8 right-4 bg-primary flex-row items-center justify-center shadow-lg"
         >
-          <Plus size={24} className="text-foreground" />
-          <Text className="text-primary-foreground font-bold text-xl tracking-widest text-center">
+          <Plus className="text-primary-foreground size-6" />
+          <Text className="text-primary-foreground text-lg text-center ml-2">
             Add Category
           </Text>
         </TouchableOpacity>
       </View>
 
       {/* Add New Category Modal */}
-      <AppModal visible={modalVisible} animationType="slide" transparent>
-        <KeyboardAvoidingView behavior="height" style={{ flex: 1 }}>
-          <View className="flex-1 justify-end bg-black/40">
-            <TouchableOpacity
-              className="flex-1"
-              activeOpacity={1}
-              onPress={() => setModalVisible(false)}
-            />
-            <View className="bg-background rounded-t-3xl pt-2 px-6 pb-10 shadow-lg">
-              <View className="items-center mb-6 mt-1">
-                <View className="h-1 w-12 bg-foreground rounded-full" />
-              </View>
-
-              <View className="flex-row items-center justify-between mb-6">
-                <Text className="text-xl font-bold text-foreground">
-                  New Category
-                </Text>
-                <TouchableOpacity
-                  onPress={() => setModalVisible(false)}
-                  className="bg-muted p-2 rounded-full"
-                >
-                  <X size={20} className="text-foreground" />
-                </TouchableOpacity>
-              </View>
-
-              <Text className="text-sm font-semibold text-foreground mb-2">
-                Category Name
-              </Text>
-              <TextInput
-                value={newCategoryName}
-                onChangeText={setNewCategoryName}
-                placeholder="e.g. Travel, Utilities, Groceries"
-                placeholderTextColor="#9CA3AF"
-                className="w-full border border-border rounded-xl px-4 py-4 bg-muted/30 text-foreground text-base mb-6"
-                autoFocus
-              />
-
-              <View className="flex-row gap-4">
-                <TouchableOpacity
-                  onPress={() => setModalVisible(false)}
-                  className="flex-1 bg-muted rounded-xl py-4 items-center justify-center"
-                >
-                  <Text className="text-foreground font-bold text-base">
-                    Cancel
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={handleCreateCategory}
-                  disabled={createCategoryMutation.isPending}
-                  className={`flex-1 rounded-xl py-4 items-center justify-center ${createCategoryMutation.isPending ? "bg-primary/70" : "bg-primary"}`}
-                >
-                  {createCategoryMutation.isPending ? (
-                    <ActivityIndicator
-                      className="text-foreground"
-                      size="small"
-                    />
-                  ) : (
-                    <Text className="text-foreground font-bold text-base tracking-wide">
-                      Save
-                    </Text>
-                  )}
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </KeyboardAvoidingView>
-      </AppModal>
+      <CategoryModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        isEditing={false}
+      />
     </>
   );
 }

@@ -1,13 +1,16 @@
+import {
+  ACCESS_TOKEN_KEY,
+  REFRESH_TOKEN_KEY,
+  USER_INFO_KEY,
+} from "@/constants/auth";
+import { User } from "@/interface/user";
 import * as SecureStore from "expo-secure-store";
 import { Platform } from "react-native";
-import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY, USER_INFO_KEY } from "@/constants/auth";
-import { User } from "@/interface/user";
 
 export async function getAccessToken(): Promise<string | null> {
   try {
     // Web platform uses cookie-based auth, no manual token management needed
     if (Platform.OS === "web") {
-      console.log("[Auth] Web platform uses cookie-based auth, skipping token retrieval");
       return null;
     }
 
@@ -15,7 +18,6 @@ export async function getAccessToken(): Promise<string | null> {
     const token = await SecureStore.getItemAsync(ACCESS_TOKEN_KEY);
     return token;
   } catch (error) {
-    console.error("[Auth] Failed to get session token:", error);
     return null;
   }
 }
@@ -24,7 +26,6 @@ export async function getRefreshToken(): Promise<string | null> {
   try {
     // Web platform uses cookie-based auth, no manual token management needed
     if (Platform.OS === "web") {
-      console.log("[Auth] Web platform uses cookie-based auth, skipping token retrieval");
       return null;
     }
 
@@ -32,7 +33,6 @@ export async function getRefreshToken(): Promise<string | null> {
     const token = await SecureStore.getItemAsync(REFRESH_TOKEN_KEY);
     return token;
   } catch (error) {
-    console.error("[Auth] Failed to get refresh token:", error);
     return null;
   }
 }
@@ -41,12 +41,10 @@ export async function setAccessToken(token: string): Promise<void> {
   try {
     // Web platform uses cookie-based auth, no manual token management needed
     if (Platform.OS === "web") {
-      console.log("[Auth] Web platform uses cookie-based auth, skipping token storage");
       return;
     }
     await SecureStore.setItemAsync(ACCESS_TOKEN_KEY, token);
   } catch (error) {
-    console.error("[Auth] Failed to set session token:", error);
     throw error;
   }
 }
@@ -55,15 +53,12 @@ export async function removeAccessToken(): Promise<void> {
   try {
     // Web platform uses cookie-based auth, logout is handled by server clearing cookie
     if (Platform.OS === "web") {
-      console.log("[Auth] Web platform uses cookie-based auth, skipping token removal");
       return;
     }
 
     // Use SecureStore for native
     await SecureStore.deleteItemAsync(ACCESS_TOKEN_KEY);
-  } catch (error) {
-    console.error("[Auth] Failed to remove session token:", error);
-  }
+  } catch (error) {}
 }
 
 export async function getUserInfo(): Promise<User | null> {
@@ -83,7 +78,6 @@ export async function getUserInfo(): Promise<User | null> {
     const user = JSON.parse(info);
     return user;
   } catch (error) {
-    console.error("[Auth] Failed to get user info:", error);
     return null;
   }
 }
@@ -95,12 +89,10 @@ export async function setUserInfo(user: User): Promise<void> {
       window.localStorage.setItem(USER_INFO_KEY, JSON.stringify(user));
       return;
     }
-    
+
     // Use SecureStore for native
     await SecureStore.setItemAsync(USER_INFO_KEY, JSON.stringify(user));
-  } catch (error) {
-    console.error("[Auth] Failed to set user info:", error);
-  }
+  } catch (error) {}
 }
 
 export async function clearUserInfo(): Promise<void> {
@@ -113,7 +105,5 @@ export async function clearUserInfo(): Promise<void> {
 
     // Use SecureStore for native
     await SecureStore.deleteItemAsync(USER_INFO_KEY);
-  } catch (error) {
-    console.error("[Auth] Failed to clear user info:", error);
-  }
+  } catch (error) {}
 }

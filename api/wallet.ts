@@ -19,8 +19,6 @@ export const useBooks = (
   if (searchParams.sort) params.sort_by = searchParams.sort;
   if (searchParams.sort_order) params.sort_order = searchParams.sort_order;
 
-  console.log("params.....", params);
-
   return useQuery({
     queryKey: [...keys.list(), params],
     queryFn: async (): Promise<{ data: Book[] } | undefined> => {
