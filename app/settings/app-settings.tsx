@@ -1,5 +1,6 @@
 import { useUpdateProfile } from "@/api/user";
 import { ScreenContainer } from "@/components/screen-container";
+import { languages, type LanguageCode } from "@/constants/onboarding";
 import { useAuth } from "@/context/auth-context";
 import { useTheme } from "@/context/theme-context";
 import { Bell } from "@/lib/icons";
@@ -14,7 +15,7 @@ import {
   Switch,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 
 // ─── Helpers ────────────────────────────────────────────────────────
@@ -127,6 +128,81 @@ function ThemeSelector({
   );
 }
 
+// ─── Language selector ───────────────────────────────────────────────────
+
+function LanguageSelector({
+  selected,
+  onSelect,
+  t,
+}: {
+  selected: LanguageCode;
+  onSelect: (language: LanguageCode) => void;
+  t: (key: string) => string;
+}) {
+  const [showDropdown, setShowDropdown] = useState(false);
+  const selectedLanguage = languages.find((lang) => lang.code === selected);
+
+  return (
+    <View className="flex-row items-center py-4 gap-3">
+      <View className="w-11 h-11 rounded-xl items-center justify-center mr-1 bg-blue-500/10">
+        <Feather name="globe" size={22} color="#3b82f6" />
+      </View>
+      <Text className="flex-1 text-base font-semibold text-foreground">
+        {t("settings.language")}
+      </Text>
+
+      {/* Dropdown */}
+      <TouchableOpacity
+        onPress={() => setShowDropdown(!showDropdown)}
+        activeOpacity={0.7}
+        className="flex-row items-center bg-muted rounded-xl px-3 py-2 min-w-[100px]"
+      >
+        <Text className="text-sm font-medium text-foreground flex-1 text-center">
+          {selectedLanguage?.code.toUpperCase()}
+        </Text>
+        <Feather
+          name="chevron-down"
+          size={16}
+          color="#9ca3af"
+          style={{ transform: [{ rotate: showDropdown ? "180deg" : "0deg" }] }}
+        />
+      </TouchableOpacity>
+
+      {/* Dropdown modal */}
+      {showDropdown && (
+        <View className="absolute top-full right-0 mt-1 bg-card rounded-xl border border-border shadow-lg z-50 min-w-[120px]">
+          {languages.map((lang) => {
+            const isActive = lang.code === selected;
+            return (
+              <TouchableOpacity
+                key={lang.code}
+                onPress={() => {
+                  onSelect(lang.code);
+                  setShowDropdown(false);
+                }}
+                activeOpacity={0.7}
+                className={`flex-row items-center justify-between px-3 py-2.5 ${isActive ? "bg-primary/10" : ""} ${lang.code === "en" ? "rounded-t-xl" : ""} ${lang.code === "bn" ? "rounded-b-xl" : ""}`}
+              >
+                <View>
+                  <Text
+                    className={`text-sm font-medium ${isActive ? "text-primary" : "text-foreground"}`}
+                  >
+                    {lang.label}
+                  </Text>
+                  <Text className="text-xs text-muted-foreground">
+                    {lang.nativeLabel}
+                  </Text>
+                </View>
+                {isActive && <Feather name="check" size={16} color="#8b5cf6" />}
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      )}
+    </View>
+  );
+}
+
 // ─── Main screen ────────────────────────────────────────────────────
 
 export default function AppSettingsScreen() {
@@ -138,6 +214,7 @@ export default function AppSettingsScreen() {
 
   // Derive display values from user
   const currentTheme = user?.theme ?? "LIGHT";
+  const currentLanguage = (user?.language as LanguageCode) ?? "en";
   const pushNotification = user?.push_notification ?? true;
 
   // Saving indicator per setting
@@ -193,6 +270,13 @@ export default function AppSettingsScreen() {
     [updateSetting],
   );
 
+  const handleLanguageChange = useCallback(
+    (language: LanguageCode) => {
+      updateSetting("language", language);
+    },
+    [updateSetting],
+  );
+
   return (
     <>
       <Stack.Screen options={{ title: "App Settings" }} />
@@ -208,6 +292,16 @@ export default function AppSettingsScreen() {
             <ThemeSelector
               selected={currentTheme}
               onSelect={handleThemeChange}
+            />
+          </View>
+
+          {/* ── Language ── */}
+          <SectionLabel>{t("settings.languageSection")}</SectionLabel>
+          <View className="bg-card rounded-2xl border border-border px-4 mb-6">
+            <LanguageSelector
+              selected={currentLanguage}
+              onSelect={handleLanguageChange}
+              t={t}
             />
           </View>
 

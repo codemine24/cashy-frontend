@@ -33,9 +33,9 @@ const SORT_OPTIONS: {
   label: string;
   order: "asc" | "desc";
 }[] = [
-  { key: "name", label: "Name (A-Z)", order: "desc" },
-  { key: "created_at", label: "Last Created", order: "desc" },
   { key: "updated_at", label: "Last Updated", order: "desc" },
+  { key: "name", label: "Name (A-Z)", order: "asc" },
+  { key: "created_at", label: "Last Created", order: "desc" },
 ];
 
 export default function HomeScreen() {
@@ -47,13 +47,13 @@ export default function HomeScreen() {
   } | null>(null);
   const [showSortModal, setShowSortModal] = useState(false);
   const [sortBy, setSortBy] = useState<SortOption>("updated_at");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(searchQuery, 400);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
 
   const [tempSortBy, setTempSortBy] = useState<SortOption>("updated_at");
-  const [tempSortOrder, setTempSortOrder] = useState<"asc" | "desc">("desc");
+  const [tempSortOrder, setTempSortOrder] = useState<"asc" | "desc">("asc");
 
   const openSortModal = () => {
     setTempSortBy(sortBy);

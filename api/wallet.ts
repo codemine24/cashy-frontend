@@ -16,8 +16,10 @@ export const useBooks = (
   // Filter out empty/undefined params
   const params: Record<string, string> = {};
   if (searchParams.search) params.search_term = searchParams.search;
-  if (searchParams.sort) params.sort = searchParams.sort;
+  if (searchParams.sort) params.sort_by = searchParams.sort;
   if (searchParams.sort_order) params.sort_order = searchParams.sort_order;
+
+  console.log("params.....", params);
 
   return useQuery({
     queryKey: [...keys.list(), params],
@@ -84,7 +86,9 @@ export const useDeleteBook = () => {
   return useMutation({
     mutationFn: async (id: string) => {
       try {
-        const response = await apiClient.delete(BOOK_API_URL, { data: { ids: [id] } });
+        const response = await apiClient.delete(BOOK_API_URL, {
+          data: { ids: [id] },
+        });
         return response.data;
       } catch (error) {
         throwApiError(error);
@@ -124,9 +128,18 @@ export const useShareBook = () => {
 export const useRemoveMember = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ book_id, user_id }: { book_id: string; user_id: string }) => {
+    mutationFn: async ({
+      book_id,
+      user_id,
+    }: {
+      book_id: string;
+      user_id: string;
+    }) => {
       try {
-        const response = await apiClient.delete(`${BOOK_API_URL}/remove-member`, { data: { book_id, user_id } });
+        const response = await apiClient.delete(
+          `${BOOK_API_URL}/remove-member`,
+          { data: { book_id, user_id } },
+        );
         return response.data;
       } catch (error) {
         throwApiError(error);
