@@ -1,8 +1,9 @@
+import { useGetUnreadCount } from "@/api/notification";
 import { BellIcon } from "@/icons/bell-icon";
+import { Menu } from "@/lib/icons";
 import { useRouter } from "expo-router";
 import { useEffect, useRef } from "react";
 import { Animated, Easing, Text, TouchableOpacity, View } from "react-native";
-import { Menu } from "@/lib/icons";
 
 
 function PremiumIcon() {
@@ -184,6 +185,7 @@ function SparkleDot({ delay, style }: { delay: number; style: object }) {
 
 export const TabHeader = () => {
   const router = useRouter();
+  const { data: unreadCount = 0 } = useGetUnreadCount();
 
   return (
     <View
@@ -221,7 +223,36 @@ export const TabHeader = () => {
             className="size-10 items-center justify-center"
             hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
           >
-            <BellIcon className="text-foreground" />
+            <View style={{ position: "relative" }}>
+              <BellIcon className="text-foreground" />
+              {unreadCount > 0 && (
+                <View
+                  style={{
+                    position: "absolute",
+                    top: -5,
+                    right: -6,
+                    minWidth: 16,
+                    height: 16,
+                    borderRadius: 8,
+                    backgroundColor: "#ef4444",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    paddingHorizontal: 3,
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: "#fff",
+                      fontSize: 9,
+                      fontWeight: "700",
+                      lineHeight: 12,
+                    }}
+                  >
+                    {unreadCount > 99 ? "99+" : unreadCount}
+                  </Text>
+                </View>
+              )}
+            </View>
           </TouchableOpacity>
 
           {/* Breadcrumb / Menu */}
