@@ -1,14 +1,195 @@
+import { useGetUnreadCount } from "@/api/notification";
 import { BellIcon } from "@/icons/bell-icon";
 import { Menu } from "@/lib/icons";
 import { useRouter } from "expo-router";
-import { TouchableOpacity, View } from "react-native";
+import { useEffect, useRef } from "react";
+import { Animated, Easing, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Logo } from "./logo";
 import { PremiumAnimatedIcon } from "./premium-animated-icon";
 
+
+function PremiumIcon() {
+  const spinAnim = useRef(new Animated.Value(0)).current;
+  const pulseAnim = useRef(new Animated.Value(0)).current;
+  const bounceAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    // Continuous spin for arc ring
+    Animated.loop(
+      Animated.timing(spinAnim, {
+        toValue: 1,
+        duration: 2200,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      })
+    ).start();
+
+    // Soft background breathe
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 1100,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 0,
+          duration: 1100,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+
+    // Crown gentle float
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(bounceAnim, {
+          toValue: -2.5,
+          duration: 700,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+        Animated.timing(bounceAnim, {
+          toValue: 0,
+          duration: 700,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+  }, [bounceAnim, pulseAnim, spinAnim]);
+
+  const spin = spinAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["0deg", "360deg"],
+  });
+
+  const bgOpacity = pulseAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.12, 0.3],
+  });
+  const bgScale = pulseAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.82, 1.06],
+  });
+
+  return (
+    <View style={{ width: 42, height: 42, alignItems: "center", justifyContent: "center" }}>
+
+      {/* Breathing glow background */}
+      <Animated.View
+        style={{
+          position: "absolute",
+          width: 36,
+          height: 36,
+          borderRadius: 18,
+          backgroundColor: "#FBBF24",
+          opacity: bgOpacity,
+          transform: [{ scale: bgScale }],
+        }}
+      />
+
+      {/* Spinning arc — primary (top-right amber) */}
+      <Animated.View
+        style={{
+          position: "absolute",
+          width: 35,
+          height: 35,
+          borderRadius: 20,
+          borderWidth: 2,
+          borderTopColor: "#F59E0B",
+          borderRightColor: "#FBBF24",
+          borderBottomColor: "transparent",
+          borderLeftColor: "transparent",
+          transform: [{ rotate: spin }],
+        }}
+      />
+
+      {/* Spinning arc — secondary (bottom-left lighter) */}
+      <Animated.View
+        style={{
+          position: "absolute",
+          width: 35,
+          height: 35,
+          borderRadius: 20,
+          borderWidth: 2,
+          borderTopColor: "transparent",
+          borderRightColor: "transparent",
+          borderBottomColor: "#FDE68A",
+          borderLeftColor: "#FCD34D",
+          transform: [{ rotate: spin }],
+        }}
+      />
+
+      {/* Twinkling sparkle dots — staggered so they never all fire at once */}
+      <SparkleDot delay={0} style={{ top: 1, left: "50%", marginLeft: -2 }} />
+      <SparkleDot delay={350} style={{ right: 1, top: "50%", marginTop: -2 }} />
+      <SparkleDot delay={800} style={{ bottom: 1, left: "50%", marginLeft: -2 }} />
+      <SparkleDot delay={1200} style={{ left: 1, top: "50%", marginTop: -2 }} />
+
+      {/* Crown — gently floating */}
+      <Animated.Text
+        style={{
+          fontSize: 17,
+          zIndex: 2,
+          transform: [{ translateY: bounceAnim }],
+        }}
+      >
+        👑
+      </Animated.Text>
+    </View>
+  );
+}
+
+function SparkleDot({ delay, style }: { delay: number; style: object }) {
+  const anim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.delay(delay),
+        Animated.timing(anim, {
+          toValue: 1,
+          duration: 500,
+          easing: Easing.out(Easing.ease),
+          useNativeDriver: true,
+        }),
+        Animated.timing(anim, {
+          toValue: 0,
+          duration: 500,
+          easing: Easing.in(Easing.ease),
+          useNativeDriver: true,
+        }),
+        Animated.delay(600),
+      ])
+    ).start();
+  }, []);
+
+  return (
+    <Animated.View
+      style={[
+        {
+          position: "absolute",
+          width: 4,
+          height: 4,
+          borderRadius: 2,
+          backgroundColor: "#FCD34D",
+          opacity: anim,
+          transform: [{ scale: anim }],
+        },
+        style,
+      ]}
+    />
+  );
+}
+
 export const TabHeader = () => {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { data: unreadCount = 0 } = useGetUnreadCount();
 
   // TODO: Replace with actual unread notifications count from your state/context
   const hasUnreadNotifications = true;
@@ -47,20 +228,36 @@ export const TabHeader = () => {
             className="size-10 items-center justify-center relative"
             hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
           >
-            <BellIcon className="text-foreground" />
-            {/* Red dot indicator for unread notifications */}
-            {hasUnreadNotifications && (
-              <View
-                className="absolute top-1.5 right-2 w-2 h-2 bg-red-500 rounded-full"
-                style={{
-                  shadowColor: "#000",
-                  shadowOffset: { width: 0, height: 1 },
-                  shadowOpacity: 0.2,
-                  shadowRadius: 1,
-                  elevation: 2,
-                }}
-              />
-            )}
+            <View style={{ position: "relative" }}>
+              <BellIcon className="text-foreground" />
+              {unreadCount > 0 && (
+                <View
+                  style={{
+                    position: "absolute",
+                    top: -5,
+                    right: -6,
+                    minWidth: 16,
+                    height: 16,
+                    borderRadius: 8,
+                    backgroundColor: "#ef4444",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    paddingHorizontal: 3,
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: "#fff",
+                      fontSize: 9,
+                      fontWeight: "700",
+                      lineHeight: 12,
+                    }}
+                  >
+                    {unreadCount > 99 ? "99+" : unreadCount}
+                  </Text>
+                </View>
+              )}
+            </View>
           </TouchableOpacity>
 
           {/* Breadcrumb / Menu */}
@@ -77,3 +274,5 @@ export const TabHeader = () => {
     </View>
   );
 };
+
+
