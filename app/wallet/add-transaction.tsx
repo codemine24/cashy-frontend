@@ -12,7 +12,6 @@ import {
   Alert,
   Image,
   KeyboardAvoidingView,
-  Platform,
   ScrollView,
   Text,
   TextInput,
@@ -263,15 +262,15 @@ export default function AddTransactionScreen() {
       />
       <KeyboardAvoidingView
         style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
+        behavior="height"
+        keyboardVerticalOffset={120}
       >
         <View className="flex-1 bg-background">
           <ScrollView
             className="flex-1 bg-background"
             contentContainerStyle={{
               paddingHorizontal: 20,
-              paddingBottom: 100,
+              paddingBottom: 120,
             }}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
@@ -411,9 +410,9 @@ export default function AddTransactionScreen() {
                 <DateTimePicker
                   value={date}
                   mode="date"
-                  display={Platform.OS === "ios" ? "spinner" : "default"}
+                  display="default"
                   onChange={(event, selectedDate) => {
-                    setShowDatePicker(Platform.OS === "ios");
+                    setShowDatePicker(false);
                     if (selectedDate) {
                       setDate(selectedDate);
                       form.setValue("date", selectedDate.toISOString());
@@ -427,9 +426,9 @@ export default function AddTransactionScreen() {
                 <DateTimePicker
                   value={date}
                   mode="time"
-                  display={Platform.OS === "ios" ? "spinner" : "default"}
+                  display="default"
                   onChange={(event, selectedTime) => {
-                    setShowTimePicker(Platform.OS === "ios");
+                    setShowTimePicker(false);
                     if (selectedTime) {
                       setDate(selectedTime);
                       form.setValue("date", selectedTime.toISOString());
