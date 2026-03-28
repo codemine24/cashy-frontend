@@ -15,7 +15,12 @@ interface GoalCardProps {
   onDelete?: (goalId: string, goalName: string) => void;
 }
 
-export const GoalCard = ({ goal, onEdit, onAddMember, onDelete }: GoalCardProps) => {
+export const GoalCard = ({
+  goal,
+  onEdit,
+  onAddMember,
+  onDelete,
+}: GoalCardProps) => {
   const router = useRouter();
   const { authState } = useAuth();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
@@ -23,7 +28,7 @@ export const GoalCard = ({ goal, onEdit, onAddMember, onDelete }: GoalCardProps)
 
   const progress = Math.min(
     Math.max((goal.balance / goal.target_amount) * 100, 0),
-    100
+    100,
   );
   const isComplete = progress >= 100;
 
@@ -55,25 +60,19 @@ export const GoalCard = ({ goal, onEdit, onAddMember, onDelete }: GoalCardProps)
             <Target size={26} className="text-primary" />
           </View>
           <View className="flex-1 mr-4">
-            <Text className="text-foreground font-bold text-lg" numberOfLines={1}>
+            <Text
+              className="text-foreground font-bold text-lg"
+              numberOfLines={1}
+            >
               {goal.name}
             </Text>
-            <View className="flex-row items-center gap-1">
-              <Text className="text-sm text-muted-foreground mt-0.5">
-                {goal.total_transactions} {goal.total_transactions === 1 ? 'entry' : 'entries'}
-              </Text>
-              <Text className="text-sm text-muted-foreground mt-0.5">•</Text>
-              <Text className="text-sm text-muted-foreground mt-0.5">
-                {formatUpdateDate(goal.updated_at)}
-              </Text>
-            </View>
           </View>
         </View>
 
         {/* Right: Amount and Options Menu */}
         <View className="flex-row items-center">
           <View className="items-end mr-1">
-            <Text className="text-lg font-bold text-success">
+            <Text className="text-lg font-bold text-primary">
               {goal.balance}
             </Text>
             <Text className="text-[10px] text-muted-foreground">
@@ -129,18 +128,24 @@ export const GoalCard = ({ goal, onEdit, onAddMember, onDelete }: GoalCardProps)
                     style={{ opacity: isCurrentUserOwner ? 1 : 0.4 }}
                   >
                     <UserPlus size={20} className="text-black" />
-                    <Text className="ml-4 text-[16px] text-black">Add Members</Text>
+                    <Text className="ml-4 text-[16px] text-black">
+                      Add Members
+                    </Text>
                   </TouchableOpacity>
                 )}
                 {onDelete && (
                   <TouchableOpacity
-                    onPress={() => handleAction(() => onDelete(goal.id, goal.name))}
+                    onPress={() =>
+                      handleAction(() => onDelete(goal.id, goal.name))
+                    }
                     className="flex-row items-center mt-1"
                     disabled={!isCurrentUserOwner}
                     style={{ opacity: isCurrentUserOwner ? 1 : 0.4 }}
                   >
                     <Trash2 size={20} className="text-red-500" />
-                    <Text className="ml-4 text-[16px] text-red-500">Delete Goal</Text>
+                    <Text className="ml-4 text-[16px] text-red-500">
+                      Delete Goal
+                    </Text>
                   </TouchableOpacity>
                 )}
               </View>
@@ -150,16 +155,20 @@ export const GoalCard = ({ goal, onEdit, onAddMember, onDelete }: GoalCardProps)
       </View>
 
       {/* Progress Line in the bottom */}
-      <View className="mt-4">
-        <View className="h-2 bg-muted rounded-full overflow-hidden">
+      <View className="mt-2">
+        <View className="h-1 bg-muted rounded-full overflow-hidden">
           <View
-            className={`h-full rounded-full ${isComplete ? "bg-success" : "bg-primary"}`}
+            className={`h-full rounded-full ${isComplete ? "bg-primary" : "bg-primary"}`}
             style={{ width: `${progress}%` }}
           />
         </View>
-        <View className="flex-row justify-between mt-1">
-          <Text className="text-[10px] text-muted-foreground">Progress</Text>
-          <Text className={`text-[10px] font-bold ${isComplete ? "text-success" : "text-primary"}`}>
+        <View className="flex-row justify-between mt-2">
+          <Text className="text-[10px] text-muted-foreground">
+            <Text className="text-xs text-muted-foreground mt-0.5">
+              {formatUpdateDate(goal.updated_at)}
+            </Text>
+          </Text>
+          <Text className={`text-xs text-muted-foreground`}>
             {progress.toFixed(1)}%
           </Text>
         </View>
