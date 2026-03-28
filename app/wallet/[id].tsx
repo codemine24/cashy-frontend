@@ -511,6 +511,7 @@ export default function BookDetailScreen() {
             onRefresh={onRefresh}
           />
         }
+        renderItem={() => null}
         ListHeaderComponent={
           <>
             {/* Header Card */}
@@ -688,84 +689,85 @@ export default function BookDetailScreen() {
             </View>
           </>
         }
-        renderSectionHeader={({ section: { title } }) => (
-          <View className="bg-background py-2 rounded-lg">
-            <Text className="text-muted-foreground text-[13px] font-bold tracking-wide">
-              {title}
-            </Text>
-          </View>
-        )}
-        renderItem={({ item, index, section }) => (
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={() => {
-              if (selectedTransaction) {
-                setSelectedTransaction(
-                  item.id === selectedTransaction.id ? null : item,
-                );
-              } else {
-                handleOpenTransaction(item);
-              }
-            }}
-            onLongPress={() => setSelectedTransaction(item)}
-            className={`rounded-2xl mt-1.5 px-3 py-3 flex-row justify-between bg-card border ${
-              selectedTransaction?.id === item.id
-                ? "border-primary bg-primary/10"
-                : "border-border"
-            } ${index !== section.data.length - 1 ? "mb-1" : ""}`}
-          >
-            <View className="flex-1 mr-2">
-              <View className="flex-row items-center justify-between mb-1.5">
-                <View
-                  className={`px-2 py-[2px] rounded-xl ${item.type === "IN" ? "bg-green-600/20" : "bg-red-600/20"}`}
-                >
-                  {item.type === "IN" ? (
-                    <Text
-                      className={`text-[10px] font-semibold  tracking-wider text-green-600`}
+        renderSectionHeader={({ section: { title, data } }) => (
+          <View className="bg-card rounded-2xl mb-2 border border-border">
+            <View className="px-3 py-3 border-b border-border">
+              <Text className="text-muted-foreground text-[13px] font-bold tracking-wide">
+                {title}
+              </Text>
+            </View>
+            {data.map((item, index) => (
+              <TouchableOpacity
+                key={item.id}
+                activeOpacity={0.7}
+                onPress={() => {
+                  if (selectedTransaction) {
+                    setSelectedTransaction(
+                      item.id === selectedTransaction.id ? null : item,
+                    );
+                  } else {
+                    handleOpenTransaction(item);
+                  }
+                }}
+                onLongPress={() => setSelectedTransaction(item)}
+                className={`px-3 py-3 flex-row justify-between ${
+                  selectedTransaction?.id === item.id ? "bg-primary/10" : ""
+                } ${index !== data.length - 1 ? "border-b border-border" : ""}`}
+              >
+                <View className="flex-1 mr-2">
+                  <View className="flex-row items-center justify-between mb-1.5">
+                    <View
+                      className={`px-2 py-[2px] rounded-xl ${item.type === "IN" ? "bg-green-600/20" : "bg-red-600/20"}`}
                     >
-                      Cash in
-                    </Text>
-                  ) : (
-                    <Text
-                      className={`text-[10px] font-semibold  tracking-wider text-red-500`}
-                    >
-                      {item.category?.title || "Cash out"}
-                    </Text>
-                  )}
-                </View>
-              </View>
+                      {item.type === "IN" ? (
+                        <Text
+                          className={`text-[10px] font-semibold  tracking-wider text-green-600`}
+                        >
+                          Cash in
+                        </Text>
+                      ) : (
+                        <Text
+                          className={`text-[10px] font-semibold  tracking-wider text-red-500`}
+                        >
+                          {item.category?.title || "Cash out"}
+                        </Text>
+                      )}
+                    </View>
+                  </View>
 
-              <Text
-                className={`text-sm mb-1.5 font-medium ${item.remark ? "text-foreground" : "text-muted-foreground"}`}
-              >
-                {item.remark || item.category?.title || "No remark"}
-              </Text>
-              <Text className="text-xs text-muted-foreground">
-                Updated:{" "}
-                {new Date(item.updated_at).toLocaleDateString("en-GB", {
-                  day: "2-digit",
-                  month: "short",
-                  year: "numeric",
-                })}{" "}
-                {new Date(item.updated_at).toLocaleTimeString("en-US", {
-                  hour: "numeric",
-                  minute: "2-digit",
-                })}
-              </Text>
-            </View>
-            <View className="items-end justify-center">
-              <Text
-                className={`text-sm font-bold mb-1 ${
-                  item.type === "IN" ? "text-success" : "text-destructive"
-                }`}
-              >
-                {formatNumber(item.amount)}
-              </Text>
-              <Text className="text-sm text-muted-foreground">
-                Balance: {formatNumber(item.runningBalance)}
-              </Text>
-            </View>
-          </TouchableOpacity>
+                  <Text
+                    className={`text-sm mb-1.5 font-medium ${item.remark ? "text-foreground" : "text-muted-foreground"}`}
+                  >
+                    {item.remark || item.category?.title || "No remark"}
+                  </Text>
+                  <Text className="text-xs text-muted-foreground">
+                    Updated:{" "}
+                    {new Date(item.updated_at).toLocaleDateString("en-GB", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                    })}{" "}
+                    {new Date(item.updated_at).toLocaleTimeString("en-US", {
+                      hour: "numeric",
+                      minute: "2-digit",
+                    })}
+                  </Text>
+                </View>
+                <View className="items-end justify-center">
+                  <Text
+                    className={`text-sm font-bold mb-1 ${
+                      item.type === "IN" ? "text-success" : "text-destructive"
+                    }`}
+                  >
+                    {formatNumber(item.amount)}
+                  </Text>
+                  <Text className="text-sm text-muted-foreground">
+                    Balance: {formatNumber(item.runningBalance)}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </View>
         )}
         ListEmptyComponent={
           transactionsLoading && searchQuery ? (

@@ -72,8 +72,23 @@ function BottomTabBar({
               alignItems: "center",
               justifyContent: "center",
               gap: 2,
+              paddingTop: 4,
             }}
           >
+            {active && (
+              <View
+                style={{
+                  position: "absolute",
+                  top: -2,
+                  left: "50%",
+                  transform: [{ translateX: -30 }],
+                  width: 60,
+                  height: 2,
+                  backgroundColor: ACTIVE_COLOR,
+                  borderRadius: 1,
+                }}
+              />
+            )}
             {tab.icon(color)}
             <Text style={{ fontSize: 10, fontWeight: "500", color }}>
               {tab.name}
