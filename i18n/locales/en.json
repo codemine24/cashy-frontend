@@ -21,7 +21,6 @@
   "tabs": {
     "home": "Home",
     "wallets": "Wallets",
-    "goals": "Goals",
     "settings": "Settings"
   },
   "settings": {
@@ -74,17 +73,6 @@
     "deleteConfirm": "Are you sure you want to delete this transaction?",
     "categories": "Categories",
     "manageCategories": "Manage Categories"
-  },
-  "goals": {
-    "title": "Goals",
-    "createGoal": "Create Goal",
-    "noGoals": "No goals yet",
-    "targetAmount": "Target Amount",
-    "currentAmount": "Current Amount",
-    "progress": "Progress",
-    "addEntry": "Add Entry",
-    "deleteGoal": "Delete Goal",
-    "deleteConfirm": "Delete \"{{name}}\"? This cannot be undone."
   },
   "profile": {
     "title": "Your Profile",

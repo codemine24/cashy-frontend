@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { Animated, Easing, Text, TouchableOpacity, View } from "react-native";
 
 const PREMIUM_FEATURES = [
-  "Unlimited wallets & goals",
+  "Unlimited wallets",
   "Share with unlimited members",
   "Advance analytics & reports",
 ];
