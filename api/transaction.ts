@@ -1,6 +1,11 @@
 import apiClient from "@/lib/api-client";
 import { throwApiError } from "@/utils/throw-api-error";
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 
 const TRANSACTION_API_URL = "/transaction";
 const keys = {
@@ -32,7 +37,10 @@ export const useTransactions = (searchParams: GetTransactionsParams) => {
     queryKey: [...keys.list(), searchParams],
     queryFn: async () => {
       try {
-        const response = await apiClient.get(`${TRANSACTION_API_URL}/book/${searchParams.book_id}`, { params });
+        const response = await apiClient.get(
+          `${TRANSACTION_API_URL}/book/${searchParams.book_id}`,
+          { params },
+        );
         return response.data;
       } catch (error) {
         throwApiError(error);
@@ -74,12 +82,14 @@ export const useInfiniteTransactions = (params: InfiniteTransactionsParams) => {
         if (params.to_date) queryParams.to_date = params.to_date;
         if (params.date) queryParams.date = params.date;
         if (params.member_id) queryParams.member_id = params.member_id;
-        if (params.category_ids) queryParams.category_ids = params.category_ids.join(",");
+        if (params.category_ids)
+          queryParams.category_ids = params.category_ids.join(",");
 
         const response = await apiClient.get(
           `${TRANSACTION_API_URL}/book/${params.book_id}`,
           { params: queryParams },
         );
+
         return response.data;
       } catch (error) {
         throwApiError(error);

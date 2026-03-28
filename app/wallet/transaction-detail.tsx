@@ -24,14 +24,15 @@ import {
   View,
 } from "react-native";
 
-import { TransactionDetailSkeleton } from "@/components/skeletons/transaction-detail-skeleton";
 import { AppModal } from "@/components/app-modal";
+import { TransactionDetailSkeleton } from "@/components/skeletons/transaction-detail-skeleton";
 import { useAuth } from "@/context/auth-context";
-import { Paths, File as ExpoFile } from "expo-file-system";
-import * as Sharing from "expo-sharing";
-import * as MediaLibrary from "expo-media-library";
-import Toast from "react-native-toast-message";
+import { useTheme } from "@/context/theme-context";
 import { makeImageUrl } from "@/utils/helper";
+import { File as ExpoFile, Paths } from "expo-file-system";
+import * as MediaLibrary from "expo-media-library";
+import * as Sharing from "expo-sharing";
+import Toast from "react-native-toast-message";
 
 // ── helper: avatar (real image or initials fallback) ─────────────────────────
 
@@ -44,7 +45,7 @@ function Avatar({
   avatarFile?: string;
   size?: number;
 }) {
-  const uri = avatarFile ? makeImageUrl(avatarFile, 'user') : undefined;
+  const uri = avatarFile ? makeImageUrl(avatarFile, "user") : undefined;
 
   const initials = (name || "?")
     .split(" ")
@@ -109,7 +110,12 @@ export default function TransactionDetailScreen() {
   }>();
 
   const { authState } = useAuth();
-  const { data: txData, isLoading, refetch } = useTransaction(params.transactionId!);
+  const { isDark } = useTheme();
+  const {
+    data: txData,
+    isLoading,
+    refetch,
+  } = useTransaction(params.transactionId!);
   const deleteTransaction = useDeleteTransaction();
   const [refreshing, setRefreshing] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -134,30 +140,30 @@ export default function TransactionDetailScreen() {
 
   const formattedDate = transaction?.created_at
     ? new Date(transaction.created_at).toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "long",
-      year: "numeric",
-    })
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+      })
     : "—";
 
   const formattedTime = transaction?.created_at
     ? new Date(transaction.created_at)
-      .toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })
-      .toLowerCase()
+        .toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })
+        .toLowerCase()
     : "—";
 
   const updatedDate = transaction?.updated_at
     ? new Date(transaction.updated_at).toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "long",
-      year: "numeric",
-    })
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+      })
     : "—";
 
   const updatedTime = transaction?.updated_at
     ? new Date(transaction.updated_at)
-      .toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })
-      .toLowerCase()
+        .toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })
+        .toLowerCase()
     : "—";
 
   const handleEdit = () => {
@@ -170,6 +176,10 @@ export default function TransactionDetailScreen() {
         editAmount: transaction?.amount?.toString(),
         editRemark: transaction?.remark || "",
         editType: transaction?.type,
+        editDate: transaction?.created_at,
+        editTime: transaction?.created_at,
+        editCategoryId: transaction?.category_id || "",
+        editCategoryName: transaction?.category?.title || "",
       },
     });
   };
@@ -183,6 +193,10 @@ export default function TransactionDetailScreen() {
         editAmount: transaction?.amount?.toString(),
         editRemark: transaction?.remark || "",
         editType: transaction?.type,
+        editDate: transaction?.created_at,
+        editTime: transaction?.created_at,
+        editCategoryId: transaction?.category_id || "",
+        editCategoryName: transaction?.category?.title || "",
       },
     });
   };
@@ -226,7 +240,7 @@ export default function TransactionDetailScreen() {
       const downloadRes = await ExpoFile.downloadFileAsync(
         selectedImage,
         Paths.cache,
-        { idempotent: true }
+        { idempotent: true },
       );
 
       if (!downloadRes) throw new Error("Download failed");
@@ -271,7 +285,7 @@ export default function TransactionDetailScreen() {
       const downloadRes = await ExpoFile.downloadFileAsync(
         selectedImage,
         Paths.cache,
-        { idempotent: true }
+        { idempotent: true },
       );
 
       if (!downloadRes) throw new Error("Download failed");
@@ -304,24 +318,46 @@ export default function TransactionDetailScreen() {
           headerShown: true,
           headerBackTitle: "Back",
           title: "Transaction Detail",
-          headerStyle: { backgroundColor: headerJsColor },
-          headerTintColor: "#fff",
-          headerTitleStyle: { color: "#fff", fontWeight: "700" },
+          headerStyle: {
+            backgroundColor: isLoading
+              ? isDark
+                ? "#111827"
+                : "#ffffff"
+              : headerJsColor,
+          },
+          headerTintColor: isLoading
+            ? isDark
+              ? "#ffffff"
+              : "#000000"
+            : "#fff",
+          headerTitleStyle: {
+            color: isLoading ? (isDark ? "#ffffff" : "#000000") : "#fff",
+          },
           headerRight: () => (
-            <View className="flex-row items-center gap-1">
+            <View className="flex-row items-center gap-2">
               <TouchableOpacity
                 onPress={handleEdit}
                 className="p-2"
                 hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               >
-                <Edit3 size={20} color="#ffffff" />
+                <Edit3
+                  size={20}
+                  color={
+                    isLoading ? (isDark ? "#ffffff" : "#000000") : "#ffffff"
+                  }
+                />
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={handleDuplicate}
                 className="p-2"
                 hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               >
-                <Copy size={20} color="#ffffff" />
+                <Copy
+                  size={20}
+                  color={
+                    isLoading ? (isDark ? "#ffffff" : "#000000") : "#ffffff"
+                  }
+                />
               </TouchableOpacity>
               {canDelete && (
                 <TouchableOpacity
@@ -329,7 +365,12 @@ export default function TransactionDetailScreen() {
                   className="p-2"
                   hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                 >
-                  <Trash2 size={20} color="#fca5a5" />
+                  <Trash2
+                    size={20}
+                    color={
+                      isLoading ? (isDark ? "#ffffff" : "#000000") : "#ffffff"
+                    }
+                  />
                 </TouchableOpacity>
               )}
             </View>
@@ -337,7 +378,7 @@ export default function TransactionDetailScreen() {
         }}
       />
 
-      <View className={`flex-1 ${headerBgClass}`}>
+      <View className={`flex-1 ${isLoading ? "bg-background" : headerBgClass}`}>
         {isLoading ? (
           <TransactionDetailSkeleton />
         ) : (
@@ -356,15 +397,12 @@ export default function TransactionDetailScreen() {
           >
             {/* ── Colored Header: Amount ── */}
             <View className="items-center pt-7 pb-9 px-6">
-              <Text className="text-white/75 text-xs font-semibold tracking-widest uppercase mb-2">
+              <Text className="text-white/95 text-xs font-semibold tracking-widest uppercase mb-2">
                 {typeLabel}
               </Text>
               <Text className="text-white text-5xl font-extrabold tracking-tight">
                 {isIn ? "+" : "-"}
                 {transaction?.amount}
-              </Text>
-              <Text className="text-white/65 text-sm mt-2">
-                {formattedDate} · {formattedTime}
               </Text>
             </View>
 
@@ -385,7 +423,9 @@ export default function TransactionDetailScreen() {
               />
               <Divider />
               <InfoRow
-                icon={<MessageSquare size={16} className="text-muted-foreground" />}
+                icon={
+                  <MessageSquare size={16} className="text-muted-foreground" />
+                }
                 label="Remark"
                 value={transaction?.remark || "No remark"}
               />
@@ -404,7 +444,7 @@ export default function TransactionDetailScreen() {
               <Divider />
               <InfoRow
                 icon={<BookOpen size={16} className="text-muted-foreground" />}
-                label="Book"
+                label="Wallet"
                 value={transaction?.book?.name || "—"}
               />
 
@@ -430,7 +470,9 @@ export default function TransactionDetailScreen() {
                   ) : null}
                 </View>
                 <View className="items-end">
-                  <Text className={`text-[11px] font-semibold mb-0.5 ${accentTextClass}`}>
+                  <Text
+                    className={`text-[11px] font-semibold mb-0.5 ${accentTextClass}`}
+                  >
                     Added
                   </Text>
                   <Text className="text-[11px] text-muted-foreground">
@@ -480,7 +522,9 @@ export default function TransactionDetailScreen() {
                     <View className="w-5 items-center">
                       <BookOpen size={18} color="#6b7280" />
                     </View>
-                    <Text className="flex-1 text-sm text-muted-foreground">Attachment</Text>
+                    <Text className="flex-1 text-sm text-muted-foreground">
+                      Attachment
+                    </Text>
                     <View className="items-end">
                       <Text className="text-[11px] text-muted-foreground">
                         {transaction.attachment.length} file(s)
@@ -490,7 +534,7 @@ export default function TransactionDetailScreen() {
 
                   <View className="flex-row items-center px-5 gap-3.5">
                     {transaction.attachment.map((item: any, index: number) => {
-                      const imageUrl = makeImageUrl(item, 'general');
+                      const imageUrl = makeImageUrl(item, "general");
                       return (
                         <TouchableOpacity
                           key={index}

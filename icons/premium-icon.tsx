@@ -2,8 +2,11 @@ import { cssInterop } from "nativewind";
 import { Path, Svg, SvgProps } from "react-native-svg";
 
 const PremiumIconSvg = (props: SvgProps) => (
-  <Svg width="20" height="20" viewBox="0 0 20 20" {...props}>
-    <Path fill="currentColor" d="M5.5 3a.5.5 0 0 0-.429.243l-3 5a.5.5 0 0 0 .045.577l7.5 9a.5.5 0 0 0 .768 0l7.5-9a.5.5 0 0 0 .045-.577l-3-5A.5.5 0 0 0 14.5 3zM3.383 8l2.4-4h1.979l-1.6 4zm2.775 1l2.267 5.829L3.568 9zM10 16.12L7.231 9h5.538zM7.239 8l1.6-4h2.322l1.6 4zm6.6 0l-1.6-4h1.978l2.4 4zm.003 1h2.59l-4.857 5.829z" />
+  <Svg width="24" height="24" viewBox="0 0 24 24" {...props}>
+    <Path
+      fill="currentColor"
+      d="m9.675 13.7l.875-2.85L8.25 9h2.85l.9-2.8l.9 2.8h2.85l-2.325 1.85l.875 2.85l-2.3-1.775zM6 23v-7.725q-.95-1.05-1.475-2.4T4 10q0-3.35 2.325-5.675T12 2t5.675 2.325T20 10q0 1.525-.525 2.875T18 15.275V23l-6-2zm10.25-8.75Q18 12.5 18 10t-1.75-4.25T12 4T7.75 5.75T6 10t1.75 4.25T12 16t4.25-1.75M8 20.025L12 19l4 1.025v-3.1q-.875.5-1.888.788T12 18t-2.113-.288T8 16.926zm4-1.55"
+    />
   </Svg>
 );
 

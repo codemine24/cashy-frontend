@@ -1,16 +1,17 @@
 import { ScreenContainer } from "@/components/screen-container";
 import { Stack, useRouter } from "expo-router";
-import { Alert, Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import {
+  Alert,
+  Image,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 import { PremiumUpSellCard } from "@/components/premium-upsell-card";
 import { useAuth } from "@/context/auth-context";
-import {
-  ChevronRight,
-  Info,
-  LogOut,
-  Settings,
-  User,
-} from "@/lib/icons";
+import { ChevronRight, Info, LogOut, Settings, User } from "@/lib/icons";
 import { clearUserInfo, removeAccessToken } from "@/utils/auth";
 import { makeImageUrl } from "@/utils/helper";
 
@@ -51,12 +52,16 @@ function SettingsRow({
           {title}
         </Text>
         {subtitle ? (
-          <Text className="text-xs text-muted-foreground mt-0.5">{subtitle}</Text>
+          <Text className="text-xs text-muted-foreground mt-0.5">
+            {subtitle}
+          </Text>
         ) : null}
       </View>
 
       {/* Arrow or danger icon */}
-      {danger ? null : <ChevronRight size={18} className="text-muted-foreground" />}
+      {danger ? null : (
+        <ChevronRight size={18} className="text-muted-foreground" />
+      )}
     </TouchableOpacity>
   );
 }
@@ -75,7 +80,7 @@ export default function SettingsScreen() {
     await removeAccessToken();
     await clearUserInfo();
     setAuthState({ isAuthenticated: false, user: null });
-    router.replace("/login-type");
+    router.replace("/");
   };
 
   return (
@@ -86,7 +91,8 @@ export default function SettingsScreen() {
           title: "More",
           headerBackTitle: "Back",
           headerShadowVisible: true,
-        }} />
+        }}
+      />
       <ScreenContainer edges={["left", "right"]} className="bg-background">
         <ScrollView
           showsVerticalScrollIndicator={false}
@@ -97,9 +103,14 @@ export default function SettingsScreen() {
           }}
         >
           <View className="mb-6 flex-row items-center gap-3 bg-card rounded-2xl border border-border px-4 py-4">
-            <Image source={{ uri: makeImageUrl(authState?.user?.avatar, "user") }} className="size-11 rounded-full" />
+            <Image
+              source={{ uri: makeImageUrl(authState?.user?.avatar, "user") }}
+              className="size-11 rounded-full"
+            />
             <View>
-              <Text className="text-2xl font-bold text-foreground">{authState?.user?.name}</Text>
+              <Text className="text-2xl font-bold text-foreground">
+                {authState?.user?.name}
+              </Text>
               <Text className="text-sm text-muted-foreground mt-1">
                 {authState?.user?.email}
               </Text>
