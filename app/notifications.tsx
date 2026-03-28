@@ -1,9 +1,13 @@
-import { useGetNotifications } from "@/api/notification";
+import { useGetNotifications, useMarkNotificationsAsRead } from "@/api/notification";
+
 import { ScreenContainer } from "@/components/screen-container";
 import { Notification } from "@/interface/notification";
 import { ArrowLeft, Bell, Check, Info, Settings } from "@/lib/icons";
 import { timeAgo } from "@/utils";
+import { useQueryClient } from "@tanstack/react-query";
 import { Stack, useRouter } from "expo-router";
+import { useEffect } from "react";
+
 import {
   ActivityIndicator,
   FlatList,
@@ -38,6 +42,18 @@ export default function NotificationsScreen() {
     page: 1,
     limit: 20,
   });
+
+  const queryClient = useQueryClient();
+  const { mutate: markAsRead } = useMarkNotificationsAsRead();
+
+  useEffect(() => {
+    markAsRead(undefined, {
+      onSuccess: () => {
+        queryClient.refetchQueries({ queryKey: ["notifications"] });
+      },
+    });
+  }, []);
+
 
   const notifications = data?.data || [];
 
@@ -110,8 +126,8 @@ export default function NotificationsScreen() {
               renderItem={({ item }: { item: Notification }) => (
                 <View
                   className={`flex-row p-4 rounded-2xl border ${item.is_read
-                      ? "bg-surface/50 border-border/50"
-                      : "bg-surface border-border shadow-sm"
+                    ? "bg-surface/50 border-border/50"
+                    : "bg-surface border-border shadow-sm"
                     }`}
                 >
                   <View
