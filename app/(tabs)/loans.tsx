@@ -1,22 +1,43 @@
 import { useDeleteLoan, useGetAllLoans } from "@/api/loan";
-import { formatCurrency } from "@/utils/index";
 import { LoanCard } from "@/components/loan/loan-card";
 import { ScreenContainer } from "@/components/screen-container";
 import { LoansSkeleton } from "@/components/skeletons/loans-skeleton";
 import { Button } from "@/components/ui/button";
+import { CrossIcon } from "@/icons/cross-icon";
+import { FilterIcon } from "@/icons/filter-icon";
 import { PlusIcon } from "@/icons/plus-icon";
+import { SearchIcon } from "@/icons/search-icon";
 import { Loan } from "@/interface/loan";
+import { formatCurrency } from "@/utils/index";
 import { useRouter } from "expo-router";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Alert,
   FlatList,
   RefreshControl,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
 import Toast from "react-native-toast-message";
+
+// Simple debounce implementation
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+}
 
 type LoanTab = "GIVEN" | "TAKEN";
 
@@ -24,14 +45,32 @@ export default function LoansScreen() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<LoanTab>("GIVEN");
   const [refreshing, setRefreshing] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 400);
+  const [isSearchLoading, setIsSearchLoading] = useState(false);
 
   const { data, isLoading, error, refetch } = useGetAllLoans({
     type: activeTab,
+    search: debouncedSearchQuery.trim() || undefined,
   });
 
   const loans: Loan[] = data?.data ?? [];
 
   const deleteLoanMutation = useDeleteLoan();
+
+  // Track search loading state
+  useEffect(() => {
+    if (searchQuery.trim()) {
+      setIsSearchLoading(true);
+      // Reset loading state after debounce delay
+      const timer = setTimeout(() => {
+        setIsSearchLoading(false);
+      }, 450); // Slightly longer than debounce delay
+      return () => clearTimeout(timer);
+    } else {
+      setIsSearchLoading(false);
+    }
+  }, [debouncedSearchQuery, searchQuery]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -40,43 +79,39 @@ export default function LoansScreen() {
   }, [refetch]);
 
   const handleDeleteLoan = (loan: Loan) => {
-    Alert.alert(
-      "Delete Loan",
-      `Delete loan for "${loan.person_name}"?`,
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              const res: any = await deleteLoanMutation.mutateAsync(loan.id);
+    Alert.alert("Delete Loan", `Delete loan for "${loan.person_name}"?`, [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: async () => {
+          try {
+            const res: any = await deleteLoanMutation.mutateAsync(loan.id);
 
-              if (res?.success) {
-                Toast.show({
-                  type: "success",
-                  text1: "success",
-                  text2: res?.message || "Loan deleted successfully",
-                });
-                refetch();
-              } else {
-                Toast.show({
-                  type: "error",
-                  text1: "error",
-                  text2: res?.message || "Delete failed",
-                });
-              }
-            } catch (e: any) {
+            if (res?.success) {
+              Toast.show({
+                type: "success",
+                text1: "success",
+                text2: res?.message || "Loan deleted successfully",
+              });
+              refetch();
+            } else {
               Toast.show({
                 type: "error",
                 text1: "error",
-                text2: e?.message || "Something went wrong",
+                text2: res?.message || "Delete failed",
               });
             }
-          },
+          } catch (e: any) {
+            Toast.show({
+              type: "error",
+              text1: "error",
+              text2: e?.message || "Something went wrong",
+            });
+          }
         },
-      ]
-    );
+      },
+    ]);
   };
 
   const handleEditLoan = (loan: Loan) => {
@@ -92,14 +127,6 @@ export default function LoansScreen() {
 
   const renderHeader = () => (
     <>
-      {/* Title */}
-      <View className="mb-4">
-        <Text className="text-3xl font-bold text-foreground">Loans</Text>
-        <Text className="text-sm text-muted-foreground mt-1">
-          Track money you lent or borrowed
-        </Text>
-      </View>
-
       {/* Tabs */}
       <View className="flex-row bg-muted rounded-2xl p-1 mb-3">
         <TabButton
@@ -117,17 +144,57 @@ export default function LoansScreen() {
         />
       </View>
 
+      {/* Search Input */}
+      <View className="relative mb-4">
+        <View className="flex-row items-center bg-muted rounded-xl px-3 border border-border">
+          <SearchIcon className="text-muted-foreground size-5" />
+          <TextInput
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            placeholder="Search loans..."
+            placeholderClassName="text-muted-foreground"
+            className="flex-1 ml-2 text-base text-foreground"
+            placeholderTextColor="#94a3b8"
+          />
+          {searchQuery.length > 0 && (
+            <TouchableOpacity
+              onPress={() => setSearchQuery("")}
+              className="ml-2 p-1"
+            >
+              <CrossIcon className="text-muted-foreground size-4" />
+            </TouchableOpacity>
+          )}
+        </View>
+      </View>
+
+      {/* Header with filter */}
+      <View className="mb-2 flex-row items-center">
+        <Text className="text-sm font-semibold text-muted-foreground">
+          {activeTab === "GIVEN" ? "YOUR LENTS" : "YOUR BORROW LIST"}
+        </Text>
+        <TouchableOpacity className="ml-2 p-2.5 rounded-xl">
+          <FilterIcon className="text-primary size-6" />
+        </TouchableOpacity>
+      </View>
+
       {/* Summary Section */}
       {summary && totalCount > 0 && (
         <View className="flex-row justify-between bg-card rounded-2xl p-4 mb-1 border border-border">
           <View className="flex-1 border-r border-border pr-2">
-            <Text className="text-sm text-muted-foreground mb-1">Total Left</Text>
-            <Text className="text-2xl font-bold text-foreground" numberOfLines={1}>
+            <Text className="text-sm text-muted-foreground mb-1">
+              Total Left
+            </Text>
+            <Text
+              className="text-2xl font-bold text-foreground"
+              numberOfLines={1}
+            >
               {formatCurrency(summary.total_remaining || 0)}
             </Text>
           </View>
           <View className="flex-1 pl-4 justify-center">
-            <Text className="text-xs text-muted-foreground mb-1">Total Loans: {totalCount}</Text>
+            <Text className="text-xs text-muted-foreground mb-1">
+              Total Loans: {totalCount}
+            </Text>
             <View className="flex-row items-center">
               <View className="w-2 h-2 rounded-full bg-success mr-2" />
               <Text className="text-sm font-medium text-foreground">
@@ -161,14 +228,12 @@ export default function LoansScreen() {
         }
         className="bg-primary px-6 py-2 rounded-lg"
       >
-        <Text className="text-primary-foreground font-semibold">
-          Add Loan
-        </Text>
+        <Text className="text-primary-foreground font-semibold">Add Loan</Text>
       </TouchableOpacity>
     </View>
   );
 
-  if (isLoading) {
+  if (isLoading || isSearchLoading) {
     return (
       <ScreenContainer className="p-4 bg-background">
         <LoansSkeleton />
@@ -188,9 +253,7 @@ export default function LoansScreen() {
             onPress={() => refetch()}
             className="bg-primary px-6 py-2 rounded-lg"
           >
-            <Text className="text-primary-foreground font-semibold">
-              Retry
-            </Text>
+            <Text className="text-primary-foreground font-semibold">Retry</Text>
           </TouchableOpacity>
         </View>
       </ScreenContainer>
@@ -231,9 +294,7 @@ export default function LoansScreen() {
         className="rounded-full py-4 absolute bottom-4 right-4 flex-row items-center"
       >
         <PlusIcon className="text-primary-foreground size-6" />
-        <Text className="text-primary-foreground text-lg ml-2">
-          Add Loan
-        </Text>
+        <Text className="text-primary-foreground text-lg ml-2">Add Loan</Text>
       </Button>
     </>
   );
@@ -253,19 +314,22 @@ function TabButton({
   return (
     <TouchableOpacity
       onPress={onPress}
-      className={`flex-1 py-3 rounded-xl items-center ${active ? "bg-primary shadow-sm" : ""
-        }`}
+      className={`flex-1 py-3 rounded-xl items-center ${
+        active ? "bg-primary shadow-sm" : ""
+      }`}
     >
       <Text
-        className={`font-semibold ${active ? "text-white" : "text-muted-foreground"
-          }`}
+        className={`font-semibold ${
+          active ? "text-white" : "text-muted-foreground"
+        }`}
       >
         {label}
       </Text>
 
       <Text
-        className={`text-[10px] mt-0.5 ${active ? "text-foreground" : "text-muted-foreground/60"
-          }`}
+        className={`text-[10px] mt-0.5 ${
+          active ? "text-foreground" : "text-muted-foreground/60"
+        }`}
       >
         {subtitle}
       </Text>
