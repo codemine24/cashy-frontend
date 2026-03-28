@@ -5,11 +5,11 @@ import { ArrowLeft, Bell, Check, Info, Settings } from "@/lib/icons";
 import { timeAgo } from "@/utils";
 import { Stack, useRouter } from "expo-router";
 import {
-  ActivityIndicator,
-  FlatList,
-  Text,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    FlatList,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -40,8 +40,6 @@ export default function NotificationsScreen() {
   });
 
   const notifications = data?.data || [];
-
-  console.log("notifications......", notifications);
 
   return (
     <>

@@ -1,13 +1,6 @@
 import { useCreateBook, useUpdateBook } from "@/api/wallet";
-import React, { useState } from "react";
-import {
-    KeyboardAvoidingView,
-    Platform,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
-} from "react-native";
+import React, { useRef, useState } from "react";
+import { Text, TextInput, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
 import { BottomSheetModal } from "../bottom-sheet-modal";
 
@@ -25,6 +18,7 @@ export function CreateWalletModal({
   const [bookName, setBookName] = useState(editBook?.name || "");
   const createBookMutation = useCreateBook();
   const updateBookMutation = useUpdateBook();
+  const inputRef = useRef<TextInput>(null);
 
   // Keep internal state synced when editBook changes while open
   React.useEffect(() => {
@@ -34,6 +28,15 @@ export function CreateWalletModal({
       setBookName("");
     }
   }, [visible, editBook]);
+
+  // Focus input when modal opens
+  React.useEffect(() => {
+    if (visible) {
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 400); // Delay to match modal animation
+    }
+  }, [visible]);
 
   const handleAction = async () => {
     if (!bookName.trim()) {
@@ -83,65 +86,52 @@ export function CreateWalletModal({
 
   return (
     <BottomSheetModal visible={visible} onClose={onClose}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      >
-        <View className="p-6">
-          {/* Header */}
-          <View className="flex-row justify-between items-center mb-6">
-            <Text className="text-2xl font-bold text-foreground">
-              {editBook ? "Rename Wallet" : "New Wallet"}
-            </Text>
-            <TouchableOpacity
-              onPress={handleClose}
-              className="w-8 h-8 items-center justify-center"
-            >
-              <Text className="text-xl text-foreground">✕</Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* Book name input */}
-          <Text className="text-sm font-semibold text-foreground mb-2">
-            Wallet name
+      <View className="px-6 pt-3 pb-4">
+        {/* Header */}
+        <View className="flex-row justify-between items-center mb-6 border-b border-border pb-3">
+          <Text className="text-xl font-bold text-foreground">
+            {editBook ? "Rename Wallet" : "Add New Wallet"}
           </Text>
-          <TextInput
-            value={bookName}
-            onChangeText={setBookName}
-            placeholder="e.g., January Expenses"
-            placeholderClassName="text-muted-foreground"
-            className="bg-surface rounded-lg px-4 py-3 border border-border text-foreground mb-8"
-            autoFocus
-            editable={!isPending}
-            onSubmitEditing={handleAction}
-          />
-
-          {/* Action buttons */}
-          <View className="flex-row gap-3">
-            <TouchableOpacity
-              onPress={handleClose}
-              disabled={isPending}
-              className="flex-1 bg-surface rounded-lg py-3 border border-border items-center justify-center disabled:bg-muted-foreground"
-            >
-              <Text className="text-foreground font-semibold">Cancel</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={handleAction}
-              disabled={isPending}
-              className={`flex-1 rounded-lg py-3 items-center justify-center ${isPending ? "bg-primary/50" : "bg-primary"}`}
-            >
-              <Text className="text-white font-semibold">
-                {isPending
-                  ? editBook
-                    ? "Renaming..."
-                    : "Creating..."
-                  : editBook
-                    ? "Rename"
-                    : "Create"}
-              </Text>
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity
+            onPress={handleClose}
+            className="w-8 h-8 items-center justify-center"
+          >
+            <Text className="text-xl text-foreground">✕</Text>
+          </TouchableOpacity>
         </View>
-      </KeyboardAvoidingView>
+
+        {/* Book name input */}
+        <Text className="text-sm font-normal text-foreground mb-2">
+          Enter Wallet Name
+        </Text>
+        <TextInput
+          ref={inputRef}
+          value={bookName}
+          onChangeText={setBookName}
+          placeholder="e.g., January Expenses"
+          placeholderTextColor="#9ca3af"
+          className="bg-surface rounded-lg px-4 py-3 border border-border text-foreground mb-3"
+          editable={!isPending}
+          onSubmitEditing={handleAction}
+        />
+
+        {/* Action buttons */}
+        <View className="flex-row gap-3">
+          <TouchableOpacity
+            onPress={handleAction}
+            disabled={isPending}
+            className={`flex-1 rounded-lg py-3 items-center justify-center ${isPending ? "bg-primary/50" : "bg-primary"}`}
+          >
+            <Text className="text-primary-foreground font-semibold text-base">
+              {isPending
+                ? editBook
+                  ? "Renaming..."
+                  : "Adding..."
+                : "+ ADD NEW WALLET"}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </BottomSheetModal>
   );
 }

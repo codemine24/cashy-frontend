@@ -117,8 +117,6 @@ export default function BookDetailScreen() {
   const [selectedTransaction, setSelectedTransaction] =
     useState<Transaction | null>(null);
 
-  console.log("selectedTransaction..........", selectedTransaction);
-
   // Fetch categories for the filter
   const { data: categoriesData } = useGetCategories();
 
@@ -191,6 +189,29 @@ export default function BookDetailScreen() {
     () => groupedTransactions.map((g) => ({ title: g.date, data: g.data })),
     [groupedTransactions],
   );
+
+  // Calculate filtered balance values from filtered transactions
+  const filteredBalance = useMemo(() => {
+    let totalIn = 0;
+    let totalOut = 0;
+
+    allTransactions.forEach((transaction) => {
+      const amount = parseFloat(transaction.amount) || 0;
+      if (transaction.type === "IN") {
+        totalIn += amount;
+      } else {
+        totalOut += amount;
+      }
+    });
+
+    const netBalance = totalIn - totalOut;
+
+    return {
+      netBalance,
+      totalIn,
+      totalOut,
+    };
+  }, [allTransactions]);
 
   const handleLoadMore = useCallback(() => {
     if (hasNextPage && !isFetchingNextPage) {
@@ -499,7 +520,7 @@ export default function BookDetailScreen() {
                   Net Balance
                 </Text>
                 <Text className="text-foreground font-bold text-[14px]">
-                  {formatNumber(book.data.balance ?? 0)}
+                  {formatNumber(filteredBalance.netBalance)}
                 </Text>
               </View>
               <View className="px-3 py-3">
@@ -508,7 +529,7 @@ export default function BookDetailScreen() {
                     Total In (+)
                   </Text>
                   <Text className="text-success font-semibold text-[12px]">
-                    {formatNumber(book.data.in ?? 0)}
+                    {formatNumber(filteredBalance.totalIn)}
                   </Text>
                 </View>
                 <View className="flex-row justify-between items-center">
@@ -516,7 +537,7 @@ export default function BookDetailScreen() {
                     Total Out (-)
                   </Text>
                   <Text className="text-destructive font-semibold text-[12px]">
-                    {formatNumber(book.data.out ?? 0)}
+                    {formatNumber(filteredBalance.totalOut)}
                   </Text>
                 </View>
               </View>

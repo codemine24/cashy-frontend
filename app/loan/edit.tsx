@@ -9,14 +9,13 @@ import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    KeyboardAvoidingView,
+    ScrollView,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View
 } from "react-native";
 import Toast from "react-native-toast-message";
 import { z } from "zod";
@@ -144,7 +143,11 @@ export default function EditLoanScreen() {
     return (
       <>
         <Stack.Screen
-          options={{ headerShown: true, title: "Edit Loan", headerBackTitle: "Back" }}
+          options={{
+            headerShown: true,
+            title: "Edit Loan",
+            headerBackTitle: "Back",
+          }}
         />
         <View className="flex-1 bg-background items-center justify-center">
           <ActivityIndicator size="large" />
@@ -162,10 +165,7 @@ export default function EditLoanScreen() {
           headerBackTitle: "Back",
         }}
       />
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-        style={{ flex: 1 }}
-      >
+      <KeyboardAvoidingView behavior="height" style={{ flex: 1 }}>
         <ScrollView
           className="flex-1 bg-background"
           contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 120 }}
@@ -178,24 +178,28 @@ export default function EditLoanScreen() {
           <View className="flex-row bg-muted rounded-2xl p-1 my-6">
             <TouchableOpacity
               onPress={() => form.setValue("type", "GIVEN")}
-              className={`flex-1 py-3.5 rounded-xl items-center justify-center ${isGiven ? "bg-primary shadow-sm" : "bg-transparent"
-                }`}
+              className={`flex-1 py-3.5 rounded-xl items-center justify-center ${
+                isGiven ? "bg-primary shadow-sm" : "bg-transparent"
+              }`}
             >
               <Text
-                className={`font-semibold text-sm ${isGiven ? "text-white" : "text-muted-foreground"
-                  }`}
+                className={`font-semibold text-sm ${
+                  isGiven ? "text-white" : "text-muted-foreground"
+                }`}
               >
                 Lent (Given)
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => form.setValue("type", "TAKEN")}
-              className={`flex-1 py-3.5 rounded-xl items-center justify-center ${!isGiven ? "bg-primary shadow-sm" : "bg-transparent"
-                }`}
+              className={`flex-1 py-3.5 rounded-xl items-center justify-center ${
+                !isGiven ? "bg-primary shadow-sm" : "bg-transparent"
+              }`}
             >
               <Text
-                className={`font-semibold text-sm ${!isGiven ? "text-white" : "text-muted-foreground"
-                  }`}
+                className={`font-semibold text-sm ${
+                  !isGiven ? "text-white" : "text-muted-foreground"
+                }`}
               >
                 Borrowed (Taken)
               </Text>
@@ -218,10 +222,11 @@ export default function EditLoanScreen() {
                     onBlur={onBlur}
                     placeholder="Person name"
                     autoCapitalize="words"
-                    className={`${form.formState.errors.person_name
-                      ? "border-destructive"
-                      : "border-border"
-                      }`}
+                    className={`${
+                      form.formState.errors.person_name
+                        ? "border-destructive"
+                        : "border-border"
+                    }`}
                   />
                   <InputError
                     error={form.formState.errors.person_name?.message}
@@ -242,10 +247,11 @@ export default function EditLoanScreen() {
               render={({ field: { onChange, onBlur, value } }) => (
                 <View>
                   <View
-                    className={`flex-row items-center rounded-xl px-4 py-4 border ${form.formState.errors.amount
-                      ? "border-destructive"
-                      : "border-border"
-                      }`}
+                    className={`flex-row items-center rounded-xl px-4 py-4 border ${
+                      form.formState.errors.amount
+                        ? "border-destructive"
+                        : "border-border"
+                    }`}
                   >
                     <Text className="text-2xl font-bold text-primary mr-2">
                       $
@@ -274,10 +280,25 @@ export default function EditLoanScreen() {
             <View className="flex-row gap-2">
               {STATUS_OPTIONS.map((option) => {
                 const isActive = watchedStatus === option.key;
-                const colorMap: Record<string, { bg: string; text: string; activeBg: string }> = {
-                  ONGOING: { bg: "bg-card", text: "text-blue-500", activeBg: "bg-blue-500/15" },
-                  PAID: { bg: "bg-card", text: "text-green-500", activeBg: "bg-green-500/15" },
-                  OVERDUE: { bg: "bg-card", text: "text-red-500", activeBg: "bg-red-500/15" },
+                const colorMap: Record<
+                  string,
+                  { bg: string; text: string; activeBg: string }
+                > = {
+                  ONGOING: {
+                    bg: "bg-card",
+                    text: "text-blue-500",
+                    activeBg: "bg-blue-500/15",
+                  },
+                  PAID: {
+                    bg: "bg-card",
+                    text: "text-green-500",
+                    activeBg: "bg-green-500/15",
+                  },
+                  OVERDUE: {
+                    bg: "bg-card",
+                    text: "text-red-500",
+                    activeBg: "bg-red-500/15",
+                  },
                 };
                 const colors = colorMap[option.key];
 
@@ -285,14 +306,16 @@ export default function EditLoanScreen() {
                   <TouchableOpacity
                     key={option.key}
                     onPress={() => form.setValue("status", option.key)}
-                    className={`flex-1 py-3 rounded-xl items-center justify-center border ${isActive
-                      ? `${colors.activeBg} border-transparent`
-                      : `${colors.bg} border-border`
-                      }`}
+                    className={`flex-1 py-3 rounded-xl items-center justify-center border ${
+                      isActive
+                        ? `${colors.activeBg} border-transparent`
+                        : `${colors.bg} border-border`
+                    }`}
                   >
                     <Text
-                      className={`font-semibold text-sm ${isActive ? colors.text : "text-muted-foreground"
-                        }`}
+                      className={`font-semibold text-sm ${
+                        isActive ? colors.text : "text-muted-foreground"
+                      }`}
                     >
                       {option.label}
                     </Text>
@@ -320,8 +343,9 @@ export default function EditLoanScreen() {
                     className="bg-card rounded-xl px-4 py-4 border border-border flex-row items-center justify-between"
                   >
                     <Text
-                      className={`text-base ${value ? "text-foreground" : "text-muted-foreground"
-                        }`}
+                      className={`text-base ${
+                        value ? "text-foreground" : "text-muted-foreground"
+                      }`}
                     >
                       {formatDateForDisplay(value)}
                     </Text>
@@ -331,15 +355,15 @@ export default function EditLoanScreen() {
                     <DateTimePicker
                       value={selectedDate || new Date()}
                       mode="date"
-                      display={Platform.OS === "ios" ? "spinner" : "default"}
+                      display="default"
                       onChange={(event, date) => {
-                        setShowDatePicker(Platform.OS === "ios");
+                        setShowDatePicker(false);
                         if (date) {
                           setSelectedDate(date);
                           const year = date.getFullYear();
                           const month = String(date.getMonth() + 1).padStart(
                             2,
-                            "0"
+                            "0",
                           );
                           const day = String(date.getDate()).padStart(2, "0");
                           form.setValue("due_date", `${year}-${month}-${day}`);

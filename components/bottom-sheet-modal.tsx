@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import {
   Animated,
+  KeyboardAvoidingView,
   ModalProps,
   Modal as RNModal,
   TouchableOpacity,
@@ -20,20 +21,21 @@ export function BottomSheetModal({
   children,
   ...modalProps
 }: BottomSheetModalProps) {
-  const slideAnimation = useRef(new Animated.Value(200)).current;
+  const slideAnimation = useRef(new Animated.Value(300)).current;
 
   useEffect(() => {
     if (visible) {
-      slideAnimation.setValue(200); // Reset to starting position
-      Animated.timing(slideAnimation, {
+      slideAnimation.setValue(300);
+      Animated.spring(slideAnimation, {
         toValue: 0,
-        duration: 200,
         useNativeDriver: true,
+        tension: 65,
+        friction: 8,
       }).start();
     } else {
       Animated.timing(slideAnimation, {
-        toValue: 200,
-        duration: 200,
+        toValue: 300,
+        duration: 250,
         useNativeDriver: true,
       }).start();
     }
@@ -48,21 +50,23 @@ export function BottomSheetModal({
       statusBarTranslucent={true}
       {...modalProps}
     >
-      <View className="flex-1 bg-black/40">
-        <TouchableOpacity
-          className="flex-1"
-          activeOpacity={1}
-          onPress={onClose}
-        />
-        <Animated.View
-          className="bg-background rounded-t-3xl"
-          style={{
-            transform: [{ translateY: slideAnimation }],
-          }}
-        >
-          {children}
-        </Animated.View>
-      </View>
+      <KeyboardAvoidingView behavior="height" style={{ flex: 1 }}>
+        <View style={{ flex: 1 }}>
+          <TouchableOpacity
+            style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.4)" }}
+            activeOpacity={1}
+            onPress={onClose}
+          />
+          <Animated.View
+            className="bg-background rounded-t-3xl"
+            style={{
+              transform: [{ translateY: slideAnimation }],
+            }}
+          >
+            {children}
+          </Animated.View>
+        </View>
+      </KeyboardAvoidingView>
       <Toast />
     </RNModal>
   );
