@@ -5,12 +5,11 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   FlatList,
-  Platform,
   ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -680,9 +679,9 @@ function DateFilterModal({
               <DateTimePicker
                 value={draftSingleDate || new Date()}
                 mode="date"
-                display={Platform.OS === "ios" ? "spinner" : "default"}
+                display="default"
                 onChange={(_, d) => {
-                  setShowSinglePicker(Platform.OS === "ios");
+                  setShowSinglePicker(false);
                   if (d) setDraftSingleDate(d);
                 }}
               />
@@ -706,9 +705,9 @@ function DateFilterModal({
               <DateTimePicker
                 value={draftRangeStart || new Date()}
                 mode="date"
-                display={Platform.OS === "ios" ? "spinner" : "default"}
+                display="default"
                 onChange={(_, d) => {
-                  setShowRangeStartPicker(Platform.OS === "ios");
+                  setShowRangeStartPicker(false);
                   if (d) setDraftRangeStart(d);
                 }}
               />
@@ -727,9 +726,9 @@ function DateFilterModal({
               <DateTimePicker
                 value={draftRangeEnd || new Date()}
                 mode="date"
-                display={Platform.OS === "ios" ? "spinner" : "default"}
+                display="default"
                 onChange={(_, d) => {
-                  setShowRangeEndPicker(Platform.OS === "ios");
+                  setShowRangeEndPicker(false);
                   if (d) setDraftRangeEnd(d);
                 }}
               />

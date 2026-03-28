@@ -1,10 +1,13 @@
 import { useCreateTransaction, useUpdateTransaction } from "@/api/transaction";
+import { InputError } from "@/components/ui/input-error";
 import { ChevronRight, Paperclip, X } from "@/lib/icons";
 import { formatDateToUTC, formatTimeToUTC } from "@/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import * as ImagePicker from "expo-image-picker";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import {
   Alert,
   Image,
@@ -17,6 +20,7 @@ import {
   View,
 } from "react-native";
 import Toast from "react-native-toast-message";
+import { z } from "zod";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 interface PickedFile {
@@ -24,6 +28,20 @@ interface PickedFile {
   name: string;
   type: string;
 }
+
+// ─── Validation Schema ───────────────────────────────────────────────────────
+const transactionSchema = z.object({
+  amount: z
+    .string()
+    .min(1, "Amount is required")
+    .refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, {
+      message: "Amount must be greater than 0",
+    }),
+  date: z.string().min(1, "Date is required"),
+  time: z.string().min(1, "Time is required"),
+});
+
+type TransactionFormValues = z.infer<typeof transactionSchema>;
 
 // ─── Main Screen ─────────────────────────────────────────────────────────────
 export default function AddTransactionScreen() {
@@ -43,8 +61,6 @@ export default function AddTransactionScreen() {
     selectedCategoryName?: string;
   }>();
 
-  console.log(params, "params......");
-
   const bookId = params.bookId!;
   const initialType = (params.type as "IN" | "OUT") || "OUT";
   const isEditing = !!params.editId;
@@ -62,10 +78,24 @@ export default function AddTransactionScreen() {
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [attachments, setAttachments] = useState<PickedFile[]>([]);
 
+  // Form setup
+  const form = useForm<TransactionFormValues>({
+    resolver: zodResolver(transactionSchema),
+    defaultValues: {
+      amount: "",
+      date: date.toISOString(),
+      time: date.toTimeString(),
+    },
+    mode: "onBlur",
+  });
+
   useEffect(() => {
     // Populate fields from params (used for both Edit and Duplicate)
     if (params.editType) setType(params.editType as "IN" | "OUT");
-    if (params.editAmount) setAmount(params.editAmount);
+    if (params.editAmount) {
+      setAmount(params.editAmount);
+      form.setValue("amount", params.editAmount);
+    }
     if (params.editRemark) setRemark(params.editRemark);
     if (params.editCategoryId) {
       setSelectedCategory(params.editCategoryId);
@@ -76,6 +106,8 @@ export default function AddTransactionScreen() {
     if (params.editDate) {
       const transactionDate = new Date(params.editDate);
       setDate(transactionDate);
+      form.setValue("date", transactionDate.toISOString());
+      form.setValue("time", transactionDate.toTimeString());
     }
 
     // Handle selectedCategoryId (for other use cases)
@@ -134,7 +166,7 @@ export default function AddTransactionScreen() {
       ? {
           amount: parseFloat(amount),
           category_id: !isDeposit
-            ? selectedCategory === "other"
+            ? selectedCategory === "other" || !selectedCategory
               ? undefined
               : selectedCategory
             : undefined,
@@ -147,7 +179,7 @@ export default function AddTransactionScreen() {
           type,
           amount: parseFloat(amount),
           category_id: !isDeposit
-            ? selectedCategory === "other"
+            ? selectedCategory === "other" || !selectedCategory
               ? undefined
               : selectedCategory
             : undefined,
@@ -155,6 +187,8 @@ export default function AddTransactionScreen() {
           date: formatDateToUTC(date),
           time: formatTimeToUTC(date),
         };
+
+    console.log("dataPayload.........", dataPayload);
 
     const formData = new FormData();
     formData.append("data", JSON.stringify(dataPayload));
@@ -169,8 +203,6 @@ export default function AddTransactionScreen() {
 
     return formData;
   };
-
-  console.log("buildFormData......", buildFormData);
 
   // ── Submit ─────────────────────────────────────────────────────────────────
   const isDeposit = type === "IN";
@@ -192,8 +224,6 @@ export default function AddTransactionScreen() {
   const handleSubmit = async () => {
     try {
       let response: any;
-
-      console.log("response.....", response);
 
       if (isEditing) {
         response = await updateTransactionMutation.mutateAsync({
@@ -252,22 +282,35 @@ export default function AddTransactionScreen() {
               <Text className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
                 Amount
               </Text>
-              <View
-                className={`flex-row items-center rounded-xl px-4 py-3.5 border-2 ${accentBorderClassMap} ${accentBgClassMap}`}
-              >
-                <Text className={`text-2xl font-bold ${accentTextClass}`}>
-                  $
-                </Text>
-                <TextInput
-                  value={amount}
-                  onChangeText={setAmount}
-                  placeholder="0.00"
-                  placeholderTextColor="#A1A1AA"
-                  keyboardType="decimal-pad"
-                  className={`flex-1 ml-2 text-2xl font-bold ${accentTextClass}`}
-                  autoFocus={true}
-                />
-              </View>
+              <Controller
+                control={form.control}
+                name="amount"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <View>
+                    <View
+                      className={`flex-row items-center rounded-xl px-4 py-3.5 border-2 ${accentBorderClassMap} ${accentBgClassMap} ${form.formState.errors.amount ? "border-destructive" : ""}`}
+                    >
+                      <Text className={`text-2xl font-bold ${accentTextClass}`}>
+                        $
+                      </Text>
+                      <TextInput
+                        value={value}
+                        onChangeText={(text) => {
+                          onChange(text);
+                          setAmount(text);
+                        }}
+                        onBlur={onBlur}
+                        placeholder="0.00"
+                        placeholderTextColor="#A1A1AA"
+                        keyboardType="decimal-pad"
+                        className={`flex-1 ml-2 text-2xl font-bold ${accentTextClass}`}
+                        autoFocus={true}
+                      />
+                    </View>
+                    <InputError error={form.formState.errors.amount?.message} />
+                  </View>
+                )}
+              />
             </View>
 
             {/* Category (only for Cash Out) */}
@@ -325,25 +368,43 @@ export default function AddTransactionScreen() {
                 Date & Time
               </Text>
               <View className="flex-row gap-3">
-                <TouchableOpacity
-                  onPress={() => setShowDatePicker(true)}
-                  className="flex-1 bg-card rounded-xl px-4 py-3.5 border border-border flex-row items-center justify-between"
-                >
-                  <Text className="text-foreground text-base font-medium">
-                    {date.toLocaleDateString()}
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => setShowTimePicker(true)}
-                  className="flex-1 bg-card rounded-xl px-4 py-3.5 border border-border flex-row items-center justify-between"
-                >
-                  <Text className="text-foreground text-base font-medium">
-                    {date.toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </Text>
-                </TouchableOpacity>
+                <Controller
+                  control={form.control}
+                  name="date"
+                  render={({ field: { onChange, value } }) => (
+                    <View className="flex-1">
+                      <TouchableOpacity
+                        onPress={() => setShowDatePicker(true)}
+                        className={`flex-1 bg-card rounded-xl px-4 py-3.5 border flex-row items-center justify-between ${form.formState.errors.date ? "border-destructive" : "border-border"}`}
+                      >
+                        <Text className="text-foreground text-base font-medium">
+                          {date.toLocaleDateString()}
+                        </Text>
+                      </TouchableOpacity>
+                      <InputError error={form.formState.errors.date?.message} />
+                    </View>
+                  )}
+                />
+                <Controller
+                  control={form.control}
+                  name="time"
+                  render={({ field: { onChange, value } }) => (
+                    <View className="flex-1">
+                      <TouchableOpacity
+                        onPress={() => setShowTimePicker(true)}
+                        className={`flex-1 bg-card rounded-xl px-4 py-3.5 border flex-row items-center justify-between ${form.formState.errors.time ? "border-destructive" : "border-border"}`}
+                      >
+                        <Text className="text-foreground text-base font-medium">
+                          {date.toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </Text>
+                      </TouchableOpacity>
+                      <InputError error={form.formState.errors.time?.message} />
+                    </View>
+                  )}
+                />
               </View>
 
               {showDatePicker && (
@@ -355,6 +416,8 @@ export default function AddTransactionScreen() {
                     setShowDatePicker(Platform.OS === "ios");
                     if (selectedDate) {
                       setDate(selectedDate);
+                      form.setValue("date", selectedDate.toISOString());
+                      form.setValue("time", selectedDate.toTimeString());
                     }
                   }}
                 />
@@ -369,6 +432,8 @@ export default function AddTransactionScreen() {
                     setShowTimePicker(Platform.OS === "ios");
                     if (selectedTime) {
                       setDate(selectedTime);
+                      form.setValue("date", selectedTime.toISOString());
+                      form.setValue("time", selectedTime.toTimeString());
                     }
                   }}
                 />
@@ -430,7 +495,7 @@ export default function AddTransactionScreen() {
           {/* Submit Button - Sticks above keyboard */}
           <View className="px-5 py-3 bg-background border-t border-border">
             <TouchableOpacity
-              onPress={handleSubmit}
+              onPress={form.handleSubmit(handleSubmit)}
               disabled={isPending}
               className={`rounded-xl py-4 items-center justify-center ${btnClassMap} ${isPending ? "opacity-50" : "opacity-100"}`}
               activeOpacity={0.8}

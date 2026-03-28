@@ -1,14 +1,13 @@
 import { useCreateGoal, useUpdateGoal } from "@/api/goal";
 import React, { useState } from "react";
 import {
-  Alert,
-  KeyboardAvoidingView,
-  Modal,
-  Platform,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View
+    Alert,
+    KeyboardAvoidingView,
+    Modal,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View
 } from "react-native";
 import Toast from "react-native-toast-message";
 
@@ -18,7 +17,11 @@ interface CreateGoalModalProps {
   editGoal?: { id: string; name: string; target_amount: number } | null;
 }
 
-export function CreateGoalModal({ visible, onClose, editGoal }: CreateGoalModalProps) {
+export function CreateGoalModal({
+  visible,
+  onClose,
+  editGoal,
+}: CreateGoalModalProps) {
   const createGoalMutation = useCreateGoal();
   const updateGoalMutation = useUpdateGoal();
   const [name, setName] = useState("");
@@ -67,19 +70,20 @@ export function CreateGoalModal({ visible, onClose, editGoal }: CreateGoalModalP
         Toast.show({
           type: "success",
           text1: "Success",
-          text2: `Goal ${isEdit ? "updated" : "created"} successfully`
-        })
+          text2: `Goal ${isEdit ? "updated" : "created"} successfully`,
+        });
       }, 100);
     } catch (error: any) {
       Toast.show({
         type: "error",
         text1: "Error",
-        text2: error.message || `Goal ${isEdit ? "update" : "creation"} failed`
-      })
+        text2: error.message || `Goal ${isEdit ? "update" : "creation"} failed`,
+      });
     }
   };
 
-  const isPending = createGoalMutation.isPending || updateGoalMutation.isPending;
+  const isPending =
+    createGoalMutation.isPending || updateGoalMutation.isPending;
 
   const handleClose = () => {
     setName("");
@@ -89,10 +93,7 @@ export function CreateGoalModal({ visible, onClose, editGoal }: CreateGoalModalP
 
   return (
     <Modal visible={visible} animationType="slide" transparent={true}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1 }}
-      >
+      <KeyboardAvoidingView behavior="height" style={{ flex: 1 }}>
         <TouchableOpacity
           className="flex-1 bg-black/50"
           activeOpacity={1}
@@ -134,7 +135,9 @@ export function CreateGoalModal({ visible, onClose, editGoal }: CreateGoalModalP
             <Text className="text-sm font-semibold text-foreground mb-2">
               Target amount {editGoal && "(Cannot be edited)"}
             </Text>
-            <View className={`flex-row items-center rounded-lg px-4 py-3 border border-border mb-8 ${editGoal ? "bg-card" : "bg-surface"}`}>
+            <View
+              className={`flex-row items-center rounded-lg px-4 py-3 border border-border mb-8 ${editGoal ? "bg-card" : "bg-surface"}`}
+            >
               <Text className="text-2xl font-bold text-primary">$</Text>
               <TextInput
                 value={target}

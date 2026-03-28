@@ -1,5 +1,5 @@
-import { useGetAllUsers } from "@/api/user";
 import { useGoal, useRemoveMember, useShareGoal } from "@/api/goal";
+import { useGetAllUsers } from "@/api/user";
 import { AppModal } from "@/components/app-modal";
 import { MemberCard } from "@/components/memeber/member-card";
 import { ScreenContainer } from "@/components/screen-container";
@@ -10,16 +10,15 @@ import { Plus, X } from "@/lib/icons";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
-  FlatList,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    Alert,
+    FlatList,
+    KeyboardAvoidingView,
+    ScrollView,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View
 } from "react-native";
 import Toast from "react-native-toast-message";
 
@@ -73,7 +72,10 @@ export default function GoalMembersScreen() {
         style: "destructive",
         onPress: async () => {
           try {
-            const response = await removeMemberMutation.mutateAsync({ goal_id: goalId, user_id: member.id });
+            const response = await removeMemberMutation.mutateAsync({
+              goal_id: goalId,
+              user_id: member.id,
+            });
             if (response.success) {
               Toast.show({
                 type: "success",
@@ -111,7 +113,9 @@ export default function GoalMembersScreen() {
         setTimeout(() => {
           Toast.show({
             type: "success",
-            text1: editingMember ? "Member updated successfully" : "Member added successfully",
+            text1: editingMember
+              ? "Member updated successfully"
+              : "Member added successfully",
           });
         }, 100);
       }
@@ -127,7 +131,9 @@ export default function GoalMembersScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ title: "Goal Members", headerBackTitle: "Back" }} />
+      <Stack.Screen
+        options={{ title: "Goal Members", headerBackTitle: "Back" }}
+      />
       <ScreenContainer edges={["left", "right"]} className="bg-background">
         {goalLoading ? (
           <MembersSkeleton />
@@ -173,10 +179,7 @@ export default function GoalMembersScreen() {
 
       {/* Add / Edit Member Modal */}
       <AppModal visible={modalVisible} transparent animationType="slide">
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          style={{ flex: 1 }}
-        >
+        <KeyboardAvoidingView behavior="height" style={{ flex: 1 }}>
           <TouchableOpacity
             className="flex-1 bg-black/60"
             activeOpacity={1}
@@ -298,14 +301,18 @@ export default function GoalMembersScreen() {
                 <View className="flex-row items-center gap-3">
                   <TouchableOpacity
                     onPress={() => setRole("VIEWER")}
-                    className={`flex-1 py-3.5 items-center rounded-xl border ${role === "VIEWER"
-                      ? "bg-primary/10 border-primary"
-                      : "bg-surface border-border"
-                      }`}
+                    className={`flex-1 py-3.5 items-center rounded-xl border ${
+                      role === "VIEWER"
+                        ? "bg-primary/10 border-primary"
+                        : "bg-surface border-border"
+                    }`}
                   >
                     <Text
-                      className={`font-semibold text-base ${role === "VIEWER" ? "text-primary" : "text-muted-foreground"
-                        }`}
+                      className={`font-semibold text-base ${
+                        role === "VIEWER"
+                          ? "text-primary"
+                          : "text-muted-foreground"
+                      }`}
                     >
                       Viewer
                     </Text>
@@ -313,14 +320,18 @@ export default function GoalMembersScreen() {
 
                   <TouchableOpacity
                     onPress={() => setRole("EDITOR")}
-                    className={`flex-1 py-3.5 items-center rounded-xl border ${role === "EDITOR"
-                      ? "bg-primary/10 border-primary"
-                      : "bg-surface border-border"
-                      }`}
+                    className={`flex-1 py-3.5 items-center rounded-xl border ${
+                      role === "EDITOR"
+                        ? "bg-primary/10 border-primary"
+                        : "bg-surface border-border"
+                    }`}
                   >
                     <Text
-                      className={`font-semibold text-base ${role === "EDITOR" ? "text-primary" : "text-muted-foreground"
-                        }`}
+                      className={`font-semibold text-base ${
+                        role === "EDITOR"
+                          ? "text-primary"
+                          : "text-muted-foreground"
+                      }`}
                     >
                       Editor
                     </Text>
@@ -328,14 +339,18 @@ export default function GoalMembersScreen() {
 
                   <TouchableOpacity
                     onPress={() => setRole("ADMIN")}
-                    className={`flex-1 py-3.5 items-center rounded-xl border ${role === "ADMIN"
-                      ? "bg-primary/10 border-primary"
-                      : "bg-surface border-border"
-                      }`}
+                    className={`flex-1 py-3.5 items-center rounded-xl border ${
+                      role === "ADMIN"
+                        ? "bg-primary/10 border-primary"
+                        : "bg-surface border-border"
+                    }`}
                   >
                     <Text
-                      className={`font-semibold text-base ${role === "ADMIN" ? "text-primary" : "text-muted-foreground"
-                        }`}
+                      className={`font-semibold text-base ${
+                        role === "ADMIN"
+                          ? "text-primary"
+                          : "text-muted-foreground"
+                      }`}
                     >
                       Admin
                     </Text>
@@ -354,28 +369,30 @@ export default function GoalMembersScreen() {
                 </Text>
                 {(role === "VIEWER"
                   ? [
-                    { icon: "✅", label: "View all transactions" },
-                    { icon: "✅", label: "View goal progress" },
-                    { icon: "❌", label: "Add or edit entries" },
-                    { icon: "❌", label: "Manage members" },
-                  ]
-                  : role === "EDITOR"
-                    ? [
                       { icon: "✅", label: "View all transactions" },
-                      { icon: "✅", label: "Add & edit entries" },
-                      { icon: "✅", label: "Delete own entries" },
+                      { icon: "✅", label: "View goal progress" },
+                      { icon: "❌", label: "Add or edit entries" },
                       { icon: "❌", label: "Manage members" },
                     ]
+                  : role === "EDITOR"
+                    ? [
+                        { icon: "✅", label: "View all transactions" },
+                        { icon: "✅", label: "Add & edit entries" },
+                        { icon: "✅", label: "Delete own entries" },
+                        { icon: "❌", label: "Manage members" },
+                      ]
                     : [
-                      { icon: "✅", label: "View all transactions" },
-                      { icon: "✅", label: "Add & edit entries" },
-                      { icon: "✅", label: "Delete any entries" },
-                      { icon: "✅", label: "Manage & invite members" },
-                    ]
+                        { icon: "✅", label: "View all transactions" },
+                        { icon: "✅", label: "Add & edit entries" },
+                        { icon: "✅", label: "Delete any entries" },
+                        { icon: "✅", label: "Manage & invite members" },
+                      ]
                 ).map((item, i) => (
                   <View key={i} className="flex-row items-center mb-1.5">
                     <Text className="text-sm mr-2">{item.icon}</Text>
-                    <Text className="text-sm text-foreground">{item.label}</Text>
+                    <Text className="text-sm text-foreground">
+                      {item.label}
+                    </Text>
                   </View>
                 ))}
               </View>
@@ -392,10 +409,9 @@ export default function GoalMembersScreen() {
                 <TouchableOpacity
                   onPress={handleSubmitModal}
                   disabled={addMemberMutation.isPending}
-                  className={`flex-1 rounded-xl py-4 items-center justify-center flex-row ${addMemberMutation.isPending
-                    ? "bg-primary/50"
-                    : "bg-primary"
-                    }`}
+                  className={`flex-1 rounded-xl py-4 items-center justify-center flex-row ${
+                    addMemberMutation.isPending ? "bg-primary/50" : "bg-primary"
+                  }`}
                 >
                   {addMemberMutation.isPending && (
                     <ActivityIndicator

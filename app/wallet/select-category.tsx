@@ -4,14 +4,13 @@ import { Check, Plus, Settings, X } from "@/lib/icons";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    KeyboardAvoidingView,
+    ScrollView,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View
 } from "react-native";
 import Toast from "react-native-toast-message";
 
@@ -61,7 +60,11 @@ export default function SelectCategoryScreen() {
 
       const response = await createCategoryMutation.mutateAsync(payload);
 
-      if (response?.data?.success || (response as any)?.success || response?.data?.id) {
+      if (
+        response?.data?.success ||
+        (response as any)?.success ||
+        response?.data?.id
+      ) {
         Toast.show({
           type: "success",
           text1: "Success",
@@ -83,7 +86,10 @@ export default function SelectCategoryScreen() {
         Toast.show({
           type: "error",
           text1: "Error",
-          text2: response?.data?.message || (response as any)?.message || "Failed to create category",
+          text2:
+            response?.data?.message ||
+            (response as any)?.message ||
+            "Failed to create category",
         });
       }
     } catch (e: any) {
@@ -103,7 +109,14 @@ export default function SelectCategoryScreen() {
           title: "Choose Category",
           headerBackTitle: "Back",
           headerRight: () => (
-            <TouchableOpacity onPress={() => router.push({ pathname: "/wallet/manage-categories", params: { bookId: params.bookId } })}>
+            <TouchableOpacity
+              onPress={() =>
+                router.push({
+                  pathname: "/wallet/manage-categories",
+                  params: { bookId: params.bookId },
+                })
+              }
+            >
               <Settings size={22} className="text-foreground" />
             </TouchableOpacity>
           ),
@@ -124,9 +137,13 @@ export default function SelectCategoryScreen() {
             </Text>
           </View>
         ) : (
-          <ScrollView className="flex-1 px-4 py-2" contentContainerStyle={{ paddingBottom: 100 }}>
+          <ScrollView
+            className="flex-1 px-4 py-2"
+            contentContainerStyle={{ paddingBottom: 100 }}
+          >
             {categories.map((cat: any) => {
-              const isSelected = params.currentSelectedId === cat.id?.toString();
+              const isSelected =
+                params.currentSelectedId === cat.id?.toString();
 
               return (
                 <TouchableOpacity
@@ -136,7 +153,9 @@ export default function SelectCategoryScreen() {
                 >
                   <View className="flex-row items-center">
                     <Text className="text-3xl mr-4">{cat.icon || "📝"}</Text>
-                    <Text className={`text-base font-semibold ${isSelected ? "text-primary" : "text-foreground"}`}>
+                    <Text
+                      className={`text-base font-semibold ${isSelected ? "text-primary" : "text-foreground"}`}
+                    >
                       {cat.title}
                     </Text>
                   </View>
@@ -144,7 +163,9 @@ export default function SelectCategoryScreen() {
                   <View
                     className={`h-6 w-6 rounded-full border-2 items-center justify-center ${isSelected ? "border-primary bg-primary" : "border-border"}`}
                   >
-                    {isSelected && <Check size={14} className="text-foreground" />}
+                    {isSelected && (
+                      <Check size={14} className="text-foreground" />
+                    )}
                   </View>
                 </TouchableOpacity>
               );
@@ -159,16 +180,15 @@ export default function SelectCategoryScreen() {
           style={{ elevation: 5 }}
         >
           <Plus size={24} className="text-foreground" />
-          <Text className="text-primary-foreground font-bold text-xl tracking-widest text-center">Add Category</Text>
+          <Text className="text-primary-foreground font-bold text-xl tracking-widest text-center">
+            Add Category
+          </Text>
         </TouchableOpacity>
       </View>
 
       {/* Add New Category Modal */}
       <AppModal visible={modalVisible} animationType="slide" transparent>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : undefined}
-          style={{ flex: 1 }}
-        >
+        <KeyboardAvoidingView behavior="height" style={{ flex: 1 }}>
           <View className="flex-1 justify-end bg-black/40">
             <TouchableOpacity
               className="flex-1"
@@ -219,7 +239,10 @@ export default function SelectCategoryScreen() {
                   className={`flex-1 rounded-xl py-4 items-center justify-center ${createCategoryMutation.isPending ? "bg-primary/70" : "bg-primary"}`}
                 >
                   {createCategoryMutation.isPending ? (
-                    <ActivityIndicator className="text-foreground" size="small" />
+                    <ActivityIndicator
+                      className="text-foreground"
+                      size="small"
+                    />
                   ) : (
                     <Text className="text-foreground font-bold text-base tracking-wide">
                       Save
