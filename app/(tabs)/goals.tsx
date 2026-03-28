@@ -1,25 +1,30 @@
 import { useDeleteGoal, useGoals } from "@/api/goal";
-import { formatCurrency } from "@/utils/index";
 import { CreateGoalModal } from "@/components/goal/create-goal-modal";
 import { GoalCard } from "@/components/goal/goal-card";
 import { ScreenContainer } from "@/components/screen-container";
 import { GoalsSkeleton } from "@/components/skeletons/goals-skeleton";
+import { Button } from "@/components/ui/button";
+import { PlusIcon } from "@/icons/plus-icon";
+import { formatCurrency } from "@/utils/index";
 import { useRouter } from "expo-router";
-import { Plus } from "@/lib/icons";
 import { useState } from "react";
 import {
-  Alert,
-  FlatList,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
+    Alert,
+    FlatList,
+    ScrollView,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import Toast from "react-native-toast-message";
 
 export default function GoalsScreen() {
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [editGoal, setEditGoal] = useState<{ id: string; name: string; target_amount: number } | null>(null);
+  const [editGoal, setEditGoal] = useState<{
+    id: string;
+    name: string;
+    target_amount: number;
+  } | null>(null);
   const { data: goalsData, isLoading } = useGoals();
   const deleteGoalMutation = useDeleteGoal();
 
@@ -102,13 +107,20 @@ export default function GoalsScreen() {
               {summary && totalCount > 0 && (
                 <View className="flex-row justify-between bg-card rounded-2xl p-4 mb-6 border border-border">
                   <View className="flex-1 border-r border-border pr-2">
-                    <Text className="text-sm text-muted-foreground mb-1">Total Left</Text>
-                    <Text className="text-2xl font-bold text-foreground" numberOfLines={1}>
+                    <Text className="text-sm text-muted-foreground mb-1">
+                      Total Left
+                    </Text>
+                    <Text
+                      className="text-2xl font-bold text-foreground"
+                      numberOfLines={1}
+                    >
                       {formatCurrency(summary.total_remaining || 0)}
                     </Text>
                   </View>
                   <View className="flex-1 pl-4 justify-center">
-                    <Text className="text-xs text-muted-foreground mb-1">Total Goals: {totalCount}</Text>
+                    <Text className="text-xs text-muted-foreground mb-1">
+                      Total Goals: {totalCount}
+                    </Text>
                     <View className="flex-row items-center">
                       <View className="w-2 h-2 rounded-full bg-success mr-2" />
                       <Text className="text-sm font-medium text-foreground">
@@ -150,17 +162,15 @@ export default function GoalsScreen() {
       </ScreenContainer>
 
       {/* Floating Action Button */}
-      <View className="absolute bottom-8 right-4">
-        <TouchableOpacity
-          onPress={() => setShowCreateModal(true)}
-          className="bg-primary p-4 rounded-full items-center justify-center flex-row gap-3 shadow-sm"
-        >
-          <Plus size={20} className="text-primary-foreground" />
-          <Text className="text-primary-foreground font-bold text-xl tracking-widest text-center">
-            Add New Goal
-          </Text>
-        </TouchableOpacity>
-      </View>
+      <Button
+        onPress={() => setShowCreateModal(true)}
+        className="rounded-full py-4 absolute bottom-4 right-4"
+      >
+        <PlusIcon className="text-primary-foreground size-6" />
+        <Text className="text-primary-foreground text-lg text-center ml-2">
+          Add New Goal
+        </Text>
+      </Button>
 
       <CreateGoalModal
         visible={showCreateModal}

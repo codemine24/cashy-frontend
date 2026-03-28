@@ -11,18 +11,21 @@ import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
-  Animated,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View
+    Animated,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import { z } from "zod";
 
 const emailSchema = z.object({
-  email: z.string().min(1, "Email address is required").email("Please enter a valid email address"),
+  email: z
+    .string()
+    .min(1, "Email address is required")
+    .email("Please enter a valid email address"),
 });
 
 const otpSchema = z.object({
@@ -111,7 +114,6 @@ export default function AuthScreen() {
 
       otpForm.setValue("email", data.email);
       animateToStep("otp");
-
     } catch (error: any) {
       Toast.show({
         type: "error",
@@ -122,7 +124,10 @@ export default function AuthScreen() {
 
   const handleVerifyOtp = async (data: OtpFormValues) => {
     try {
-      const response = await verifyOtpMutation.mutateAsync({ email: data.email, otp: data.otp });
+      const response = await verifyOtpMutation.mutateAsync({
+        email: data.email,
+        otp: data.otp,
+      });
 
       Toast.show({
         type: "success",
@@ -151,7 +156,6 @@ export default function AuthScreen() {
       applyUserTheme(userTheme);
 
       router.replace("/(tabs)");
-
     } catch (error: any) {
       console.error("Verify OTP Error:", error);
       Toast.show({
@@ -173,7 +177,6 @@ export default function AuthScreen() {
         onPress={step === "otp" ? () => animateToStep("email") : undefined}
       />
       <View style={{ flex: 1, paddingHorizontal: 24 }}>
-
         {/* EMAIL STEP */}
         <Animated.View
           style={{
@@ -184,7 +187,9 @@ export default function AuthScreen() {
         >
           <View className="mt-8">
             <H2 className="text-center">Welcome!</H2>
-            <Muted className="text-center mt-2 mb-6">Login/ Signup to store your data securely.</Muted>
+            <Muted className="text-center mt-2 mb-6">
+              Login/ Signup to store your data securely.
+            </Muted>
           </View>
 
           <Controller
@@ -197,6 +202,7 @@ export default function AuthScreen() {
                   onChangeText={onChange}
                   onBlur={onBlur}
                   placeholder="Email address"
+                  placeholderClassName="text-muted-foreground"
                   keyboardType="email-address"
                   autoCapitalize="none"
                   autoCorrect={false}
@@ -230,7 +236,9 @@ export default function AuthScreen() {
         >
           <View className="mt-8">
             <H2 className="text-center">Check your email</H2>
-            <Muted className="text-center mt-2 mb-6">We sent a code to {otpForm.watch("email")}</Muted>
+            <Muted className="text-center mt-2 mb-6">
+              We sent a code to {otpForm.watch("email")}
+            </Muted>
           </View>
 
           <Controller
@@ -256,7 +264,8 @@ export default function AuthScreen() {
 
           <TouchableOpacity onPress={handleResend} className="mt-4">
             <Muted className="text-sm">
-              Didn&apos;t receive it? <Muted className="underline text-sm">Resend</Muted>
+              Didn&apos;t receive it?{" "}
+              <Muted className="underline text-sm">Resend</Muted>
             </Muted>
           </TouchableOpacity>
 
@@ -270,7 +279,6 @@ export default function AuthScreen() {
             </Text>
           </Button>
         </Animated.View>
-
       </View>
     </SafeAreaView>
   );

@@ -12,35 +12,26 @@ export const onboardingSlides: OnboardingSlide[] = [
     id: "1",
     title: "Set-Up Multiple Businesses",
     subtitle: "Keep multiple business records on one app",
-    image: require("../assets/images/onboarding-slide-1.png"),
+    image: require("../assets/images/onboarding.png"),
   },
   {
     id: "2",
     title: "Track Every Transaction",
     subtitle: "Record cash-in and cash-out with ease daily",
-    image: require("../assets/images/onboarding-slide-2.png"),
+    image: require("../assets/images/onboarding.png"),
   },
   {
     id: "3",
     title: "Visual Reports & Insights",
     subtitle: "Understand your finances with clean charts",
-    image: require("../assets/images/onboarding-slide-3.png"),
+    image: require("../assets/images/onboarding.png"),
   },
   {
     id: "4",
     title: "Share With Your Team",
     subtitle: "Collaborate on wallets with family or staff",
-    image: require("../assets/images/onboarding-slide-4.png"),
+    image: require("../assets/images/onboarding.png"),
   },
 ];
 
-export const languages = [
-  { code: "en", label: "English", nativeLabel: "English" },
-  { code: "bn", label: "Bangla", nativeLabel: "বাংলা" },
-  // { code: "hi", label: "Hindi", nativeLabel: "हिंदी" },
-  // { code: "de", label: "German", nativeLabel: "Deutsch" },
-  // { code: "fr", label: "French", nativeLabel: "Français" },
-  // { code: "es", label: "Spanish", nativeLabel: "Español" },
-] as const;
-
-export type LanguageCode = (typeof languages)[number]["code"];
+export type LanguageCode = "en" | "bn";

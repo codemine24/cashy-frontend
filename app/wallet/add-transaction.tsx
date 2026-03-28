@@ -1,5 +1,6 @@
 import { useCreateTransaction, useUpdateTransaction } from "@/api/transaction";
 import { ChevronRight, Paperclip, X } from "@/lib/icons";
+import { formatDateToUTC, formatTimeToUTC } from "@/utils";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import * as ImagePicker from "expo-image-picker";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
@@ -36,9 +37,13 @@ export default function AddTransactionScreen() {
     editType?: string;
     editCategoryId?: string;
     editCategoryName?: string;
+    editDate?: string;
+    editTime?: string;
     selectedCategoryId?: string;
     selectedCategoryName?: string;
   }>();
+
+  console.log(params, "params......");
 
   const bookId = params.bookId!;
   const initialType = (params.type as "IN" | "OUT") || "OUT";
@@ -66,31 +71,30 @@ export default function AddTransactionScreen() {
       setSelectedCategory(params.editCategoryId);
       setSelectedCategoryName(params.editCategoryName || "Unknown Category");
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
-  useEffect(() => {
+    // Handle date - use editDate parameter which contains the full timestamp
+    if (params.editDate) {
+      const transactionDate = new Date(params.editDate);
+      setDate(transactionDate);
+    }
+
+    // Handle selectedCategoryId (for other use cases)
     if (params.selectedCategoryId) {
       setSelectedCategory(params.selectedCategoryId);
       setSelectedCategoryName(
         params.selectedCategoryName || "Unknown Category",
       );
     }
-  }, [params.selectedCategoryId, params.selectedCategoryName]);
-
-  const formatDate = (date: Date) => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
-  };
-
-  const formatTime = (date: Date) => {
-    const hours = String(date.getHours()).padStart(2, "0");
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-    const seconds = String(date.getSeconds()).padStart(2, "0");
-    return `${hours}:${minutes}:${seconds}`;
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    params.editType,
+    params.editAmount,
+    params.editDate,
+    params.editCategoryId,
+    params.editRemark,
+    params.selectedCategoryId,
+    params.selectedCategoryName,
+  ]);
 
   // ── Attachment picker ──────────────────────────────────────────────────────
   const pickAttachments = async () => {
@@ -128,29 +132,29 @@ export default function AddTransactionScreen() {
   const buildFormData = (isUpdate = false) => {
     const dataPayload = isUpdate
       ? {
-        amount: parseFloat(amount),
-        category_id: !isDeposit
-          ? selectedCategory === "other"
-            ? undefined
-            : selectedCategory
-          : undefined,
-        remark,
-        date: formatDate(date),
-        time: formatTime(date),
-      }
+          amount: parseFloat(amount),
+          category_id: !isDeposit
+            ? selectedCategory === "other"
+              ? undefined
+              : selectedCategory
+            : undefined,
+          remark,
+          date: formatDateToUTC(date),
+          time: formatTimeToUTC(date),
+        }
       : {
-        book_id: bookId,
-        type,
-        amount: parseFloat(amount),
-        category_id: !isDeposit
-          ? selectedCategory === "other"
-            ? undefined
-            : selectedCategory
-          : undefined,
-        remark,
-        date: formatDate(date),
-        time: formatTime(date),
-      };
+          book_id: bookId,
+          type,
+          amount: parseFloat(amount),
+          category_id: !isDeposit
+            ? selectedCategory === "other"
+              ? undefined
+              : selectedCategory
+            : undefined,
+          remark,
+          date: formatDateToUTC(date),
+          time: formatTimeToUTC(date),
+        };
 
     const formData = new FormData();
     formData.append("data", JSON.stringify(dataPayload));
@@ -166,12 +170,16 @@ export default function AddTransactionScreen() {
     return formData;
   };
 
+  console.log("buildFormData......", buildFormData);
+
   // ── Submit ─────────────────────────────────────────────────────────────────
   const isDeposit = type === "IN";
 
   const accentTextClass = isDeposit ? "text-success" : "text-destructive";
   const accentBgClassMap = isDeposit ? "bg-success/10" : "bg-destructive/10";
-  const accentBorderClassMap = isDeposit ? "border-success/30" : "border-destructive/30";
+  const accentBorderClassMap = isDeposit
+    ? "border-success/30"
+    : "border-destructive/30";
 
   const btnClassMap = isDeposit ? "bg-success" : "bg-destructive";
 
@@ -182,26 +190,10 @@ export default function AddTransactionScreen() {
       : "Cash Out";
 
   const handleSubmit = async () => {
-    if (!amount || parseFloat(amount) <= 0) {
-      Toast.show({
-        type: "error",
-        text1: "Error",
-        text2: "Please enter a valid amount",
-      });
-      return;
-    }
-
-    if (!isDeposit && !selectedCategory) {
-      Toast.show({
-        type: "error",
-        text1: "Error",
-        text2: "Please select a category",
-      });
-      return;
-    }
-
     try {
       let response: any;
+
+      console.log("response.....", response);
 
       if (isEditing) {
         response = await updateTransactionMutation.mutateAsync({
@@ -217,7 +209,7 @@ export default function AddTransactionScreen() {
         text2: response?.message,
       });
 
-      router.replace(`/wallet/${bookId}` as any)
+      router.replace(`/wallet/${bookId}` as any);
     } catch (error: any) {
       Toast.show({
         type: "error",
@@ -247,7 +239,10 @@ export default function AddTransactionScreen() {
         <View className="flex-1 bg-background">
           <ScrollView
             className="flex-1 bg-background"
-            contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 100 }}
+            contentContainerStyle={{
+              paddingHorizontal: 20,
+              paddingBottom: 100,
+            }}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
             keyboardDismissMode="on-drag"
@@ -260,9 +255,7 @@ export default function AddTransactionScreen() {
               <View
                 className={`flex-row items-center rounded-xl px-4 py-3.5 border-2 ${accentBorderClassMap} ${accentBgClassMap}`}
               >
-                <Text
-                  className={`text-2xl font-bold ${accentTextClass}`}
-                >
+                <Text className={`text-2xl font-bold ${accentTextClass}`}>
                   $
                 </Text>
                 <TextInput
@@ -296,7 +289,7 @@ export default function AddTransactionScreen() {
                   className="flex-row items-center bg-card border border-border rounded-xl px-4 py-3.5"
                 >
                   <Text
-                    className={`flex-1 text-base font-medium ${selectedCategoryName ? "text-foreground" : "text-muted-foreground"}`}
+                    className={`flex-1 text-base ${selectedCategoryName ? "text-foreground" : "text-muted-foreground"}`}
                   >
                     {selectedCategoryName || "Select a category"}
                   </Text>
