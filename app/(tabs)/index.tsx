@@ -13,7 +13,7 @@ import { PlusIcon } from "@/icons/plus-icon";
 import { SearchIcon } from "@/icons/search-icon";
 import { Book } from "@/interface/wallet";
 import { useRouter } from "expo-router";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Alert,
   FlatList,
@@ -33,9 +33,9 @@ const SORT_OPTIONS: {
   label: string;
   order: "asc" | "desc";
 }[] = [
-  { key: "name", label: "Name (A-Z)", order: "desc" },
-  { key: "created_at", label: "Last Created", order: "desc" },
   { key: "updated_at", label: "Last Updated", order: "desc" },
+  { key: "name", label: "Name (A-Z)", order: "asc" },
+  { key: "created_at", label: "Last Created", order: "desc" },
 ];
 
 export default function HomeScreen() {
@@ -47,12 +47,13 @@ export default function HomeScreen() {
   } | null>(null);
   const [showSortModal, setShowSortModal] = useState(false);
   const [sortBy, setSortBy] = useState<SortOption>("updated_at");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(searchQuery, 400);
+  const [isSearchLoading, setIsSearchLoading] = useState(false);
 
   const [tempSortBy, setTempSortBy] = useState<SortOption>("updated_at");
-  const [tempSortOrder, setTempSortOrder] = useState<"asc" | "desc">("desc");
+  const [tempSortOrder, setTempSortOrder] = useState<"asc" | "desc">("asc");
 
   const openSortModal = () => {
     setTempSortBy(sortBy);
@@ -73,6 +74,20 @@ export default function HomeScreen() {
   const deleteBookMutation = useDeleteBook();
 
   const [refreshing, setRefreshing] = useState(false);
+
+  // Track search loading state
+  useEffect(() => {
+    if (searchQuery.trim()) {
+      setIsSearchLoading(true);
+      // Reset loading state after debounce delay
+      const timer = setTimeout(() => {
+        setIsSearchLoading(false);
+      }, 450); // Slightly longer than debounce delay
+      return () => clearTimeout(timer);
+    } else {
+      setIsSearchLoading(false);
+    }
+  }, [debouncedSearchQuery, searchQuery]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -176,7 +191,7 @@ export default function HomeScreen() {
           </View>
 
           {/* Books List */}
-          {isLoading && !searchQuery ? (
+          {isLoading || isSearchLoading ? (
             <WalletsSkeleton />
           ) : booksData?.data?.length === 0 ? (
             <View className="bg-surface rounded-xl p-8 items-center justify-center border border-border">

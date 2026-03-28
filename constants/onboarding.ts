@@ -35,3 +35,14 @@ export const onboardingSlides: OnboardingSlide[] = [
 ];
 
 export type LanguageCode = "en" | "bn";
+
+export interface Language {
+  code: LanguageCode;
+  label: string;
+  nativeLabel: string;
+}
+
+export const languages: Language[] = [
+  { code: "en", label: "English", nativeLabel: "English" },
+  { code: "bn", label: "Bangla", nativeLabel: "বাংলা" },
+];

@@ -1,6 +1,5 @@
 import { TabHeader } from "@/components/tab-header";
 import { useTheme } from "@/context/theme-context";
-import { GoalIcon } from "@/icons/goal-icon";
 import { LoanIcon } from "@/icons/loan-icon";
 import { StatisticsIcon } from "@/icons/statistics-icon";
 import { WalletIcon } from "@/icons/wallet-icon";
@@ -11,7 +10,6 @@ import PagerView from "react-native-pager-view";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 // Import each screen directly — PagerView needs to render them side-by-side
-import GoalsScreen from "./goals";
 import WalletsScreen from "./index";
 import LoansScreen from "./loans";
 import StatisticsScreen from "./statistics";
@@ -24,11 +22,6 @@ const TABS = [
     name: "Wallets",
     icon: (c: string) => <WalletIcon color={c} size={24} />,
     Screen: WalletsScreen,
-  },
-  {
-    name: "Goals",
-    icon: (c: string) => <GoalIcon color={c} size={24} />,
-    Screen: GoalsScreen,
   },
   {
     name: "Loans",
@@ -79,8 +72,23 @@ function BottomTabBar({
               alignItems: "center",
               justifyContent: "center",
               gap: 2,
+              paddingTop: 4,
             }}
           >
+            {active && (
+              <View
+                style={{
+                  position: "absolute",
+                  top: -2,
+                  left: "50%",
+                  transform: [{ translateX: -30 }],
+                  width: 60,
+                  height: 2,
+                  backgroundColor: ACTIVE_COLOR,
+                  borderRadius: 1,
+                }}
+              />
+            )}
             {tab.icon(color)}
             <Text style={{ fontSize: 10, fontWeight: "500", color }}>
               {tab.name}

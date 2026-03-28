@@ -187,8 +187,6 @@ export default function AddTransactionScreen() {
           time: formatTimeToUTC(date),
         };
 
-    console.log("dataPayload.........", dataPayload);
-
     const formData = new FormData();
     formData.append("data", JSON.stringify(dataPayload));
 
@@ -270,11 +268,9 @@ export default function AddTransactionScreen() {
             className="flex-1 bg-background"
             contentContainerStyle={{
               paddingHorizontal: 20,
-              paddingBottom: 120,
             }}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
-            keyboardDismissMode="on-drag"
           >
             {/* Amount Input */}
             <View className="mb-5 mt-4">
@@ -325,6 +321,15 @@ export default function AddTransactionScreen() {
                       params: {
                         bookId: bookId,
                         currentSelectedId: selectedCategory,
+                        // Pass edit parameters if in edit mode
+                        editId: params.editId,
+                        editAmount: params.editAmount,
+                        editRemark: params.editRemark,
+                        editType: params.editType,
+                        editCategoryId: params.editCategoryId,
+                        editCategoryName: params.editCategoryName,
+                        editDate: params.editDate,
+                        editTime: params.editTime,
                       },
                     });
                   }}
@@ -440,7 +445,7 @@ export default function AddTransactionScreen() {
             </View>
 
             {/* ── Attachments ── */}
-            <View className="mb-5">
+            <View className="mb-5 pb-24">
               <Text className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
                 Attachments
               </Text>

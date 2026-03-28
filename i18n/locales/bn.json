@@ -21,7 +21,6 @@
   "tabs": {
     "home": "হোম",
     "wallets": "ওয়ালেট",
-    "goals": "লক্ষ্য",
     "settings": "সেটিংস"
   },
   "settings": {
@@ -30,6 +29,7 @@
     "profile": "আপনার প্রোফাইল",
     "subscription": "সাবস্ক্রিপশন",
     "appearance": "থিম",
+    "languageSection": "ভাষা",
     "localisation": "স্থানীয়করণ",
     "notifications": "বিজ্ঞপ্তি",
     "theme": "থিম",
@@ -74,17 +74,6 @@
     "deleteConfirm": "আপনি কি এই লেনদেনটি মুছতে চান?",
     "categories": "বিভাগ",
     "manageCategories": "বিভাগ পরিচালনা"
-  },
-  "goals": {
-    "title": "লক্ষ্য",
-    "createGoal": "লক্ষ্য তৈরি করুন",
-    "noGoals": "কোনো লক্ষ্য নেই",
-    "targetAmount": "লক্ষ্য পরিমাণ",
-    "currentAmount": "বর্তমান পরিমাণ",
-    "progress": "অগ্রগতি",
-    "addEntry": "এন্ট্রি যোগ করুন",
-    "deleteGoal": "লক্ষ্য মুছুন",
-    "deleteConfirm": "\"{{name}}\" মুছে ফেলবেন? এটি পূর্বাবস্থায় ফেরানো যাবে না।"
   },
   "profile": {
     "title": "আপনার প্রোফাইল",

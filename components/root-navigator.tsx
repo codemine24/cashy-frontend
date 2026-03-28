@@ -1,8 +1,8 @@
 import { ThemeVarsProvider, useTheme } from "@/context/theme-context";
 import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider as NavThemeProvider,
+    DarkTheme,
+    DefaultTheme,
+    ThemeProvider as NavThemeProvider,
 } from "@react-navigation/native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -36,12 +36,6 @@ export const RootNavigator = () => {
             <Stack.Screen name="(tabs)" />
             <Stack.Screen
               name="notifications"
-              options={{ headerShown: true }}
-            />
-            <Stack.Screen name="goal/[id]" options={{ headerShown: true }} />
-            <Stack.Screen name="goal/members" options={{ headerShown: true }} />
-            <Stack.Screen
-              name="goal/add-entry"
               options={{ headerShown: true }}
             />
             <Stack.Screen name="wallet/[id]" options={{ headerShown: true }} />

@@ -254,8 +254,6 @@ export default function TransactionDetailScreen() {
         });
       }
     } catch (error) {
-      console.log("Share error:", error);
-
       Toast.show({
         type: "error",
         text1: "Failed to share attachment",
@@ -298,8 +296,6 @@ export default function TransactionDetailScreen() {
         text2: "Saved to gallery",
       });
     } catch (error) {
-      console.log("Download error:", error);
-
       Toast.show({
         type: "error",
         text1: "Download failed",
