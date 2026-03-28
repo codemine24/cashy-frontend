@@ -14,19 +14,31 @@ function ComparisonRow(props: { feature: string } & ComparisonProps) {
 
   return (
     <View className="flex-row items-center justify-between py-4 border-b border-border">
-      <Text className="flex-1 text-base text-foreground font-medium pr-2">{feature}</Text>
+      <Text className="flex-1 text-base text-foreground font-medium pr-2">
+        {feature}
+      </Text>
 
       <View className="w-20 items-center justify-center">
         {type === "boolean" ? (
-          free ? <Check size={20} className="text-green-600" /> : <X size={20} className="text-muted-foreground" />
+          free ? (
+            <Check size={20} className="text-green-600" />
+          ) : (
+            <X size={20} className="text-muted-foreground" />
+          )
         ) : (
-          <Text className="text-sm text-muted-foreground text-center">{free}</Text>
+          <Text className="text-sm text-muted-foreground text-center">
+            {free}
+          </Text>
         )}
       </View>
 
       <View className="w-20 items-center justify-center">
         {type === "boolean" ? (
-          pro ? <Check size={20} className="text-green-600" /> : <X size={20} className="text-muted-foreground" />
+          pro ? (
+            <Check size={20} className="text-green-600" />
+          ) : (
+            <X size={20} className="text-muted-foreground" />
+          )
         ) : (
           <Text className="text-sm text-muted-foreground">{pro}</Text>
         )}
@@ -35,7 +47,15 @@ function ComparisonRow(props: { feature: string } & ComparisonProps) {
   );
 }
 
-function FAQItem({ question, answer, isLast }: { question: string; answer: string; isLast?: boolean }) {
+function FAQItem({
+  question,
+  answer,
+  isLast,
+}: {
+  question: string;
+  answer: string;
+  isLast?: boolean;
+}) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -65,12 +85,16 @@ function FAQItem({ question, answer, isLast }: { question: string; answer: strin
 }
 
 export default function Subscription() {
-  const [selectedPlan, setSelectedPlan] = useState<"free" | "lifetime">("lifetime");
+  const [selectedPlan, setSelectedPlan] = useState<"free" | "lifetime">(
+    "lifetime",
+  );
   const insets = useSafeAreaInsets();
 
   return (
     <>
-      <Stack.Screen options={{ title: "Cashy Subscription", headerTitleAlign: "left" }} />
+      <Stack.Screen
+        options={{ title: "Cashy Subscription", headerTitleAlign: "left" }}
+      />
       <ScreenContainer edges={[]} className="bg-background relative">
         <ScrollView
           showsVerticalScrollIndicator={false}
@@ -83,31 +107,61 @@ export default function Subscription() {
               Upgrade to premium
             </Text>
             <Text className="text-sm font-medium text-muted-foreground text-center px-2">
-              Grab the limited &quot;Lifetime Deal&quot; and get all premium feature and updates with no additional cost.
+              Grab the limited &quot;Lifetime Deal&quot; and get all premium
+              feature and updates with no additional cost.
             </Text>
           </View>
 
           {/* Comparison Table */}
           <View className="bg-card rounded-3xl border border-border p-5 mb-8">
-            <Text className="text-xl font-bold text-foreground mb-4 mt-2">Whats included in Pro</Text>
+            <Text className="text-xl font-bold text-foreground mb-4 mt-2">
+              Whats included in Pro
+            </Text>
 
             <View className="flex-row items-center justify-between pb-3 border-b border-border">
-              <Text className="flex-1 text-sm text-muted-foreground font-medium">Features</Text>
-              <Text className="w-16 text-center text-sm text-foreground font-medium">Free</Text>
-              <Text className="w-16 text-center text-sm text-amber-500 font-bold">Pro</Text>
+              <Text className="flex-1 text-sm text-muted-foreground font-medium">
+                Features
+              </Text>
+              <Text className="w-16 text-center text-sm text-foreground font-medium">
+                Free
+              </Text>
+              <Text className="w-16 text-center text-sm text-amber-500 font-bold">
+                Pro
+              </Text>
             </View>
 
             {/* 5 Comparisons */}
-            <ComparisonRow feature="Number of wallet" type="text" free={"5"} pro={"Unlimited"} />
-            <ComparisonRow feature="Number of goal" type="text" free={"5"} pro={"Unlimited"} />
-            <ComparisonRow feature="Each wallet/ goal can be shared with" type="text" free={"1 member"} pro={"Unlimited"} />
-            <ComparisonRow feature="Advance analytics" type="boolean" free={false} pro={true} />
-            <ComparisonRow feature="Attach image with transaction" type="boolean" free={false} pro={true} />
+            <ComparisonRow
+              feature="Number of wallet"
+              type="text"
+              free={"5"}
+              pro={"Unlimited"}
+            />
+            <ComparisonRow
+              feature="Each wallet can be shared with"
+              type="text"
+              free={"1 member"}
+              pro={"Unlimited"}
+            />
+            <ComparisonRow
+              feature="Advance analytics"
+              type="boolean"
+              free={false}
+              pro={true}
+            />
+            <ComparisonRow
+              feature="Attach image with transaction"
+              type="boolean"
+              free={false}
+              pro={true}
+            />
           </View>
 
           {/* FAQ Section */}
           <View className="mb-8">
-            <Text className="text-xl font-bold text-foreground mb-3 px-1">FAQs</Text>
+            <Text className="text-xl font-bold text-foreground mb-3 px-1">
+              FAQs
+            </Text>
             <View className="bg-card rounded-3xl border border-border px-5">
               <FAQItem
                 question="Is the lifetime deal really a one-time payment?"
@@ -119,7 +173,7 @@ export default function Subscription() {
               />
               <FAQItem
                 question="Can I share my subscription with my family?"
-                answer="Yes, our Pro plan supports Family Sharing where applicable through the App Store or Play Store. You can also share specific wallets and goals with other users directly."
+                answer="Yes, our Pro plan supports Family Sharing where applicable through the App Store or Play Store. You can also share specific wallets with other users directly."
               />
               <FAQItem
                 isLast
@@ -130,15 +184,21 @@ export default function Subscription() {
 
             <View className="mt-6 p-4 flex-row items-center justify-between bg-card rounded-3xl border border-border">
               <View className="flex-1 pr-4">
-                <Text className="text-base font-bold text-foreground">Still have questions?</Text>
-                <Text className="text-sm text-muted-foreground mt-1">Can&apos;t find the answer you&apos;re looking for? Please chat to our friendly team.</Text>
+                <Text className="text-base font-bold text-foreground">
+                  Still have questions?
+                </Text>
+                <Text className="text-sm text-muted-foreground mt-1">
+                  Can&apos;t find the answer you&apos;re looking for? Please
+                  chat to our friendly team.
+                </Text>
               </View>
               <TouchableOpacity className="bg-foreground px-5 py-2.5 rounded-full">
-                <Text className="text-sm font-bold text-background">Contact</Text>
+                <Text className="text-sm font-bold text-background">
+                  Contact
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
-
         </ScrollView>
 
         {/* Sticky Bottom Area */}
@@ -151,24 +211,40 @@ export default function Subscription() {
             <TouchableOpacity
               activeOpacity={0.8}
               onPress={() => setSelectedPlan("free")}
-              className={`flex-1 rounded-2xl border-2 p-4 pt-5 ${selectedPlan === "free" ? "border-foreground bg-card" : "border-border bg-card/50"
-                }`}
+              className={`flex-1 rounded-2xl border-2 p-4 pt-5 ${
+                selectedPlan === "free"
+                  ? "border-foreground bg-card"
+                  : "border-border bg-card/50"
+              }`}
             >
-              <Text className="text-lg font-semibold text-center text-foreground mb-2">Free</Text>
-              <Text className="text-2xl font-bold text-center text-foreground mt-auto">$0</Text>
-              <Text className="text-xs text-center text-muted-foreground mt-1">Forever</Text>
+              <Text className="text-lg font-semibold text-center text-foreground mb-2">
+                Free
+              </Text>
+              <Text className="text-2xl font-bold text-center text-foreground mt-auto">
+                $0
+              </Text>
+              <Text className="text-xs text-center text-muted-foreground mt-1">
+                Forever
+              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               activeOpacity={0.8}
               onPress={() => setSelectedPlan("lifetime")}
-              className={`flex-1 rounded-2xl border-2 p-4 pt-5 relative ${selectedPlan === "lifetime" ? "border-amber-500 bg-amber-500/10" : "border-border bg-card/50"
-                }`}
+              className={`flex-1 rounded-2xl border-2 p-4 pt-5 relative ${
+                selectedPlan === "lifetime"
+                  ? "border-amber-500 bg-amber-500/10"
+                  : "border-border bg-card/50"
+              }`}
             >
               <View className="absolute -top-3.5 self-center bg-amber-500 px-3 py-1 rounded-full">
-                <Text className="text-[10px] font-bold text-white tracking-wider">Limited offer</Text>
+                <Text className="text-[10px] font-bold text-white tracking-wider">
+                  Limited offer
+                </Text>
               </View>
-              <Text className="text-lg font-semibold text-center text-foreground mb-2">Lifetime</Text>
+              <Text className="text-lg font-semibold text-center text-foreground mb-2">
+                Lifetime
+              </Text>
 
               <View className="items-center justify-center mt-auto flex-col gap-0.5">
                 <Text className="text-sm font-medium text-muted-foreground line-through decoration-muted-foreground">
@@ -178,7 +254,9 @@ export default function Subscription() {
                   $4.99
                 </Text>
               </View>
-              <Text className="text-xs text-center text-muted-foreground mt-1">One-time payment</Text>
+              <Text className="text-xs text-center text-muted-foreground mt-1">
+                One-time payment
+              </Text>
             </TouchableOpacity>
           </View>
 
@@ -194,7 +272,6 @@ export default function Subscription() {
             </TouchableOpacity>
           )}
         </View>
-
       </ScreenContainer>
     </>
   );

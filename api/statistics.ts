@@ -14,7 +14,6 @@ const keys = {
     params,
   ],
   loanSummary: () => [...keys.all, "loanSummary"],
-  goalSummary: () => [...keys.all, "goalSummary"],
   walletStats: (params: any) => [...keys.all, "walletStats", params],
 };
 
@@ -108,22 +107,6 @@ export const useLoanSummary = () => {
       try {
         const response = await apiClient.get(
           `${STATISTICS_API_URL}/loan-summary`,
-        );
-        return response.data;
-      } catch (error) {
-        throwApiError(error);
-      }
-    },
-  });
-};
-
-export const useGoalSummary = () => {
-  return useQuery({
-    queryKey: keys.goalSummary(),
-    queryFn: async () => {
-      try {
-        const response = await apiClient.get(
-          `${STATISTICS_API_URL}/goal-summary`,
         );
         return response.data;
       } catch (error) {
