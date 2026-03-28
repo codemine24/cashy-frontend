@@ -9,13 +9,12 @@ import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    KeyboardAvoidingView,
+    ScrollView,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View
 } from "react-native";
 import Toast from "react-native-toast-message";
 import { z } from "zod";
@@ -114,10 +113,7 @@ export default function CreateLoanScreen() {
           headerBackTitle: "Back",
         }}
       />
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-        style={{ flex: 1 }}
-      >
+      <KeyboardAvoidingView behavior="height" style={{ flex: 1 }}>
         <ScrollView
           className="flex-1 bg-background"
           contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 120 }}
@@ -129,25 +125,33 @@ export default function CreateLoanScreen() {
           {/* Type Toggle */}
           <View className="flex-row bg-muted rounded-2xl p-1 my-6">
             <TouchableOpacity
-              onPress={() => form.setValue("type", "GIVEN", { shouldValidate: true })}
-              className={`flex-1 py-3.5 rounded-xl items-center justify-center ${isGiven ? "bg-primary shadow-sm" : "bg-transparent"
-                }`}
+              onPress={() =>
+                form.setValue("type", "GIVEN", { shouldValidate: true })
+              }
+              className={`flex-1 py-3.5 rounded-xl items-center justify-center ${
+                isGiven ? "bg-primary shadow-sm" : "bg-transparent"
+              }`}
             >
               <Text
-                className={`font-semibold text-sm ${isGiven ? "text-white" : "text-muted-foreground"
-                  }`}
+                className={`font-semibold text-sm ${
+                  isGiven ? "text-white" : "text-muted-foreground"
+                }`}
               >
                 Lent (Given)
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => form.setValue("type", "TAKEN", { shouldValidate: true })}
-              className={`flex-1 py-3.5 rounded-xl items-center justify-center ${!isGiven ? "bg-primary shadow-sm" : "bg-transparent"
-                }`}
+              onPress={() =>
+                form.setValue("type", "TAKEN", { shouldValidate: true })
+              }
+              className={`flex-1 py-3.5 rounded-xl items-center justify-center ${
+                !isGiven ? "bg-primary shadow-sm" : "bg-transparent"
+              }`}
             >
               <Text
-                className={`font-semibold text-sm ${!isGiven ? "text-white" : "text-muted-foreground"
-                  }`}
+                className={`font-semibold text-sm ${
+                  !isGiven ? "text-white" : "text-muted-foreground"
+                }`}
               >
                 Borrowed (Taken)
               </Text>
@@ -174,10 +178,11 @@ export default function CreateLoanScreen() {
                         : "Who did you borrow from?"
                     }
                     autoCapitalize="words"
-                    className={`${form.formState.errors.person_name
-                      ? "border-destructive"
-                      : "border-border"
-                      }`}
+                    className={`${
+                      form.formState.errors.person_name
+                        ? "border-destructive"
+                        : "border-border"
+                    }`}
                   />
                   <InputError
                     error={form.formState.errors.person_name?.message}
@@ -198,10 +203,11 @@ export default function CreateLoanScreen() {
               render={({ field: { onChange, onBlur, value } }) => (
                 <View>
                   <View
-                    className={`flex-row items-center rounded-xl px-4 py-4 border ${form.formState.errors.amount
-                      ? "border-destructive"
-                      : "border-border"
-                      }`}
+                    className={`flex-row items-center rounded-xl px-4 py-4 border ${
+                      form.formState.errors.amount
+                        ? "border-destructive"
+                        : "border-border"
+                    }`}
                   >
                     <Text className="text-2xl font-bold text-primary mr-2">
                       $
@@ -240,8 +246,9 @@ export default function CreateLoanScreen() {
                     className="bg-card rounded-xl px-4 py-4 border border-border flex-row items-center justify-between"
                   >
                     <Text
-                      className={`text-base ${value ? "text-foreground" : "text-muted-foreground"
-                        }`}
+                      className={`text-base ${
+                        value ? "text-foreground" : "text-muted-foreground"
+                      }`}
                     >
                       {formatDateForDisplay(value)}
                     </Text>
@@ -251,16 +258,16 @@ export default function CreateLoanScreen() {
                     <DateTimePicker
                       value={selectedDate || new Date()}
                       mode="date"
-                      display={Platform.OS === "ios" ? "spinner" : "default"}
+                      display="default"
                       minimumDate={new Date()}
                       onChange={(event, date) => {
-                        setShowDatePicker(Platform.OS === "ios");
+                        setShowDatePicker(false);
                         if (date) {
                           setSelectedDate(date);
                           const year = date.getFullYear();
                           const month = String(date.getMonth() + 1).padStart(
                             2,
-                            "0"
+                            "0",
                           );
                           const day = String(date.getDate()).padStart(2, "0");
                           form.setValue("due_date", `${year}-${month}-${day}`);

@@ -2,7 +2,6 @@ import { useDeleteTransaction, useTransaction } from "@/api/transaction";
 import {
   BookOpen,
   Calendar,
-  Clock,
   Copy,
   Download,
   Edit3,
@@ -34,8 +33,27 @@ import * as MediaLibrary from "expo-media-library";
 import * as Sharing from "expo-sharing";
 import Toast from "react-native-toast-message";
 
-// ── helper: avatar (real image or initials fallback) ─────────────────────────
+// ── helper: format a UTC timestamp string into local date + time ─────────────
+// new Date(utcString) automatically converts the UTC value from Supabase
+// into the device's local timezone — works correctly for all timezones worldwide.
+function formatDateTime(utcString?: string): { date: string; time: string } {
+  if (!utcString) return { date: "—", time: "—" };
 
+  const d = new Date(utcString);
+
+  return {
+    date: d.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    }),
+    time: d
+      .toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })
+      .toLowerCase(),
+  };
+}
+
+// ── helper: avatar (real image or initials fallback) ─────────────────────────
 function Avatar({
   name,
   avatarFile,
@@ -135,36 +153,16 @@ export default function TransactionDetailScreen() {
   const headerBgClass = isIn ? "bg-success" : "bg-destructive";
   const accentTextClass = isIn ? "text-success" : "text-destructive";
   const typeLabel = isIn ? "Cash In" : "Cash Out";
-  // JS colors for the navigation header
   const headerJsColor = isIn ? "#16a34a" : "#dc2626";
 
-  const formattedDate = transaction?.created_at
-    ? new Date(transaction.created_at).toLocaleDateString("en-GB", {
-        day: "2-digit",
-        month: "long",
-        year: "numeric",
-      })
-    : "—";
-
-  const formattedTime = transaction?.created_at
-    ? new Date(transaction.created_at)
-        .toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })
-        .toLowerCase()
-    : "—";
-
-  const updatedDate = transaction?.updated_at
-    ? new Date(transaction.updated_at).toLocaleDateString("en-GB", {
-        day: "2-digit",
-        month: "long",
-        year: "numeric",
-      })
-    : "—";
-
-  const updatedTime = transaction?.updated_at
-    ? new Date(transaction.updated_at)
-        .toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })
-        .toLowerCase()
-    : "—";
+  // Single source of truth for date/time formatting.
+  // formatDateTime converts the UTC timestamp from Supabase to the user's local timezone.
+  const { date: createdDate, time: createdTime } = formatDateTime(
+    transaction?.created_at,
+  );
+  const { date: updatedDate, time: updatedTime } = formatDateTime(
+    transaction?.updated_at,
+  );
 
   const handleEdit = () => {
     router.push({
@@ -432,14 +430,14 @@ export default function TransactionDetailScreen() {
               <Divider />
               <InfoRow
                 icon={<Calendar size={16} className="text-muted-foreground" />}
-                label="Date"
-                value={formattedDate}
+                label="Created At"
+                value={`${createdDate} ${createdTime}`}
               />
               <Divider />
               <InfoRow
-                icon={<Clock size={16} className="text-muted-foreground" />}
-                label="Time"
-                value={formattedTime}
+                icon={<Calendar size={16} className="text-muted-foreground" />}
+                label="Last Update"
+                value={`${updatedDate} ${updatedTime}`}
               />
               <Divider />
               <InfoRow
@@ -476,10 +474,7 @@ export default function TransactionDetailScreen() {
                     Added
                   </Text>
                   <Text className="text-[11px] text-muted-foreground">
-                    {formattedDate}
-                  </Text>
-                  <Text className="text-[11px] text-muted-foreground">
-                    {formattedTime}
+                    {createdDate}
                   </Text>
                 </View>
               </View>
@@ -506,9 +501,6 @@ export default function TransactionDetailScreen() {
                       </Text>
                       <Text className="text-[11px] text-muted-foreground">
                         {updatedDate}
-                      </Text>
-                      <Text className="text-[11px] text-muted-foreground">
-                        {updatedTime}
                       </Text>
                     </View>
                   </View>
