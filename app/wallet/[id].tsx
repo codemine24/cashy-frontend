@@ -563,7 +563,7 @@ export default function BookDetailScreen() {
                   <View className="px-3 py-2 flex-row items-center justify-between border-b border-border">
                     <View className="flex-row items-center gap-2">
                       <Users size={16} className="text-muted-foreground" />
-                      <Text className="text-foreground font-bold text-[13px] ml-2">
+                      <Text className="text-white text-sm font-semibold tracking-wide ml-2">
                         Members
                       </Text>
                     </View>
@@ -692,7 +692,7 @@ export default function BookDetailScreen() {
         renderSectionHeader={({ section: { title, data } }) => (
           <View className="bg-card rounded-2xl mb-2 border border-border">
             <View className="px-3 py-3 border-b border-border">
-              <Text className="text-muted-foreground text-[13px] font-bold tracking-wide">
+              <Text className="text-white text-sm font-semibold tracking-wide">
                 {title}
               </Text>
             </View>
