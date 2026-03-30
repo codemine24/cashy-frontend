@@ -1,5 +1,6 @@
 import { useCreateTransaction, useUpdateTransaction } from "@/api/transaction";
 import { InputError } from "@/components/ui/input-error";
+import { useKeyboardOffset } from "@/hooks/useKeyboardOffset";
 import { ChevronRight, Paperclip, X } from "@/lib/icons";
 import { formatDateToUTC, formatTimeToUTC } from "@/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,6 +19,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import { z } from "zod";
 
@@ -45,6 +47,7 @@ type TransactionFormValues = z.infer<typeof transactionSchema>;
 // ─── Main Screen ─────────────────────────────────────────────────────────────
 export default function AddTransactionScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{
     bookId: string;
     type: string;
@@ -64,9 +67,10 @@ export default function AddTransactionScreen() {
   const initialType = (params.type as "IN" | "OUT") || "OUT";
   const isEditing = !!params.editId;
 
+  const keyboardOffset = useKeyboardOffset();
+
   const createTransactionMutation = useCreateTransaction();
   const updateTransactionMutation = useUpdateTransaction();
-
   const [type, setType] = useState<"IN" | "OUT">(initialType);
   const [amount, setAmount] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -258,12 +262,12 @@ export default function AddTransactionScreen() {
           headerBackTitle: "Back",
         }}
       />
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior="height"
-        keyboardVerticalOffset={120}
-      >
-        <View className="flex-1 bg-background">
+      <View className="flex-1 bg-background">
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior="height"
+          keyboardVerticalOffset={keyboardOffset}
+        >
           <ScrollView
             className="flex-1 bg-background"
             contentContainerStyle={{
@@ -497,7 +501,10 @@ export default function AddTransactionScreen() {
           </ScrollView>
 
           {/* Submit Button - Sticks above keyboard */}
-          <View className="px-5 py-3 bg-background border-t border-border">
+          <View
+            className="px-5 py-3 bg-background border-t border-border"
+            style={{ paddingBottom: Math.max(insets.bottom, 16) }}
+          >
             <TouchableOpacity
               onPress={form.handleSubmit(handleSubmit)}
               disabled={isPending}
@@ -515,8 +522,8 @@ export default function AddTransactionScreen() {
               </Text>
             </TouchableOpacity>
           </View>
-        </View>
-      </KeyboardAvoidingView>
+        </KeyboardAvoidingView>
+      </View>
     </>
   );
 }

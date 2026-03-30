@@ -1,6 +1,6 @@
 import { Loan } from "@/interface/loan";
 import { Edit3, MoreVertical, Trash2 } from "@/lib/icons";
-import { formatCurrency, formatUpdateDate } from "@/utils";
+import { formatNumber } from "@/utils";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
@@ -12,63 +12,64 @@ interface LoanCardProps {
   onDelete?: (loan: Loan) => void;
 }
 
-const STATUS_STYLES: Record<string, { bg: string; text: string }> = {
-  ONGOING: { bg: "bg-blue-500/15", text: "text-blue-500" },
-  PAID: { bg: "bg-green-500/15", text: "text-green-500" },
-  OVERDUE: { bg: "bg-red-500/15", text: "text-red-500" },
-};
-
 export const LoanCard = ({ loan, onEdit, onDelete }: LoanCardProps) => {
   const router = useRouter();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
 
   const showMenu = !!(onEdit || onDelete);
 
-  const statusStyle = STATUS_STYLES[loan.status] || STATUS_STYLES.ONGOING;
-  const progress = loan.amount > 0 ? Math.min((loan.paid_amount / loan.amount) * 100, 100) : 0;
-  const remaining = Math.max(loan.amount - loan.paid_amount, 0);
-
   const handleAction = (action?: (loan: Loan) => void) => {
     setIsMenuVisible(false);
     if (action) {
+      // Small timeout to allow popover to close before opening other modals
       setTimeout(() => {
         action(loan);
       }, 100);
     }
   };
 
+  // Determine color based on loan type and status
+  const getAmountColor = () => {
+    if (loan.type === "GIVEN") {
+      // Lent loans - green when positive (someone owes you money)
+      return "text-green-600";
+    } else {
+      // Borrowed loans - red when positive (you owe someone money)
+      return "text-red-600";
+    }
+  };
+
   return (
     <TouchableOpacity
       onPress={() => router.push(`/loan/${loan.id}` as any)}
-      className="bg-card rounded-2xl p-4 mt-3 border border-border active:opacity-70"
+      className="bg-card rounded-2xl p-3 mt-3 border border-border active:opacity-70"
     >
-      {/* Top Row: Name, Status, Menu */}
+      {/* Top: Icon and Name/Date */}
       <View className="flex-row items-center justify-between mb-3">
-        <View className="flex-row items-center flex-1 mr-3">
-          {/* Avatar */}
-          <View className="size-11 items-center justify-center rounded-2xl mr-3 bg-primary/10">
+        <View className="flex-row items-center flex-1">
+          <View className="size-13 items-center justify-center rounded-2xl mr-4 bg-primary/10">
             <Text className="text-primary font-bold text-lg">
               {loan.person_name.charAt(0).toUpperCase()}
             </Text>
           </View>
-          <View className="flex-1 mr-2">
-            <Text className="text-foreground font-bold text-base" numberOfLines={1}>
+          <View className="flex-1 mr-4">
+            <Text
+              className="text-foreground font-bold text-lg"
+              numberOfLines={1}
+            >
               {loan.person_name}
             </Text>
-            <Text className="text-xs text-muted-foreground mt-0.5">
-              {loan.due_date
-                ? `Due: ${new Date(loan.due_date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`
-                : formatUpdateDate(loan.updated_at)
-              }
+            <Text className="text-sm text-muted-foreground mt-0.5">
+              {`Due: ${new Date(loan.due_date!).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`}
             </Text>
           </View>
         </View>
 
+        {/* Amount and Options Menu */}
         <View className="flex-row items-center">
-          {/* Status Badge */}
-          <View className={`px-2.5 py-1 rounded-lg mr-1 ${statusStyle.bg}`}>
-            <Text className={`text-[10px] font-bold uppercase tracking-wider ${statusStyle.text}`}>
-              {loan.status}
+          <View className="items-end mr-1">
+            <Text className={`font-semibold ${getAmountColor()}`}>
+              {formatNumber(loan.amount)}
             </Text>
           </View>
 
@@ -79,9 +80,9 @@ export const LoanCard = ({ loan, onEdit, onDelete }: LoanCardProps) => {
               from={
                 <TouchableOpacity
                   onPress={() => setIsMenuVisible(true)}
-                  className="py-2 pl-1 rounded-full"
+                  className="py-2 pl-2 rounded-full"
                 >
-                  <MoreVertical size={18} className="text-foreground" />
+                  <MoreVertical size={20} className="text-foreground" />
                 </TouchableOpacity>
               }
               popoverStyle={{
@@ -89,7 +90,7 @@ export const LoanCard = ({ loan, onEdit, onDelete }: LoanCardProps) => {
                 backgroundColor: "#ffffff",
                 paddingVertical: 12,
                 paddingHorizontal: 16,
-                width: 200,
+                width: 220,
                 elevation: 4,
                 shadowColor: "#000",
                 shadowOpacity: 0.1,
@@ -106,17 +107,22 @@ export const LoanCard = ({ loan, onEdit, onDelete }: LoanCardProps) => {
                     onPress={() => handleAction(onEdit)}
                     className="flex-row items-center"
                   >
-                    <Edit3 size={18} className="text-black" />
-                    <Text className="ml-4 text-[15px] text-black">Edit Loan</Text>
+                    <Edit3 size={20} className="text-black" />
+                    <Text className="ml-4 text-[16px] text-black">
+                      Edit Loan
+                    </Text>
                   </TouchableOpacity>
                 )}
+
                 {onDelete && (
                   <TouchableOpacity
                     onPress={() => handleAction(onDelete)}
-                    className="flex-row items-center"
+                    className="flex-row items-center mt-1"
                   >
-                    <Trash2 size={18} className="text-red-500" />
-                    <Text className="ml-4 text-[15px] text-red-500">Delete Loan</Text>
+                    <Trash2 size={20} className="text-red-500" />
+                    <Text className="ml-4 text-[16px] text-red-500">
+                      Delete Loan
+                    </Text>
                   </TouchableOpacity>
                 )}
               </View>
@@ -125,42 +131,22 @@ export const LoanCard = ({ loan, onEdit, onDelete }: LoanCardProps) => {
         </View>
       </View>
 
-      {/* Amount Row */}
-      <View className="flex-row items-center justify-between mb-3">
-        <View>
-          <Text className="text-xs text-muted-foreground mb-0.5">Total</Text>
-          <Text className="text-foreground font-bold text-lg">
-            {formatCurrency(loan.amount)}
-          </Text>
-        </View>
-        <View className="items-end">
-          <Text className="text-xs text-muted-foreground mb-0.5">Paid</Text>
-          <Text className="text-success font-bold text-lg">
-            {formatCurrency(loan.paid_amount)}
-          </Text>
-        </View>
-      </View>
-
-      {/* Progress Bar */}
-      <View className="h-2 bg-muted rounded-full overflow-hidden mb-2">
-        <View
-          className={`h-full rounded-full ${progress >= 100 ? "bg-success" : "bg-primary"}`}
-          style={{ width: `${progress}%` }}
-        />
-      </View>
-
-      {/* Progress Info */}
-      <View className="flex-row justify-between">
-        <Text className={`text-xs font-semibold ${progress >= 100 ? "text-success" : "text-primary"}`}>
-          {progress.toFixed(0)}% paid
+      {/* Bottom: Progress Bar */}
+      <View className="flex-row items-center justify-between mb-1">
+        <Text className="text-xs text-muted-foreground">
+          {formatNumber(Math.max(loan.amount - loan.paid_amount, 0))} left
         </Text>
-        {remaining > 0 ? (
-          <Text className="text-xs text-muted-foreground">
-            {formatCurrency(remaining)} remaining
-          </Text>
-        ) : (
-          <Text className="text-xs font-semibold text-success">Fully paid ✓</Text>
-        )}
+        <Text className="text-xs text-muted-foreground font-medium">
+          {Math.min(Math.round((loan.paid_amount / loan.amount) * 100), 100)}%
+        </Text>
+      </View>
+      <View className="w-full h-1 bg-gray-300 dark:bg-gray-600 rounded-full overflow-hidden">
+        <View
+          className="h-full bg-green-500 rounded-full"
+          style={{
+            width: `${Math.min((loan.paid_amount / loan.amount) * 100, 100)}%`,
+          }}
+        />
       </View>
     </TouchableOpacity>
   );
