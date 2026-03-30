@@ -1,22 +1,26 @@
-import { useAddPayment, useDeleteLoan, useDeletePayment, useGetLoanDetail, useUpdatePayment } from "@/api/loan";
+import {
+  useAddPayment,
+  useDeletePayment,
+  useGetLoanDetail,
+  useUpdatePayment,
+} from "@/api/loan";
 import { ScreenContainer } from "@/components/screen-container";
 import { Button } from "@/components/ui/button";
 import { InputError } from "@/components/ui/input-error";
 import { useTheme } from "@/context/theme-context";
-import { Edit3, Trash2, X } from "@/lib/icons";
 import { LoanPayment } from "@/interface/loan";
+import { Edit3, Trash2, X } from "@/lib/icons";
 import { formatCurrency } from "@/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
   ActivityIndicator,
   Alert,
-  FlatList,
   Modal,
   RefreshControl,
-  ScrollView,
+  SectionList,
   Text,
   TextInput,
   TouchableOpacity,
@@ -37,26 +41,23 @@ const paymentSchema = z.object({
 
 type PaymentFormValues = z.infer<typeof paymentSchema>;
 
-const STATUS_STYLES: Record<string, { bg: string; text: string }> = {
-  ONGOING: { bg: "bg-blue-500/15", text: "text-blue-500" },
-  PAID: { bg: "bg-green-500/15", text: "text-green-500" },
-  OVERDUE: { bg: "bg-red-500/15", text: "text-red-500" },
-};
-
 export default function LoanDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { isDark } = useTheme();
   const { data: loanData, isLoading, refetch } = useGetLoanDetail(id!);
-  const deleteLoanMutation = useDeleteLoan();
   const addPaymentMutation = useAddPayment();
   const updatePaymentMutation = useUpdatePayment();
   const deletePaymentMutation = useDeletePayment();
 
   const [refreshing, setRefreshing] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [editingPayment, setEditingPayment] = useState<LoanPayment | null>(null);
-  const [selectedPayment, setSelectedPayment] = useState<LoanPayment | null>(null);
+  const [editingPayment, setEditingPayment] = useState<LoanPayment | null>(
+    null,
+  );
+  const [selectedPayment, setSelectedPayment] = useState<LoanPayment | null>(
+    null,
+  );
 
   const paymentForm = useForm<PaymentFormValues>({
     resolver: zodResolver(paymentSchema),
@@ -69,6 +70,40 @@ export default function LoanDetailScreen() {
     await refetch();
     setRefreshing(false);
   }, [refetch]);
+
+  // Group payments by date (similar to wallet) - moved before early returns
+  const groupedPayments = useMemo(() => {
+    if (!loanData?.data?.payments || loanData.data.payments.length === 0)
+      return [];
+
+    const sorted = [...loanData.data.payments].sort(
+      (a, b) =>
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+    );
+
+    const groups: { date: string; data: typeof sorted }[] = [];
+    sorted.forEach((payment) => {
+      const date = new Date(payment.created_at).toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+      });
+      const group = groups.find((g) => g.date === date);
+      if (group) {
+        group.data.push(payment);
+      } else {
+        groups.push({ date, data: [payment] });
+      }
+    });
+
+    return groups;
+  }, [loanData?.data?.payments]);
+
+  // Convert to SectionList format - moved before early returns
+  const sections = useMemo(
+    () => groupedPayments.map((g) => ({ title: g.date, data: g.data })),
+    [groupedPayments],
+  );
 
   const openAddPayment = () => {
     setEditingPayment(null);
@@ -108,7 +143,9 @@ export default function LoanDetailScreen() {
         Toast.show({
           type: "success",
           text1: "Success",
-          text2: response?.message || (editingPayment ? "Payment updated" : "Payment added"),
+          text2:
+            response?.message ||
+            (editingPayment ? "Payment updated" : "Payment added"),
         });
         setShowPaymentModal(false);
         setEditingPayment(null);
@@ -141,7 +178,9 @@ export default function LoanDetailScreen() {
           style: "destructive",
           onPress: async () => {
             try {
-              const res: any = await deletePaymentMutation.mutateAsync(payment.id);
+              const res: any = await deletePaymentMutation.mutateAsync(
+                payment.id,
+              );
               if (res?.success) {
                 Toast.show({
                   type: "success",
@@ -166,53 +205,20 @@ export default function LoanDetailScreen() {
             }
           },
         },
-      ]
-    );
-  };
-
-  const handleDeleteLoan = () => {
-    Alert.alert(
-      "Delete Loan",
-      "Are you sure you want to delete this loan? This action cannot be undone.",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              const res: any = await deleteLoanMutation.mutateAsync(id!);
-              if (res?.success) {
-                Toast.show({
-                  type: "success",
-                  text1: "Success",
-                  text2: "Loan deleted successfully",
-                });
-                router.back();
-              } else {
-                Toast.show({
-                  type: "error",
-                  text1: "Error",
-                  text2: res?.message || "Failed to delete loan",
-                });
-              }
-            } catch (error: any) {
-              Toast.show({
-                type: "error",
-                text1: "Error",
-                text2: error?.message || "Something went wrong",
-              });
-            }
-          },
-        },
-      ]
+      ],
     );
   };
 
   if (isLoading) {
     return (
       <>
-        <Stack.Screen options={{ headerShown: true, title: "Loan Details", headerBackTitle: "Back" }} />
+        <Stack.Screen
+          options={{
+            headerShown: true,
+            title: "Loan Details",
+            headerBackTitle: "Back",
+          }}
+        />
         <View className="flex-1 bg-background items-center justify-center">
           <ActivityIndicator size="large" />
         </View>
@@ -223,7 +229,13 @@ export default function LoanDetailScreen() {
   if (!loanData?.data) {
     return (
       <>
-        <Stack.Screen options={{ headerShown: true, title: "Loan Details", headerBackTitle: "Back" }} />
+        <Stack.Screen
+          options={{
+            headerShown: true,
+            title: "Loan Details",
+            headerBackTitle: "Back",
+          }}
+        />
         <ScreenContainer className="p-4 items-center justify-center">
           <Text className="text-foreground">Loan not found</Text>
           <TouchableOpacity onPress={() => router.back()} className="mt-4">
@@ -235,11 +247,14 @@ export default function LoanDetailScreen() {
   }
 
   const loan = loanData.data;
-  const progress = loan.amount > 0 ? Math.min((loan.paid_amount / loan.amount) * 100, 100) : 0;
+  const progress =
+    loan.amount > 0
+      ? Math.min(Math.max((loan.paid_amount / loan.amount) * 100, 0), 100)
+      : 0;
   const remaining = Math.max(loan.amount - loan.paid_amount, 0);
   const isComplete = progress >= 100;
-  const statusStyle = STATUS_STYLES[loan.status] || STATUS_STYLES.ONGOING;
-  const isPending = addPaymentMutation.isPending || updatePaymentMutation.isPending;
+  const isPending =
+    addPaymentMutation.isPending || updatePaymentMutation.isPending;
 
   return (
     <>
@@ -250,13 +265,13 @@ export default function LoanDetailScreen() {
           headerBackTitle: "Back",
           headerLeft: selectedPayment
             ? () => (
-              <TouchableOpacity
-                onPress={() => setSelectedPayment(null)}
-                style={{ marginLeft: 8, padding: 6 }}
-              >
-                <X size={22} className="text-foreground" />
-              </TouchableOpacity>
-            )
+                <TouchableOpacity
+                  onPress={() => setSelectedPayment(null)}
+                  style={{ marginLeft: 8, padding: 6 }}
+                >
+                  <X size={22} className="text-foreground" />
+                </TouchableOpacity>
+              )
             : undefined,
           headerRight: () => {
             if (selectedPayment) {
@@ -279,203 +294,168 @@ export default function LoanDetailScreen() {
                 </View>
               );
             }
-            return (
-              <View className="flex-row items-center gap-1">
-                <TouchableOpacity
-                  onPress={() =>
-                    router.push({
-                      pathname: "/loan/edit",
-                      params: { id: loan.id },
-                    } as any)
-                  }
-                  className="p-2"
-                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                >
-                  <Edit3 size={20} className="text-primary" />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={handleDeleteLoan}
-                  className="p-2"
-                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                >
-                  <Trash2 size={20} className="text-destructive" />
-                </TouchableOpacity>
-              </View>
-            );
+            return undefined;
           },
         }}
       />
 
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 100 }}
-        className="px-4 bg-background"
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      >
-        {/* Summary Card */}
-        <View className="bg-card rounded-2xl p-5 mt-4 mb-6 border border-border">
-          {/* Type & Status */}
-          <View className="flex-row items-center justify-between mb-4">
-            <View className="bg-primary/10 px-3 py-1 rounded-lg">
-              <Text className="text-primary text-xs font-bold uppercase tracking-wider">
-                {loan.type === "GIVEN" ? "Debtor" : "Creditor"}
-              </Text>
-            </View>
-            <View className={`px-3 py-1 rounded-lg ${statusStyle.bg}`}>
-              <Text className={`text-xs font-bold uppercase tracking-wider ${statusStyle.text}`}>
-                {loan.status}
-              </Text>
-            </View>
-          </View>
-
-          {/* Main Amount */}
-          <Text className="text-muted-foreground text-center text-sm mb-1">
-            Loan Amount
-          </Text>
-          <Text className="text-3xl font-bold text-center text-foreground mb-1">
-            {formatCurrency(loan.amount)}
-          </Text>
-
-          {/* Progress Bar */}
-          <View className="h-3 bg-background rounded-full overflow-hidden border border-border mb-2 mt-4">
-            <View
-              className={`h-full rounded-full ${isComplete ? "bg-success" : "bg-primary"}`}
-              style={{ width: `${progress}%` }}
-            />
-          </View>
-
-          {/* Progress Info */}
-          <View className="flex-row justify-between mb-4">
-            <Text className={`text-sm font-bold ${isComplete ? "text-success" : "text-primary"}`}>
-              {progress.toFixed(1)}%
-            </Text>
-            {remaining > 0 ? (
-              <Text className="text-sm text-muted-foreground">
-                {formatCurrency(remaining)} remaining
-              </Text>
-            ) : (
-              <Text className="text-sm font-bold text-success">Fully paid ✓</Text>
-            )}
-          </View>
-
-          {/* Stats Row */}
-          <View className="flex-row gap-3">
-            <View className="flex-1 bg-background rounded-lg p-3 border border-border items-center">
-              <Text className="text-xs text-muted-foreground font-medium mb-1">
-                Total Paid
-              </Text>
-              <Text className="text-base font-bold text-success">
-                {formatCurrency(loan.paid_amount)}
-              </Text>
-            </View>
-            <View className="flex-1 bg-background rounded-lg p-3 border border-border items-center">
-              <Text className="text-xs text-muted-foreground font-medium mb-1">
-                Remaining
-              </Text>
-              <Text className="text-base font-bold text-destructive">
-                {formatCurrency(remaining)}
-              </Text>
-            </View>
-          </View>
-
-          {/* Due Date & Remark */}
-          {(loan.due_date || loan.remark) && (
-            <View className="mt-4 pt-4 border-t border-border">
-              {loan.due_date && (
-                <View className="flex-row justify-between items-center mb-2">
-                  <Text className="text-sm text-muted-foreground">Due Date</Text>
-                  <Text className="text-sm font-semibold text-foreground">
-                    {new Date(loan.due_date).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                    })}
+      <View className="flex-1 bg-background px-4">
+        <SectionList
+          sections={sections}
+          keyExtractor={(item) => item.id}
+          stickySectionHeadersEnabled={false}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 100 }}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+          renderItem={() => null}
+          ListHeaderComponent={
+            <>
+              {/* Top Summary Card - matching wallet structure */}
+              <View className="bg-card mt-2 rounded-2xl mb-4 shadow-sm border border-border">
+                <View className="px-3 py-3 flex-row justify-between items-center border-b border-border">
+                  <Text className="text-foreground font-bold text-[14px]">
+                    Loan Amount
+                  </Text>
+                  <Text className="text-foreground font-bold text-[14px]">
+                    {formatCurrency(loan.amount)}
                   </Text>
                 </View>
-              )}
-              {loan.remark && (
-                <View>
-                  <Text className="text-sm text-muted-foreground mb-1">Remark</Text>
-                  <Text className="text-sm text-foreground">{loan.remark}</Text>
+                <View className="px-3 py-3">
+                  <View className="flex-row justify-between items-center mb-2">
+                    <Text className="text-foreground font-bold text-[12px]">
+                      Total Paid
+                    </Text>
+                    <Text className="text-green-600 font-semibold text-[12px]">
+                      {formatCurrency(loan.paid_amount)}
+                    </Text>
+                  </View>
+                  <View className="flex-row justify-between items-center">
+                    <Text className="text-foreground font-bold text-[12px]">
+                      Remaining
+                    </Text>
+                    <Text className="text-destructive font-semibold text-[12px]">
+                      {formatCurrency(remaining)}
+                    </Text>
+                  </View>
+                </View>
+
+                {/* Progress Bar */}
+                <View className="px-3 py-2">
+                  <View className="h-2 bg-background rounded-full overflow-hidden border border-border">
+                    <View
+                      className={`h-full rounded-full ${isComplete ? "bg-green-600" : "bg-primary"}`}
+                      style={{ width: `${progress}%` }}
+                    />
+                  </View>
+                  <View className="flex-row justify-between mt-1">
+                    <Text
+                      className={`text-xs ${isComplete ? "text-muted-foreground" : "text-primary"}`}
+                    >
+                      {progress.toFixed(1)}%
+                    </Text>
+                    {remaining > 0 ? (
+                      <Text className="text-xs text-muted-foreground">
+                        {formatCurrency(remaining)} remaining
+                      </Text>
+                    ) : (
+                      <Text className="text-xs text-muted-foreground">
+                        Fully paid
+                      </Text>
+                    )}
+                  </View>
+                </View>
+
+                <View className="flex-row justify-between items-center border-t border-border">
+                  <View className="flex-1 items-center py-2.5 flex-row justify-center">
+                    <Text className="text-primary font-semibold text-sm">
+                      {loan.payments?.length || 0} Payments
+                    </Text>
+                  </View>
+                </View>
+              </View>
+
+              {/* Showing X entries */}
+              {loan.payments && loan.payments.length > 0 && (
+                <View className="flex-row items-center justify-center mb-3 px-6 rounded-2xl">
+                  <View className="flex-1 h-[1px] bg-border" />
+                  <Text className="text-muted-foreground font-medium text-[10px] mx-4 tracking-wide">
+                    Showing {loan.payments.length} entries
+                  </Text>
+                  <View className="flex-1 h-[1px] bg-border" />
                 </View>
               )}
+            </>
+          }
+          renderSectionHeader={({ section: { title, data } }) => (
+            <View className="bg-card rounded-2xl mb-2 border border-border">
+              <View className="px-3 py-3 border-b border-border">
+                <Text className="text-white text-sm font-semibold tracking-wide">
+                  {title}
+                </Text>
+              </View>
+              {data.map((item, index) => (
+                <TouchableOpacity
+                  key={item.id}
+                  activeOpacity={0.7}
+                  onPress={() => {
+                    if (selectedPayment) {
+                      setSelectedPayment(
+                        item.id === selectedPayment.id ? null : item,
+                      );
+                    }
+                  }}
+                  onLongPress={() => setSelectedPayment(item)}
+                  className={`px-4 py-4 flex-row justify-between ${
+                    selectedPayment?.id === item.id ? "bg-primary/10" : ""
+                  } ${index !== data.length - 1 ? "border-b border-border" : ""}`}
+                >
+                  <View className="flex-1 mr-3">
+                    <Text
+                      className={`text-base mb-2 font-medium ${item.remark ? "text-foreground" : "text-muted-foreground"}`}
+                    >
+                      {item.remark || "No remark"}
+                    </Text>
+                    <Text className="text-sm text-muted-foreground">
+                      {new Date(item.created_at).toLocaleTimeString("en-US", {
+                        hour: "numeric",
+                        minute: "2-digit",
+                      })}
+                    </Text>
+                  </View>
+                  <View className="items-end justify-center">
+                    <Text className="text-base font-bold mb-2 text-green-600">
+                      +{formatCurrency(item.amount)}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              ))}
             </View>
           )}
-        </View>
+          ListEmptyComponent={
+            <View className="bg-card rounded-2xl p-8 items-center justify-center border border-border">
+              <Text className="text-lg font-semibold text-foreground mb-2">
+                No payments yet
+              </Text>
+              <Text className="text-sm text-muted-foreground text-center">
+                Tap the button below to record a payment
+              </Text>
+            </View>
+          }
+        />
 
-        {/* Payments Section */}
-        <View className="flex-row items-center justify-between mb-4">
-          <Text className="text-xl font-bold text-foreground">Payments</Text>
-          <Text className="text-sm text-muted-foreground">
-            {loan.payments?.length || 0} entries
-          </Text>
-        </View>
-
-        {!loan.payments || loan.payments.length === 0 ? (
-          <View className="bg-card rounded-xl p-8 items-center justify-center border border-border">
-            <Text className="text-lg font-semibold text-foreground mb-2">
-              No payments yet
+        {/* Floating Action Button */}
+        <View className="absolute bottom-0 left-0 right-0 px-4 pb-8 pt-3 bg-background border-t border-border shadow-2xl">
+          <TouchableOpacity
+            onPress={openAddPayment}
+            className="rounded-2xl bg-primary py-3.5 items-center justify-center"
+          >
+            <Text className="text-primary-foreground font-bold text-sm tracking-widest">
+              + ADD PAYMENT
             </Text>
-            <Text className="text-sm text-muted-foreground text-center">
-              Tap the button below to record a payment
-            </Text>
-          </View>
-        ) : (
-          <FlatList
-            scrollEnabled={false}
-            data={loan.payments}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                onLongPress={() => setSelectedPayment(item)}
-                onPress={() => {
-                  if (selectedPayment) {
-                    setSelectedPayment(
-                      item.id === selectedPayment.id ? null : item
-                    );
-                  }
-                }}
-                className={`rounded-xl p-4 mb-3 border flex-row items-center justify-between active:opacity-70 ${selectedPayment?.id === item.id
-                  ? "border-primary bg-primary/10"
-                  : "bg-card border-border"
-                  }`}
-              >
-                <View className="flex-1 mr-4">
-                  <Text
-                    className="text-base font-semibold text-foreground"
-                    numberOfLines={1}
-                  >
-                    {item.remark || "Payment"}
-                  </Text>
-                  <Text className="text-xs text-muted-foreground mt-1">
-                    {new Date(item.created_at).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                    })}
-                  </Text>
-                </View>
-                <Text className="text-lg font-bold text-success">
-                  +{formatCurrency(item.amount)}
-                </Text>
-              </TouchableOpacity>
-            )}
-          />
-        )}
-      </ScrollView>
-
-      {/* Floating Action Button */}
-      <View className="absolute bottom-0 left-0 right-0 px-4 pb-8 pt-3 bg-background border-t border-border shadow-2xl">
-        <TouchableOpacity
-          onPress={openAddPayment}
-          className="rounded-2xl bg-primary py-3.5 items-center justify-center"
-        >
-          <Text className="text-primary-foreground font-bold text-sm tracking-widest">
-            + ADD PAYMENT
-          </Text>
-        </TouchableOpacity>
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* Payment Modal */}
@@ -491,7 +471,10 @@ export default function LoanDetailScreen() {
             activeOpacity={1}
             onPress={() => setShowPaymentModal(false)}
           />
-          <View className="bg-background rounded-t-3xl px-6 pt-3" style={{ paddingBottom: 30 }}>
+          <View
+            className="bg-background rounded-t-3xl px-6 pt-3"
+            style={{ paddingBottom: 30 }}
+          >
             {/* Handle */}
             <View className="items-center mb-5">
               <View className="w-10 h-1 rounded-full bg-foreground" />
@@ -524,12 +507,15 @@ export default function LoanDetailScreen() {
                 render={({ field: { onChange, onBlur, value } }) => (
                   <View>
                     <View
-                      className={`flex-row items-center rounded-xl px-4 py-3 border ${paymentForm.formState.errors.amount
-                        ? "border-destructive"
-                        : "border-border"
-                        }`}
+                      className={`flex-row items-center rounded-xl px-4 py-3 border ${
+                        paymentForm.formState.errors.amount
+                          ? "border-destructive"
+                          : "border-border"
+                      }`}
                     >
-                      <Text className="text-xl font-bold text-primary mr-2">$</Text>
+                      <Text className="text-xl font-bold text-primary mr-2">
+                        $
+                      </Text>
                       <TextInput
                         value={value}
                         onChangeText={onChange}
@@ -541,7 +527,9 @@ export default function LoanDetailScreen() {
                         autoFocus
                       />
                     </View>
-                    <InputError error={paymentForm.formState.errors.amount?.message} />
+                    <InputError
+                      error={paymentForm.formState.errors.amount?.message}
+                    />
                   </View>
                 )}
               />

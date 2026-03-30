@@ -1,7 +1,12 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  CreateLoanPayload,
+  CreateLoanPaymentPayload,
+  UpdateLoanPayload,
+  UpdateLoanPaymentPayload,
+} from "@/interface/loan";
 import apiClient from "@/lib/api-client";
 import { throwApiError } from "@/utils/throw-api-error";
-import { CreateLoanPayload, CreateLoanPaymentPayload, UpdateLoanPayload, UpdateLoanPaymentPayload } from "@/interface/loan";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const LOAN_API_URL = "/loan";
 const keys = {
@@ -12,7 +17,7 @@ const keys = {
 
 interface GetLoansParams {
   search?: string;
-  sort?: string;
+  sort_by?: string;
   sort_order?: string;
   page?: number;
   limit?: number;
@@ -20,21 +25,23 @@ interface GetLoansParams {
   status?: string;
 }
 
-export const useGetAllLoans = ( searchParams: GetLoansParams = {} ) => {
+export const useGetAllLoans = (searchParams: GetLoansParams = {}) => {
   const params: Record<string, string> = {};
   if (searchParams.search) params.search_term = searchParams.search;
-  if (searchParams.sort) params.sort = searchParams.sort;
+  if (searchParams.sort_by) params.sort_by = searchParams.sort_by;
   if (searchParams.sort_order) params.sort_order = searchParams.sort_order;
   if (searchParams.page) params.page = searchParams.page.toString();
   if (searchParams.limit) params.limit = searchParams.limit.toString();
   if (searchParams.type) params.type = searchParams.type;
   if (searchParams.status) params.status = searchParams.status;
+  console.log("params.....", params);
 
   return useQuery({
     queryKey: [...keys.list(), params],
     queryFn: async () => {
       try {
         const response = await apiClient.get(LOAN_API_URL, { params });
+        console.log(response.data, "response.data.....");
         return response.data;
       } catch (error) {
         throwApiError(error);
@@ -69,22 +76,33 @@ export const useCreateLoan = () => {
         throwApiError(error);
       }
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: [...keys.list()] }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: [...keys.list()] }),
   });
 };
 
 export const useUpdateLoan = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, payload }: { id: string; payload: UpdateLoanPayload }) => {
+    mutationFn: async ({
+      id,
+      payload,
+    }: {
+      id: string;
+      payload: UpdateLoanPayload;
+    }) => {
       try {
-        const response = await apiClient.patch(`${LOAN_API_URL}/${id}`, payload);
+        const response = await apiClient.patch(
+          `${LOAN_API_URL}/${id}`,
+          payload,
+        );
         return response.data;
       } catch (error) {
         throwApiError(error);
       }
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: [...keys.list()] }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: [...keys.list()] }),
   });
 };
 
@@ -93,13 +111,16 @@ export const useDeleteLoan = () => {
   return useMutation({
     mutationFn: async (id: string) => {
       try {
-        const response = await apiClient.delete(`${LOAN_API_URL}`, { data: { ids: [id] } });
+        const response = await apiClient.delete(`${LOAN_API_URL}`, {
+          data: { ids: [id] },
+        });
         return response.data;
       } catch (error) {
         throwApiError(error);
       }
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: [...keys.list()] }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: [...keys.list()] }),
   });
 };
 
@@ -108,7 +129,10 @@ export const useAddPayment = () => {
   return useMutation({
     mutationFn: async (payload: CreateLoanPaymentPayload) => {
       try {
-        const response = await apiClient.post(`${LOAN_API_URL}/payment`, payload);
+        const response = await apiClient.post(
+          `${LOAN_API_URL}/payment`,
+          payload,
+        );
         return response.data;
       } catch (error) {
         throwApiError(error);
@@ -123,7 +147,10 @@ export const useUpdatePayment = () => {
   return useMutation({
     mutationFn: async (payload: UpdateLoanPaymentPayload) => {
       try {
-        const response = await apiClient.patch(`${LOAN_API_URL}/payment`, payload);
+        const response = await apiClient.patch(
+          `${LOAN_API_URL}/payment`,
+          payload,
+        );
         return response.data;
       } catch (error) {
         throwApiError(error);
@@ -138,7 +165,9 @@ export const useDeletePayment = () => {
   return useMutation({
     mutationFn: async (id: string) => {
       try {
-        const response = await apiClient.delete(`${LOAN_API_URL}/payment`, { data: { ids: [id] } });
+        const response = await apiClient.delete(`${LOAN_API_URL}/payment`, {
+          data: { ids: [id] },
+        });
         return response.data;
       } catch (error) {
         throwApiError(error);
