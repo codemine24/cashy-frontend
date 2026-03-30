@@ -89,16 +89,6 @@ export default function StatisticsPage() {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        {/* Header */}
-        <View className="px-6 pt-4 pb-6">
-          <H3 className="text-2xl font-bold text-foreground mb-2">
-            Financial Statistics
-          </H3>
-          <P className="text-muted-foreground">
-            Track your expenses and income patterns
-          </P>
-        </View>
-
         {/* Wallet Filter Chips */}
         <View className="mb-6">
           <ScrollView
@@ -197,6 +187,55 @@ export default function StatisticsPage() {
                 )}
               </Pressable>
             ))}
+          </View>
+        </View>
+
+        {/* Summary Cards */}
+        <View className="px-6 mb-6">
+          <View className="grid grid-cols-3 gap-2">
+            <View
+              className={`${isDark ? "bg-card" : "bg-white"} border border-border rounded-2xl shadow-sm p-3`}
+            >
+              <P className="text-[10px] text-muted-foreground mb-1">Total In</P>
+              <P className="text-base font-bold text-green-600">
+                $
+                {walletStats.income_vs_expense?.income?.toLocaleString() || "0"}
+              </P>
+            </View>
+            <View
+              className={`${isDark ? "bg-card" : "bg-white"} border border-border rounded-2xl shadow-sm p-3`}
+            >
+              <P className="text-[10px] text-muted-foreground mb-1">
+                Total Out
+              </P>
+              <P className="text-base font-bold text-red-600">
+                $
+                {walletStats.income_vs_expense?.expense?.toLocaleString() ||
+                  "0"}
+              </P>
+            </View>
+            <View
+              className={`${isDark ? "bg-card" : "bg-white"} border border-border rounded-2xl shadow-sm p-3`}
+            >
+              <P className="text-[10px] text-muted-foreground mb-1">
+                Net Balance
+              </P>
+              <P
+                className={`text-base font-bold ${
+                  (walletStats.income_vs_expense?.income || 0) -
+                    (walletStats.income_vs_expense?.expense || 0) >=
+                  0
+                    ? "text-green-600"
+                    : "text-red-600"
+                }`}
+              >
+                $
+                {(
+                  (walletStats.income_vs_expense?.income || 0) -
+                  (walletStats.income_vs_expense?.expense || 0)
+                ).toLocaleString()}
+              </P>
+            </View>
           </View>
         </View>
 
