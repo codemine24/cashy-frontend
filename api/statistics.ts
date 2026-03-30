@@ -19,8 +19,10 @@ const keys = {
 
 export const useWalletStats = (
   params: {
-    period?: "week" | "month" | "year";
+    period?: "today" | "last_7_days" | "last_30_days" | "custom";
     book_id?: string;
+    from_date?: string;
+    to_date?: string;
   } = {},
 ) => {
   return useQuery({
