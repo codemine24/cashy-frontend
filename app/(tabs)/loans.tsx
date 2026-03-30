@@ -1,8 +1,11 @@
 import { useDeleteLoan, useGetAllLoans } from "@/api/loan";
+import { BottomSheetModal } from "@/components/bottom-sheet-modal";
 import { LoanCard } from "@/components/loan/loan-card";
 import { ScreenContainer } from "@/components/screen-container";
 import { LoansSkeleton } from "@/components/skeletons/loans-skeleton";
 import { Button } from "@/components/ui/button";
+import { H3, Muted } from "@/components/ui/typography";
+import { useDebounce } from "@/hooks/use-debounce";
 import { CrossIcon } from "@/icons/cross-icon";
 import { FilterIcon } from "@/icons/filter-icon";
 import { PlusIcon } from "@/icons/plus-icon";
@@ -10,7 +13,7 @@ import { SearchIcon } from "@/icons/search-icon";
 import { Loan } from "@/interface/loan";
 import { formatCurrency } from "@/utils/index";
 import { useRouter } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import {
   Alert,
   FlatList,
@@ -22,55 +25,86 @@ import {
 } from "react-native";
 import Toast from "react-native-toast-message";
 
-// Simple debounce implementation
-function useDebounce<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+type SortOption = "person_name" | "updated_at" | "created_at";
 
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedValue(value);
-    }, delay);
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [value, delay]);
-
-  return debouncedValue;
-}
+const SORT_OPTIONS: {
+  key: SortOption;
+  label: string;
+  order: "asc" | "desc";
+}[] = [
+  { key: "updated_at", label: "Last Updated", order: "desc" },
+  { key: "person_name", label: "Name (A-Z)", order: "asc" },
+  { key: "created_at", label: "Last Created", order: "desc" },
+];
 
 type LoanTab = "GIVEN" | "TAKEN";
+
+function TabButton({
+  label,
+  subtitle,
+  active,
+  onPress,
+}: {
+  label: string;
+  subtitle: string;
+  active: boolean;
+  onPress: () => void;
+}) {
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      className={`flex-1 py-2 rounded-lg items-center ${
+        active ? "bg-primary" : ""
+      }`}
+    >
+      <Text
+        className={`font-medium text-sm ${
+          active ? "text-white" : "text-muted-foreground"
+        }`}
+      >
+        {label}
+      </Text>
+
+      <Text
+        className={`text-[9px] mt-0.5 ${
+          active ? "text-foreground/80" : "text-muted-foreground/50"
+        }`}
+      >
+        {subtitle}
+      </Text>
+    </TouchableOpacity>
+  );
+}
 
 export default function LoansScreen() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<LoanTab>("GIVEN");
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const debouncedSearchQuery = useDebounce(searchQuery, 400);
-  const [isSearchLoading, setIsSearchLoading] = useState(false);
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
+  const [showSortModal, setShowSortModal] = useState(false);
+  const [sortBy, setSortBy] = useState<SortOption>("updated_at");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+
+  const [tempSortBy, setTempSortBy] = useState<SortOption>("updated_at");
+  const [tempSortOrder, setTempSortOrder] = useState<"asc" | "desc">("desc");
+
+  const openSortModal = () => {
+    setTempSortBy(sortBy);
+    setTempSortOrder(sortOrder);
+    setShowSortModal(true);
+  };
 
   const { data, isLoading, error, refetch } = useGetAllLoans({
     type: activeTab,
     search: debouncedSearchQuery.trim() || undefined,
+    sort_by: sortBy,
+    sort_order: sortOrder,
   });
 
   const loans: Loan[] = data?.data ?? [];
 
   const deleteLoanMutation = useDeleteLoan();
-
-  // Track search loading state
-  useEffect(() => {
-    if (searchQuery.trim()) {
-      setIsSearchLoading(true);
-      // Reset loading state after debounce delay
-      const timer = setTimeout(() => {
-        setIsSearchLoading(false);
-      }, 450); // Slightly longer than debounce delay
-      return () => clearTimeout(timer);
-    } else {
-      setIsSearchLoading(false);
-    }
-  }, [debouncedSearchQuery, searchQuery]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -116,8 +150,13 @@ export default function LoansScreen() {
 
   const handleEditLoan = (loan: Loan) => {
     router.push({
-      pathname: "/loan/edit",
-      params: { id: loan.id },
+      pathname: "/loan/create-lent",
+      params: {
+        editId: loan.id,
+        editPersonName: loan.person_name,
+        editAmount: loan.amount.toString(),
+        editDueDate: loan.due_date || "",
+      },
     } as any);
   };
 
@@ -125,13 +164,44 @@ export default function LoansScreen() {
   const summary = meta?.summary;
   const totalCount = meta?.total || 0;
 
-  const renderHeader = () => (
-    <>
+  // Calculate total left properly for borrowed vs lent loans
+  const calculateTotalLeft = () => {
+    if (!loans || loans.length === 0) return 0;
+
+    return loans.reduce((total, loan) => {
+      const remaining = Math.max(loan.amount - loan.paid_amount, 0);
+      return total + remaining;
+    }, 0);
+  };
+
+  const totalLeft = calculateTotalLeft();
+
+  if (error) {
+    return (
+      <ScreenContainer className="p-4 bg-background">
+        <View className="bg-surface rounded-xl p-8 items-center border border-border">
+          <Text className="text-lg font-semibold mb-2">
+            Something went wrong
+          </Text>
+
+          <TouchableOpacity
+            onPress={() => refetch()}
+            className="bg-primary px-6 py-2 rounded-lg"
+          >
+            <Text className="text-primary-foreground font-semibold">Retry</Text>
+          </TouchableOpacity>
+        </View>
+      </ScreenContainer>
+    );
+  }
+
+  return (
+    <ScreenContainer edges={["left", "right"]} className="p-4 bg-background">
       {/* Tabs */}
-      <View className="flex-row bg-muted rounded-2xl p-1 mb-3">
+      <View className="flex-row bg-muted rounded-lg p-1 mb-2">
         <TabButton
           label="Lent"
-          subtitle="Money lent"
+          subtitle="Money given"
           active={activeTab === "GIVEN"}
           onPress={() => setActiveTab("GIVEN")}
         />
@@ -145,7 +215,7 @@ export default function LoansScreen() {
       </View>
 
       {/* Search Input */}
-      <View className="relative mb-4">
+      <View className="relative mb-2">
         <View className="flex-row items-center bg-muted rounded-xl px-3 border border-border">
           <SearchIcon className="text-muted-foreground size-5" />
           <TextInput
@@ -172,97 +242,46 @@ export default function LoansScreen() {
         <Text className="text-sm font-semibold text-muted-foreground">
           {activeTab === "GIVEN" ? "YOUR LENTS" : "YOUR BORROW LIST"}
         </Text>
-        <TouchableOpacity className="ml-2 p-2.5 rounded-xl">
+        <TouchableOpacity
+          onPress={openSortModal}
+          className="ml-2 p-2.5 rounded-xl"
+        >
           <FilterIcon className="text-primary size-6" />
         </TouchableOpacity>
       </View>
 
-      {/* Summary Section */}
-      {summary && totalCount > 0 && (
-        <View className="flex-row justify-between bg-card rounded-2xl p-4 mb-1 border border-border">
-          <View className="flex-1 border-r border-border pr-2">
-            <Text className="text-sm text-muted-foreground mb-1">
-              Total Left
-            </Text>
-            <Text
-              className="text-2xl font-bold text-foreground"
-              numberOfLines={1}
-            >
-              {formatCurrency(summary.total_remaining || 0)}
-            </Text>
-          </View>
-          <View className="flex-1 pl-4 justify-center">
-            <Text className="text-xs text-muted-foreground mb-1">
-              Total Loans: {totalCount}
-            </Text>
-            <View className="flex-row items-center">
-              <View className="w-2 h-2 rounded-full bg-success mr-2" />
-              <Text className="text-sm font-medium text-foreground">
-                {summary.total_fulfilled || 0} Fulfilled
-              </Text>
-            </View>
-          </View>
-        </View>
-      )}
-    </>
-  );
-
-  const renderEmpty = () => (
-    <View className="bg-surface rounded-xl p-8 items-center border border-border">
-      <Text className="text-lg font-semibold text-foreground mb-2">
-        No {activeTab === "GIVEN" ? "debtor" : "creditor"} loans
-      </Text>
-
-      <Text className="text-sm text-muted-foreground text-center mb-4">
-        {activeTab === "GIVEN"
-          ? "Record money you've lent"
-          : "Record money you've borrowed"}
-      </Text>
-
-      <TouchableOpacity
-        onPress={() =>
-          router.push({
-            pathname: "/loan/create",
-            params: { type: activeTab },
-          } as any)
-        }
-        className="bg-primary px-6 py-2 rounded-lg"
-      >
-        <Text className="text-primary-foreground font-semibold">Add Loan</Text>
-      </TouchableOpacity>
-    </View>
-  );
-
-  if (isLoading || isSearchLoading) {
-    return (
-      <ScreenContainer className="p-4 bg-background">
+      {/* Content Area - Loading only here */}
+      {isLoading ? (
         <LoansSkeleton />
-      </ScreenContainer>
-    );
-  }
-
-  if (error) {
-    return (
-      <ScreenContainer className="p-4 bg-background">
-        <View className="bg-surface rounded-xl p-8 items-center border border-border">
-          <Text className="text-lg font-semibold mb-2">
-            Something went wrong
+      ) : loans.length === 0 ? (
+        <View className="flex-1 items-center justify-center py-8">
+          <SearchIcon className="text-muted-foreground size-12 mb-4" />
+          <Text className="text-muted-foreground text-base">
+            {searchQuery.trim()
+              ? `No loans found for "${searchQuery}"`
+              : `No ${activeTab === "GIVEN" ? "debtor" : "creditor"} loans`}
           </Text>
-
+          <Text className="text-sm text-muted-foreground text-center mb-4">
+            {activeTab === "GIVEN"
+              ? "Record money you've lent"
+              : "Record money you've borrowed"}
+          </Text>
           <TouchableOpacity
-            onPress={() => refetch()}
+            onPress={() =>
+              router.push(
+                activeTab === "GIVEN"
+                  ? "/loan/create-lent"
+                  : "/loan/create-borrowed",
+              )
+            }
             className="bg-primary px-6 py-2 rounded-lg"
           >
-            <Text className="text-primary-foreground font-semibold">Retry</Text>
+            <Text className="text-primary-foreground font-semibold">
+              Add Loan
+            </Text>
           </TouchableOpacity>
         </View>
-      </ScreenContainer>
-    );
-  }
-
-  return (
-    <>
-      <ScreenContainer edges={["left", "right"]} className="p-4 bg-background">
+      ) : (
         <FlatList
           data={loans}
           extraData={activeTab}
@@ -274,65 +293,119 @@ export default function LoansScreen() {
               onDelete={handleDeleteLoan}
             />
           )}
-          ListHeaderComponent={renderHeader}
-          ListEmptyComponent={renderEmpty}
+          ListHeaderComponent={
+            summary && totalCount > 0 ? (
+              <View className="flex-row justify-between bg-card rounded-xl p-3 border border-border">
+                <View className="flex-1 border-r border-border pr-2">
+                  <Text className="text-xs text-muted-foreground mb-0.5">
+                    Total Left
+                  </Text>
+                  <Text
+                    className="text-lg font-bold text-foreground"
+                    numberOfLines={1}
+                  >
+                    {formatCurrency(totalLeft)}
+                  </Text>
+                </View>
+                <View className="flex-1 pl-3 justify-center">
+                  <Text className="text-xs text-muted-foreground mb-0.5">
+                    {totalCount} Loans
+                  </Text>
+                  <View className="flex-row items-center">
+                    <View className="w-1.5 h-1.5 rounded-full bg-success mr-1.5" />
+                    <Text className="text-xs font-medium text-foreground">
+                      {summary.total_fulfilled || 0} Fulfilled
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            ) : null
+          }
+          contentContainerStyle={{ paddingBottom: 80 }}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
           showsVerticalScrollIndicator={false}
         />
-      </ScreenContainer>
+      )}
 
-      {/* Floating Button */}
+      {/* Floating Add Button */}
       <Button
         onPress={() =>
-          router.push({
-            pathname: "/loan/create",
-            params: { type: activeTab },
-          } as any)
+          router.push(
+            activeTab === "GIVEN"
+              ? "/loan/create-lent"
+              : "/loan/create-borrowed",
+          )
         }
-        className="rounded-full py-4 absolute bottom-4 right-4 flex-row items-center"
+        className="rounded-full py-4 absolute bottom-4 right-4"
       >
         <PlusIcon className="text-primary-foreground size-6" />
-        <Text className="text-primary-foreground text-lg ml-2">Add Loan</Text>
+        <Text className="text-primary-foreground text-lg text-center ml-2">
+          Add loan
+        </Text>
       </Button>
-    </>
-  );
-}
 
-function TabButton({
-  label,
-  subtitle,
-  active,
-  onPress,
-}: {
-  label: string;
-  subtitle: string;
-  active: boolean;
-  onPress: () => void;
-}) {
-  return (
-    <TouchableOpacity
-      onPress={onPress}
-      className={`flex-1 py-3 rounded-xl items-center ${
-        active ? "bg-primary shadow-sm" : ""
-      }`}
-    >
-      <Text
-        className={`font-semibold ${
-          active ? "text-white" : "text-muted-foreground"
-        }`}
+      {/* Sort Modal */}
+      <BottomSheetModal
+        visible={showSortModal}
+        onClose={() => setShowSortModal(false)}
       >
-        {label}
-      </Text>
+        <View className="px-6 pt-3" style={{ paddingBottom: 30 }}>
+          {/* Handle */}
+          <View className="items-center mb-5">
+            <View className="w-10 h-1 rounded-full bg-foreground" />
+          </View>
 
-      <Text
-        className={`text-[10px] mt-0.5 ${
-          active ? "text-foreground" : "text-muted-foreground/60"
-        }`}
-      >
-        {subtitle}
-      </Text>
-    </TouchableOpacity>
+          {/* Title */}
+          <View className="flex-row items-center justify-between mb-2 border-b border-border pb-4">
+            <H3>Sort loans by</H3>
+            <TouchableOpacity
+              onPress={() => setShowSortModal(false)}
+              className="p-1"
+            >
+              <CrossIcon className="size-4" />
+            </TouchableOpacity>
+          </View>
+
+          {/* Options */}
+          <View className="mb-5">
+            {SORT_OPTIONS.map((option, index) => {
+              const isActive = tempSortBy === option.key;
+              return (
+                <TouchableOpacity
+                  key={option.key}
+                  onPress={() => {
+                    setTempSortBy(option.key);
+                    setTempSortOrder(option.order);
+                  }}
+                  className={`flex-row items-center py-3`}
+                >
+                  {/* Radio Circle */}
+                  <View
+                    className={`size-4 items-center justify-center border border-foreground rounded-full mr-3 ${isActive ? "border-primary" : "border-border"}`}
+                  >
+                    {isActive && (
+                      <View className="size-2 rounded-full bg-primary" />
+                    )}
+                  </View>
+                  <Muted>{option.label}</Muted>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+
+          <Button
+            onPress={() => {
+              setSortBy(tempSortBy);
+              setSortOrder(tempSortOrder);
+              setShowSortModal(false);
+            }}
+          >
+            Apply
+          </Button>
+        </View>
+      </BottomSheetModal>
+    </ScreenContainer>
   );
 }
