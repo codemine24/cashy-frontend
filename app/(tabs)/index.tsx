@@ -213,6 +213,7 @@ export default function HomeScreen() {
               scrollEnabled={false}
               data={booksData?.data}
               keyExtractor={(item) => item.id}
+              contentContainerStyle={{ paddingBottom: 80 }}
               renderItem={({ item: book }) => (
                 <WalletCard
                   book={book}
