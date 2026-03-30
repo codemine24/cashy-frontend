@@ -311,7 +311,7 @@ export default function TransactionDetailScreen() {
         options={{
           headerShown: true,
           headerBackTitle: "Back",
-          title: "Transaction Detail",
+          title: "Transaction Details",
           headerStyle: {
             backgroundColor: isLoading
               ? isDark
@@ -329,30 +329,24 @@ export default function TransactionDetailScreen() {
           },
           headerRight: () => (
             <View className="flex-row items-center gap-2">
-              <TouchableOpacity
-                onPress={handleEdit}
-                className="p-2"
-                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-              >
-                <Edit3
-                  size={20}
-                  color={
-                    isLoading ? (isDark ? "#ffffff" : "#000000") : "#ffffff"
-                  }
-                />
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={handleDuplicate}
-                className="p-2"
-                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-              >
-                <Copy
-                  size={20}
-                  color={
-                    isLoading ? (isDark ? "#ffffff" : "#000000") : "#ffffff"
-                  }
-                />
-              </TouchableOpacity>
+              {!isLoading && (
+                <>
+                  <TouchableOpacity
+                    onPress={handleEdit}
+                    className="p-2"
+                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                  >
+                    <Edit3 size={20} color="#ffffff" />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={handleDuplicate}
+                    className="p-2"
+                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                  >
+                    <Copy size={20} color="#ffffff" />
+                  </TouchableOpacity>
+                </>
+              )}
               {canDelete && (
                 <TouchableOpacity
                   onPress={handleDelete}
@@ -395,7 +389,6 @@ export default function TransactionDetailScreen() {
                 {typeLabel}
               </Text>
               <Text className="text-white text-5xl font-extrabold tracking-tight">
-                {isIn ? "+" : "-"}
                 {transaction?.amount}
               </Text>
             </View>
