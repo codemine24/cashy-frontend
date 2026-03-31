@@ -1,55 +1,23 @@
-import {
-  useAddPayment,
-  useDeletePayment,
-  useGetLoanDetail,
-  useUpdatePayment,
-} from "@/api/loan";
+import { useGetLoanDetail } from "@/api/loan";
+import { CreatePaymentModal } from "@/components/loan/create-payment-modal";
 import { ScreenContainer } from "@/components/screen-container";
-import { BookDetailSkeleton } from "@/components/skeletons/book-detail-skeleton";
-import { Button } from "@/components/ui/button";
-import { InputError } from "@/components/ui/input-error";
-import { useTheme } from "@/context/theme-context";
 import { usePullToRefreshSkeleton } from "@/hooks/use-pull-to-refresh-skeleton";
 import { LoanPayment } from "@/interface/loan";
-import { Edit3, Trash2, X } from "@/lib/icons";
 import { formatCurrency } from "@/utils";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useMemo, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
 import {
-  Alert,
-  Modal,
   RefreshControl,
   SectionList,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
-import Toast from "react-native-toast-message";
-import { z } from "zod";
-
-const paymentSchema = z.object({
-  amount: z
-    .string()
-    .min(1, "Amount is required")
-    .refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, {
-      message: "Amount must be a valid positive number",
-    }),
-  remark: z.string().optional(),
-});
-
-type PaymentFormValues = z.infer<typeof paymentSchema>;
 
 export default function LoanDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
-  const { isDark } = useTheme();
   const { data: loanData, isLoading, refetch } = useGetLoanDetail(id!);
-  const addPaymentMutation = useAddPayment();
-  const updatePaymentMutation = useUpdatePayment();
-  const deletePaymentMutation = useDeletePayment();
 
   const { showSkeleton, refreshControlProps } = usePullToRefreshSkeleton(
     async () => {
@@ -60,15 +28,6 @@ export default function LoanDetailScreen() {
   const [editingPayment, setEditingPayment] = useState<LoanPayment | null>(
     null,
   );
-  const [selectedPayment, setSelectedPayment] = useState<LoanPayment | null>(
-    null,
-  );
-
-  const paymentForm = useForm<PaymentFormValues>({
-    resolver: zodResolver(paymentSchema),
-    defaultValues: { amount: "", remark: "" },
-    mode: "onBlur",
-  });
 
   // Show skeleton when initially loading or refreshing
   const finalShowSkeleton = isLoading || showSkeleton;
@@ -109,106 +68,18 @@ export default function LoanDetailScreen() {
 
   const openAddPayment = () => {
     setEditingPayment(null);
-    paymentForm.reset({ amount: "", remark: "" });
     setShowPaymentModal(true);
   };
 
   const openEditPayment = (payment: LoanPayment) => {
     setEditingPayment(payment);
-    paymentForm.reset({
-      amount: payment.amount?.toString(),
-      remark: payment.remark || "",
-    });
     setShowPaymentModal(true);
-    setSelectedPayment(null);
   };
 
-  const handlePaymentSubmit = async (data: PaymentFormValues) => {
-    try {
-      let response: any;
-
-      if (editingPayment) {
-        response = await updatePaymentMutation.mutateAsync({
-          payment_id: editingPayment.id,
-          amount: parseFloat(data.amount),
-          remark: data.remark || undefined,
-        });
-      } else {
-        response = await addPaymentMutation.mutateAsync({
-          loan_id: id!,
-          amount: parseFloat(data.amount),
-          remark: data.remark || undefined,
-        });
-      }
-
-      if (response?.success) {
-        Toast.show({
-          type: "success",
-          text1: "Success",
-          text2:
-            response?.message ||
-            (editingPayment ? "Payment updated" : "Payment added"),
-        });
-        setShowPaymentModal(false);
-        setEditingPayment(null);
-        paymentForm.reset({ amount: "", remark: "" });
-        refetch();
-      } else {
-        Toast.show({
-          type: "error",
-          text1: "Error",
-          text2: response?.message || "Failed to save payment",
-        });
-      }
-    } catch (error: any) {
-      Toast.show({
-        type: "error",
-        text1: "Error",
-        text2: error?.message || "Something went wrong",
-      });
-    }
-  };
-
-  const handleDeletePayment = (payment: LoanPayment) => {
-    Alert.alert(
-      "Delete Payment",
-      "Are you sure you want to delete this payment?",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              const res: any = await deletePaymentMutation.mutateAsync(
-                payment.id,
-              );
-              if (res?.success) {
-                Toast.show({
-                  type: "success",
-                  text1: "Success",
-                  text2: "Payment deleted",
-                });
-                setSelectedPayment(null);
-                refetch();
-              } else {
-                Toast.show({
-                  type: "error",
-                  text1: "Error",
-                  text2: res?.message || "Failed to delete payment",
-                });
-              }
-            } catch (error: any) {
-              Toast.show({
-                type: "error",
-                text1: "Error",
-                text2: error?.message || "Something went wrong",
-              });
-            }
-          },
-        },
-      ],
-    );
+  const handleClosePaymentModal = () => {
+    setShowPaymentModal(false);
+    setEditingPayment(null);
+    refetch();
   };
 
   if (finalShowSkeleton) {
@@ -221,7 +92,45 @@ export default function LoanDetailScreen() {
             headerBackTitle: "Back",
           }}
         />
-        <BookDetailSkeleton />
+        <ScreenContainer className="px-4 bg-background">
+          <View className="mt-4 gap-6">
+            {/* Header Card Skeleton */}
+            <View className="bg-card rounded-2xl p-4 border border-border shadow-sm animate-pulse">
+              <View className="flex-row justify-between items-center border-b border-border pb-4 mb-4">
+                <View className="w-1/4 h-5 bg-muted rounded-md" />
+                <View className="w-1/3 h-6 bg-muted rounded-md" />
+              </View>
+              <View className="gap-3">
+                <View className="flex-row justify-between items-center">
+                  <View className="w-1/4 h-4 bg-muted rounded-md" />
+                  <View className="w-1/4 h-5 bg-muted rounded-md" />
+                </View>
+                <View className="flex-row justify-between items-center">
+                  <View className="w-1/4 h-4 bg-muted rounded-md" />
+                  <View className="w-1/4 h-5 bg-muted rounded-md" />
+                </View>
+                <View className="flex-row justify-between items-center">
+                  <View className="w-1/4 h-4 bg-muted rounded-md" />
+                  <View className="w-1/4 h-5 bg-muted rounded-md" />
+                </View>
+              </View>
+            </View>
+
+            {/* Payment Summary Section Skeleton */}
+            <View className="bg-card rounded-2xl h-[60px] border border-border shadow-sm animate-pulse" />
+
+            {/* Payments List Skeleton */}
+            <View className="gap-3">
+              <View className="w-1/3 h-6 bg-surface rounded-lg my-1 animate-pulse" />
+              {[1, 2, 3].map((i) => (
+                <View
+                  key={i}
+                  className="rounded-2xl h-[80px] bg-card border border-border animate-pulse"
+                />
+              ))}
+            </View>
+          </View>
+        </ScreenContainer>
       </>
     );
   }
@@ -253,49 +162,14 @@ export default function LoanDetailScreen() {
       : 0;
   const remaining = Math.max(loan.amount - loan.paid_amount, 0);
   const isComplete = progress >= 100;
-  const isPending =
-    addPaymentMutation.isPending || updatePaymentMutation.isPending;
 
   return (
     <>
       <Stack.Screen
         options={{
           headerShown: true,
-          title: selectedPayment ? "1 Selected" : loan.person_name,
+          title: loanData?.data?.person_name || "Loan Details",
           headerBackTitle: "Back",
-          headerLeft: selectedPayment
-            ? () => (
-                <TouchableOpacity
-                  onPress={() => setSelectedPayment(null)}
-                  style={{ marginLeft: 8, padding: 6 }}
-                >
-                  <X size={22} className="text-foreground" />
-                </TouchableOpacity>
-              )
-            : undefined,
-          headerRight: () => {
-            if (selectedPayment) {
-              return (
-                <View className="flex-row items-center gap-1">
-                  <TouchableOpacity
-                    onPress={() => openEditPayment(selectedPayment)}
-                    className="p-2"
-                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                  >
-                    <Edit3 size={20} className="text-foreground" />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => handleDeletePayment(selectedPayment)}
-                    className="p-2"
-                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                  >
-                    <Trash2 size={20} className="text-destructive" />
-                  </TouchableOpacity>
-                </View>
-              );
-            }
-            return undefined;
-          },
         }}
       />
 
@@ -397,17 +271,10 @@ export default function LoanDetailScreen() {
                 <TouchableOpacity
                   key={item.id}
                   activeOpacity={0.7}
-                  onPress={() => {
-                    if (selectedPayment) {
-                      setSelectedPayment(
-                        item.id === selectedPayment.id ? null : item,
-                      );
-                    }
-                  }}
-                  onLongPress={() => setSelectedPayment(item)}
+                  onLongPress={() => openEditPayment(item)}
                   className={`px-4 py-4 flex-row justify-between ${
-                    selectedPayment?.id === item.id ? "bg-primary/10" : ""
-                  } ${index !== data.length - 1 ? "border-b border-border" : ""}`}
+                    index !== data.length - 1 ? "border-b border-border" : ""
+                  }`}
                 >
                   <View className="flex-1 mr-3">
                     <Text
@@ -456,120 +323,13 @@ export default function LoanDetailScreen() {
         </View>
       </View>
 
-      {/* Payment Modal */}
-      <Modal
+      {/* Create/Edit Payment Modal */}
+      <CreatePaymentModal
         visible={showPaymentModal}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => setShowPaymentModal(false)}
-      >
-        <View className="flex-1 bg-black/40">
-          <TouchableOpacity
-            className="flex-1"
-            activeOpacity={1}
-            onPress={() => setShowPaymentModal(false)}
-          />
-          <View
-            className="bg-background rounded-t-3xl px-6 pt-3"
-            style={{ paddingBottom: 30 }}
-          >
-            {/* Handle */}
-            <View className="items-center mb-5">
-              <View className="w-10 h-1 rounded-full bg-foreground" />
-            </View>
-
-            {/* Title */}
-            <View className="flex-row items-center justify-between mb-5 border-b border-border pb-4">
-              <Text className="text-xl font-semibold text-foreground">
-                {editingPayment ? "Edit Payment" : "Add Payment"}
-              </Text>
-              <TouchableOpacity
-                onPress={() => {
-                  setShowPaymentModal(false);
-                  setEditingPayment(null);
-                }}
-                className="p-1"
-              >
-                <X size={20} className="text-foreground" />
-              </TouchableOpacity>
-            </View>
-
-            {/* Amount */}
-            <View className="mb-4">
-              <Text className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
-                Amount
-              </Text>
-              <Controller
-                control={paymentForm.control}
-                name="amount"
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <View>
-                    <View
-                      className={`flex-row items-center rounded-xl px-4 py-3 border ${
-                        paymentForm.formState.errors.amount
-                          ? "border-destructive"
-                          : "border-border"
-                      }`}
-                    >
-                      <Text className="text-xl font-bold text-primary mr-2">
-                        $
-                      </Text>
-                      <TextInput
-                        value={value}
-                        onChangeText={onChange}
-                        onBlur={onBlur}
-                        placeholder="0.00"
-                        placeholderTextColor={isDark ? "#555" : "#A1A1AA"}
-                        keyboardType="decimal-pad"
-                        className="flex-1 text-xl font-bold text-foreground"
-                        autoFocus
-                      />
-                    </View>
-                    <InputError
-                      error={paymentForm.formState.errors.amount?.message}
-                    />
-                  </View>
-                )}
-              />
-            </View>
-
-            {/* Remark */}
-            <View className="mb-5">
-              <Text className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
-                Remark (Optional)
-              </Text>
-              <Controller
-                control={paymentForm.control}
-                name="remark"
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <TextInput
-                    value={value}
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    placeholder="Add a note..."
-                    placeholderTextColor={isDark ? "#555" : "#A1A1AA"}
-                    className="bg-card border border-border rounded-xl px-4 py-3 text-foreground text-base"
-                  />
-                )}
-              />
-            </View>
-
-            {/* Submit */}
-            <Button
-              onPress={paymentForm.handleSubmit(handlePaymentSubmit)}
-              disabled={isPending}
-            >
-              <Text className="text-primary-foreground font-semibold text-base">
-                {isPending
-                  ? "Saving..."
-                  : editingPayment
-                    ? "Update Payment"
-                    : "Add Payment"}
-              </Text>
-            </Button>
-          </View>
-        </View>
-      </Modal>
+        onClose={handleClosePaymentModal}
+        loanId={id!}
+        editPayment={editingPayment}
+      />
     </>
   );
 }
