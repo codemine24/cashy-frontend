@@ -5,18 +5,19 @@ import {
   useUpdatePayment,
 } from "@/api/loan";
 import { ScreenContainer } from "@/components/screen-container";
+import { BookDetailSkeleton } from "@/components/skeletons/book-detail-skeleton";
 import { Button } from "@/components/ui/button";
 import { InputError } from "@/components/ui/input-error";
 import { useTheme } from "@/context/theme-context";
+import { usePullToRefreshSkeleton } from "@/hooks/use-pull-to-refresh-skeleton";
 import { LoanPayment } from "@/interface/loan";
 import { Edit3, Trash2, X } from "@/lib/icons";
 import { formatCurrency } from "@/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { useCallback, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
-  ActivityIndicator,
   Alert,
   Modal,
   RefreshControl,
@@ -50,7 +51,11 @@ export default function LoanDetailScreen() {
   const updatePaymentMutation = useUpdatePayment();
   const deletePaymentMutation = useDeletePayment();
 
-  const [refreshing, setRefreshing] = useState(false);
+  const { showSkeleton, refreshControlProps } = usePullToRefreshSkeleton(
+    async () => {
+      await refetch();
+    },
+  );
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [editingPayment, setEditingPayment] = useState<LoanPayment | null>(
     null,
@@ -65,11 +70,8 @@ export default function LoanDetailScreen() {
     mode: "onBlur",
   });
 
-  const onRefresh = useCallback(async () => {
-    setRefreshing(true);
-    await refetch();
-    setRefreshing(false);
-  }, [refetch]);
+  // Show skeleton when initially loading or refreshing
+  const finalShowSkeleton = isLoading || showSkeleton;
 
   // Group payments by date (similar to wallet) - moved before early returns
   const groupedPayments = useMemo(() => {
@@ -209,7 +211,7 @@ export default function LoanDetailScreen() {
     );
   };
 
-  if (isLoading) {
+  if (finalShowSkeleton) {
     return (
       <>
         <Stack.Screen
@@ -219,9 +221,7 @@ export default function LoanDetailScreen() {
             headerBackTitle: "Back",
           }}
         />
-        <View className="flex-1 bg-background items-center justify-center">
-          <ActivityIndicator size="large" />
-        </View>
+        <BookDetailSkeleton />
       </>
     );
   }
@@ -306,9 +306,7 @@ export default function LoanDetailScreen() {
           stickySectionHeadersEnabled={false}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 100 }}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
+          refreshControl={<RefreshControl {...refreshControlProps} />}
           renderItem={() => null}
           ListHeaderComponent={
             <>
