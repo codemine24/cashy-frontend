@@ -157,7 +157,6 @@ export default function AuthScreen() {
 
       router.replace("/(tabs)");
     } catch (error: any) {
-      console.error("Verify OTP Error:", error);
       Toast.show({
         type: "error",
         text1: error?.message || "Invalid OTP",

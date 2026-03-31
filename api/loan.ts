@@ -1,8 +1,8 @@
 import {
-  CreateLoanPayload,
-  CreateLoanPaymentPayload,
-  UpdateLoanPayload,
-  UpdateLoanPaymentPayload,
+    CreateLoanPayload,
+    CreateLoanPaymentPayload,
+    UpdateLoanPayload,
+    UpdateLoanPaymentPayload,
 } from "@/interface/loan";
 import apiClient from "@/lib/api-client";
 import { throwApiError } from "@/utils/throw-api-error";
@@ -34,14 +34,12 @@ export const useGetAllLoans = (searchParams: GetLoansParams = {}) => {
   if (searchParams.limit) params.limit = searchParams.limit.toString();
   if (searchParams.type) params.type = searchParams.type;
   if (searchParams.status) params.status = searchParams.status;
-  console.log("params.....", params);
 
   return useQuery({
     queryKey: [...keys.list(), params],
     queryFn: async () => {
       try {
         const response = await apiClient.get(LOAN_API_URL, { params });
-        console.log(response.data, "response.data.....");
         return response.data;
       } catch (error) {
         throwApiError(error);
