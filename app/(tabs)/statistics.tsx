@@ -651,50 +651,6 @@ function NetBalanceTrend({ data }: { data: any[] }) {
   );
 }
 
-function IncomeVsExpenseChart({
-  income,
-  expense,
-}: {
-  income: number;
-  expense: number;
-}) {
-  const chartHeight = 80;
-  const chartWidth = (SCREEN_WIDTH - 80) / 3;
-  const maxVal = Math.max(income, expense, 100);
-
-  const barWidth = 12;
-  const gap = 4;
-  const xCenter = chartWidth / 2;
-
-  const incomeHeight = (income / maxVal) * (chartHeight - 10);
-  const expenseHeight = (expense / maxVal) * (chartHeight - 10);
-
-  return (
-    <View className="items-center justify-center">
-      <Svg height={chartHeight} width={chartWidth}>
-        {/* Income Bar */}
-        <Rect
-          x={xCenter - barWidth - gap / 2}
-          y={chartHeight - incomeHeight}
-          width={barWidth}
-          height={incomeHeight}
-          fill="#A3D031"
-          rx="2"
-        />
-        {/* Expense Bar */}
-        <Rect
-          x={xCenter + gap / 2}
-          y={chartHeight - expenseHeight}
-          width={barWidth}
-          height={expenseHeight}
-          fill="#E5E7EB"
-          rx="2"
-        />
-      </Svg>
-    </View>
-  );
-}
-
 function CategorySpendingChart({ data }: { data: any[] }) {
   const size = 90;
   const centerX = size / 2;
