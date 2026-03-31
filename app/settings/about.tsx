@@ -1,8 +1,14 @@
 import { ScreenContainer } from "@/components/screen-container";
-import { ChevronRight, FileText, ShieldCheck, Users } from "@/lib/icons";
+import {
+  ChevronRight,
+  FileText,
+  ShieldCheck,
+  Trash2,
+  Users,
+} from "@/lib/icons";
 import { Stack, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 // ─── Reusable row component ───────────────────────────────────────────────
 function AboutRow({
@@ -74,6 +80,28 @@ export default function AboutScreen() {
     router.push("/settings/contact-us" as any);
   };
 
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      "Delete Account",
+      "Are you sure you want to permanently delete your account? This action cannot be undone and all your data will be lost.",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: () => {
+            // TODO: Implement backend API call for account deletion
+            console.log("Account deletion requested");
+          },
+        },
+      ],
+      { cancelable: true },
+    );
+  };
+
   return (
     <>
       <Stack.Screen
@@ -126,6 +154,33 @@ export default function AboutScreen() {
               subtitle={t("about.contactUsSubtitle")}
               onPress={handleContactUs}
             />
+          </View>
+
+          {/* ── Account Deletion Section ── */}
+          <View className="bg-card rounded-2xl border border-border px-4 mb-6">
+            <TouchableOpacity
+              onPress={handleDeleteAccount}
+              activeOpacity={0.7}
+              className="flex-row items-center py-4"
+            >
+              {/* Icon bubble */}
+              <View className="w-11 h-11 rounded-xl items-center justify-center mr-4 bg-red-500/10">
+                <Trash2 size={22} className="text-red-500" />
+              </View>
+
+              {/* Text */}
+              <View className="flex-1">
+                <Text className="text-base font-semibold text-foreground">
+                  {t("about.deleteAccount")}
+                </Text>
+                <Text className="text-xs text-muted-foreground mt-0.5">
+                  {t("about.deleteAccountSubtitle")}
+                </Text>
+              </View>
+
+              {/* Arrow */}
+              <ChevronRight size={18} className="text-muted-foreground" />
+            </TouchableOpacity>
           </View>
         </ScrollView>
       </ScreenContainer>

@@ -1,11 +1,20 @@
 import { ScreenContainer } from "@/components/screen-container";
 import { Stack } from "expo-router";
-import { ScrollView, Text } from "react-native";
+import {
+    Linking,
+    ScrollView,
+    Text,
+    TouchableOpacity,
+    View,
+} from "react-native";
+
+const TERMS_URL =
+  "https://doc-hosting.flycricket.io/cashy-expense-manager-terms-of-use/44e4c397-9599-4dc3-8317-d22833c89540/terms";
 
 const TERMS_AND_CONDITIONS = `
 Terms & Conditions
 
-These terms and conditions apply to the Cashy: Expense Manager app (hereby referred to as "Application") for mobile devices that was created by Fazly (hereby referred to as "Service Provider") as a Free service.
+These terms and conditions apply to the Cashy: Expense Manager app (hereby referred to as "Application") for mobile devices that was created by Fazly (hereby referred to as "Service Provider") as a Freemium service.
 
 Upon downloading or utilizing the Application, you are automatically agreeing to the following terms. It is strongly advised that you thoroughly read and understand these terms prior to using the Application.
 
@@ -17,7 +26,7 @@ The Application stores and processes personal data that you have provided to the
 
 Please be aware that the Service Provider does not assume responsibility for certain aspects. Some functions of the Application require an active internet connection, which can be Wi-Fi or provided by your mobile network provider. The Service Provider cannot be held responsible if the Application does not function at full capacity due to lack of access to Wi-Fi or if you have exhausted your data allowance.
 
-If you are using the application outside of a Wi-Fi area, please be aware that your mobile network provider's agreement terms still apply. Consequently, you may incur charges from your mobile provider for data usage during the connection to the application, or other third-party charges. By using the application, you accept responsibility for any such charges, including roaming data charges if you use the application outside of your home territory (i.e. region or country) without disabling data roaming. If you are not the bill payer for the device on which you are using the application, they assume that you have obtained permission from the bill payer.
+If you are using the application outside of a Wi-Fi area, please be aware that your mobile network provider's agreement terms still apply. Consequently, you may incur charges from your mobile provider for data usage during the connection to the application, or other third-party charges. By using the application, you accept responsibility for any such charges, including roaming data charges if you use the application outside of your home territory (i.e., region or country) without disabling data roaming. If you are not the bill payer for the device on which you are using the application, they assume that you have obtained permission from the bill payer.
 
 Similarly, the Service Provider cannot always assume responsibility for your usage of the application. For instance, it is your responsibility to ensure that your device remains charged. If your device runs out of battery and you are unable to access the Service, the Service Provider cannot be held responsible.
 
@@ -62,6 +71,15 @@ export default function TermsAndConditionsScreen() {
             {TERMS_AND_CONDITIONS.trim()}
           </Text>
         </ScrollView>
+
+        {/* External Link */}
+        <View className="px-4 py-3 border-t border-border bg-card">
+          <TouchableOpacity onPress={() => Linking.openURL(TERMS_URL)}>
+            <Text className="text-primary text-sm text-center font-medium">
+              read this doc on web browser
+            </Text>
+          </TouchableOpacity>
+        </View>
       </ScreenContainer>
     </>
   );

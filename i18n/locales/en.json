@@ -123,7 +123,9 @@
     "aboutUs": "About Us",
     "aboutUsSubtitle": "Learn more about Cashy",
     "contactUs": "Contact Us",
-    "contactUsSubtitle": "Get in touch with our team"
+    "contactUsSubtitle": "Get in touch with our team",
+    "deleteAccount": "Delete Account",
+    "deleteAccountSubtitle": "Request to permanently delete your account"
   },
   "profile": {
     "title": "Your Profile",

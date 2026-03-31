@@ -137,6 +137,8 @@
     "aboutUs": "আমাদের সম্পর্কে",
     "aboutUsSubtitle": "ক্যাশি সম্পর্কে বিস্তারিত জানুন",
     "contactUs": "যোগাযোগ করুন",
-    "contactUsSubtitle": "আপনার সম্পস্যা জানান"
+    "contactUsSubtitle": "আপনার সম্পস্যা জানান",
+    "deleteAccount": "ডিলিট একাউন্ট",
+    "deleteAccountSubtitle": "আপনার একাউন্ট স্থায়ীভাবে ডিলিট করুন"
   }
 }
