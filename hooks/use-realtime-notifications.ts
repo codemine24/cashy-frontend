@@ -19,8 +19,6 @@ export const useRealtimeNotifications = (userId?: string) => {
           ...(userId ? { filter: `user_id=eq.${userId}` } : {}),
         },
         (payload) => {
-          console.log("New notification received:", payload.new);
-
           // Invalidate relevant queries to update UI
           queryClient.invalidateQueries({ queryKey: ["notifications"] });
           queryClient.invalidateQueries({ queryKey: ["books"] });

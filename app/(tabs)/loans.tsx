@@ -6,6 +6,7 @@ import { LoansSkeleton } from "@/components/skeletons/loans-skeleton";
 import { Button } from "@/components/ui/button";
 import { H3, Muted } from "@/components/ui/typography";
 import { useDebounce } from "@/hooks/use-debounce";
+import { usePullToRefreshSkeletonWithSearch } from "@/hooks/use-pull-to-refresh-skeleton";
 import { CrossIcon } from "@/icons/cross-icon";
 import { FilterIcon } from "@/icons/filter-icon";
 import { PlusIcon } from "@/icons/plus-icon";
@@ -13,15 +14,15 @@ import { SearchIcon } from "@/icons/search-icon";
 import { Loan } from "@/interface/loan";
 import { formatCurrency } from "@/utils/index";
 import { useRouter } from "expo-router";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import {
-  Alert,
-  FlatList,
-  RefreshControl,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    Alert,
+    FlatList,
+    RefreshControl,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import Toast from "react-native-toast-message";
 
@@ -79,7 +80,6 @@ function TabButton({
 export default function LoansScreen() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<LoanTab>("GIVEN");
-  const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
   const [showSortModal, setShowSortModal] = useState(false);
@@ -106,11 +106,12 @@ export default function LoansScreen() {
 
   const deleteLoanMutation = useDeleteLoan();
 
-  const onRefresh = useCallback(async () => {
-    setRefreshing(true);
-    await refetch();
-    setRefreshing(false);
-  }, [refetch]);
+  const { showSkeleton, refreshControlProps } =
+    usePullToRefreshSkeletonWithSearch(async () => {
+      await refetch();
+    }, debouncedSearchQuery.trim());
+
+  const finalShowSkeleton = isLoading || showSkeleton;
 
   const handleDeleteLoan = (loan: Loan) => {
     Alert.alert("Delete Loan", `Delete loan for "${loan.person_name}"?`, [
@@ -251,7 +252,7 @@ export default function LoansScreen() {
       </View>
 
       {/* Content Area - Loading only here */}
-      {isLoading ? (
+      {finalShowSkeleton ? (
         <LoansSkeleton />
       ) : loans.length === 0 ? (
         <View className="flex-1 items-center justify-center py-8">
@@ -322,9 +323,7 @@ export default function LoansScreen() {
             ) : null
           }
           contentContainerStyle={{ paddingBottom: 80 }}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
+          refreshControl={<RefreshControl {...refreshControlProps} />}
           showsVerticalScrollIndicator={false}
         />
       )}

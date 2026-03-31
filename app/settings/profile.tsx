@@ -9,13 +9,13 @@ import { Stack } from "expo-router";
 import { Camera, User } from "lucide-react-native";
 import { useState } from "react";
 import {
-  Alert,
-  Image,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    Alert,
+    Image,
+    ScrollView,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from "react-native";
 
 export default function ProfileScreen() {
@@ -27,7 +27,9 @@ export default function ProfileScreen() {
     user?.contact_number ?? "",
   );
   const email = user?.email ?? "";
-  const [avatarUri, setAvatarUri] = useState<string>(makeImageUrl(user?.avatar, "user"));
+  const [avatarUri, setAvatarUri] = useState<string>(
+    makeImageUrl(user?.avatar, "user"),
+  );
   const [pickedAsset, setPickedAsset] = useState<ImagePickerAsset | null>(null);
   const { mutate: updateProfile, isPending: isSaving } = useUpdateProfile();
 
@@ -93,11 +95,10 @@ export default function ProfileScreen() {
           name: data.data.name,
           contact_number: data.data.contact_number,
           avatar: data.data.avatar,
-        })
+        });
         Alert.alert("Saved", "Your profile has been updated.");
       },
       onError: (error) => {
-        console.error("Update profile error:", error);
         Alert.alert("Error", "Failed to update profile. Please try again.");
       },
     });
@@ -197,8 +198,9 @@ export default function ProfileScreen() {
           <TouchableOpacity
             onPress={handleSave}
             disabled={isSaving}
-            className={`rounded-2xl py-4 items-center justify-center ${isSaving ? "bg-primary/50" : "bg-primary"
-              }`}
+            className={`rounded-2xl py-4 items-center justify-center ${
+              isSaving ? "bg-primary/50" : "bg-primary"
+            }`}
           >
             <Text className="text-white font-bold text-base">
               {isSaving ? "Saving..." : "Save Changes"}

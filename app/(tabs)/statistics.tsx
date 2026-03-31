@@ -10,24 +10,25 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { BarChart3, Download, TrendingUp } from "lucide-react-native";
 import { useCallback, useState } from "react";
 import {
-  ActivityIndicator,
-  Dimensions,
-  Modal,
-  Pressable,
-  RefreshControl,
-  ScrollView,
-  View,
+    ActivityIndicator,
+    Dimensions,
+    Modal,
+    Pressable,
+    RefreshControl,
+    ScrollView,
+    View,
 } from "react-native";
 import Svg, {
-  Circle,
-  Defs,
-  G,
-  LinearGradient,
-  Path,
-  Rect,
-  Stop,
-  Text as SvgText,
+    Circle,
+    Defs,
+    G,
+    LinearGradient,
+    Path,
+    Rect,
+    Stop,
+    Text as SvgText,
 } from "react-native-svg";
+import Toast from "react-native-toast-message";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -450,15 +451,13 @@ export default function StatisticsPage() {
                       // Simulate PDF generation and download
                       await new Promise((resolve) => setTimeout(resolve, 2000));
                       // In real implementation, this would call an API to generate PDF
-                      console.log(
-                        "Generating PDF for:",
-                        exportStartDate.toISOString(),
-                        "to",
-                        exportEndDate.toISOString(),
-                      );
                       // Show success message or trigger download
-                    } catch (error) {
-                      console.error("Error generating report:", error);
+                    } catch {
+                      Toast.show({
+                        type: "error",
+                        text1: "Error",
+                        text2: "Failed to generate report. Please try again.",
+                      });
                     } finally {
                       setIsGenerating(false);
                       setShowExportModal(false);
