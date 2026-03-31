@@ -1,16 +1,17 @@
+import { BottomSheetModal } from "@/components/bottom-sheet-modal";
+import { Calendar, Check, ChevronDown, Search, X } from "@/lib/icons";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   FlatList,
-  Platform,
   ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
-import { AppModal } from "@/components/app-modal";
-import { Calendar, Check, ChevronDown, Search, X } from "@/lib/icons";
-import DateTimePicker from "@react-native-community/datetimepicker";
+
+
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -363,7 +364,7 @@ function FilterChip({
 
 // ─── Shared Modal Shell ───────────────────────────────────────────────────────
 
-function BottomSheetModal({
+function BottomSheetModalWrapper({
   visible,
   title,
   onClose,
@@ -377,40 +378,26 @@ function BottomSheetModal({
   footer: React.ReactNode;
 }) {
   return (
-    <AppModal
-      visible={visible}
-      transparent
-      animationType="slide"
-      onRequestClose={onClose}
-    >
-      <View className="flex-1 justify-end bg-black/50">
-        <TouchableOpacity
-          activeOpacity={1}
-          onPress={onClose}
-          className="flex-1"
-        />
-        <View className="bg-card rounded-t-3xl max-h-[80%]">
-          {/* Header */}
-          <View className="flex-row items-center justify-between px-5 pt-5 pb-3">
-            <Text className="text-lg font-bold text-foreground">{title}</Text>
-            <TouchableOpacity
-              onPress={onClose}
-              className="w-8 h-8 bg-muted rounded-full items-center justify-center"
-            >
-              <X size={16} className="text-muted-foreground" />
-            </TouchableOpacity>
-          </View>
-          <View className="w-full h-[1px] bg-border" />
-
-          {/* Content */}
-          {children}
-
-          {/* Footer */}
-          <View className="w-full h-[1px] bg-border" />
-          {footer}
+    <BottomSheetModal visible={visible} onClose={onClose}>
+      <View className="px-6 pt-3 pb-4">
+        {/* Header */}
+        <View className="flex-row justify-between items-center mb-6 border-b border-border pb-3">
+          <Text className="text-xl font-bold text-foreground">{title}</Text>
+          <TouchableOpacity
+            onPress={onClose}
+            className="w-8 h-8 items-center justify-center"
+          >
+            <Text className="text-xl text-foreground">✕</Text>
+          </TouchableOpacity>
         </View>
+
+        {/* Content */}
+        {children}
+
+        {/* Footer */}
+        {footer}
       </View>
-    </AppModal>
+    </BottomSheetModal>
   );
 }
 
@@ -462,6 +449,8 @@ function CheckboxRow({
       <View
         className={`w-5 h-5 rounded-md border-2 items-center justify-center ${checked ? "border-primary bg-primary" : "border-muted-foreground"
           }`}
+        className={`w-5 h-5 rounded-full border-2 items-center justify-center ${checked ? "border-primary bg-primary" : "border-muted-foreground"
+          }`}
       >
         {checked && <Check size={12} color="#ffffff" />}
       </View>
@@ -473,32 +462,27 @@ function CheckboxRow({
 // ─── Footer Buttons ───────────────────────────────────────────────────────────
 
 function ModalFooter({
-  onClear,
   onApply,
   applyDisabled,
 }: {
-  onClear: () => void;
   onApply: () => void;
   applyDisabled: boolean;
 }) {
   return (
-    <View className="flex-row gap-3 px-5 pt-3 pb-6">
-      <TouchableOpacity
-        onPress={onClear}
-        activeOpacity={0.7}
-        className="flex-1 py-3 rounded-xl bg-muted items-center"
-      >
-        <Text className="text-foreground font-bold text-[14px]">Clear</Text>
-      </TouchableOpacity>
+    <View className="px-0 pt-3 pb-6">
       <TouchableOpacity
         onPress={onApply}
         disabled={applyDisabled}
         activeOpacity={0.7}
         className={`flex-1 py-3 rounded-xl items-center ${applyDisabled ? "bg-primary/30" : "bg-primary"
           }`}
+        className={`rounded-lg py-3 items-center justify-center ${applyDisabled ? "bg-primary/50" : "bg-primary"
+          }`}
       >
         <Text
           className={`font-bold text-[14px] ${applyDisabled ? "text-white/50" : "text-white"
+            }`}
+          className={`font-semibold text-base ${applyDisabled ? "text-white/50" : "text-white"
             }`}
         >
           Apply
@@ -532,15 +516,12 @@ function EntryTypeModal({
   const hasChanged = draft !== current;
 
   return (
-    <BottomSheetModal
+    <BottomSheetModalWrapper
       visible={visible}
       title="Entry Type"
       onClose={onClose}
       footer={
         <ModalFooter
-          onClear={() => {
-            onApply("ALL");
-          }}
           onApply={() => onApply(draft)}
           applyDisabled={!hasChanged}
         />
@@ -551,7 +532,7 @@ function EntryTypeModal({
         <RadioRow label="Cash In" selected={draft === "IN"} onPress={() => setDraft("IN")} />
         <RadioRow label="Cash Out" selected={draft === "OUT"} onPress={() => setDraft("OUT")} />
       </View>
-    </BottomSheetModal>
+    </BottomSheetModalWrapper>
   );
 }
 
@@ -625,14 +606,20 @@ function DateFilterModal({
       : fallback;
 
   return (
-    <BottomSheetModal
+    <BottomSheetModalWrapper
       visible={visible}
       title="Select Date"
       onClose={onClose}
       footer={
         <ModalFooter
-          onClear={() => onApply("all_time", null, null, null)}
-          onApply={() => onApply(draftPreset, draftSingleDate, draftRangeStart, draftRangeEnd)}
+          onApply={() =>
+            onApply(
+              draftPreset,
+              draftSingleDate,
+              draftRangeStart,
+              draftRangeEnd,
+            )
+          }
           applyDisabled={!hasChanged}
         />
       }
@@ -725,7 +712,7 @@ function DateFilterModal({
           </View>
         )}
       </ScrollView>
-    </BottomSheetModal>
+    </BottomSheetModalWrapper>
   );
 }
 
@@ -768,13 +755,12 @@ function MembersFilterModal({
   const hasChanged = draft !== currentMemberId;
 
   return (
-    <BottomSheetModal
+    <BottomSheetModalWrapper
       visible={visible}
       title="Members"
       onClose={onClose}
       footer={
         <ModalFooter
-          onClear={() => onApply(null)}
           onApply={() => onApply(draft)}
           applyDisabled={!hasChanged}
         />
@@ -820,7 +806,7 @@ function MembersFilterModal({
           }
         />
       </View>
-    </BottomSheetModal>
+    </BottomSheetModalWrapper>
   );
 }
 
@@ -875,13 +861,12 @@ function CategoryFilterModal({
   }, [draft, currentIds]);
 
   return (
-    <BottomSheetModal
+    <BottomSheetModalWrapper
       visible={visible}
       title="Category"
       onClose={onClose}
       footer={
         <ModalFooter
-          onClear={() => onApply([])}
           onApply={() => onApply(draft)}
           applyDisabled={!hasChanged}
         />
@@ -927,6 +912,6 @@ function CategoryFilterModal({
           }
         />
       </View>
-    </BottomSheetModal>
+    </BottomSheetModalWrapper>
   );
 }
