@@ -106,7 +106,7 @@ export default function BookDetailScreen() {
 
   const [reportModalVisible, setReportModalVisible] = useState(false);
   const [selectedReport, setSelectedReport] =
-    useState<ReportType>("all-entries");
+    useState<ReportType>("all");
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
   const { authState } = useAuth();
@@ -223,15 +223,25 @@ export default function BookDetailScreen() {
     try {
       setIsGeneratingPdf(true);
 
-      const reportTypeMap: Record<ReportType, string> = {
-        "all-entries": "all",
-        "day-wise": "day_wise",
-        "category-wise": "category_wise",
-      };
-
-      const mappedType = reportTypeMap[selectedReport];
+      const mappedType = selectedReport || "all";
       const baseUrl = process.env.EXPO_PUBLIC_SERVER_URL;
-      const url = `${baseUrl}/transaction/book/${id}/export-pdf?report_type=${mappedType}`;
+      
+      const queryParams = new URLSearchParams();
+      queryParams.append("report_type", mappedType);
+
+      if (debouncedQuery.trim()) {
+        queryParams.append("search_term", debouncedQuery.trim());
+      }
+
+      Object.entries(_filterParams).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          queryParams.append(key, value.join(","));
+        } else if (value !== undefined && value !== null) {
+          queryParams.append(key, String(value));
+        }
+      });
+
+      const url = `${baseUrl}/transaction/book/${id}/export-pdf?${queryParams.toString()}`;
 
       if (Platform.OS === "web") {
         window.open(url, "_blank");
