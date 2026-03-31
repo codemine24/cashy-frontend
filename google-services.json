@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "16421307165",
+    "project_id": "cashy-38a68",
+    "storage_bucket": "cashy-38a68.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:16421307165:android:5ad59d30aa5b37879157f4",
+        "android_client_info": {
+          "package_name": "com.rakib_web_dev.cashymobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD1ZUuTIBuEGt8oXEg9szx5tZ74fYLF2SU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
