@@ -508,17 +508,20 @@ export default function AddTransactionScreen() {
             <TouchableOpacity
               onPress={form.handleSubmit(handleSubmit)}
               disabled={isPending}
-              className={`rounded-xl py-4 items-center justify-center ${btnClassMap} ${isPending ? "opacity-50" : "opacity-100"}`}
+              className={`rounded-xl py-4 items-center justify-center w-full ${btnClassMap} ${isPending ? "opacity-50" : "opacity-100"}`}
               activeOpacity={0.8}
             >
-              <Text className="text-white font-bold text-base tracking-wider">
+              <Text 
+                className="text-white font-bold text-base tracking-wider text-center w-full"
+                numberOfLines={1}
+              >
                 {isPending
                   ? "SAVING..."
                   : isEditing
                     ? "SAVE CHANGES"
                     : isDeposit
-                      ? "ADD CASH IN"
-                      : "ADD CASH OUT"}
+                      ? "CASH IN"
+                      : "CASH OUT"}
               </Text>
             </TouchableOpacity>
           </View>
