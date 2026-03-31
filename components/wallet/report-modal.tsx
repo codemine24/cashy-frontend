@@ -3,7 +3,7 @@ import { useCallback } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { BottomSheetModal } from "../bottom-sheet-modal";
 
-export type ReportType = "all-entries" | "day-wise" | "category-wise";
+export type ReportType = "all" | "day_wise" | "category_wise";
 
 interface ReportOption {
   value: ReportType;
@@ -14,19 +14,19 @@ interface ReportOption {
 
 const REPORT_OPTIONS: ReportOption[] = [
   {
-    value: "all-entries",
+    value: "all",
     label: "All Entries",
     subtext: "List of all transactions with full details",
     Icon: LayoutList,
   },
   {
-    value: "day-wise",
+    value: "day_wise",
     label: "Day-wise",
     subtext: "Transactions grouped and summarized by date",
     Icon: FileText,
   },
   {
-    value: "category-wise",
+    value: "category_wise",
     label: "Category-wise",
     subtext: "Spending breakdown grouped by category",
     Icon: Tag,
