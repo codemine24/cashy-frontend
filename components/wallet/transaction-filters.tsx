@@ -9,6 +9,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Platform
 } from "react-native";
 
 
@@ -447,8 +448,6 @@ function CheckboxRow({
       className="flex-row items-center px-5 py-3.5 gap-3"
     >
       <View
-        className={`w-5 h-5 rounded-md border-2 items-center justify-center ${checked ? "border-primary bg-primary" : "border-muted-foreground"
-          }`}
         className={`w-5 h-5 rounded-full border-2 items-center justify-center ${checked ? "border-primary bg-primary" : "border-muted-foreground"
           }`}
       >
@@ -476,13 +475,9 @@ function ModalFooter({
         activeOpacity={0.7}
         className={`flex-1 py-3 rounded-xl items-center ${applyDisabled ? "bg-primary/30" : "bg-primary"
           }`}
-        className={`rounded-lg py-3 items-center justify-center ${applyDisabled ? "bg-primary/50" : "bg-primary"
-          }`}
       >
         <Text
           className={`font-bold text-[14px] ${applyDisabled ? "text-white/50" : "text-white"
-            }`}
-          className={`font-semibold text-base ${applyDisabled ? "text-white/50" : "text-white"
             }`}
         >
           Apply
