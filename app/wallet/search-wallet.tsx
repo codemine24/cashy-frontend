@@ -6,18 +6,20 @@ import { Book } from "@/interface/wallet";
 import { ArrowLeft, Search, X } from "@/lib/icons";
 import { Stack, useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
-  ActivityIndicator,
-  Alert,
-  FlatList,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    Alert,
+    FlatList,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import Toast from "react-native-toast-message";
 
 export default function SearchWalletScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedQuery = useDebounce(searchQuery, 300);
@@ -71,7 +73,7 @@ export default function SearchWalletScreen() {
             }
           },
         },
-      ]
+      ],
     );
   };
   const handleRename = (book: Book) => {
@@ -115,7 +117,7 @@ export default function SearchWalletScreen() {
                   ref={inputRef}
                   value={searchQuery}
                   onChangeText={setSearchQuery}
-                  placeholder="Search wallets..."
+                  placeholder={t("wallets.searchWallets")}
                   placeholderTextColor="#9CA3AF"
                   className="flex-1 ml-2 text-base text-gray-900"
                   autoFocus={true}
@@ -149,8 +151,8 @@ export default function SearchWalletScreen() {
             <Search size={48} color="#D1D5DB" />
             <Text className="text-gray-400 text-base mt-4">
               {debouncedQuery.trim()
-                ? `No wallets found for "${debouncedQuery}"`
-                : "Search your wallets"}
+                ? t("wallets.noWalletsFound", { query: debouncedQuery })
+                : t("wallets.searchYourWallets")}
             </Text>
           </View>
         ) : (

@@ -18,6 +18,20 @@
     "retry": "Retry",
     "close": "Close"
   },
+  "premium": {
+    "unlockPremiumFeatures": "Unlock Premium Features",
+    "oneTimePaymentLifetimeAccess": "One-time payment. Lifetime access. No subscription",
+    "unlimitedWallets": "Unlimited wallets",
+    "shareWithUnlimitedMembers": "Share with unlimited members",
+    "advanceAnalyticsReports": "Advance analytics & reports",
+    "upgradeToPremium": "Upgrade to premium",
+    "limitedOffer": "Limited offer. Only 14.99 4.99 one-time",
+    "limitedOfferPrefix": "Limited offer",
+    "limitedOfferOnly": "Only",
+    "originalPrice": "$14.99",
+    "discountedPrice": "$4.99",
+    "oneTime": "one-time"
+  },
   "tabs": {
     "home": "Home",
     "wallets": "Wallets",
@@ -41,7 +55,13 @@
     "restartNote": "Some settings may require a restart to take effect.",
     "logOut": "Log Out",
     "logOutConfirm": "Are you sure you want to log out?",
-    "version": "Version"
+    "version": "Version",
+    "more": "More",
+    "aboutCashy": "About Cashy",
+    "privacyPolicy": "Privacy Policy",
+    "termsAndConditions": "T&C",
+    "aboutUs": "About us",
+    "profileInfo": "Name, Avatar, Email"
   },
   "auth": {
     "welcome": "Welcome!",
@@ -73,7 +93,37 @@
     "deleteTransaction": "Delete Transaction",
     "deleteConfirm": "Are you sure you want to delete this transaction?",
     "categories": "Categories",
-    "manageCategories": "Manage Categories"
+    "manageCategories": "Manage Categories",
+    "searchWallets": "Search wallets",
+    "yourWallets": "Your Wallets",
+    "sortWalletBy": "Sort wallet by",
+    "lastUpdated": "Last Updated",
+    "nameAZ": "Name (A-Z)",
+    "lastCreated": "Last Created",
+    "searchYourWallets": "Search your wallets",
+    "noWalletsFound": "No wallets found for \"{{query}}\"",
+    "addWallet": "Add wallet",
+    "searchByAmountOrRemarks": "Search by amount or remarks",
+    "netBalance": "Net Balance",
+    "totalIn": "Total In",
+    "totalOut": "Total Out",
+    "viewReport": "View report"
+  },
+  "members": {
+    "title": "Members",
+    "addMember": "Add member",
+    "noMembersAdded": "No members added yet"
+  },
+  "about": {
+    "title": "About Cashy",
+    "privacyPolicy": "Privacy Policy",
+    "privacyPolicySubtitle": "How we handle your data",
+    "termsAndConditions": "Terms & Conditions",
+    "termsAndConditionsSubtitle": "Terms of use",
+    "aboutUs": "About Us",
+    "aboutUsSubtitle": "Learn more about Cashy",
+    "contactUs": "Contact Us",
+    "contactUsSubtitle": "Get in touch with our team"
   },
   "profile": {
     "title": "Your Profile",

@@ -18,6 +18,20 @@
     "retry": "পুনরায় চেষ্টা",
     "close": "বন্ধ"
   },
+  "premium": {
+    "unlockPremiumFeatures": "প্রিমিয়াম ফিচার আনলক করুন",
+    "oneTimePaymentLifetimeAccess": "এককালীন পেমেন্ট। আজীবন এক্সেস। নো সাবস্ক্রিপশন",
+    "unlimitedWallets": "আনলিমিটেড ওয়ালেট",
+    "shareWithUnlimitedMembers": "যতখুশি মেম্বারের শেয়ার করুন",
+    "advanceAnalyticsReports": "এডভান্স রিপোর্ট ও এনালাইটিকস",
+    "upgradeToPremium": "প্রিমিয়াম এক্সেস",
+    "limitedOffer": "এককালীন পেমেন্ট",
+    "limitedOfferPrefix": "এককালীন পেমেন্ট",
+    "limitedOfferOnly": "শুধুমাত্র",
+    "originalPrice": "$১৪.৯৯",
+    "discountedPrice": "$৪.৯৯",
+    "oneTime": "এককালীন"
+  },
   "tabs": {
     "home": "হোম",
     "wallets": "ওয়ালেট",
@@ -25,13 +39,13 @@
   },
   "settings": {
     "title": "সেটিংস",
-    "appSettings": "অ্যাপ সেটিংস",
-    "profile": "আপনার প্রোফাইল",
+    "appSettings": "এপ সেটিংস",
+    "profile": "প্রোফাইল",
     "subscription": "সাবস্ক্রিপশন",
     "appearance": "থিম",
     "languageSection": "ভাষা",
     "localisation": "স্থানীয়করণ",
-    "notifications": "বিজ্ঞপ্তি",
+    "notifications": "নোটিফিকেশন",
     "theme": "থিম",
     "language": "ভাষা",
     "currency": "মুদ্রা",
@@ -41,7 +55,13 @@
     "restartNote": "কিছু সেটিংস কার্যকর হতে পুনরায় চালু করার প্রয়োজন হতে পারে।",
     "logOut": "লগ আউট",
     "logOutConfirm": "আপনি কি লগ আউট করতে চান?",
-    "version": "সংস্করণ"
+    "version": "সংস্করণ",
+    "more": "আরো",
+    "aboutCashy": "ক্যাশি সম্পর্কে",
+    "privacyPolicy": "প্রাইভেসি",
+    "termsAndConditions": "ব্যবহার বিধি",
+    "aboutUs": "আমাদের সম্পর্কে",
+    "profileInfo": "নাম, ছবি, ইমেইল"
   },
   "auth": {
     "welcome": "স্বাগতম!",
@@ -73,20 +93,50 @@
     "deleteTransaction": "লেনদেন মুছুন",
     "deleteConfirm": "আপনি কি এই লেনদেনটি মুছতে চান?",
     "categories": "বিভাগ",
-    "manageCategories": "বিভাগ পরিচালনা"
+    "manageCategories": "বিভাগ পরিচালনা",
+    "searchWallets": "ওয়ালেট সার্চ করুন",
+    "yourWallets": "আপনার ওয়ালেট সমূহ",
+    "sortWalletBy": "সর্ট করুন",
+    "lastUpdated": "সর্বশেষ আপডেট",
+    "nameAZ": "নাম (a-z)",
+    "lastCreated": "সর্বশেষ ক্রিয়েট",
+    "searchYourWallets": "আপনার ওয়ালেট সার্চ করুন",
+    "noWalletsFound": "{{query}} এর জন্য কোনো ওয়ালেট পাওয়া যায়নি",
+    "addWallet": "ওয়ালেট যোগ করুন",
+    "searchByAmountOrRemarks": "এমাউন্ট অথবা রিমার্ক দিয়ে সার্চ করুন",
+    "netBalance": "নেট ব্যালেন্স",
+    "totalIn": "টোটাল ইন",
+    "totalOut": "টোটাল আউট",
+    "viewReport": "রিপোর্ট দেখুন"
+  },
+  "members": {
+    "title": "সদস্য",
+    "addMember": "সদস্য যোগ করুন",
+    "noMembersAdded": "এখনও কোনো সদস্য যোগ করা হয়নি"
   },
   "profile": {
     "title": "আপনার প্রোফাইল",
-    "fullName": "পুরো নাম",
+    "fullName": "নামের",
     "email": "ইমেইল",
-    "contactNumber": "যোগাযোগ নম্বর",
-    "locked": "লক করা",
-    "emailLocked": "নিবন্ধনের পরে ইমেইল পরিবর্তন করা যাবে না।",
-    "changeAvatar": "অবতার পরিবর্তন করতে ক্যামেরা আইকনে ট্যাপ করুন",
-    "saveChanges": "পরিবর্তন সংরক্ষণ",
+    "contactNumber": "ফোন নাম্বার",
+    "locked": "পরিবর্তনঅযোগ্য",
+    "emailLocked": "ইমেইল পরিবর্তনযোগ্য নয়।",
+    "changeAvatar": "ছবি পরিবর্তন করতে ক্যামেরা আইকনে ক্লিক করুন",
+    "saveChanges": "সেভ করুন ",
     "saving": "সংরক্ষণ করা হচ্ছে...",
     "saved": "আপনার প্রোফাইল আপডেট করা হয়েছে।",
     "saveFailed": "প্রোফাইল আপডেট করতে ব্যর্থ। আবার চেষ্টা করুন।",
     "accountInfo": "অ্যাকাউন্ট তথ্য"
+  },
+  "about": {
+    "title": "ক্যাশি সম্পর্কে",
+    "privacyPolicy": "প্রাইভেসি",
+    "privacyPolicySubtitle": "কিভাবে আপনার ডাটা ব্যবহৃত হচ্ছে",
+    "termsAndConditions": "ব্যবহার শর্তাবলী",
+    "termsAndConditionsSubtitle": "ব্যবহারের শর্তাবলী",
+    "aboutUs": "আমাদের সম্পর্কে",
+    "aboutUsSubtitle": "ক্যাশি সম্পর্কে বিস্তারিত জানুন",
+    "contactUs": "যোগাযোগ করুন",
+    "contactUsSubtitle": "আপনার সম্পস্যা জানান"
   }
 }

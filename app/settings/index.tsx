@@ -1,5 +1,6 @@
 import { ScreenContainer } from "@/components/screen-container";
 import { Stack, useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
 import {
   Alert,
   Image,
@@ -75,6 +76,7 @@ function Divider() {
 export default function SettingsScreen() {
   const router = useRouter();
   const { authState, setAuthState } = useAuth();
+  const { t } = useTranslation();
 
   const handleLogout = async () => {
     await removeAccessToken();
@@ -88,8 +90,8 @@ export default function SettingsScreen() {
       <Stack.Screen
         options={{
           headerShown: true,
-          title: "More",
-          headerBackTitle: "Back",
+          title: t("settings.more"),
+          headerBackTitle: t("common.back"),
           headerShadowVisible: true,
         }}
       />
@@ -124,24 +126,36 @@ export default function SettingsScreen() {
             <SettingsRow
               iconBgClass="bg-violet-500/10"
               icon={<Settings size={22} className="text-violet-500" />}
-              title="App Settings"
-              subtitle="Language, Theme, Notifications"
+              title={t("settings.appSettings")}
+              subtitle={
+                t("settings.languageSection") +
+                ", " +
+                t("settings.theme") +
+                ", " +
+                t("settings.notifications")
+              }
               onPress={() => router.push("/settings/app-settings" as any)}
             />
             <Divider />
             <SettingsRow
               iconBgClass="bg-blue-500/10"
               icon={<User size={22} className="text-blue-500" />}
-              title="Your Profile"
-              subtitle="Name, Avatar, Email"
+              title={t("settings.profile")}
+              subtitle={t("settings.profileInfo")}
               onPress={() => router.push("/settings/profile" as any)}
             />
             <Divider />
             <SettingsRow
               iconBgClass="bg-amber-500/10"
               icon={<Info size={22} className="text-amber-500" />}
-              title="About Cashy"
-              subtitle="Privacy Policy, T&C, About us"
+              title={t("settings.aboutCashy")}
+              subtitle={
+                t("settings.privacyPolicy") +
+                ", " +
+                t("settings.termsAndConditions") +
+                ", " +
+                t("settings.aboutUs")
+              }
               onPress={() => router.push("/settings/about" as any)}
             />
           </View>
@@ -150,10 +164,10 @@ export default function SettingsScreen() {
           <View className="bg-card rounded-2xl border border-border px-4">
             <TouchableOpacity
               onPress={() =>
-                Alert.alert("Log Out", "Are you sure you want to log out?", [
-                  { text: "Cancel", style: "cancel" },
+                Alert.alert(t("settings.logOut"), t("settings.logOutConfirm"), [
+                  { text: t("common.cancel"), style: "cancel" },
                   {
-                    text: "Log Out",
+                    text: t("settings.logOut"),
                     style: "destructive",
                     onPress: handleLogout,
                   },
@@ -166,7 +180,7 @@ export default function SettingsScreen() {
                 <LogOut size={22} className="text-destructive" />
               </View>
               <Text className="text-base font-semibold text-destructive">
-                Log Out
+                {t("settings.logOut")}{" "}
               </Text>
             </TouchableOpacity>
           </View>
