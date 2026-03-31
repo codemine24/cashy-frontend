@@ -20,14 +20,6 @@ import {
 
 // ─── Helpers ────────────────────────────────────────────────────────
 
-function SectionLabel({ children }: { children: string }) {
-  return (
-    <Text className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-3 px-1">
-      {children}
-    </Text>
-  );
-}
-
 function ToggleRow({
   icon,
   iconBgClass,
@@ -81,9 +73,11 @@ const THEME_OPTIONS: {
 function ThemeSelector({
   selected,
   onSelect,
+  t,
 }: {
   selected: "LIGHT" | "DARK";
   onSelect: (theme: "LIGHT" | "DARK") => void;
+  t: (key: string) => string;
 }) {
   return (
     <View className="flex-row items-center py-4 gap-3">
@@ -101,7 +95,7 @@ function ThemeSelector({
         />
       </View>
       <Text className="flex-1 text-base font-semibold text-foreground">
-        Theme
+        {t("settings.theme")}
       </Text>
 
       {/* Segmented control */}
@@ -279,35 +273,27 @@ export default function AppSettingsScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ title: "App Settings" }} />
+      <Stack.Screen options={{ title: t("settings.appSettings") }} />
       {/* edges={["bottom"]} — top is handled by the native header */}
       <ScreenContainer edges={["bottom"]} className="bg-background">
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerClassName="px-5 pt-6 pb-10"
         >
-          {/* ── Appearance ── */}
-          <SectionLabel>{t("settings.appearance")}</SectionLabel>
+          {/* ── App Settings ── */}
           <View className="bg-card rounded-2xl border border-border px-4 mb-6">
             <ThemeSelector
               selected={currentTheme}
               onSelect={handleThemeChange}
+              t={t}
             />
-          </View>
-
-          {/* ── Language ── */}
-          <SectionLabel>{t("settings.languageSection")}</SectionLabel>
-          <View className="bg-card rounded-2xl border border-border px-4 mb-6">
+            <View className="h-px bg-border ml-16" />
             <LanguageSelector
               selected={currentLanguage}
               onSelect={handleLanguageChange}
               t={t}
             />
-          </View>
-
-          {/* ── Notifications ── */}
-          <SectionLabel>{t("settings.notifications")}</SectionLabel>
-          <View className="bg-card rounded-2xl border border-border px-4 mb-8">
+            <View className="h-px bg-border ml-16" />
             <ToggleRow
               iconBgClass="bg-amber-500/10"
               icon={<Bell size={22} className="text-amber-500" />}

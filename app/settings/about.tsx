@@ -1,6 +1,7 @@
 import { ScreenContainer } from "@/components/screen-container";
 import { ChevronRight, FileText, ShieldCheck, Users } from "@/lib/icons";
 import { Stack, useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 // ─── Reusable row component ───────────────────────────────────────────────
@@ -54,6 +55,7 @@ function Divider() {
 // ─── Main screen ─────────────────────────────────────────────────────────
 export default function AboutScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
 
   const handlePrivacyPolicy = () => {
     // Show privacy policy in a modal or navigate to a dedicated screen
@@ -77,8 +79,8 @@ export default function AboutScreen() {
       <Stack.Screen
         options={{
           headerShown: true,
-          title: "About Cashy",
-          headerBackTitle: "Back",
+          title: t("about.title"),
+          headerBackTitle: t("common.back"),
           headerShadowVisible: true,
         }}
       />
@@ -96,32 +98,32 @@ export default function AboutScreen() {
             <AboutRow
               iconBgClass="bg-blue-500/10"
               icon={<ShieldCheck size={22} className="text-blue-500" />}
-              title="Privacy Policy"
-              subtitle="How we handle your data"
+              title={t("about.privacyPolicy")}
+              subtitle={t("about.privacyPolicySubtitle")}
               onPress={handlePrivacyPolicy}
             />
             <Divider />
             <AboutRow
               iconBgClass="bg-green-500/10"
               icon={<FileText size={22} className="text-green-500" />}
-              title="Terms & Conditions"
-              subtitle="Terms of use"
+              title={t("about.termsAndConditions")}
+              subtitle={t("about.termsAndConditionsSubtitle")}
               onPress={handleTermsAndConditions}
             />
             <Divider />
             <AboutRow
               iconBgClass="bg-purple-500/10"
               icon={<Users size={22} className="text-purple-500" />}
-              title="About Us"
-              subtitle="Learn more about Cashy"
+              title={t("about.aboutUs")}
+              subtitle={t("about.aboutUsSubtitle")}
               onPress={handleAboutUs}
             />
             <Divider />
             <AboutRow
               iconBgClass="bg-orange-500/10"
               icon={<FileText size={22} className="text-orange-500" />}
-              title="Contact Us"
-              subtitle="Get in touch with our team"
+              title={t("about.contactUs")}
+              subtitle={t("about.contactUsSubtitle")}
               onPress={handleContactUs}
             />
           </View>

@@ -8,18 +8,20 @@ import * as ImagePicker from "expo-image-picker";
 import { Stack } from "expo-router";
 import { Camera, User } from "lucide-react-native";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
-    Alert,
-    Image,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  Image,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 export default function ProfileScreen() {
   const { authState, setAuthState } = useAuth();
+  const { t } = useTranslation();
   const user = authState.user;
 
   const [name, setName] = useState(user?.name ?? "");
@@ -106,7 +108,7 @@ export default function ProfileScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ title: "Your Profile" }} />
+      <Stack.Screen options={{ title: t("profile.title") }} />
       <ScreenContainer edges={["bottom"]} className="bg-background">
         <ScrollView
           showsVerticalScrollIndicator={false}
@@ -139,18 +141,18 @@ export default function ProfileScreen() {
               </TouchableOpacity>
             </View>
             <Text className="text-xs text-muted-foreground mt-3">
-              Tap the camera icon to change avatar
+              {t("profile.changeAvatar")}
             </Text>
           </View>
 
           {/* ── Name (editable) ── */}
           <Text className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-3 px-1">
-            Account Info
+            {t("profile.accountInfo")}
           </Text>
           <View className="bg-card rounded-2xl border border-border px-4 mb-6">
             <View className="pt-4 border-b border-border">
               <Text className="text-xs text-muted-foreground mb-1">
-                Full Name
+                {t("profile.fullName")}
               </Text>
               <TextInput
                 value={name}
@@ -165,9 +167,13 @@ export default function ProfileScreen() {
             {/* ── Email (locked) ── */}
             <View className="py-4 border-b border-border">
               <View className="flex-row items-center gap-2 mb-1">
-                <Text className="text-xs text-muted-foreground">Email</Text>
+                <Text className="text-xs text-muted-foreground">
+                  {t("profile.email")}
+                </Text>
                 <View className="bg-primary border border-border rounded-full px-2 py-0.5">
-                  <Text className="text-xs text-white">locked</Text>
+                  <Text className="text-xs text-white">
+                    {t("profile.locked")}
+                  </Text>
                 </View>
               </View>
               <Text className="text-base text-foreground">{email}</Text>
@@ -176,7 +182,7 @@ export default function ProfileScreen() {
             {/* ── Contact Number (editable) ── */}
             <View className="py-4">
               <Text className="text-xs text-muted-foreground mb-1">
-                Contact Number
+                {t("profile.contactNumber")}
               </Text>
               <TextInput
                 value={contactNumber}
@@ -191,7 +197,7 @@ export default function ProfileScreen() {
           </View>
 
           <Text className="text-xs text-muted-foreground mb-6 px-1">
-            Email cannot be changed after registration.
+            {t("profile.emailLocked")}
           </Text>
 
           {/* ── Save button ── */}
@@ -203,7 +209,7 @@ export default function ProfileScreen() {
             }`}
           >
             <Text className="text-white font-bold text-base">
-              {isSaving ? "Saving..." : "Save Changes"}
+              {isSaving ? t("profile.saving") : t("profile.saveChanges")}
             </Text>
           </TouchableOpacity>
         </ScrollView>
