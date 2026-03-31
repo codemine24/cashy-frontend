@@ -10,14 +10,14 @@ import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
-  Alert,
-  Image,
-  KeyboardAvoidingView,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    Alert,
+    Image,
+    KeyboardAvoidingView,
+    ScrollView,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
@@ -61,6 +61,7 @@ export default function AddTransactionScreen() {
     editTime?: string;
     selectedCategoryId?: string;
     selectedCategoryName?: string;
+    currentAmount?: string;
   }>();
 
   const bookId = params.bookId!;
@@ -95,10 +96,16 @@ export default function AddTransactionScreen() {
   useEffect(() => {
     // Populate fields from params (used for both Edit and Duplicate)
     if (params.editType) setType(params.editType as "IN" | "OUT");
+
+    // Handle amount - prioritize editAmount for editing, otherwise use currentAmount
     if (params.editAmount) {
       setAmount(params.editAmount);
       form.setValue("amount", params.editAmount);
+    } else if (params.currentAmount) {
+      setAmount(params.currentAmount);
+      form.setValue("amount", params.currentAmount);
     }
+
     if (params.editRemark) setRemark(params.editRemark);
     if (params.editCategoryId) {
       setSelectedCategory(params.editCategoryId);
@@ -124,11 +131,13 @@ export default function AddTransactionScreen() {
   }, [
     params.editType,
     params.editAmount,
+    params.currentAmount,
     params.editDate,
     params.editCategoryId,
     params.editRemark,
     params.selectedCategoryId,
     params.selectedCategoryName,
+    // Only run this effect when these specific params change, not on every render
   ]);
 
   // ── Attachment picker ──────────────────────────────────────────────────────
@@ -325,6 +334,7 @@ export default function AddTransactionScreen() {
                       params: {
                         bookId: bookId,
                         currentSelectedId: selectedCategory,
+                        currentAmount: amount,
                         // Pass edit parameters if in edit mode
                         editId: params.editId,
                         editAmount: params.editAmount,
@@ -511,7 +521,7 @@ export default function AddTransactionScreen() {
               className={`rounded-xl py-4 items-center justify-center w-full ${btnClassMap} ${isPending ? "opacity-50" : "opacity-100"}`}
               activeOpacity={0.8}
             >
-              <Text 
+              <Text
                 className="text-white font-bold text-base tracking-wider text-center w-full"
                 numberOfLines={1}
               >

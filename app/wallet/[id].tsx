@@ -19,6 +19,7 @@ import {
 } from "@/components/wallet/transaction-filters";
 import { useAuth } from "@/context/auth-context";
 import { useDebounce } from "@/hooks/use-debounce";
+import { usePullToRefreshSkeletonWithSearch } from "@/hooks/use-pull-to-refresh-skeleton";
 import { SearchIcon } from "@/icons/search-icon";
 import { Copy, Edit3, Trash2, UserPlus, Users, X } from "@/lib/icons";
 import { formatNumber } from "@/utils";
@@ -105,15 +106,17 @@ export default function BookDetailScreen() {
   );
 
   const [reportModalVisible, setReportModalVisible] = useState(false);
-  const [selectedReport, setSelectedReport] =
-    useState<ReportType>("all");
+  const [selectedReport, setSelectedReport] = useState<ReportType>("all");
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
   const { authState } = useAuth();
 
   const deleteTransaction = useDeleteTransaction();
 
-  const [refreshing, setRefreshing] = useState(false);
+  const { showSkeleton, refreshControlProps } =
+    usePullToRefreshSkeletonWithSearch(async () => {
+      await Promise.all([refetch(), refetchTransactions()]);
+    }, searchQuery.trim());
   const [selectedTransaction, setSelectedTransaction] =
     useState<Transaction | null>(null);
 
@@ -139,11 +142,8 @@ export default function BookDetailScreen() {
     }));
   }, [categoriesData?.data]);
 
-  const onRefresh = useCallback(async () => {
-    setRefreshing(true);
-    await Promise.all([refetch(), refetchTransactions()]);
-    setRefreshing(false);
-  }, [refetch, refetchTransactions]);
+  const finalShowSkeleton =
+    isLoading || (transactionsLoading && !searchQuery) || showSkeleton;
 
   const groupedTransactions = useMemo(() => {
     if (!allTransactions.length) return [];
@@ -225,7 +225,7 @@ export default function BookDetailScreen() {
 
       const mappedType = selectedReport || "all";
       const baseUrl = process.env.EXPO_PUBLIC_SERVER_URL;
-      
+
       const queryParams = new URLSearchParams();
       queryParams.append("report_type", mappedType);
 
@@ -284,8 +284,7 @@ export default function BookDetailScreen() {
           text2: "Download was unsuccessful",
         });
       }
-    } catch (error) {
-      console.error("[PDF Export Error]", error);
+    } catch {
       Toast.show({
         type: "error",
         text1: "An error occurred",
@@ -296,7 +295,7 @@ export default function BookDetailScreen() {
     }
   };
 
-  if (isLoading || (transactionsLoading && !searchQuery)) {
+  if (finalShowSkeleton) {
     return <BookDetailSkeleton />;
   }
 
@@ -397,7 +396,6 @@ export default function BookDetailScreen() {
       <Stack.Screen
         options={{
           title: selectedTransaction ? "1 Selected" : book.data.name,
-          headerBackTitle: "Books",
           headerLeft: selectedTransaction
             ? () => (
                 <TouchableOpacity
@@ -515,12 +513,7 @@ export default function BookDetailScreen() {
         contentContainerStyle={{ paddingBottom: 100 }}
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.3}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing && !searchQuery}
-            onRefresh={onRefresh}
-          />
-        }
+        refreshControl={<RefreshControl {...refreshControlProps} />}
         renderItem={() => null}
         ListHeaderComponent={
           <>
