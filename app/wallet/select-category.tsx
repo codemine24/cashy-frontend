@@ -4,11 +4,11 @@ import { Check, Plus, Settings } from "@/lib/icons";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-  ActivityIndicator,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    ScrollView,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 
 export default function SelectCategoryScreen() {
@@ -16,6 +16,7 @@ export default function SelectCategoryScreen() {
   const params = useLocalSearchParams<{
     bookId: string;
     currentSelectedId?: string;
+    currentAmount?: string;
     editId?: string;
     editAmount?: string;
     editRemark?: string;
@@ -24,6 +25,8 @@ export default function SelectCategoryScreen() {
     editCategoryName?: string;
     editDate?: string;
     editTime?: string;
+    currentRemark?: string;
+    currentDate?: string;
   }>();
 
   const [modalVisible, setModalVisible] = useState(false);
@@ -39,6 +42,9 @@ export default function SelectCategoryScreen() {
       params: {
         bookId: params.bookId,
         currentSelectedId: params.currentSelectedId,
+        currentAmount: params.currentAmount,
+        currentRemark: params.currentRemark,
+        currentDate: params.currentDate,
         // Preserve edit parameters if they exist
         editId: params.editId,
         editAmount: params.editAmount,

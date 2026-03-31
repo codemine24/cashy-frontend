@@ -7,13 +7,14 @@ import { H3, Muted } from "@/components/ui/typography";
 import { CreateWalletModal } from "@/components/wallet/create-wallet-modal";
 import { WalletCard } from "@/components/wallet/wallet-card";
 import { useDebounce } from "@/hooks/use-debounce";
+import { usePullToRefreshSkeletonWithSearch } from "@/hooks/use-pull-to-refresh-skeleton";
 import { CrossIcon } from "@/icons/cross-icon";
 import { FilterIcon } from "@/icons/filter-icon";
 import { PlusIcon } from "@/icons/plus-icon";
 import { SearchIcon } from "@/icons/search-icon";
 import { Book } from "@/interface/wallet";
 import { useRouter } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Alert,
   FlatList,
@@ -50,7 +51,6 @@ export default function HomeScreen() {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(searchQuery, 400);
-  const [isSearchLoading, setIsSearchLoading] = useState(false);
 
   const [tempSortBy, setTempSortBy] = useState<SortOption>("updated_at");
   const [tempSortOrder, setTempSortOrder] = useState<"asc" | "desc">("asc");
@@ -73,27 +73,13 @@ export default function HomeScreen() {
 
   const deleteBookMutation = useDeleteBook();
 
-  const [refreshing, setRefreshing] = useState(false);
+  const { showSkeleton, refreshControlProps } =
+    usePullToRefreshSkeletonWithSearch(async () => {
+      await refetch();
+    }, debouncedSearchQuery.trim());
 
-  // Track search loading state
-  useEffect(() => {
-    if (searchQuery.trim()) {
-      setIsSearchLoading(true);
-      // Reset loading state after debounce delay
-      const timer = setTimeout(() => {
-        setIsSearchLoading(false);
-      }, 450); // Slightly longer than debounce delay
-      return () => clearTimeout(timer);
-    } else {
-      setIsSearchLoading(false);
-    }
-  }, [debouncedSearchQuery, searchQuery]);
-
-  const onRefresh = useCallback(async () => {
-    setRefreshing(true);
-    await refetch();
-    setRefreshing(false);
-  }, [refetch]);
+  // Show skeleton when initially loading or refreshing
+  const finalShowSkeleton = isLoading || showSkeleton;
 
   const handleDeleteBook = (book: Book) => {
     Alert.alert(
@@ -150,9 +136,7 @@ export default function HomeScreen() {
       <ScreenContainer edges={["left", "right"]} className="p-4 bg-background">
         <ScrollView
           showsVerticalScrollIndicator={false}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
+          refreshControl={<RefreshControl {...refreshControlProps} />}
         >
           {/* Search Input */}
           <View className="relative mb-4">
@@ -178,20 +162,20 @@ export default function HomeScreen() {
           </View>
 
           {/* Header */}
-          <View className="mb-2 flex-row items-center">
+          <View className="mb-2 flex-row items-center justify-between">
             <Text className="text-sm font-semibold text-muted-foreground">
               YOUR WALLETS
             </Text>
             <TouchableOpacity
               onPress={openSortModal}
-              className="ml-2 p-2.5 rounded-xl"
+              className="p-2.5 rounded-xl"
             >
               <FilterIcon className="text-primary size-6" />
             </TouchableOpacity>
           </View>
 
           {/* Books List */}
-          {isLoading || isSearchLoading ? (
+          {finalShowSkeleton ? (
             <WalletsSkeleton />
           ) : booksData?.data?.length === 0 ? (
             <View className="bg-surface rounded-xl p-8 items-center justify-center border border-border">
