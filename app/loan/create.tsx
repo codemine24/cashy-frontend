@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { InputError } from "@/components/ui/input-error";
 import { InputField } from "@/components/ui/input-field";
 import { useTheme } from "@/context/theme-context";
+import { PlusIcon } from "@/icons/plus-icon";
 import { zodResolver } from "@hookform/resolvers/zod";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
@@ -14,7 +15,7 @@ import {
     Text,
     TextInput,
     TouchableOpacity,
-    View
+    View,
 } from "react-native";
 import Toast from "react-native-toast-message";
 import { z } from "zod";
@@ -128,32 +129,44 @@ export default function CreateLoanScreen() {
               onPress={() =>
                 form.setValue("type", "GIVEN", { shouldValidate: true })
               }
-              className={`flex-1 py-3.5 rounded-xl items-center justify-center ${
+              className={`flex-1 rounded-lg py-3 items-center justify-center ${
                 isGiven ? "bg-primary shadow-sm" : "bg-transparent"
               }`}
+              activeOpacity={0.8}
             >
+              <PlusIcon
+                className={`mr-2 size-4 ${
+                  isGiven ? "text-primary-foreground" : "text-foreground"
+                }`}
+              />
               <Text
-                className={`font-semibold text-sm ${
-                  isGiven ? "text-white" : "text-muted-foreground"
+                className={`font-semibold text-base ${
+                  isGiven ? "text-primary-foreground" : "text-muted-foreground"
                 }`}
               >
-                Lent (Given)
+                Lent Loan
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() =>
                 form.setValue("type", "TAKEN", { shouldValidate: true })
               }
-              className={`flex-1 py-3.5 rounded-xl items-center justify-center ${
+              className={`flex-1 rounded-lg py-3 items-center justify-center ${
                 !isGiven ? "bg-primary shadow-sm" : "bg-transparent"
               }`}
+              activeOpacity={0.8}
             >
+              <PlusIcon
+                className={`mr-2 size-4 ${
+                  !isGiven ? "text-primary-foreground" : "text-foreground"
+                }`}
+              />
               <Text
-                className={`font-semibold text-sm ${
-                  !isGiven ? "text-white" : "text-muted-foreground"
+                className={`font-semibold text-base ${
+                  !isGiven ? "text-primary-foreground" : "text-muted-foreground"
                 }`}
               >
-                Borrowed (Taken)
+                Borrowed Loan
               </Text>
             </TouchableOpacity>
           </View>

@@ -152,7 +152,7 @@ export default function CreateLentLoanScreen() {
     : createLoanMutation.isPending;
 
   const screenTitle = isEditing ? "Edit Lent Loan" : "New Lent Loan";
-  const buttonText = isEditing ? "UPDATE LENT LOAN" : "ADD LENT LOAN";
+  const buttonText = isEditing ? "UPDATE LENT LOAN" : "+ ADD LENT LOAN";
 
   return (
     <>

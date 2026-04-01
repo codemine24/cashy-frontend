@@ -15,6 +15,7 @@ import { SearchIcon } from "@/icons/search-icon";
 import { Book } from "@/interface/wallet";
 import { useRouter } from "expo-router";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Alert,
   FlatList,
@@ -29,17 +30,20 @@ import Toast from "react-native-toast-message";
 
 type SortOption = "name" | "created_at" | "updated_at";
 
-const SORT_OPTIONS: {
+const SORT_OPTIONS = (
+  t: (key: string) => string,
+): {
   key: SortOption;
   label: string;
   order: "asc" | "desc";
-}[] = [
-  { key: "updated_at", label: "Last Updated", order: "desc" },
-  { key: "name", label: "Name (A-Z)", order: "asc" },
-  { key: "created_at", label: "Last Created", order: "desc" },
+}[] => [
+  { key: "updated_at", label: t("wallets.lastUpdated"), order: "desc" },
+  { key: "name", label: t("wallets.nameAZ"), order: "asc" },
+  { key: "created_at", label: t("wallets.lastCreated"), order: "desc" },
 ];
 
 export default function HomeScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingBook, setEditingBook] = useState<{
@@ -145,7 +149,7 @@ export default function HomeScreen() {
               <TextInput
                 value={searchQuery}
                 onChangeText={setSearchQuery}
-                placeholder="Search wallets..."
+                placeholder={t("wallets.searchWallets")}
                 placeholderClassName="text-muted-foreground"
                 className="flex-1 ml-2 text-base text-foreground"
                 placeholderTextColor="#94a3b8"
@@ -164,7 +168,7 @@ export default function HomeScreen() {
           {/* Header */}
           <View className="mb-2 flex-row items-center justify-between">
             <Text className="text-sm font-semibold text-muted-foreground">
-              YOUR WALLETS
+              {t("wallets.yourWallets")}
             </Text>
             <TouchableOpacity
               onPress={openSortModal}
@@ -180,16 +184,18 @@ export default function HomeScreen() {
           ) : booksData?.data?.length === 0 ? (
             <View className="bg-surface rounded-xl p-8 items-center justify-center border border-border">
               <Text className="text-lg font-semibold text-foreground mb-2">
-                No wallets yet
+                {t("wallets.noWallets")}
               </Text>
               <Text className="text-sm text-foreground text-center mb-4">
-                Create your first wallet to start tracking expenses
+                {t("wallets.createWallet")}
               </Text>
               <TouchableOpacity
                 onPress={() => setShowCreateModal(true)}
                 className="bg-primary rounded-lg px-6 py-2"
               >
-                <Text className="text-white font-semibold">Create Wallet</Text>
+                <Text className="text-white font-semibold">
+                  {t("wallets.createWallet")}
+                </Text>
               </TouchableOpacity>
             </View>
           ) : (
@@ -219,7 +225,7 @@ export default function HomeScreen() {
       >
         <PlusIcon className="text-primary-foreground size-6" />
         <Text className="text-primary-foreground text-lg text-center ml-2">
-          Add wallet
+          {t("wallets.addWallet")}
         </Text>
       </Button>
 
@@ -246,7 +252,7 @@ export default function HomeScreen() {
 
           {/* Title */}
           <View className="flex-row items-center justify-between mb-2  border-b border-border pb-4">
-            <H3>Sort wallet by</H3>
+            <H3>{t("wallets.sortWalletBy")}</H3>
             <TouchableOpacity
               onPress={() => setShowSortModal(false)}
               className="p-1"
@@ -257,7 +263,7 @@ export default function HomeScreen() {
 
           {/* Options */}
           <View className="mb-5">
-            {SORT_OPTIONS.map((option, index) => {
+            {SORT_OPTIONS(t).map((option, index) => {
               const isActive = tempSortBy === option.key;
               return (
                 <TouchableOpacity

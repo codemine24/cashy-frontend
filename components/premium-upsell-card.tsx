@@ -1,13 +1,8 @@
 import { useTheme } from "@/context/theme-context";
 import { useRouter } from "expo-router";
 import { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { Animated, Easing, Text, TouchableOpacity, View } from "react-native";
-
-const PREMIUM_FEATURES = [
-  "Unlimited wallets",
-  "Share with unlimited members",
-  "Advance analytics & reports",
-];
 
 function DiamondIcon() {
   const { isDark } = useTheme();
@@ -90,7 +85,12 @@ export function PremiumUpSellCard({
 }: PremiumUpsellCardProps) {
   const router = useRouter();
   const { isDark } = useTheme();
-  const displayFeatures = features ?? PREMIUM_FEATURES;
+  const { t } = useTranslation();
+  const displayFeatures = features ?? [
+    t("premium.unlimitedWallets"),
+    t("premium.shareWithUnlimitedMembers"),
+    t("premium.advanceAnalyticsReports"),
+  ];
 
   const handleUpgrade = () => {
     if (onUpgrade) {
@@ -132,7 +132,7 @@ export function PremiumUpSellCard({
             isDark ? "text-violet-100" : "text-stone-900"
           }`}
         >
-          Unlock Premium Features
+          {t("premium.unlockPremiumFeatures")}
         </Text>
 
         {/* Subtitle */}
@@ -141,7 +141,7 @@ export function PremiumUpSellCard({
             isDark ? "text-violet-200" : "text-stone-500"
           }`}
         >
-          One-time payment. Lifetime access. No subscriptions.
+          {t("premium.oneTimePaymentLifetimeAccess")}
         </Text>
 
         {/* Features */}
@@ -189,26 +189,38 @@ export function PremiumUpSellCard({
         >
           <Text className="text-sm">💎</Text>
           <Text className="text-white font-extrabold text-[15px] tracking-wide">
-            Upgrade to Premium
+            {t("premium.upgradeToPremium")}
           </Text>
         </TouchableOpacity>
 
         {/* Price */}
-        <Text
-          className={`text-[11px] text-center mt-2.5 ${
-            isDark ? "text-violet-300" : "text-stone-400"
-          }`}
+        <View
+          className={`flex-row items-center justify-center mt-2.5 ${isDark ? "text-violet-300" : "text-stone-400"}`}
         >
-          Limited offer · Only <Text className="line-through">$14.99</Text>{" "}
           <Text
-            className={`font-bold ${
-              isDark ? "text-violet-400" : "text-amber-500"
-            }`}
+            className={`text-[11px] ${isDark ? "text-violet-300" : "text-stone-400"}`}
           >
-            $4.99
-          </Text>{" "}
-          one-time
-        </Text>
+            {t("premium.limitedOfferPrefix")} · {t("premium.limitedOfferOnly")}
+          </Text>
+          <Text
+            className={`text-[11px] mx-1 ${isDark ? "text-violet-300" : "text-stone-400"}`}
+            style={{ textDecorationLine: "line-through" }}
+          >
+            {t("premium.originalPrice")}
+          </Text>
+          <Text
+            className={`text-[11px] font-bold ${isDark ? "text-violet-400" : "text-amber-500"}`}
+          >
+            {" "}
+            {t("premium.discountedPrice")}
+          </Text>
+          <Text
+            className={`text-[11px] ${isDark ? "text-violet-300" : "text-stone-400"}`}
+          >
+            {" "}
+            {t("premium.oneTime")}
+          </Text>
+        </View>
       </View>
     </View>
   );
