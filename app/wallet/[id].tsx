@@ -29,6 +29,7 @@ import { File as ExpoFile, Paths } from "expo-file-system";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import * as Sharing from "expo-sharing";
 import { useCallback, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   Alert,
@@ -73,6 +74,7 @@ interface Transaction {
 }
 
 export default function BookDetailScreen() {
+  const { t } = useTranslation();
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
 
@@ -485,7 +487,7 @@ export default function BookDetailScreen() {
         <TextInput
           value={searchQuery}
           onChangeText={setSearchQuery}
-          placeholder="Search by amount or remarks..."
+          placeholder={t("wallets.searchByAmountOrRemarks")}
           placeholderTextColor="#9CA3AF"
           className="flex-1 ml-2 text-base text-foreground"
           returnKeyType="search"
@@ -521,7 +523,7 @@ export default function BookDetailScreen() {
             <View className="bg-card mt-2 rounded-2xl mb-4 shadow-sm border border-border">
               <View className="px-3 py-3 flex-row justify-between items-center border-b border-border">
                 <Text className="text-foreground font-bold text-[14px]">
-                  Net Balance
+                  {t("wallets.netBalance")}
                 </Text>
                 <Text className="text-foreground font-bold text-[14px]">
                   {formatNumber(filteredBalance.netBalance)}
@@ -530,7 +532,7 @@ export default function BookDetailScreen() {
               <View className="px-3 py-3">
                 <View className="flex-row justify-between items-center mb-2">
                   <Text className="text-foreground font-bold text-[12px]">
-                    Total In (+)
+                    {t("wallets.totalIn")} (+)
                   </Text>
                   <Text className="text-success font-semibold text-[12px]">
                     {formatNumber(filteredBalance.totalIn)}
@@ -538,7 +540,7 @@ export default function BookDetailScreen() {
                 </View>
                 <View className="flex-row justify-between items-center">
                   <Text className="text-foreground font-bold text-[12px]">
-                    Total Out (-)
+                    {t("wallets.totalOut")} (-)
                   </Text>
                   <Text className="text-destructive font-semibold text-[12px]">
                     {formatNumber(filteredBalance.totalOut)}
@@ -552,7 +554,7 @@ export default function BookDetailScreen() {
                   className="flex-1 items-center py-2.5 flex-row justify-center"
                 >
                   <Text className="text-primary font-semibold text-sm">
-                    View Reports
+                    {t("wallets.viewReport")}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -726,13 +728,13 @@ export default function BookDetailScreen() {
                         <Text
                           className={`text-[10px] font-semibold  tracking-wider text-green-600`}
                         >
-                          Cash in
+                          {t("wallets.cashIn")}
                         </Text>
                       ) : (
                         <Text
                           className={`text-[10px] font-semibold  tracking-wider text-red-500`}
                         >
-                          {item.category?.title || "Cash out"}
+                          {item.category?.title || t("wallets.cashOut")}
                         </Text>
                       )}
                     </View>
@@ -824,7 +826,7 @@ export default function BookDetailScreen() {
           disabled={isWalletViewer(authState.user?.id, book.data)}
         >
           <Text className="text-success-foreground font-bold text-[14px] tracking-widest">
-            + CASH IN
+            + {t("wallets.cashIn").toUpperCase()}
           </Text>
         </Button>
 
@@ -839,7 +841,7 @@ export default function BookDetailScreen() {
           disabled={isWalletViewer(authState.user?.id, book.data)}
         >
           <Text className="text-success-foreground font-bold text-[14px]">
-            - CASH OUT
+            - {t("wallets.cashOut").toUpperCase()}
           </Text>
         </Button>
       </View>

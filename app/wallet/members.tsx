@@ -10,6 +10,7 @@ import { PlusIcon } from "@/icons/plus-icon";
 import { Member } from "@/interface/wallet";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
     ActivityIndicator,
     Alert,
@@ -23,6 +24,7 @@ import {
 import Toast from "react-native-toast-message";
 
 export default function MembersScreen() {
+  const { t } = useTranslation();
   const params = useLocalSearchParams<{ bookId: string; bookName?: string }>();
   const bookId = params.bookId;
 
@@ -133,7 +135,9 @@ export default function MembersScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ title: "Members", headerBackTitle: "Back" }} />
+      <Stack.Screen
+        options={{ title: t("members.title"), headerBackTitle: "Back" }}
+      />
       <ScreenContainer
         edges={["left", "right"]}
         className="bg-background relative"
@@ -159,7 +163,7 @@ export default function MembersScreen() {
             ListEmptyComponent={
               <View className="items-center justify-center p-8 mt-10">
                 <Text className="text-muted-foreground text-center">
-                  No members added yet.
+                  {t("members.noMembersAdded")}
                 </Text>
               </View>
             }
@@ -174,7 +178,7 @@ export default function MembersScreen() {
       >
         <PlusIcon className="text-primary-foreground size-6" />
         <Text className="text-primary-foreground text-lg text-center ml-2">
-          Add member
+          {t("members.addMember")}
         </Text>
       </Button>
 

@@ -1,15 +1,24 @@
 import { ScreenContainer } from "@/components/screen-container";
 import { Stack } from "expo-router";
-import { ScrollView, Text } from "react-native";
+import {
+    Linking,
+    ScrollView,
+    Text,
+    TouchableOpacity,
+    View,
+} from "react-native";
+
+const PRIVACY_URL =
+  "https://doc-hosting.flycricket.io/cashy-expense-manager-privacy-policy/86803ed8-d454-48f2-9db5-74c73745e367/privacy";
 
 const PRIVACY_POLICY = `
 Privacy Policy
 
-This privacy policy applies to the Cashy: Expense Manager app (hereby referred to as "Application") for mobile devices that was created by Fazly (hereby referred to as "Service Provider") as a Free service. This service is intended for use "AS IS".
+This privacy policy applies to the Cashy: Expense Manager app (hereby referred to as "Application") for mobile devices that was created by Fazly (hereby referred to as "Service Provider") as a Freemium service. This service is intended for use "AS IS".
 
 Information Collection and Use
 
-The Application collects information when you download and use it. This information may include information such as 
+The Application collects information when you download and use it. This information may include information such as
 
 • Your device's Internet Protocol address (e.g. IP address)
 • The pages of the Application that you visit, the time and date of your visit, the time spent on those pages
@@ -22,7 +31,7 @@ The Application does not use Artificial Intelligence (AI) technologies to proces
 
 The Service Provider may use the information you provided to contact you from time to time to provide you with important information, required notices and marketing promotions.
 
-For a better experience, while using the Application, the Service Provider may require you to provide us with certain personally identifiable information, including but not limited to Email, First name, Last name, Phone number. The information that the Service Provider request will be retained by them and used as described in this privacy policy.
+For a better experience, while using the Application, the Service Provider may require you to provide us with certain personally identifiable information, including but not limited to Email, Name, Contact number. The information that the Service Provider request will be retained by them and used as described in this privacy policy.
 
 Third Party Access
 
@@ -93,6 +102,15 @@ export default function PrivacyPolicyScreen() {
             {PRIVACY_POLICY.trim()}
           </Text>
         </ScrollView>
+
+        {/* External Link */}
+        <View className="px-4 py-3 border-t border-border bg-card">
+          <TouchableOpacity onPress={() => Linking.openURL(PRIVACY_URL)}>
+            <Text className="text-primary text-sm text-center font-medium">
+              read this doc on web browser
+            </Text>
+          </TouchableOpacity>
+        </View>
       </ScreenContainer>
     </>
   );

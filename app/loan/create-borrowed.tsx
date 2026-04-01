@@ -250,7 +250,7 @@ export default function CreateBorrowedLoanScreen() {
             <Text className="text-white font-bold text-base tracking-wider">
               {createLoanMutation.isPending
                 ? "CREATING..."
-                : "ADD BORROWED LOAN"}
+                : "+ ADD BORROWED LOAN"}
             </Text>
           </TouchableOpacity>
         </View>
