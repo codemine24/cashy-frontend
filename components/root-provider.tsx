@@ -1,8 +1,7 @@
 import { AuthProvider } from "@/context/auth-context";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
-import Toast from 'react-native-toast-message';
-import { RealtimeEffect } from "./realtime-effect";
+import Toast from "react-native-toast-message";
 
 export const RootProvider = ({ children }: { children: React.ReactNode }) => {
   const [queryClient] = useState(
@@ -20,10 +19,9 @@ export const RootProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <RealtimeEffect />
         {children}
         <Toast />
       </AuthProvider>
     </QueryClientProvider>
-  )
-}
+  );
+};
