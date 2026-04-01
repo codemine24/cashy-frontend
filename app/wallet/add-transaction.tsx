@@ -62,6 +62,8 @@ export default function AddTransactionScreen() {
     selectedCategoryId?: string;
     selectedCategoryName?: string;
     currentAmount?: string;
+    currentRemark?: string;
+    currentDate?: string;
   }>();
 
   const bookId = params.bookId!;
@@ -106,7 +108,12 @@ export default function AddTransactionScreen() {
       form.setValue("amount", params.currentAmount);
     }
 
-    if (params.editRemark) setRemark(params.editRemark);
+    if (params.editRemark) {
+      setRemark(params.editRemark);
+    } else if (params.currentRemark) {
+      setRemark(params.currentRemark);
+    }
+
     if (params.editCategoryId) {
       setSelectedCategory(params.editCategoryId);
       setSelectedCategoryName(params.editCategoryName || "Unknown Category");
@@ -115,6 +122,11 @@ export default function AddTransactionScreen() {
     // Handle date - use editDate parameter which contains the full timestamp
     if (params.editDate) {
       const transactionDate = new Date(params.editDate);
+      setDate(transactionDate);
+      form.setValue("date", transactionDate.toISOString());
+      form.setValue("time", transactionDate.toTimeString());
+    } else if (params.currentDate) {
+      const transactionDate = new Date(params.currentDate);
       setDate(transactionDate);
       form.setValue("date", transactionDate.toISOString());
       form.setValue("time", transactionDate.toTimeString());
@@ -133,8 +145,10 @@ export default function AddTransactionScreen() {
     params.editAmount,
     params.currentAmount,
     params.editDate,
+    params.currentDate,
     params.editCategoryId,
     params.editRemark,
+    params.currentRemark,
     params.selectedCategoryId,
     params.selectedCategoryName,
     // Only run this effect when these specific params change, not on every render
@@ -335,6 +349,8 @@ export default function AddTransactionScreen() {
                         bookId: bookId,
                         currentSelectedId: selectedCategory,
                         currentAmount: amount,
+                        currentRemark: remark,
+                        currentDate: date.toISOString(),
                         // Pass edit parameters if in edit mode
                         editId: params.editId,
                         editAmount: params.editAmount,

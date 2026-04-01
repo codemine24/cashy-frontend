@@ -25,6 +25,8 @@ export default function SelectCategoryScreen() {
     editCategoryName?: string;
     editDate?: string;
     editTime?: string;
+    currentRemark?: string;
+    currentDate?: string;
   }>();
 
   const [modalVisible, setModalVisible] = useState(false);
@@ -41,6 +43,8 @@ export default function SelectCategoryScreen() {
         bookId: params.bookId,
         currentSelectedId: params.currentSelectedId,
         currentAmount: params.currentAmount,
+        currentRemark: params.currentRemark,
+        currentDate: params.currentDate,
         // Preserve edit parameters if they exist
         editId: params.editId,
         editAmount: params.editAmount,
