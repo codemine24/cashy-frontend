@@ -4,29 +4,31 @@ import { DateRangeModal } from "@/components/date-range-modal";
 import { ScreenContainer } from "@/components/screen-container";
 import { H3, P } from "@/components/ui/typography";
 import { useTheme } from "@/context/theme-context";
+import { getAccessToken } from "@/utils/auth";
 import { cn } from "@/utils/cn";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import { File as ExpoFile, Paths } from "expo-file-system";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import * as Sharing from "expo-sharing";
 import { BarChart3, Download, TrendingUp } from "lucide-react-native";
 import { useCallback, useState } from "react";
 import {
-    ActivityIndicator,
-    Dimensions,
-    Modal,
-    Pressable,
-    RefreshControl,
-    ScrollView,
-    View,
+  ActivityIndicator,
+  Dimensions,
+  Platform,
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  View,
 } from "react-native";
 import Svg, {
-    Circle,
-    Defs,
-    G,
-    LinearGradient,
-    Path,
-    Rect,
-    Stop,
-    Text as SvgText,
+  Circle,
+  Defs,
+  G,
+  LinearGradient,
+  Path,
+  Rect,
+  Stop,
+  Text as SvgText,
 } from "react-native-svg";
 import Toast from "react-native-toast-message";
 
@@ -43,11 +45,6 @@ export default function StatisticsPage() {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
-  const [showExportModal, setShowExportModal] = useState(false);
-  const [exportStartDate, setExportStartDate] = useState<Date | null>(null);
-  const [exportEndDate, setExportEndDate] = useState<Date | null>(null);
-  const [showExportStartPicker, setShowExportStartPicker] = useState(false);
-  const [showExportEndPicker, setShowExportEndPicker] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
 
   const activeBookId = book_id || "all";
@@ -80,6 +77,73 @@ export default function StatisticsPage() {
   };
 
   const books = booksData?.data || [];
+
+  const handleGeneratePdf = async () => {
+    try {
+      setIsGenerating(true);
+      const baseUrl = process.env.EXPO_PUBLIC_SERVER_URL;
+      const queryParams = new URLSearchParams();
+
+      if (period) {
+        queryParams.append("period", period);
+      }
+      if (activeBookId !== "all") {
+        queryParams.append("book_id", activeBookId);
+      }
+      if (period === "custom" && startDate && endDate) {
+        queryParams.append("from_date", startDate.toISOString().split("T")[0]);
+        queryParams.append("to_date", endDate.toISOString().split("T")[0]);
+      }
+
+      const url = `${baseUrl}/statistics/wallet-stats/export?${queryParams.toString()}`;
+
+      if (Platform.OS === "web") {
+        window.open(url, "_blank");
+        return;
+      }
+
+      const token = await getAccessToken();
+      if (!token) {
+        Toast.show({
+          type: "error",
+          text1: "Authentication error",
+          text2: "Please log in again",
+        });
+        return;
+      }
+
+      const fileName = `wallet_stats_${Date.now()}.pdf`;
+      const file = new ExpoFile(Paths.cache, fileName);
+
+      const downloadRes = await ExpoFile.downloadFileAsync(url, file, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (downloadRes) {
+        await Sharing.shareAsync(downloadRes.uri, {
+          mimeType: "application/pdf",
+          dialogTitle: "Download Report",
+          UTI: "com.adobe.pdf",
+        });
+      } else {
+        Toast.show({
+          type: "error",
+          text1: "Failed to generate PDF",
+          text2: "Download was unsuccessful",
+        });
+      }
+    } catch {
+      Toast.show({
+        type: "error",
+        text1: "An error occurred",
+        text2: "Failed to export PDF report",
+      });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   return (
     <ScreenContainer className="bg-background">
@@ -348,23 +412,31 @@ export default function StatisticsPage() {
                     <View className="w-8 h-8 bg-primary/10 rounded-lg items-center justify-center">
                       <Download size={16} color="#02929A" />
                     </View>
-                    <H3 className="text-left font-bold text-sm leading-tight">
-                      Export Expense Report
+                    <H3 className="text-left font-bold text-sm leading-tight flex-1">
+                      Export Report
                     </H3>
                   </View>
                   <View className="w-2.5 h-2.5 rounded-full bg-[#FF6B6B]" />
                 </View>
                 <P className="text-[10px] text-muted-foreground mb-4">
-                  Generate a detailed PDF report of your expenses for any date
-                  range
+                  Generate a detailed PDF report of your transactions
                 </P>
                 <Pressable
-                  className="bg-primary rounded-lg py-3 px-4"
-                  onPress={() => setShowExportModal(true)}
+                  className={cn(
+                    "bg-primary rounded-lg py-3 px-4",
+                    isGenerating && "opacity-70",
+                  )}
+                  onPress={handleGeneratePdf}
+                  disabled={isGenerating}
                 >
-                  <P className="text-center text-primary-foreground font-semibold">
-                    Generate Report
-                  </P>
+                  <View className="flex-row items-center justify-center gap-2">
+                    {isGenerating && (
+                      <ActivityIndicator size="small" color="#FFF" />
+                    )}
+                    <P className="text-center text-primary-foreground font-semibold">
+                      {isGenerating ? "Generating..." : "Generate"}
+                    </P>
+                  </View>
                 </Pressable>
               </View>
             </View>
@@ -386,123 +458,6 @@ export default function StatisticsPage() {
         initialStartDate={startDate}
         initialEndDate={endDate}
       />
-
-      {/* Export Report Modal */}
-      <Modal
-        visible={showExportModal}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={() => setShowExportModal(false)}
-      >
-        <View className="flex-1 justify-center items-center bg-black/50">
-          <View
-            className={`${isDark ? "bg-card" : "bg-white"} rounded-2xl p-6 mx-4 w-full max-w-sm`}
-          >
-            <View className="flex-row items-center justify-between mb-4">
-              <P className="text-lg font-bold text-foreground">
-                Export Expense Report
-              </P>
-              <View className="w-2.5 h-2.5 rounded-full bg-[#FF6B6B]" />
-            </View>
-
-            <View className="gap-4">
-              <View>
-                <P className="text-sm text-muted-foreground mb-2">Start Date</P>
-                <Pressable
-                  className="border border-border rounded-lg px-3 py-2"
-                  onPress={() => setShowExportStartPicker(true)}
-                >
-                  <P className="text-foreground">
-                    {exportStartDate
-                      ? exportStartDate.toLocaleDateString()
-                      : "Select start date"}
-                  </P>
-                </Pressable>
-              </View>
-
-              <View>
-                <P className="text-sm text-muted-foreground mb-2">End Date</P>
-                <Pressable
-                  className="border border-border rounded-lg px-3 py-2"
-                  onPress={() => setShowExportEndPicker(true)}
-                >
-                  <P className="text-foreground">
-                    {exportEndDate
-                      ? exportEndDate.toLocaleDateString()
-                      : "Select end date"}
-                  </P>
-                </Pressable>
-              </View>
-            </View>
-
-            <View className="flex-row gap-3 mt-6">
-              <Pressable
-                className="flex-1 border border-border rounded-lg py-2"
-                onPress={() => setShowExportModal(false)}
-              >
-                <P className="text-center text-muted-foreground">Cancel</P>
-              </Pressable>
-              <Pressable
-                className="flex-1 bg-primary rounded-lg py-2"
-                onPress={async () => {
-                  if (exportStartDate && exportEndDate) {
-                    setIsGenerating(true);
-                    try {
-                      // Simulate PDF generation and download
-                      await new Promise((resolve) => setTimeout(resolve, 2000));
-                      // In real implementation, this would call an API to generate PDF
-                      // Show success message or trigger download
-                    } catch {
-                      Toast.show({
-                        type: "error",
-                        text1: "Error",
-                        text2: "Failed to generate report. Please try again.",
-                      });
-                    } finally {
-                      setIsGenerating(false);
-                      setShowExportModal(false);
-                    }
-                  }
-                }}
-                disabled={!exportStartDate || !exportEndDate || isGenerating}
-              >
-                <P className="text-center text-primary-foreground font-semibold">
-                  {isGenerating ? "Generating..." : "Generate PDF"}
-                </P>
-              </Pressable>
-            </View>
-          </View>
-        </View>
-      </Modal>
-
-      {/* Export Date Pickers */}
-      {showExportStartPicker && (
-        <DateTimePicker
-          value={exportStartDate || new Date()}
-          mode="date"
-          display="default"
-          onChange={(event, selectedDate) => {
-            setShowExportStartPicker(false);
-            if (selectedDate) {
-              setExportStartDate(selectedDate);
-            }
-          }}
-        />
-      )}
-
-      {showExportEndPicker && (
-        <DateTimePicker
-          value={exportEndDate || new Date()}
-          mode="date"
-          display="default"
-          onChange={(event, selectedDate) => {
-            setShowExportEndPicker(false);
-            if (selectedDate) {
-              setExportEndDate(selectedDate);
-            }
-          }}
-        />
-      )}
     </ScreenContainer>
   );
 }
