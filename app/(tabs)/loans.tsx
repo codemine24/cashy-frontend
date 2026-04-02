@@ -42,36 +42,26 @@ type LoanTab = "GIVEN" | "TAKEN";
 
 function TabButton({
   label,
-  subtitle,
   active,
   onPress,
 }: {
   label: string;
-  subtitle: string;
   active: boolean;
   onPress: () => void;
 }) {
   return (
     <TouchableOpacity
       onPress={onPress}
-      className={`flex-1 py-2 rounded-lg items-center ${
+      className={`flex-1 py-2.5 rounded-md items-center justify-center ${
         active ? "bg-primary" : ""
       }`}
     >
       <Text
-        className={`font-medium text-sm ${
+        className={`font-semibold text-sm ${
           active ? "text-white" : "text-muted-foreground"
         }`}
       >
         {label}
-      </Text>
-
-      <Text
-        className={`text-[9px] mt-0.5 ${
-          active ? "text-foreground/80" : "text-muted-foreground/50"
-        }`}
-      >
-        {subtitle}
       </Text>
     </TouchableOpacity>
   );
@@ -227,14 +217,12 @@ export default function LoansScreen() {
         <View className="flex-1 flex-row bg-muted rounded-lg p-1">
           <TabButton
             label="Lent"
-            subtitle="Money given"
             active={activeTab === "GIVEN"}
             onPress={() => setActiveTab("GIVEN")}
           />
 
           <TabButton
             label="Borrowed"
-            subtitle="Money borrowed"
             active={activeTab === "TAKEN"}
             onPress={() => setActiveTab("TAKEN")}
           />
