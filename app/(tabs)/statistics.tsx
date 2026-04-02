@@ -1,4 +1,4 @@
-import { useWalletStats } from "@/api/statistics";
+import { useTransactionTrend, useWalletStats } from "@/api/statistics";
 import { useBooks } from "@/api/wallet";
 import { DateRangeModal } from "@/components/date-range-modal";
 import { ScreenContainer } from "@/components/screen-container";
@@ -10,23 +10,23 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { BarChart3, Download, TrendingUp } from "lucide-react-native";
 import { useCallback, useState } from "react";
 import {
-    ActivityIndicator,
-    Dimensions,
-    Modal,
-    Pressable,
-    RefreshControl,
-    ScrollView,
-    View,
+  ActivityIndicator,
+  Dimensions,
+  Modal,
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  View,
 } from "react-native";
 import Svg, {
-    Circle,
-    Defs,
-    G,
-    LinearGradient,
-    Path,
-    Rect,
-    Stop,
-    Text as SvgText,
+  Circle,
+  Defs,
+  G,
+  LinearGradient,
+  Path,
+  Rect,
+  Stop,
+  Text as SvgText,
 } from "react-native-svg";
 import Toast from "react-native-toast-message";
 
@@ -65,6 +65,15 @@ export default function StatisticsPage() {
       to_date: endDate?.toISOString().split("T")[0],
     }),
   });
+
+  const { data: transactionTrendResponse, isLoading: isTrendLoading } = useTransactionTrend({
+    period,
+    book_id: activeBookId === "all" ? undefined : activeBookId,
+    ...(period === "custom" && {
+      from_date: startDate?.toISOString().split("T")[0],
+      to_date: endDate?.toISOString().split("T")[0],
+    }),
+  })
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -222,13 +231,12 @@ export default function StatisticsPage() {
                 Net Balance
               </P>
               <P
-                className={`text-base font-bold ${
-                  (walletStats.income_vs_expense?.income || 0) -
-                    (walletStats.income_vs_expense?.expense || 0) >=
+                className={`text-base font-bold ${(walletStats.income_vs_expense?.income || 0) -
+                  (walletStats.income_vs_expense?.expense || 0) >=
                   0
-                    ? "text-green-600"
-                    : "text-red-600"
-                }`}
+                  ? "text-green-600"
+                  : "text-red-600"
+                  }`}
               >
                 $
                 {(
@@ -259,7 +267,13 @@ export default function StatisticsPage() {
                     Transaction by date
                   </H3>
                 </View>
-                <NetBalanceTrend data={walletStats.balance_trend} />
+                {isTrendLoading ? (
+                  <View className="h-40 items-center justify-center">
+                    <ActivityIndicator size="small" color="#02929A" />
+                  </View>
+                ) : (
+                  <TransactionTrendChart data={transactionTrendResponse?.data || []} />
+                )}
               </View>
             </View>
 
@@ -509,10 +523,11 @@ export default function StatisticsPage() {
 
 // Chart Components using SVG
 
-function NetBalanceTrend({ data }: { data: any[] }) {
+function TransactionTrendChart({ data }: { data: any[] }) {
   const chartHeight = 180;
-  const chartWidth = SCREEN_WIDTH - 48;
-  const padding = 20;
+  const yAxisWidth = 35;
+  const paddingBottom = 25;
+  const paddingTop = 10;
   const { isDark } = useTheme();
 
   if (!data?.length)
@@ -523,118 +538,137 @@ function NetBalanceTrend({ data }: { data: any[] }) {
     );
 
   // Find max values for scaling
-  const allInValues = data.map((d) => d.total_in || 0);
-  const allOutValues = data.map((d) => d.total_out || 0);
-  const maxIn = Math.max(...allInValues, 1000);
-  const maxOut = Math.max(...allOutValues, 1000);
-  const maxVal = Math.max(maxIn, maxOut);
+  const allInValues = data.map((d) => d.total_income || 0);
+  const allOutValues = data.map((d) => d.total_expense || 0);
+  const maxVal = Math.max(...allInValues, ...allOutValues, 100);
 
-  const barWidth = Math.min(
-    12,
-    (chartWidth - padding * 2) / (data.length * 2.5),
-  );
-  const groupWidth = (chartWidth - padding * 2) / data.length;
+  // Calculate widths
+  const minItemWidth = 45;
+  const availableWidth = SCREEN_WIDTH - 48 - yAxisWidth;
+  const groupWidth = Math.max(availableWidth / data.length, minItemWidth);
+  const contentWidth = Math.max(availableWidth, data.length * groupWidth);
+  const barWidth = Math.min(10, groupWidth * 0.3);
+
+  const renderGridLines = (width: number) => {
+    return [0, 0.25, 0.5, 0.75, 1].map((p, i) => (
+      <Path
+        key={i}
+        d={`M 0 ${chartHeight - paddingBottom - p * (chartHeight - paddingBottom - paddingTop)} L ${width} ${chartHeight - paddingBottom - p * (chartHeight - paddingBottom - paddingTop)}`}
+        stroke={isDark ? "#374151" : "#E5E7EB"}
+        strokeWidth="0.5"
+        strokeDasharray="4, 4"
+      />
+    ));
+  };
 
   return (
     <View
-      className={`${isDark ? "bg-card" : "bg-white"} p-4 rounded-3xl border border-border`}
+      className={`${isDark ? "bg-card" : "bg-white"} py-4 rounded-3xl`}
     >
-      <Svg height={chartHeight} width={chartWidth}>
-        <Defs>
-          <LinearGradient id="incomeGrad" x1="0" y1="0" x2="0" y2="1">
-            <Stop offset="0" stopColor="#A3D031" stopOpacity="0.8" />
-            <Stop offset="1" stopColor="#A3D031" stopOpacity="0.4" />
-          </LinearGradient>
-          <LinearGradient id="expenseGrad" x1="0" y1="0" x2="0" y2="1">
-            <Stop offset="0" stopColor="#FF6B6B" stopOpacity="0.8" />
-            <Stop offset="1" stopColor="#FF6B6B" stopOpacity="0.4" />
-          </LinearGradient>
-        </Defs>
+      <View className="flex-row">
+        {/* Y Axis Labels (Fixed) */}
+        <View style={{ width: yAxisWidth, height: chartHeight }}>
+          <Svg height={chartHeight} width={yAxisWidth}>
+            {[0, 0.25, 0.5, 0.75, 1].map((p, i) => (
+              <SvgText
+                key={i}
+                x={yAxisWidth - 8}
+                y={
+                  chartHeight -
+                  paddingBottom -
+                  p * (chartHeight - paddingBottom - paddingTop) +
+                  3
+                }
+                fontSize="8"
+                fill={isDark ? "#9CA3AF" : "#6B7280"}
+                textAnchor="end"
+              >
+                {Math.round(p * maxVal) >= 1000
+                  ? `${(Math.round(p * maxVal) / 1000).toFixed(1)}k`
+                  : Math.round(p * maxVal).toLocaleString()}
+              </SvgText>
+            ))}
+          </Svg>
+        </View>
 
-        {/* Grid Lines */}
-        {[0, 0.25, 0.5, 0.75, 1].map((p, i) => (
-          <G key={i}>
-            <Path
-              d={`M ${padding} ${chartHeight - padding - p * (chartHeight - padding * 2)} L ${chartWidth - padding} ${chartHeight - padding - p * (chartHeight - padding * 2)}`}
-              stroke={isDark ? "#374151" : "#E5E7EB"}
-              strokeWidth="0.5"
-            />
-            <SvgText
-              x={0}
-              y={chartHeight - padding - p * (chartHeight - padding * 2) + 4}
-              fontSize="8"
-              fill={isDark ? "#9CA3AF" : "#6B7280"}
-            >
-              {Math.round(p * maxVal).toLocaleString()}
-            </SvgText>
-          </G>
-        ))}
+        {/* Scrollable Bars Area */}
+        <View className="flex-1 overflow-hidden">
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <Svg height={chartHeight} width={contentWidth}>
+              <Defs>
+                <LinearGradient id="incomeGrad" x1="0" y1="0" x2="0" y2="1">
+                  <Stop offset="0" stopColor="#02929A" stopOpacity="0.8" />
+                  <Stop offset="1" stopColor="#02929A" stopOpacity="0.3" />
+                </LinearGradient>
+                <LinearGradient id="expenseGrad" x1="0" y1="0" x2="0" y2="1">
+                  <Stop offset="0" stopColor="#FF6B6B" stopOpacity="0.8" />
+                  <Stop offset="1" stopColor="#FF6B6B" stopOpacity="0.3" />
+                </LinearGradient>
+              </Defs>
 
-        {/* Bars for each date */}
-        {data.map((d, i) => {
-          const x = padding + i * groupWidth + (groupWidth - barWidth * 2) / 2;
+              {/* Grid Lines */}
+              {renderGridLines(contentWidth)}
 
-          // Income bar
-          const incomeHeight = d.total_in
-            ? (d.total_in / maxVal) * (chartHeight - padding * 2)
-            : 0;
-          const incomeY = chartHeight - padding - incomeHeight;
+              {/* Bars for each date */}
+              {data.map((d, i) => {
+                const x = i * groupWidth + (groupWidth - barWidth * 2 - 4) / 2;
 
-          // Expense bar
-          const expenseHeight = d.total_out
-            ? (d.total_out / maxVal) * (chartHeight - padding * 2)
-            : 0;
-          const expenseY = chartHeight - padding - expenseHeight;
+                const incomeHeight = d.total_income
+                  ? (d.total_income / maxVal) *
+                  (chartHeight - paddingBottom - paddingTop)
+                  : 0;
+                const incomeY = chartHeight - paddingBottom - incomeHeight;
 
-          return (
-            <G key={i}>
-              {/* Income Bar */}
-              <Rect
-                x={x}
-                y={incomeY}
-                width={barWidth}
-                height={incomeHeight}
-                fill="url(#incomeGrad)"
-                rx="2"
-              />
+                const expenseHeight = d.total_expense
+                  ? (d.total_expense / maxVal) *
+                  (chartHeight - paddingBottom - paddingTop)
+                  : 0;
+                const expenseY = chartHeight - paddingBottom - expenseHeight;
 
-              {/* Expense Bar */}
-              <Rect
-                x={x + barWidth + 2}
-                y={expenseY}
-                width={barWidth}
-                height={expenseHeight}
-                fill="url(#expenseGrad)"
-                rx="2"
-              />
-            </G>
-          );
-        })}
+                return (
+                  <G key={i}>
+                    {/* Income Bar */}
+                    <Rect
+                      x={x}
+                      y={incomeY}
+                      width={barWidth}
+                      height={incomeHeight}
+                      fill="url(#incomeGrad)"
+                      rx="3"
+                    />
 
-        {/* X Axis Labels */}
-        {data.map((d, i) => {
-          if (data.length > 7 && i % Math.floor(data.length / 5) !== 0)
-            return null;
-          const x = padding + i * groupWidth + groupWidth / 2;
-          return (
-            <SvgText
-              key={i}
-              x={x}
-              y={chartHeight - 4}
-              fontSize="8"
-              fill={isDark ? "#9CA3AF" : "#6B7280"}
-              textAnchor="middle"
-            >
-              {d.date.split("-").slice(1).join("/")}
-            </SvgText>
-          );
-        })}
-      </Svg>
+                    {/* Expense Bar */}
+                    <Rect
+                      x={x + barWidth + 4}
+                      y={expenseY}
+                      width={barWidth}
+                      height={expenseHeight}
+                      fill="url(#expenseGrad)"
+                      rx="3"
+                    />
+
+                    {/* Date label */}
+                    <SvgText
+                      x={i * groupWidth + groupWidth / 2}
+                      y={chartHeight - 8}
+                      fontSize="8"
+                      fill={isDark ? "#9CA3AF" : "#6B7280"}
+                      textAnchor="middle"
+                    >
+                      {d.date.split("-").slice(1).join("/")}
+                    </SvgText>
+                  </G>
+                );
+              })}
+            </Svg>
+          </ScrollView>
+        </View>
+      </View>
 
       {/* Legend */}
-      <View className="flex-row justify-center gap-6 mt-3">
+      <View className="flex-row justify-center gap-6 mt-4 border-t border-border/30 pt-4">
         <View className="flex-row items-center gap-2">
-          <View className="w-3 h-3 rounded-sm bg-[#A3D031]" />
+          <View className="w-3 h-3 rounded-sm bg-[#02929A]" />
           <P className="text-[10px] text-muted-foreground font-semibold">
             Income
           </P>
