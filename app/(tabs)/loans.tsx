@@ -221,28 +221,32 @@ export default function LoansScreen() {
         </View>
       </View>
 
-      {/* Tabs */}
-      <View className="flex-row bg-muted rounded-lg p-1 mb-2">
-        <TabButton
-          label="Lent"
-          subtitle="Money given"
-          active={activeTab === "GIVEN"}
-          onPress={() => setActiveTab("GIVEN")}
-        />
+      {/* Header with filter & Tabs in one line */}
+      <View className="mb-2 flex-row items-center gap-2">
+        {/* Tabs */}
+        <View className="flex-1 flex-row bg-muted rounded-lg p-1">
+          <TabButton
+            label="Lent"
+            subtitle="Money given"
+            active={activeTab === "GIVEN"}
+            onPress={() => setActiveTab("GIVEN")}
+          />
 
-        <TabButton
-          label="Borrowed"
-          subtitle="Money borrowed"
-          active={activeTab === "TAKEN"}
-          onPress={() => setActiveTab("TAKEN")}
-        />
+          <TabButton
+            label="Borrowed"
+            subtitle="Money borrowed"
+            active={activeTab === "TAKEN"}
+            onPress={() => setActiveTab("TAKEN")}
+          />
+        </View>
+
+        <TouchableOpacity
+          onPress={openSortModal}
+          className="p-2.5 rounded-xl bg-surface border border-border"
+        >
+          <FilterIcon className="text-primary size-6" />
+        </TouchableOpacity>
       </View>
-      <TouchableOpacity
-        onPress={openSortModal}
-        className="ml-2 p-2.5 rounded-xl"
-      >
-        <FilterIcon className="text-primary size-6" />
-      </TouchableOpacity>
 
       {/* Content Area - Loading only here */}
       {finalShowSkeleton ? (
