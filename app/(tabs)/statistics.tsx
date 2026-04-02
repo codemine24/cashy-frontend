@@ -122,6 +122,7 @@ export default function StatisticsPage() {
       });
 
       if (downloadRes) {
+        setIsGenerating(false);
         await Sharing.shareAsync(downloadRes.uri, {
           mimeType: "application/pdf",
           dialogTitle: "Download Report",
