@@ -16,13 +16,13 @@ import { formatCurrency } from "@/utils/index";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
-    Alert,
-    FlatList,
-    RefreshControl,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  FlatList,
+  RefreshControl,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import Toast from "react-native-toast-message";
 
@@ -42,36 +42,26 @@ type LoanTab = "GIVEN" | "TAKEN";
 
 function TabButton({
   label,
-  subtitle,
   active,
   onPress,
 }: {
   label: string;
-  subtitle: string;
   active: boolean;
   onPress: () => void;
 }) {
   return (
     <TouchableOpacity
       onPress={onPress}
-      className={`flex-1 py-2 rounded-lg items-center ${
+      className={`flex-1 py-2.5 rounded-md items-center justify-center ${
         active ? "bg-primary" : ""
       }`}
     >
       <Text
-        className={`font-medium text-sm ${
+        className={`font-semibold text-sm ${
           active ? "text-white" : "text-muted-foreground"
         }`}
       >
         {label}
-      </Text>
-
-      <Text
-        className={`text-[9px] mt-0.5 ${
-          active ? "text-foreground/80" : "text-muted-foreground/50"
-        }`}
-      >
-        {subtitle}
       </Text>
     </TouchableOpacity>
   );
@@ -198,23 +188,6 @@ export default function LoansScreen() {
 
   return (
     <ScreenContainer edges={["left", "right"]} className="p-4 bg-background">
-      {/* Tabs */}
-      <View className="flex-row bg-muted rounded-lg p-1 mb-2">
-        <TabButton
-          label="Lent"
-          subtitle="Money given"
-          active={activeTab === "GIVEN"}
-          onPress={() => setActiveTab("GIVEN")}
-        />
-
-        <TabButton
-          label="Borrowed"
-          subtitle="Money borrowed"
-          active={activeTab === "TAKEN"}
-          onPress={() => setActiveTab("TAKEN")}
-        />
-      </View>
-
       {/* Search Input */}
       <View className="relative mb-2">
         <View className="flex-row items-center bg-muted rounded-xl px-3 border border-border">
@@ -238,14 +211,26 @@ export default function LoansScreen() {
         </View>
       </View>
 
-      {/* Header with filter */}
-      <View className="mb-2 flex-row items-center">
-        <Text className="text-sm font-semibold text-muted-foreground">
-          {activeTab === "GIVEN" ? "YOUR LENTS" : "YOUR BORROW LIST"}
-        </Text>
+      {/* Header with filter & Tabs in one line */}
+      <View className="mb-2 flex-row items-center gap-2">
+        {/* Tabs */}
+        <View className="flex-1 flex-row bg-muted rounded-lg p-1">
+          <TabButton
+            label="Lent"
+            active={activeTab === "GIVEN"}
+            onPress={() => setActiveTab("GIVEN")}
+          />
+
+          <TabButton
+            label="Borrowed"
+            active={activeTab === "TAKEN"}
+            onPress={() => setActiveTab("TAKEN")}
+          />
+        </View>
+
         <TouchableOpacity
           onPress={openSortModal}
-          className="ml-2 p-2.5 rounded-xl"
+          className="p-2.5 rounded-xl bg-surface border border-border"
         >
           <FilterIcon className="text-primary size-6" />
         </TouchableOpacity>
