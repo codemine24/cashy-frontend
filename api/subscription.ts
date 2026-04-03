@@ -14,7 +14,7 @@ export const useCreateSubscription = () => {
   return useMutation({
     mutationFn: async (payload: CreateSubscriptionPayload) => {
       try {
-        const response = await apiClient.post("/subscriptions", payload);
+        const response = await apiClient.post("/subscription", payload);
         return response.data;
       } catch (error) {
         throwApiError(error);

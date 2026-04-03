@@ -1,9 +1,20 @@
 import { ScreenContainer } from "@/components/screen-container";
 import { Check, ChevronDown, X } from "@/lib/icons";
 import { Stack } from "expo-router";
-import { useState } from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, Platform, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useCreateSubscription } from "@/api/subscription";
+import Toast from "react-native-toast-message";
+import type * as RNIapType from "react-native-iap";
+
+let RNIap: typeof RNIapType | null = null;
+try {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  RNIap = require("react-native-iap");
+} catch {
+  console.warn("RNIap native module not found. Are you running in Expo Go?");
+}
 
 type ComparisonProps =
   | { type: "boolean"; free: boolean; pro: boolean }
@@ -88,7 +99,122 @@ export default function Subscription() {
   const [selectedPlan, setSelectedPlan] = useState<"free" | "lifetime">(
     "lifetime",
   );
+  const [isProcessing, setIsProcessing] = useState(false);
   const insets = useSafeAreaInsets();
+  const { mutateAsync: createSubscription } = useCreateSubscription();
+
+  const LIFETIME_PRODUCT_ID = "dummy_product_id";
+
+  useEffect(() => {
+    let purchaseUpdateSubscription: any = null;
+    let purchaseErrorSubscription: any = null;
+
+    const setupIAP = async () => {
+      try {
+        if (!RNIap) {
+          console.warn("IAP is not available in Expo Go. Please run a custom dev build.");
+          return;
+        }
+
+        await RNIap.initConnection();
+
+        purchaseUpdateSubscription = RNIap.purchaseUpdatedListener(
+          async (purchase: any) => {
+            try {
+              const receipt = purchase.transactionReceipt;
+              if (receipt) {
+                await createSubscription({
+                  plan: "LIFETIME",
+                  price: 4.99,
+                  purchase_token: purchase.purchaseToken || purchase.transactionId || "",
+                  product_id: purchase.productId,
+                  package_name: Platform.OS === "android" ? purchase.packageNameAndroid : undefined,
+                });
+
+                await RNIap.finishTransaction({ purchase, isConsumable: false });
+                Toast.show({
+                  type: "success",
+                  text1: "Subscription Successful",
+                  text2: "Welcome to PRO!",
+                });
+              }
+            } catch (error: any) {
+              console.error("Failed to verify/finish transaction", error);
+              Toast.show({
+                type: "error",
+                text1: "Verification Failed",
+                text2: error?.message || "Could not verify purchase with the server.",
+              });
+            } finally {
+              setIsProcessing(false);
+            }
+          },
+        );
+
+        purchaseErrorSubscription = RNIap.purchaseErrorListener(
+          (error: any) => {
+            console.error("IAP Error", error);
+            setIsProcessing(false);
+            Toast.show({
+              type: "error",
+              text1: "Purchase Failed",
+              text2: error.message,
+            });
+          },
+        );
+      } catch (err) {
+        console.error("IAP initialization error", err);
+      }
+    };
+
+    setupIAP();
+
+    return () => {
+      if (purchaseUpdateSubscription) {
+        purchaseUpdateSubscription.remove();
+        purchaseUpdateSubscription = null;
+      }
+      if (purchaseErrorSubscription) {
+        purchaseErrorSubscription.remove();
+        purchaseErrorSubscription = null;
+      }
+      if (RNIap) {
+        RNIap.endConnection();
+      }
+    };
+  }, [createSubscription]);
+
+  const handlePurchase = async () => {
+    setIsProcessing(true);
+    try {
+      if (!RNIap) {
+        Toast.show({
+          type: "error",
+          text1: "IAP Unavailable",
+          text2: "In-App Purchases require a custom development build (not Expo Go).",
+        });
+        setIsProcessing(false);
+        return;
+      }
+
+      if (selectedPlan === "lifetime") {
+        await RNIap.requestPurchase({
+          sku: LIFETIME_PRODUCT_ID,
+          skus: [LIFETIME_PRODUCT_ID],
+        } as any);
+      } else {
+        setIsProcessing(false);
+      }
+    } catch (err: any) {
+      console.warn(err?.code, err?.message);
+      setIsProcessing(false);
+      Toast.show({
+        type: "error",
+        text1: "Purchase Failed",
+        text2: err?.message || "Something went wrong",
+      });
+    }
+  };
 
   return (
     <>
@@ -264,11 +390,17 @@ export default function Subscription() {
           {selectedPlan === "lifetime" && (
             <TouchableOpacity
               activeOpacity={0.8}
-              className="rounded-full py-4 items-center justify-center bg-amber-500 relative overflow-hidden"
+              onPress={handlePurchase}
+              disabled={isProcessing}
+              className={`rounded-full py-4 items-center justify-center relative overflow-hidden ${
+                isProcessing ? "bg-amber-500/70" : "bg-amber-500"
+              }`}
             >
-              <Text className="font-bold text-lg text-white">
-                Get Started for $4.99
-              </Text>
+              {isProcessing ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text className="font-bold text-lg text-white">Get Started</Text>
+              )}
             </TouchableOpacity>
           )}
         </View>
