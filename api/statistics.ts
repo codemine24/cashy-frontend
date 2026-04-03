@@ -66,13 +66,13 @@ export const useBookOverview = (
 };
 
 export const useTransactionTrend = (
-  params: { period?: string; book_id?: string } = {},
+  params: { period?: string; book_id?: string, from_date?: string, to_date?: string } = {},
 ) => {
   return useQuery({
     queryKey: keys.trend(params),
     queryFn: async () => {
       try {
-        const response = await apiClient.get(`${STATISTICS_API_URL}/trend`, {
+        const response = await apiClient.get(`${STATISTICS_API_URL}/transaction-stats-by-date`, {
           params,
         });
         return response.data;
