@@ -167,7 +167,7 @@ export default function HomeScreen() {
 
           {/* Header */}
           <View className="mb-2 flex-row items-center justify-between">
-            <Text className="text-sm font-semibold text-muted-foreground">
+            <Text className="text-sm font-semibold text-muted-foreground flex-1 mr-2">
               {t("wallets.yourWallets")}
             </Text>
             <TouchableOpacity
