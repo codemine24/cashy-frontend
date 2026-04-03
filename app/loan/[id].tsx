@@ -1,18 +1,21 @@
-import { useGetLoanDetail } from "@/api/loan";
+import { useDeletePayment, useGetLoanDetail } from "@/api/loan";
 import { CreatePaymentModal } from "@/components/loan/create-payment-modal";
 import { ScreenContainer } from "@/components/screen-container";
 import { usePullToRefreshSkeleton } from "@/hooks/use-pull-to-refresh-skeleton";
 import { LoanPayment } from "@/interface/loan";
+import { Edit3, Trash2, X } from "@/lib/icons";
 import { formatCurrency } from "@/utils";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useMemo, useState } from "react";
 import {
+  Alert,
   RefreshControl,
   SectionList,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import Toast from "react-native-toast-message";
 
 export default function LoanDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -28,6 +31,11 @@ export default function LoanDetailScreen() {
   const [editingPayment, setEditingPayment] = useState<LoanPayment | null>(
     null,
   );
+  const [selectedPayment, setSelectedPayment] = useState<LoanPayment | null>(
+    null,
+  );
+
+  const deletePayment = useDeletePayment();
 
   // Show skeleton when initially loading or refreshing
   const finalShowSkeleton = isLoading || showSkeleton;
@@ -71,15 +79,55 @@ export default function LoanDetailScreen() {
     setShowPaymentModal(true);
   };
 
-  const openEditPayment = (payment: LoanPayment) => {
-    setEditingPayment(payment);
-    setShowPaymentModal(true);
-  };
-
   const handleClosePaymentModal = () => {
     setShowPaymentModal(false);
     setEditingPayment(null);
     refetch();
+  };
+
+  const handleEditPayment = () => {
+    if (!selectedPayment) return;
+    setEditingPayment(selectedPayment);
+    setShowPaymentModal(true);
+    setSelectedPayment(null);
+  };
+
+  const handleDeletePayment = () => {
+    if (!selectedPayment) return;
+    Alert.alert(
+      "Delete Payment",
+      "Are you sure you want to delete this payment?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              const res = await deletePayment.mutateAsync(selectedPayment.id);
+              if (res?.success) {
+                Toast.show({
+                  type: "success",
+                  text1: "Payment deleted successfully",
+                });
+                setSelectedPayment(null);
+                refetch();
+              } else {
+                Toast.show({
+                  type: "error",
+                  text1: res?.message || "Failed to delete payment",
+                });
+              }
+            } catch (error: any) {
+              Toast.show({
+                type: "error",
+                text1: error?.message || "Failed to delete payment",
+              });
+            }
+          },
+        },
+      ],
+    );
   };
 
   if (finalShowSkeleton) {
@@ -168,8 +216,43 @@ export default function LoanDetailScreen() {
       <Stack.Screen
         options={{
           headerShown: true,
-          title: loanData?.data?.person_name || "Loan Details",
+          title: selectedPayment
+            ? "1 Selected"
+            : loanData?.data?.person_name || "Loan Details",
           headerBackTitle: "Back",
+          headerLeft: selectedPayment
+            ? () => (
+              <TouchableOpacity
+                onPress={() => setSelectedPayment(null)}
+                style={{ marginLeft: 8, padding: 6 }}
+              >
+                <X size={22} className="text-foreground" />
+              </TouchableOpacity>
+            )
+            : undefined,
+          headerRight: () => {
+            if (selectedPayment) {
+              return (
+                <View className="flex-row items-center gap-4">
+                  <TouchableOpacity
+                    onPress={handleEditPayment}
+                    className="p-2"
+                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                  >
+                    <Edit3 size={20} className="text-foreground" />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={handleDeletePayment}
+                    className="p-2"
+                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                  >
+                    <Trash2 size={20} className="text-destructive" />
+                  </TouchableOpacity>
+                </View>
+              );
+            }
+            return null;
+          },
         }}
       />
 
@@ -271,9 +354,18 @@ export default function LoanDetailScreen() {
                 <TouchableOpacity
                   key={item.id}
                   activeOpacity={0.7}
-                  onLongPress={() => openEditPayment(item)}
-                  className={`px-4 py-4 flex-row justify-between ${index !== data.length - 1 ? "border-b border-border" : ""
-                    }`}
+                  onPress={() => {
+                    if (selectedPayment) {
+                      setSelectedPayment(
+                        item.id === selectedPayment.id ? null : item,
+                      );
+                    } else {
+                      // Optionally open details or do nothing
+                    }
+                  }}
+                  onLongPress={() => setSelectedPayment(item)}
+                  className={`px-4 py-4 flex-row justify-between ${selectedPayment?.id === item.id ? "bg-primary/10" : ""
+                    } ${index !== data.length - 1 ? "border-b border-border" : ""}`}
                 >
                   <View className="flex-1 mr-3">
                     <Text

@@ -86,7 +86,7 @@ export default function BookDetailScreen() {
   const _filterParams = useMemo(() => buildFilterParams(filters), [filters]);
 
   const { data: book, isLoading, refetch } = useBook(id!);
-  console.log(book?.data)
+
   const {
     data: txPages,
     isLoading: transactionsLoading,
