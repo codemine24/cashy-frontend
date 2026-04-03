@@ -47,8 +47,8 @@ export const LoanCard = ({ loan, onEdit, onDelete }: LoanCardProps) => {
       {/* Top: Icon and Name/Date */}
       <View className="flex-row items-center justify-between mb-3">
         <View className="flex-row items-center flex-1">
-          <View className="size-13 items-center justify-center rounded-2xl mr-4 bg-primary/10">
-            <Text className="text-primary font-bold text-lg">
+          <View className="w-8 h-8 rounded-lg bg-primary/10 items-center justify-center mr-3">
+            <Text className="text-primary font-bold text-[13px]">
               {loan.person_name.charAt(0).toUpperCase()}
             </Text>
           </View>

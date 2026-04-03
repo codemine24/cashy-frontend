@@ -21,7 +21,7 @@ import { useAuth } from "@/context/auth-context";
 import { useDebounce } from "@/hooks/use-debounce";
 import { usePullToRefreshSkeletonWithSearch } from "@/hooks/use-pull-to-refresh-skeleton";
 import { SearchIcon } from "@/icons/search-icon";
-import { Copy, Edit3, Trash2, UserPlus, Users, X } from "@/lib/icons";
+import { ChevronRight, Copy, Edit3, Trash2, UserPlus, Users, X } from "@/lib/icons";
 import { formatNumber } from "@/utils";
 import { getAccessToken } from "@/utils/auth";
 import { isOwner, isWalletViewer } from "@/utils/is-owner";
@@ -86,6 +86,7 @@ export default function BookDetailScreen() {
   const _filterParams = useMemo(() => buildFilterParams(filters), [filters]);
 
   const { data: book, isLoading, refetch } = useBook(id!);
+  console.log(book?.data)
   const {
     data: txPages,
     isLoading: transactionsLoading,
@@ -400,13 +401,13 @@ export default function BookDetailScreen() {
           title: selectedTransaction ? "1 Selected" : book.data.name,
           headerLeft: selectedTransaction
             ? () => (
-                <TouchableOpacity
-                  onPress={() => setSelectedTransaction(null)}
-                  style={{ marginLeft: 8, padding: 6 }}
-                >
-                  <X size={22} className="text-foreground" />
-                </TouchableOpacity>
-              )
+              <TouchableOpacity
+                onPress={() => setSelectedTransaction(null)}
+                style={{ marginLeft: 8, padding: 6 }}
+              >
+                <X size={22} className="text-foreground" />
+              </TouchableOpacity>
+            )
             : undefined,
           headerRight: () => {
             if (selectedTransaction) {
@@ -551,41 +552,28 @@ export default function BookDetailScreen() {
               <View className="flex-row justify-between items-center border-t border-border">
                 <TouchableOpacity
                   onPress={() => setReportModalVisible(true)}
-                  className="flex-1 items-center py-2.5 flex-row justify-center"
+                  className="flex-1 items-center py-2.5 gap-x-2 flex-row justify-center"
                 >
                   <Text className="text-primary font-semibold text-sm">
                     {t("wallets.viewReport")}
                   </Text>
+                  <ChevronRight size={16} className="text-primary" />
                 </TouchableOpacity>
               </View>
             </View>
 
             {/* Members Section */}
-            {book?.data?.others_member?.length > 1 &&
+            {book?.data?.others_member?.length &&
               isOwner(authState.user?.id, book.data.created_by) && (
                 <View className="bg-card rounded-2xl mb-4 border border-border shadow-sm">
                   {/* Header */}
                   <View className="px-3 py-2 flex-row items-center justify-between border-b border-border">
                     <View className="flex-row items-center gap-2">
                       <Users size={16} className="text-muted-foreground" />
-                      <Text className="text-white text-sm font-semibold tracking-wide ml-2">
+                      <Text className="text-foreground text-sm font-semibold tracking-wide ml-2">
                         Members
                       </Text>
                     </View>
-                    {book.data.others_member.length > 2 && (
-                      <TouchableOpacity
-                        onPress={() =>
-                          router.push({
-                            pathname: "/wallet/members",
-                            params: { bookId: id, bookName: book.data.name },
-                          })
-                        }
-                      >
-                        <Text className="text-primary text-[10px] font-semibold">
-                          See All
-                        </Text>
-                      </TouchableOpacity>
-                    )}
                   </View>
 
                   {/* Member rows */}
@@ -599,12 +587,11 @@ export default function BookDetailScreen() {
                       return (
                         <View
                           key={member.id || index}
-                          className={`px-3 py-2 flex-row items-center justify-between ${
-                            index !==
+                          className={`px-3 py-2 flex-row items-center justify-between ${index !==
                             Math.min(book.data.others_member.length, 2) - 1
-                              ? "border-b border-border"
-                              : ""
-                          }`}
+                            ? "border-b border-border"
+                            : ""
+                            }`}
                         >
                           <View className="flex-row items-center flex-1">
                             {/* Avatar */}
@@ -664,7 +651,7 @@ export default function BookDetailScreen() {
                 </View>
               )}
 
-            {book?.data?.others_member?.length > 1 &&
+            {book?.data?.others_member?.length &&
               !isOwner(authState.user?.id, book.data.created_by) && (
                 <View className="bg-card rounded-xl mb-6 border border-border shadow-sm py-2">
                   <Text className="text-muted-foreground text-[11px] mt-0.5 text-center">
@@ -697,7 +684,7 @@ export default function BookDetailScreen() {
         renderSectionHeader={({ section: { title, data } }) => (
           <View className="bg-card rounded-2xl mb-2 border border-border">
             <View className="px-3 py-3 border-b border-border">
-              <Text className="text-white text-sm font-semibold tracking-wide">
+              <Text className="text-foreground text-sm font-semibold tracking-wide">
                 {title}
               </Text>
             </View>
@@ -715,9 +702,8 @@ export default function BookDetailScreen() {
                   }
                 }}
                 onLongPress={() => setSelectedTransaction(item)}
-                className={`px-4 py-4 flex-row justify-between ${
-                  selectedTransaction?.id === item.id ? "bg-primary/10" : ""
-                } ${index !== data.length - 1 ? "border-b border-border" : ""}`}
+                className={`px-4 py-4 flex-row justify-between ${selectedTransaction?.id === item.id ? "bg-primary/10" : ""
+                  } ${index !== data.length - 1 ? "border-b border-border" : ""}`}
               >
                 <View className="flex-1 mr-3">
                   <View className="flex-row items-center justify-between mb-2">
@@ -760,9 +746,8 @@ export default function BookDetailScreen() {
                 </View>
                 <View className="items-end justify-center">
                   <Text
-                    className={`text-base font-bold mb-2 ${
-                      item.type === "IN" ? "text-success" : "text-destructive"
-                    }`}
+                    className={`text-base font-bold mb-2 ${item.type === "IN" ? "text-success" : "text-destructive"
+                      }`}
                   >
                     {formatNumber(item.amount)}
                   </Text>

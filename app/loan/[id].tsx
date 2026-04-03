@@ -263,7 +263,7 @@ export default function LoanDetailScreen() {
           renderSectionHeader={({ section: { title, data } }) => (
             <View className="bg-card rounded-2xl mb-2 border border-border">
               <View className="px-3 py-3 border-b border-border">
-                <Text className="text-white text-sm font-semibold tracking-wide">
+                <Text className="text-foreground text-sm font-semibold tracking-wide">
                   {title}
                 </Text>
               </View>
@@ -272,9 +272,8 @@ export default function LoanDetailScreen() {
                   key={item.id}
                   activeOpacity={0.7}
                   onLongPress={() => openEditPayment(item)}
-                  className={`px-4 py-4 flex-row justify-between ${
-                    index !== data.length - 1 ? "border-b border-border" : ""
-                  }`}
+                  className={`px-4 py-4 flex-row justify-between ${index !== data.length - 1 ? "border-b border-border" : ""
+                    }`}
                 >
                   <View className="flex-1 mr-3">
                     <Text
