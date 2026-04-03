@@ -178,6 +178,7 @@ export default function TransactionDetailScreen() {
         editTime: transaction?.created_at,
         editCategoryId: transaction?.category_id || "",
         editCategoryName: transaction?.category?.title || "",
+        attachments: transaction?.attachment || [],
       },
     });
   };
