@@ -67,6 +67,7 @@ export default function AddTransactionScreen() {
     currentRemark?: string;
     currentDate?: string;
     attachments?: string | string[];
+    currentAttachments?: string;
   }>();
 
   const bookId = params.bookId!;
@@ -143,7 +144,16 @@ export default function AddTransactionScreen() {
       );
     }
 
-    if (params.attachments) {
+    // Handle restoration of session attachments (when returning from category selection)
+    if (params.currentAttachments) {
+      try {
+        const restored: PickedFile[] = JSON.parse(params.currentAttachments);
+        setAttachments(restored);
+      } catch (e) {
+        console.error("Failed to restore currentAttachments", e);
+      }
+    } else if (params.attachments) {
+      // Handle initial population from API (when editing)
       const raw = params.attachments;
       const list = Array.isArray(raw) ? raw : raw.split(",");
       const existingAttachments: PickedFile[] = list.map((filename) => ({
@@ -167,6 +177,7 @@ export default function AddTransactionScreen() {
     params.selectedCategoryId,
     params.selectedCategoryName,
     params.attachments,
+    params.currentAttachments,
     // Only run this effect when these specific params change, not on every render
   ]);
 
@@ -381,6 +392,8 @@ export default function AddTransactionScreen() {
                         editCategoryName: params.editCategoryName,
                         editDate: params.editDate,
                         editTime: params.editTime,
+                        attachments: params.attachments,
+                        currentAttachments: JSON.stringify(attachments),
                       },
                     });
                   }}

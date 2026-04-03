@@ -4,11 +4,11 @@ import { Check, Plus, Settings } from "@/lib/icons";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-    ActivityIndicator,
-    ScrollView,
-    Text,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 export default function SelectCategoryScreen() {
@@ -27,6 +27,8 @@ export default function SelectCategoryScreen() {
     editTime?: string;
     currentRemark?: string;
     currentDate?: string;
+    attachments?: string | string[];
+    currentAttachments?: string;
   }>();
 
   const [modalVisible, setModalVisible] = useState(false);
@@ -55,6 +57,8 @@ export default function SelectCategoryScreen() {
         // Update the category selection
         selectedCategoryId: categoryId,
         selectedCategoryName: categoryName,
+        attachments: params.attachments,
+        currentAttachments: params.currentAttachments,
       },
     } as any);
   };
