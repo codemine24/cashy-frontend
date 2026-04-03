@@ -63,14 +63,15 @@ export default function StatisticsPage() {
     }),
   });
 
-  const { data: transactionTrendResponse, isLoading: isTrendLoading } = useTransactionTrend({
-    period,
-    book_id: activeBookId === "all" ? undefined : activeBookId,
-    ...(period === "custom" && {
-      from_date: startDate?.toISOString().split("T")[0],
-      to_date: endDate?.toISOString().split("T")[0],
-    }),
-  })
+  const { data: transactionTrendResponse, isLoading: isTrendLoading } =
+    useTransactionTrend({
+      period,
+      book_id: activeBookId === "all" ? undefined : activeBookId,
+      ...(period === "custom" && {
+        from_date: startDate?.toISOString().split("T")[0],
+        to_date: endDate?.toISOString().split("T")[0],
+      }),
+    });
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -296,12 +297,13 @@ export default function StatisticsPage() {
                 Net Balance
               </P>
               <P
-                className={`text-base font-bold ${(walletStats.income_vs_expense?.income || 0) -
-                  (walletStats.income_vs_expense?.expense || 0) >=
+                className={`text-base font-bold ${
+                  (walletStats.income_vs_expense?.income || 0) -
+                    (walletStats.income_vs_expense?.expense || 0) >=
                   0
-                  ? "text-green-600"
-                  : "text-red-600"
-                  }`}
+                    ? "text-green-600"
+                    : "text-red-600"
+                }`}
               >
                 $
                 {(
@@ -337,7 +339,9 @@ export default function StatisticsPage() {
                     <ActivityIndicator size="small" color="#02929A" />
                   </View>
                 ) : (
-                  <TransactionTrendChart data={transactionTrendResponse?.data || []} />
+                  <TransactionTrendChart
+                    data={transactionTrendResponse?.data || []}
+                  />
                 )}
               </View>
             </View>
@@ -518,9 +522,7 @@ function TransactionTrendChart({ data }: { data: any[] }) {
   };
 
   return (
-    <View
-      className={`${isDark ? "bg-card" : "bg-white"} py-4 rounded-3xl`}
-    >
+    <View className={`${isDark ? "bg-card" : "bg-white"} py-4 rounded-3xl`}>
       <View className="flex-row">
         {/* Y Axis Labels (Fixed) */}
         <View style={{ width: yAxisWidth, height: chartHeight }}>
@@ -571,13 +573,13 @@ function TransactionTrendChart({ data }: { data: any[] }) {
 
                 const incomeHeight = d.total_income
                   ? (d.total_income / maxVal) *
-                  (chartHeight - paddingBottom - paddingTop)
+                    (chartHeight - paddingBottom - paddingTop)
                   : 0;
                 const incomeY = chartHeight - paddingBottom - incomeHeight;
 
                 const expenseHeight = d.total_expense
                   ? (d.total_expense / maxVal) *
-                  (chartHeight - paddingBottom - paddingTop)
+                    (chartHeight - paddingBottom - paddingTop)
                   : 0;
                 const expenseY = chartHeight - paddingBottom - expenseHeight;
 
