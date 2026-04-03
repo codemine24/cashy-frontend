@@ -3,6 +3,7 @@ import { InputError } from "@/components/ui/input-error";
 import { useKeyboardOffset } from "@/hooks/useKeyboardOffset";
 import { ChevronRight, Paperclip, X } from "@/lib/icons";
 import { formatDateToUTC, formatTimeToUTC } from "@/utils";
+import { makeImageUrl } from "@/utils/helper";
 import { zodResolver } from "@hookform/resolvers/zod";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import * as ImagePicker from "expo-image-picker";
@@ -10,14 +11,14 @@ import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
-    Alert,
-    Image,
-    KeyboardAvoidingView,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  Image,
+  KeyboardAvoidingView,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
@@ -28,6 +29,7 @@ interface PickedFile {
   uri: string;
   name: string;
   type: string;
+  isExisting?: boolean;
 }
 
 // ─── Validation Schema ───────────────────────────────────────────────────────
@@ -64,6 +66,7 @@ export default function AddTransactionScreen() {
     currentAmount?: string;
     currentRemark?: string;
     currentDate?: string;
+    attachments?: string | string[];
   }>();
 
   const bookId = params.bookId!;
@@ -139,6 +142,18 @@ export default function AddTransactionScreen() {
         params.selectedCategoryName || "Unknown Category",
       );
     }
+
+    if (params.attachments) {
+      const raw = params.attachments;
+      const list = Array.isArray(raw) ? raw : raw.split(",");
+      const existingAttachments: PickedFile[] = list.map((filename) => ({
+        uri: makeImageUrl(filename, "general"),
+        name: filename,
+        type: "image/jpeg", // Assume image/jpeg for UI display, actual type doesn't matter for existing files
+        isExisting: true,
+      }));
+      setAttachments(existingAttachments);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     params.editType,
@@ -151,6 +166,7 @@ export default function AddTransactionScreen() {
     params.currentRemark,
     params.selectedCategoryId,
     params.selectedCategoryName,
+    params.attachments,
     // Only run this effect when these specific params change, not on every render
   ]);
 
@@ -190,40 +206,45 @@ export default function AddTransactionScreen() {
   const buildFormData = (isUpdate = false) => {
     const dataPayload = isUpdate
       ? {
-          amount: parseFloat(amount),
-          category_id: !isDeposit
-            ? selectedCategory === "other" || !selectedCategory
-              ? undefined
-              : selectedCategory
-            : undefined,
-          remark,
-          date: formatDateToUTC(date),
-          time: formatTimeToUTC(date),
-        }
+        amount: parseFloat(amount),
+        category_id: !isDeposit
+          ? selectedCategory === "other" || !selectedCategory
+            ? undefined
+            : selectedCategory
+          : undefined,
+        remark,
+        date: formatDateToUTC(date),
+        time: formatTimeToUTC(date),
+        attachment: attachments
+          .filter((a) => a.isExisting)
+          .map((a) => a.name),
+      }
       : {
-          book_id: bookId,
-          type,
-          amount: parseFloat(amount),
-          category_id: !isDeposit
-            ? selectedCategory === "other" || !selectedCategory
-              ? undefined
-              : selectedCategory
-            : undefined,
-          remark,
-          date: formatDateToUTC(date),
-          time: formatTimeToUTC(date),
-        };
+        book_id: bookId,
+        type,
+        amount: parseFloat(amount),
+        category_id: !isDeposit
+          ? selectedCategory === "other" || !selectedCategory
+            ? undefined
+            : selectedCategory
+          : undefined,
+        remark,
+        date: formatDateToUTC(date),
+        time: formatTimeToUTC(date),
+      };
 
     const formData = new FormData();
     formData.append("data", JSON.stringify(dataPayload));
 
-    attachments.forEach((file) => {
-      formData.append("attachments", {
-        uri: file.uri,
-        name: file.name,
-        type: file.type,
-      } as any);
-    });
+    attachments
+      .filter((file) => !file.isExisting)
+      .forEach((file) => {
+        formData.append("attachments", {
+          uri: file.uri,
+          name: file.name,
+          type: file.type,
+        } as any);
+      });
 
     return formData;
   };
