@@ -346,6 +346,7 @@ export default function BookDetailScreen() {
         editType: selectedTransaction.type,
         editCategoryId: selectedTransaction.category_id || "",
         editCategoryName: selectedTransaction.category?.title || "",
+        attachments: selectedTransaction.attachment || [],
       },
     });
     setSelectedTransaction(null);
