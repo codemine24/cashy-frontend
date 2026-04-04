@@ -1,12 +1,19 @@
+import { useCreateSubscription } from "@/api/subscription";
 import { ScreenContainer } from "@/components/screen-container";
 import { Check, ChevronDown, X } from "@/lib/icons";
 import { Stack } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Platform, ScrollView, Text, TouchableOpacity, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useCreateSubscription } from "@/api/subscription";
-import Toast from "react-native-toast-message";
+import {
+  ActivityIndicator,
+  Platform,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import type * as RNIapType from "react-native-iap";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Toast from "react-native-toast-message";
 
 let RNIap: typeof RNIapType | null = null;
 try {
@@ -103,7 +110,7 @@ export default function Subscription() {
   const insets = useSafeAreaInsets();
   const { mutateAsync: createSubscription } = useCreateSubscription();
 
-  const LIFETIME_PRODUCT_ID = "dummy_product_id";
+  const LIFETIME_PRODUCT_ID = "lifetime_premium";
 
   useEffect(() => {
     let purchaseUpdateSubscription: any = null;
@@ -112,7 +119,9 @@ export default function Subscription() {
     const setupIAP = async () => {
       try {
         if (!RNIap) {
-          console.warn("IAP is not available in Expo Go. Please run a custom dev build.");
+          console.warn(
+            "IAP is not available in Expo Go. Please run a custom dev build.",
+          );
           return;
         }
 
@@ -126,12 +135,19 @@ export default function Subscription() {
                 await createSubscription({
                   plan: "LIFETIME",
                   price: 4.99,
-                  purchase_token: purchase.purchaseToken || purchase.transactionId || "",
+                  purchase_token:
+                    purchase.purchaseToken || purchase.transactionId || "",
                   product_id: purchase.productId,
-                  package_name: Platform.OS === "android" ? purchase.packageNameAndroid : undefined,
+                  package_name:
+                    Platform.OS === "android"
+                      ? purchase.packageNameAndroid
+                      : undefined,
                 });
 
-                await RNIap.finishTransaction({ purchase, isConsumable: false });
+                await RNIap.finishTransaction({
+                  purchase,
+                  isConsumable: false,
+                });
                 Toast.show({
                   type: "success",
                   text1: "Subscription Successful",
@@ -143,7 +159,9 @@ export default function Subscription() {
               Toast.show({
                 type: "error",
                 text1: "Verification Failed",
-                text2: error?.message || "Could not verify purchase with the server.",
+                text2:
+                  error?.message ||
+                  "Could not verify purchase with the server.",
               });
             } finally {
               setIsProcessing(false);
@@ -191,7 +209,8 @@ export default function Subscription() {
         Toast.show({
           type: "error",
           text1: "IAP Unavailable",
-          text2: "In-App Purchases require a custom development build (not Expo Go).",
+          text2:
+            "In-App Purchases require a custom development build (not Expo Go).",
         });
         setIsProcessing(false);
         return;
@@ -399,7 +418,9 @@ export default function Subscription() {
               {isProcessing ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <Text className="font-bold text-lg text-white">Get Started</Text>
+                <Text className="font-bold text-lg text-white">
+                  Get Started
+                </Text>
               )}
             </TouchableOpacity>
           )}
