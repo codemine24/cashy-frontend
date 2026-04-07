@@ -339,6 +339,18 @@ export default function Subscription() {
 
             {(() => {
               const product = products.find((p) => p.id === "cashy_lifetime");
+
+              if (!product) {
+                return (
+                  <View className="flex-1 rounded-2xl border-2 border-border bg-card/50 p-4 items-center justify-center min-h-[140px]">
+                    <ActivityIndicator size="small" color="#F59E0B" />
+                    <Text className="text-[10px] text-muted-foreground mt-2">
+                      Fetching deal...
+                    </Text>
+                  </View>
+                );
+              }
+
               const currentPrice = product?.displayPrice;
               let originalPrice;
               if (product?.platform === "android") {
@@ -367,20 +379,21 @@ export default function Subscription() {
                     </Text>
                   </View>
                   <Text className="text-lg font-semibold text-center text-foreground mb-2">
-                    {product?.title || "Lifetime"}
+                    {product.title}
                   </Text>
 
                   <View className="items-center justify-center mt-auto flex-col gap-0.5">
-                    <Text className="text-sm font-medium text-muted-foreground line-through decoration-muted-foreground">
-                      {originalPrice}
-                    </Text>
+                    {originalPrice && (
+                      <Text className="text-sm font-medium text-muted-foreground line-through decoration-muted-foreground">
+                        {originalPrice}
+                      </Text>
+                    )}
                     <Text className="text-2xl font-bold text-foreground">
                       {currentPrice}
                     </Text>
                   </View>
                   <Text className="text-xs text-center text-muted-foreground mt-2 leading-tight">
-                    {product?.description ||
-                      "One-time payment for lifetime access"}
+                    {product.description}
                   </Text>
                 </TouchableOpacity>
               );
