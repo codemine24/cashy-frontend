@@ -5,16 +5,16 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 export type CreateSubscriptionPayload = {
   plan: "LIFETIME";
   price: number;
-  purchase_token: string;
+  purchase_token?: string | null;
   product_id: string;
-  package_name?: string;
+  package_name: string;
 };
 
 export const useCreateSubscription = () => {
   return useMutation({
     mutationFn: async (payload: CreateSubscriptionPayload) => {
       try {
-        const response = await apiClient.post("/subscriptions", payload);
+        const response = await apiClient.post("/subscription", payload);
         return response.data;
       } catch (error) {
         throwApiError(error);
