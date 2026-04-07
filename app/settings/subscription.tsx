@@ -1,6 +1,7 @@
 import { useCreateSubscription } from "@/api/subscription";
 import { ScreenContainer } from "@/components/screen-container";
 import { Check, ChevronDown, X } from "@/lib/icons";
+import { formatCurrency } from "@/utils";
 import { useIAP } from "expo-iap";
 import { Stack } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -14,7 +15,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const productIds = ["lifetime_premium"];
+const productIds = ["cashy_lifetime"];
 
 type ComparisonProps =
   | { type: "boolean"; free: boolean; pro: boolean }
@@ -112,10 +113,17 @@ export default function Subscription() {
   } = useIAP({
     onPurchaseSuccess: async (purchase) => {
       try {
+        const product = products.find((p) => p.id === purchase.productId);
+
+        if (!product || typeof product.price !== "number") {
+          Alert.alert("Product not found", "Please contact support");
+          return;
+        }
+
         // 1) Send purchase to backend for verification and create subscription
         await createSubscription({
           plan: "LIFETIME",
-          price: 4.99,
+          price: product.price,
           product_id: purchase.productId,
           package_name: "com.codemine.cashy",
           purchase_token: purchase.purchaseToken,
@@ -156,7 +164,7 @@ export default function Subscription() {
       await requestPurchase({
         request: {
           google: {
-            skus: ["lifetime_premium"],
+            skus: ["cashy_lifetime"],
           },
         },
         type: "in-app",
@@ -175,7 +183,7 @@ export default function Subscription() {
   //   try {
   //     const purchases = await getAvailablePurchases();
   //     const owned = (purchases || []).find(
-  //       (p) => p.productId === "lifetime_premium",
+  //       (p) => p.productId === "cashy_lifetime",
   //     );
 
   //     if (owned) {
@@ -329,36 +337,54 @@ export default function Subscription() {
               </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
-              activeOpacity={0.8}
-              onPress={() => setSelectedPlan("lifetime")}
-              className={`flex-1 rounded-2xl border-2 p-4 pt-5 relative ${
-                selectedPlan === "lifetime"
-                  ? "border-amber-500 bg-amber-500/10"
-                  : "border-border bg-card/50"
-              }`}
-            >
-              <View className="absolute -top-3.5 self-center bg-amber-500 px-3 py-1 rounded-full">
-                <Text className="text-[10px] font-bold text-white tracking-wider">
-                  Limited offer
-                </Text>
-              </View>
-              <Text className="text-lg font-semibold text-center text-foreground mb-2">
-                {products[0].title}
-              </Text>
+            {(() => {
+              const product = products.find((p) => p.id === "cashy_lifetime");
+              const currentPrice = product?.displayPrice;
+              let originalPrice;
+              if (product?.platform === "android") {
+                const discountOffer = product.discountOffers?.[0];
+                if (discountOffer?.fullPriceMicrosAndroid) {
+                  originalPrice = formatCurrency(
+                    parseFloat(discountOffer.fullPriceMicrosAndroid) / 1000000,
+                    product.currency,
+                  );
+                }
+              }
 
-              <View className="items-center justify-center mt-auto flex-col gap-0.5">
-                <Text className="text-sm font-medium text-muted-foreground line-through decoration-muted-foreground">
-                  {/* price */}
-                </Text>
-                <Text className="text-2xl font-bold text-foreground">
-                  {/* discount price */}
-                </Text>
-              </View>
-              <Text className="text-xs text-center text-muted-foreground mt-1">
-                {products[0].description}
-              </Text>
-            </TouchableOpacity>
+              return (
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  onPress={() => setSelectedPlan("lifetime")}
+                  className={`flex-1 rounded-2xl border-2 p-4 pt-5 relative ${
+                    selectedPlan === "lifetime"
+                      ? "border-amber-500 bg-amber-500/10"
+                      : "border-border bg-card/50"
+                  }`}
+                >
+                  <View className="absolute -top-3.5 self-center bg-amber-500 px-3 py-1 rounded-full">
+                    <Text className="text-[10px] font-bold text-white tracking-wider">
+                      Limited offer
+                    </Text>
+                  </View>
+                  <Text className="text-lg font-semibold text-center text-foreground mb-2">
+                    {product?.title || "Lifetime"}
+                  </Text>
+
+                  <View className="items-center justify-center mt-auto flex-col gap-0.5">
+                    <Text className="text-sm font-medium text-muted-foreground line-through decoration-muted-foreground">
+                      {originalPrice}
+                    </Text>
+                    <Text className="text-2xl font-bold text-foreground">
+                      {currentPrice}
+                    </Text>
+                  </View>
+                  <Text className="text-xs text-center text-muted-foreground mt-2 leading-tight">
+                    {product?.description ||
+                      "One-time payment for lifetime access"}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })()}
           </View>
 
           {/* Subscribe Button */}
