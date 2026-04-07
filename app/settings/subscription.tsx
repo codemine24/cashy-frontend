@@ -126,6 +126,8 @@ export default function Subscription() {
           isConsumable: false,
         });
 
+        setIsProcessing(false);
+
         Alert.alert("Success", "Lifetime premium unlocked");
       } catch (error: any) {
         Alert.alert(
