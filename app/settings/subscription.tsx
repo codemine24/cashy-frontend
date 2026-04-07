@@ -349,11 +349,9 @@ export default function Subscription() {
 
               <View className="items-center justify-center mt-auto flex-col gap-0.5">
                 <Text className="text-sm font-medium text-muted-foreground line-through decoration-muted-foreground">
-                  $14.99
+                  14.99
                 </Text>
-                <Text className="text-2xl font-bold text-foreground">
-                  $4.99
-                </Text>
+                <Text className="text-2xl font-bold text-foreground">4.99</Text>
               </View>
               <Text className="text-xs text-center text-muted-foreground mt-1">
                 One-time payment
