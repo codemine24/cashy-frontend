@@ -344,28 +344,22 @@ export default function Subscription() {
                 </Text>
               </View>
               <Text className="text-lg font-semibold text-center text-foreground mb-2">
-                Lifetime
+                {products[0].title}
               </Text>
 
               <View className="items-center justify-center mt-auto flex-col gap-0.5">
                 <Text className="text-sm font-medium text-muted-foreground line-through decoration-muted-foreground">
-                  14.99
+                  {/* price */}
                 </Text>
-                <Text className="text-2xl font-bold text-foreground">4.99</Text>
+                <Text className="text-2xl font-bold text-foreground">
+                  {/* discount price */}
+                </Text>
               </View>
               <Text className="text-xs text-center text-muted-foreground mt-1">
-                One-time payment
+                {products[0].description}
               </Text>
             </TouchableOpacity>
           </View>
-
-          {products.map((product) => (
-            <View key={product.id} style={{ marginBottom: 16 }}>
-              <Text>Check title {product.title}</Text>
-              <Text>Check description {product.description}</Text>
-              <Text>Check price {product.displayPrice}</Text>
-            </View>
-          ))}
 
           {/* Subscribe Button */}
           {selectedPlan === "lifetime" && (
