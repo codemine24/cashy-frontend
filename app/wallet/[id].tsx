@@ -474,6 +474,9 @@ export default function BookDetailScreen() {
                   opacity: isOwner(authState.user?.id, book.data.created_by)
                     ? 1
                     : 0.4,
+                  display: isOwner(authState.user?.id, book.data.created_by)
+                    ? "flex"
+                    : "none",
                 }}
                 disabled={!isOwner(authState.user?.id, book.data.created_by)}
               >
@@ -565,7 +568,7 @@ export default function BookDetailScreen() {
             </View>
 
             {/* Members Section */}
-            {book?.data?.others_member?.length &&
+            {book?.data?.others_member?.length > 2 &&
               isOwner(authState.user?.id, book.data.created_by) && (
                 <View className="bg-card rounded-2xl mb-4 border border-border shadow-sm">
                   {/* Header */}
