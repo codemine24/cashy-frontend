@@ -3,7 +3,7 @@ import { ScreenContainer } from "@/components/screen-container";
 import { Check, ChevronDown, X } from "@/lib/icons";
 import { formatCurrency } from "@/utils";
 import { useIAP } from "expo-iap";
-import { Stack } from "expo-router";
+import { router, Stack } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -101,6 +101,7 @@ export default function Subscription() {
     "lifetime",
   );
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
   const insets = useSafeAreaInsets();
   const { mutateAsync: createSubscription } = useCreateSubscription();
 
@@ -135,8 +136,7 @@ export default function Subscription() {
         });
 
         setIsProcessing(false);
-
-        Alert.alert("Success", "Lifetime premium unlocked");
+        setShowSuccess(true);
       } catch (error: any) {
         Alert.alert(
           "Verification failed",
@@ -198,6 +198,62 @@ export default function Subscription() {
   //     );
   //   }
   // };
+
+  if (showSuccess) {
+    return (
+      <>
+        <Stack.Screen options={{ title: "Success", headerLeft: () => null }} />
+        <ScreenContainer edges={["bottom"]} className="bg-background">
+          <View className="flex-1 items-center justify-center px-6">
+            <View className="items-center mb-10">
+              <View className="w-24 h-24 bg-amber-500 rounded-full items-center justify-center mb-6 shadow-xl shadow-amber-500/20">
+                <Check size={48} className="text-white" />
+              </View>
+              <Text className="text-3xl font-bold text-foreground text-center mb-2">
+                You&apos;re all set!
+              </Text>
+              <Text className="text-lg text-muted-foreground text-center">
+                Welcome to Cashy Premium.
+              </Text>
+            </View>
+
+            <View className="bg-card border border-border rounded-3xl p-6 w-full mb-12">
+              <Text className="text-lg font-bold text-foreground mb-4">
+                Unlimited access unlocked:
+              </Text>
+              <View className="gap-y-4">
+                {[
+                  "Unlimited multi-currency wallets",
+                  "Advanced shared wallet members",
+                  "Attach images to transactions",
+                  "Detailed financial analytics",
+                ].map((feature, i) => (
+                  <View key={i} className="flex-row items-center">
+                    <View className="w-6 h-6 bg-amber-500/10 rounded-full items-center justify-center mr-3">
+                      <Check size={14} className="text-amber-500" />
+                    </View>
+                    <Text className="text-base text-foreground font-medium">
+                      {feature}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={() => router.replace("/settings" as any)}
+              className="w-full bg-foreground py-4.5 rounded-2xl items-center justify-center shadow-lg"
+            >
+              <Text className="text-lg font-bold text-background">
+                Start Using Pro
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </ScreenContainer>
+      </>
+    );
+  }
 
   return (
     <>
