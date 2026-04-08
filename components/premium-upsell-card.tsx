@@ -1,4 +1,6 @@
+import { productIds } from "@/app/settings/subscription";
 import { useTheme } from "@/context/theme-context";
+import { useIAP } from "expo-iap";
 import { useRouter } from "expo-router";
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
@@ -92,6 +94,8 @@ export function PremiumUpSellCard({
     t("premium.advanceAnalyticsReports"),
   ];
 
+  const { connected, products, fetchProducts } = useIAP();
+
   const handleUpgrade = () => {
     if (onUpgrade) {
       onUpgrade();
@@ -99,6 +103,15 @@ export function PremiumUpSellCard({
       router.push("/settings/subscription" as any);
     }
   };
+
+  useEffect(() => {
+    if (connected) {
+      fetchProducts({
+        skus: productIds,
+        type: "in-app",
+      });
+    }
+  }, [connected, fetchProducts]);
 
   return (
     <View
@@ -194,33 +207,52 @@ export function PremiumUpSellCard({
         </TouchableOpacity>
 
         {/* Price */}
-        <View
-          className={`flex-row items-center justify-center mt-2.5 ${isDark ? "text-violet-300" : "text-stone-400"}`}
-        >
-          <Text
-            className={`text-[11px] ${isDark ? "text-violet-300" : "text-stone-400"}`}
-          >
-            {t("premium.limitedOfferPrefix")} · {t("premium.limitedOfferOnly")}
-          </Text>
-          <Text
-            className={`text-[11px] mx-1 ${isDark ? "text-violet-300" : "text-stone-400"}`}
-            style={{ textDecorationLine: "line-through" }}
-          >
-            {t("premium.originalPrice")}
-          </Text>
-          <Text
-            className={`text-[11px] font-bold ${isDark ? "text-violet-400" : "text-amber-500"}`}
-          >
-            {" "}
-            {t("premium.discountedPrice")}
-          </Text>
-          <Text
-            className={`text-[11px] ${isDark ? "text-violet-300" : "text-stone-400"}`}
-          >
-            {" "}
-            {t("premium.oneTime")}
-          </Text>
-        </View>
+        {(() => {
+          const product = products.find((p) => p.id === "cashy_lifetime");
+
+          if (!product) {
+            return;
+          }
+
+          const discountOffer = (product as any)?.discountOffers?.find(
+            (i: any) => i.id === "opening-discount",
+          );
+
+          let originalPrice = product.displayPrice;
+          let discountPrice = discountOffer?.displayPrice;
+
+          return (
+            <View
+              className={`flex-row items-center justify-center mt-2.5 ${isDark ? "text-violet-300" : "text-stone-400"}`}
+            >
+              <Text
+                className={`text-[11px] ${isDark ? "text-violet-300" : "text-stone-400"}`}
+              >
+                {t("premium.limitedOfferPrefix")} ·{" "}
+                {t("premium.limitedOfferOnly")}
+              </Text>
+              {discountPrice && (
+                <Text
+                  className={`text-[11px] mx-1 ${isDark ? "text-violet-300" : "text-stone-400"}`}
+                  style={{ textDecorationLine: "line-through" }}
+                >
+                  {originalPrice}
+                </Text>
+              )}
+              <Text
+                className={`text-[11px] font-bold ${isDark ? "text-violet-400" : "text-amber-500"}`}
+              >
+                {discountPrice || originalPrice}
+              </Text>
+              <Text
+                className={`text-[11px] ${isDark ? "text-violet-300" : "text-stone-400"}`}
+              >
+                {" "}
+                {t("premium.oneTime")}
+              </Text>
+            </View>
+          );
+        })()}
       </View>
     </View>
   );
