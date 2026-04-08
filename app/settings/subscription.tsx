@@ -1,3 +1,4 @@
+import apiClient from "@/lib/api-client";
 import { useCreateSubscription } from "@/api/subscription";
 import { ScreenContainer } from "@/components/screen-container";
 import { Check, ChevronDown, X } from "@/lib/icons";
@@ -16,85 +17,6 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const productIds = ["cashy_lifetime"];
-
-type ComparisonProps =
-  | { type: "boolean"; free: boolean; pro: boolean }
-  | { type: "text"; free: string; pro: string };
-
-function ComparisonRow(props: { feature: string } & ComparisonProps) {
-  const { feature, type, free, pro } = props;
-
-  return (
-    <View className="flex-row items-center justify-between py-4 border-b border-border">
-      <Text className="flex-1 text-base text-foreground font-medium pr-2">
-        {feature}
-      </Text>
-
-      <View className="w-20 items-center justify-center">
-        {type === "boolean" ? (
-          free ? (
-            <Check size={20} className="text-green-600" />
-          ) : (
-            <X size={20} className="text-muted-foreground" />
-          )
-        ) : (
-          <Text className="text-sm text-muted-foreground text-center">
-            {free}
-          </Text>
-        )}
-      </View>
-
-      <View className="w-20 items-center justify-center">
-        {type === "boolean" ? (
-          pro ? (
-            <Check size={20} className="text-green-600" />
-          ) : (
-            <X size={20} className="text-muted-foreground" />
-          )
-        ) : (
-          <Text className="text-sm text-muted-foreground">{pro}</Text>
-        )}
-      </View>
-    </View>
-  );
-}
-
-function FAQItem({
-  question,
-  answer,
-  isLast,
-}: {
-  question: string;
-  answer: string;
-  isLast?: boolean;
-}) {
-  const [isOpen, setIsOpen] = useState(false);
-
-  return (
-    <View className={`${isLast ? "" : "border-b border-border/50"}`}>
-      <TouchableOpacity
-        activeOpacity={0.7}
-        onPress={() => setIsOpen(!isOpen)}
-        className="py-4 flex-row items-center justify-between"
-      >
-        <Text className="flex-1 text-base font-medium text-foreground pr-4 leading-relaxed">
-          {question}
-        </Text>
-        <ChevronDown
-          size={18}
-          className={isOpen ? "text-foreground" : "text-muted-foreground"}
-        />
-      </TouchableOpacity>
-      {isOpen && (
-        <View className="pb-4">
-          <Text className="text-sm text-muted-foreground leading-relaxed">
-            {answer}
-          </Text>
-        </View>
-      )}
-    </View>
-  );
-}
 
 export default function Subscription() {
   const [selectedPlan, setSelectedPlan] = useState<"free" | "lifetime">(
@@ -121,10 +43,25 @@ export default function Subscription() {
           return;
         }
 
-        // 1) Send purchase to backend for verification and create subscription
+        let purchasePrice = product.price;
+
+        if (product.platform === "android") {
+          const discountOffer = product.discountOffers?.[0];
+
+          if (discountOffer?.displayPrice) {
+            const numericPrice = Number(
+              discountOffer.displayPrice.replace(/[^0-9.]/g, ""),
+            );
+
+            if (!Number.isNaN(numericPrice)) {
+              purchasePrice = numericPrice;
+            }
+          }
+        }
+
         await createSubscription({
           plan: "LIFETIME",
-          price: product.price,
+          price: purchasePrice || product.price,
           product_id: purchase.productId,
           package_name: "com.codemine.cashy",
           purchase_token: purchase.purchaseToken,
@@ -138,6 +75,7 @@ export default function Subscription() {
         setIsProcessing(false);
         setShowSuccess(true);
       } catch (error: any) {
+        setIsProcessing(false);
         Alert.alert(
           "Verification failed",
           error?.message || "Please contact support",
@@ -145,6 +83,7 @@ export default function Subscription() {
       }
     },
     onPurchaseError: (error) => {
+      setIsProcessing(false);
       Alert.alert("Purchase failed", error.message || "Something went wrong");
     },
   });
@@ -157,6 +96,28 @@ export default function Subscription() {
       });
     }
   }, [connected, fetchProducts]);
+
+  const handleSaveProducts = async () => {
+    if (!products || products.length === 0) {
+      Alert.alert("No products", "No products data available to save");
+      return;
+    }
+
+    try {
+      setIsProcessing(true);
+      await apiClient.post("/temporary", { products });
+      Alert.alert("Success", "Products data saved successfully");
+    } catch (error: any) {
+      Alert.alert(
+        "Error",
+        error?.response?.data?.message ||
+          error?.message ||
+          "Failed to save products data",
+      );
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   const handleBuy = async () => {
     try {
@@ -178,26 +139,6 @@ export default function Subscription() {
       setIsProcessing(false);
     }
   };
-
-  // const handleRestore = async () => {
-  //   try {
-  //     const purchases = await getAvailablePurchases();
-  //     const owned = (purchases || []).find(
-  //       (p) => p.productId === "cashy_lifetime",
-  //     );
-
-  //     if (owned) {
-  //       Alert.alert("Restored", "You already own lifetime premium");
-  //     } else {
-  //       Alert.alert("Not found", "No lifetime purchase found for this account");
-  //     }
-  //   } catch (error: any) {
-  //     Alert.alert(
-  //       "Restore failed",
-  //       error?.message || "Could not restore purchases",
-  //     );
-  //   }
-  // };
 
   if (showSuccess) {
     return (
@@ -364,6 +305,19 @@ export default function Subscription() {
               </TouchableOpacity>
             </View>
           </View>
+
+          {/* Sync Logic Button */}
+          <View className="mb-8">
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={handleSaveProducts}
+              className="bg-card w-full py-4 rounded-3xl border border-border items-center justify-center"
+            >
+              <Text className="text-sm font-bold text-muted-foreground">
+                Sync Product Catalog
+              </Text>
+            </TouchableOpacity>
+          </View>
         </ScrollView>
 
         {/* Sticky Bottom Area */}
@@ -407,13 +361,21 @@ export default function Subscription() {
                 );
               }
 
-              const currentPrice = product?.displayPrice;
-              let originalPrice;
-              if (product?.platform === "android") {
+              let currentPrice = product.displayPrice;
+              let originalPrice: string | undefined;
+
+              if (product.platform === "android") {
                 const discountOffer = product.discountOffers?.[0];
+
+                // discounted/current price
+                if (discountOffer?.displayPrice) {
+                  currentPrice = discountOffer.displayPrice;
+                }
+
+                // original/full price
                 if (discountOffer?.fullPriceMicrosAndroid) {
                   originalPrice = formatCurrency(
-                    parseFloat(discountOffer.fullPriceMicrosAndroid) / 1000000,
+                    Number(discountOffer.fullPriceMicrosAndroid) / 1_000_000,
                     product.currency,
                   );
                 }
@@ -439,11 +401,12 @@ export default function Subscription() {
                   </Text>
 
                   <View className="items-center justify-center mt-auto flex-col gap-0.5">
-                    {originalPrice && (
+                    {originalPrice && originalPrice !== currentPrice && (
                       <Text className="text-sm font-medium text-muted-foreground line-through decoration-muted-foreground">
                         {originalPrice}
                       </Text>
                     )}
+
                     <Text className="text-2xl font-bold text-foreground">
                       {currentPrice}
                     </Text>
@@ -480,3 +443,102 @@ export default function Subscription() {
     </>
   );
 }
+
+type ComparisonProps =
+  | { type: "boolean"; free: boolean; pro: boolean }
+  | { type: "text"; free: string; pro: string };
+
+function ComparisonRow(props: { feature: string } & ComparisonProps) {
+  const { feature, type, free, pro } = props;
+
+  return (
+    <View className="flex-row items-center justify-between py-4 border-b border-border">
+      <Text className="flex-1 text-base text-foreground font-medium pr-2">
+        {feature}
+      </Text>
+
+      <View className="w-20 items-center justify-center">
+        {type === "boolean" ? (
+          free ? (
+            <Check size={20} className="text-green-600" />
+          ) : (
+            <X size={20} className="text-muted-foreground" />
+          )
+        ) : (
+          <Text className="text-sm text-muted-foreground text-center">
+            {free}
+          </Text>
+        )}
+      </View>
+
+      <View className="w-20 items-center justify-center">
+        {type === "boolean" ? (
+          pro ? (
+            <Check size={20} className="text-green-600" />
+          ) : (
+            <X size={20} className="text-muted-foreground" />
+          )
+        ) : (
+          <Text className="text-sm text-muted-foreground">{pro}</Text>
+        )}
+      </View>
+    </View>
+  );
+}
+
+function FAQItem({
+  question,
+  answer,
+  isLast,
+}: {
+  question: string;
+  answer: string;
+  isLast?: boolean;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <View className={`${isLast ? "" : "border-b border-border/50"}`}>
+      <TouchableOpacity
+        activeOpacity={0.7}
+        onPress={() => setIsOpen(!isOpen)}
+        className="py-4 flex-row items-center justify-between"
+      >
+        <Text className="flex-1 text-base font-medium text-foreground pr-4 leading-relaxed">
+          {question}
+        </Text>
+        <ChevronDown
+          size={18}
+          className={isOpen ? "text-foreground" : "text-muted-foreground"}
+        />
+      </TouchableOpacity>
+      {isOpen && (
+        <View className="pb-4">
+          <Text className="text-sm text-muted-foreground leading-relaxed">
+            {answer}
+          </Text>
+        </View>
+      )}
+    </View>
+  );
+}
+
+// const handleRestore = async () => {
+//   try {
+//     const purchases = await getAvailablePurchases();
+//     const owned = (purchases || []).find(
+//       (p) => p.productId === "cashy_lifetime",
+//     );
+
+//     if (owned) {
+//       Alert.alert("Restored", "You already own lifetime premium");
+//     } else {
+//       Alert.alert("Not found", "No lifetime purchase found for this account");
+//     }
+//   } catch (error: any) {
+//     Alert.alert(
+//       "Restore failed",
+//       error?.message || "Could not restore purchases",
+//     );
+//   }
+// };
