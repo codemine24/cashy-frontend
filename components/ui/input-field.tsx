@@ -6,19 +6,19 @@ interface InputFieldProps {
   placeholderClassName?: string;
   label?: string;
   keyboardType?:
-    | "email-address"
-    | "numeric"
-    | "default"
-    | "phone-pad"
-    | "number-pad";
+  | "email-address"
+  | "numeric"
+  | "default"
+  | "phone-pad"
+  | "number-pad";
   autoCapitalize?: "none" | "sentences" | "words" | "characters";
   autoCorrect?: boolean;
   textContentType?:
-    | "emailAddress"
-    | "password"
-    | "name"
-    | "telephoneNumber"
-    | "postalCode";
+  | "emailAddress"
+  | "password"
+  | "name"
+  | "telephoneNumber"
+  | "postalCode";
   autoComplete?: "email" | "password" | "name" | "tel" | "postal-code";
   className?: string;
   value: string;
@@ -32,7 +32,7 @@ export const InputField = ({
   label,
   keyboardType,
   autoCapitalize,
-  autoCorrect,
+  autoCorrect = true,
   textContentType,
   autoComplete,
   className,
