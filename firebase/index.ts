@@ -1,4 +1,6 @@
 import { initializeApp } from "firebase/app";
+import { getAuth, initializeAuth } from "firebase/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -14,5 +16,7 @@ const firebaseConfig = {
 
 // Initialize Firebase
 export const app = initializeApp(firebaseConfig);
+
+export const auth = getAuth(app);
 
 // web client id = 68140526274-cbimppqqje5k18q1aqf4cqlng98ibi5b.apps.googleusercontent.com
