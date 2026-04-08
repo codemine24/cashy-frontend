@@ -4,7 +4,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 
 export type CreateSubscriptionPayload = {
   plan: "LIFETIME";
-  price: number;
+  price: string;
   purchase_token?: string | null;
   product_id: string;
   package_name: string;

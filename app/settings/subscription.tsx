@@ -36,30 +36,21 @@ export default function Subscription() {
       try {
         const product = products.find((p) => p.id === purchase.productId);
 
-        if (!product || typeof product.price !== "number") {
+        if (!product) {
           Alert.alert("Product not found", "Please contact support");
           return;
         }
 
-        let purchasePrice = product.price;
+        const discountOffer = (product as any)?.discountOffers?.find(
+          (i: any) => i.id === "opening-discount",
+        );
 
-        if (product.platform === "android") {
-          const discountOffer = product.discountOffers?.[0];
-
-          if (discountOffer?.displayPrice) {
-            const numericPrice = Number(
-              discountOffer.displayPrice.replace(/[^0-9.]/g, ""),
-            );
-
-            if (!Number.isNaN(numericPrice)) {
-              purchasePrice = numericPrice;
-            }
-          }
-        }
+        let originalPrice = product.displayPrice;
+        let discountPrice = discountOffer?.displayPrice;
 
         await createSubscription({
           plan: "LIFETIME",
-          price: purchasePrice || product.price,
+          price: discountPrice || originalPrice,
           product_id: purchase.productId,
           package_name: "com.codemine.cashy",
           purchase_token: purchase.purchaseToken,
