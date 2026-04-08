@@ -1,4 +1,0 @@
-/Users/fazlyalahi/Documents/projects/codemine/cash-flow-fe-v2/android/app/.cxx/Debug/4l6k2m2s/arm64-v8a/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/foo.dir
-/Users/fazlyalahi/Documents/projects/codemine/cash-flow-fe-v2/android/app/.cxx/Debug/4l6k2m2s/arm64-v8a/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/boo.dir
-/Users/fazlyalahi/Documents/projects/codemine/cash-flow-fe-v2/android/app/.cxx/Debug/4l6k2m2s/arm64-v8a/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/edit_cache.dir
-/Users/fazlyalahi/Documents/projects/codemine/cash-flow-fe-v2/android/app/.cxx/Debug/4l6k2m2s/arm64-v8a/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/rebuild_cache.dir

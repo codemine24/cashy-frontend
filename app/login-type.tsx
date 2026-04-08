@@ -2,25 +2,23 @@
 import { BackButton } from "@/components/ui/back-button";
 import { H2, Muted } from "@/components/ui/typography";
 import { useAuth } from "@/context/auth-context";
-import { auth } from "@/firebase"; // use getAuth(app) in your firebase.ts
 import { GoogleIcon } from "@/icons/google-icon";
 import { Mail } from "@/lib/icons";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { useRouter } from "expo-router";
-import { GoogleAuthProvider, signInWithCredential } from "firebase/auth";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Platform, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function LoginTypeScreen() {
   const router = useRouter();
   const { authReady, authState } = useAuth();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     // Configure Google Sign-In
     GoogleSignin.configure({
-      webClientId:
-        "68140526274-cbimppqqje5k18q1aqf4cqlng98ibi5b.apps.googleusercontent.com",
+      webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID || "",
       offlineAccess: true,
     });
   }, []);
@@ -30,35 +28,20 @@ export default function LoginTypeScreen() {
     if (authReady && authState.isAuthenticated) {
       router.replace("/(tabs)");
     }
-  }, [authReady, authState.isAuthenticated]);
+  }, [authReady, router, authState.isAuthenticated]);
 
   const signInWithGoogle = async () => {
-    console.log("Signing in with Google...");
     try {
+      setLoading(true);
       // Ensure Play Services are available on Android
       if (Platform.OS === "android") {
         await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
       }
 
-      console.log("Opening Google Sign-In modal...");
-
       // Open Google Sign-In modal
       const userInfo = await GoogleSignin.signIn();
-      console.log("userInfo:", userInfo);
+      console.log("userInfo:", userInfo?.data?.user);
 
-      // Get ID token
-      const idToken = userInfo.data?.idToken;
-      if (!idToken) throw new Error("No ID token returned");
-
-      // Create Firebase credential
-      const credential = GoogleAuthProvider.credential(idToken);
-
-      // Sign in with Firebase
-      const userCredential = await signInWithCredential(auth, credential);
-      console.log("Logged in user:", userCredential.user);
-
-      // Update your auth context here if needed
-      // Example:
       // setUser({
       //   uid: userCredential.user.uid,
       //   email: userCredential.user.email,
@@ -67,6 +50,8 @@ export default function LoginTypeScreen() {
       // });
     } catch (err) {
       console.log("Login error:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -96,11 +81,12 @@ export default function LoginTypeScreen() {
         <TouchableOpacity
           onPress={signInWithGoogle}
           activeOpacity={0.85}
-          className="w-full flex-row items-center justify-center gap-3 rounded-xl py-4 border border-border"
+          disabled={loading}
+          className="w-full flex-row items-center justify-center gap-3 rounded-xl py-4 border border-border disabled:opacity-50"
         >
           <GoogleIcon width={24} height={24} />
           <Text className="text-base font-semibold tracking-widest text-primary">
-            Continue with Google 2
+            Continue with Google
           </Text>
         </TouchableOpacity>
 
