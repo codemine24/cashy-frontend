@@ -3,12 +3,12 @@ import { onboardingSlides, type OnboardingSlide } from "@/constants/onboarding";
 import { ChevronRight } from "@/lib/icons";
 import { useCallback, useRef, useState } from "react";
 import {
-  Dimensions,
-  FlatList,
-  Image,
-  TouchableOpacity,
-  View,
-  ViewToken,
+    Dimensions,
+    FlatList,
+    Image,
+    TouchableOpacity,
+    View,
+    ViewToken,
 } from "react-native";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
