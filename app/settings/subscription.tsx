@@ -1,8 +1,6 @@
-import apiClient from "@/lib/api-client";
 import { useCreateSubscription } from "@/api/subscription";
 import { ScreenContainer } from "@/components/screen-container";
 import { Check, ChevronDown, X } from "@/lib/icons";
-import { formatCurrency } from "@/utils";
 import { useIAP } from "expo-iap";
 import { router, Stack } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -97,27 +95,27 @@ export default function Subscription() {
     }
   }, [connected, fetchProducts]);
 
-  const handleSaveProducts = async () => {
-    if (!products || products.length === 0) {
-      Alert.alert("No products", "No products data available to save");
-      return;
-    }
+  // const handleSaveProducts = async () => {
+  //   if (!products || products.length === 0) {
+  //     Alert.alert("No products", "No products data available to save");
+  //     return;
+  //   }
 
-    try {
-      setIsProcessing(true);
-      await apiClient.post("/temporary", { products });
-      Alert.alert("Success", "Products data saved successfully");
-    } catch (error: any) {
-      Alert.alert(
-        "Error",
-        error?.response?.data?.message ||
-          error?.message ||
-          "Failed to save products data",
-      );
-    } finally {
-      setIsProcessing(false);
-    }
-  };
+  //   try {
+  //     setIsProcessing(true);
+  //     await apiClient.post("/temporary", { products });
+  //     Alert.alert("Success", "Products data saved successfully");
+  //   } catch (error: any) {
+  //     Alert.alert(
+  //       "Error",
+  //       error?.response?.data?.message ||
+  //         error?.message ||
+  //         "Failed to save products data",
+  //     );
+  //   } finally {
+  //     setIsProcessing(false);
+  //   }
+  // };
 
   const handleBuy = async () => {
     try {
@@ -307,7 +305,7 @@ export default function Subscription() {
           </View>
 
           {/* Sync Logic Button */}
-          <View className="mb-8">
+          {/* <View className="mb-8">
             <TouchableOpacity
               activeOpacity={0.7}
               onPress={handleSaveProducts}
@@ -317,7 +315,7 @@ export default function Subscription() {
                 Sync Product Catalog
               </Text>
             </TouchableOpacity>
-          </View>
+          </View> */}
         </ScrollView>
 
         {/* Sticky Bottom Area */}
@@ -361,25 +359,12 @@ export default function Subscription() {
                 );
               }
 
-              let currentPrice = product.displayPrice;
-              let originalPrice: string | undefined;
+              const discountOffer = (product as any)?.discountOffers?.find(
+                (i: any) => i.id === "opening-discount",
+              );
 
-              if (product.platform === "android") {
-                const discountOffer = product.discountOffers?.[0];
-
-                // discounted/current price
-                if (discountOffer?.displayPrice) {
-                  currentPrice = discountOffer.displayPrice;
-                }
-
-                // original/full price
-                if (discountOffer?.fullPriceMicrosAndroid) {
-                  originalPrice = formatCurrency(
-                    Number(discountOffer.fullPriceMicrosAndroid) / 1_000_000,
-                    product.currency,
-                  );
-                }
-              }
+              let originalPrice = product.displayPrice;
+              let discountPrice = discountOffer?.displayPrice;
 
               return (
                 <TouchableOpacity
@@ -401,14 +386,14 @@ export default function Subscription() {
                   </Text>
 
                   <View className="items-center justify-center mt-auto flex-col gap-0.5">
-                    {originalPrice && originalPrice !== currentPrice && (
+                    {discountPrice && (
                       <Text className="text-sm font-medium text-muted-foreground line-through decoration-muted-foreground">
                         {originalPrice}
                       </Text>
                     )}
 
                     <Text className="text-2xl font-bold text-foreground">
-                      {currentPrice}
+                      {discountPrice || originalPrice}
                     </Text>
                   </View>
                   <Text className="text-xs text-center text-muted-foreground mt-2 leading-tight">
