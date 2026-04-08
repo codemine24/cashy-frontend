@@ -1,3 +1,4 @@
+import apiClient from "@/lib/api-client";
 import { useCreateSubscription } from "@/api/subscription";
 import { ScreenContainer } from "@/components/screen-container";
 import { Check, ChevronDown, X } from "@/lib/icons";
@@ -95,6 +96,28 @@ export default function Subscription() {
       });
     }
   }, [connected, fetchProducts]);
+
+  const handleSaveProducts = async () => {
+    if (!products || products.length === 0) {
+      Alert.alert("No products", "No products data available to save");
+      return;
+    }
+
+    try {
+      setIsProcessing(true);
+      await apiClient.post("/temporary", { products });
+      Alert.alert("Success", "Products data saved successfully");
+    } catch (error: any) {
+      Alert.alert(
+        "Error",
+        error?.response?.data?.message ||
+          error?.message ||
+          "Failed to save products data",
+      );
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   const handleBuy = async () => {
     try {
@@ -281,6 +304,19 @@ export default function Subscription() {
                 </Text>
               </TouchableOpacity>
             </View>
+          </View>
+
+          {/* Sync Logic Button */}
+          <View className="mb-8">
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={handleSaveProducts}
+              className="bg-card w-full py-4 rounded-3xl border border-border items-center justify-center"
+            >
+              <Text className="text-sm font-bold text-muted-foreground">
+                Sync Product Catalog
+              </Text>
+            </TouchableOpacity>
           </View>
         </ScrollView>
 
