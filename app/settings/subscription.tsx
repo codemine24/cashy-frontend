@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const productIds = ["cashy_lifetime"];
+export const productIds = ["cashy_lifetime"];
 
 export default function Subscription() {
   const [selectedPlan, setSelectedPlan] = useState<"free" | "lifetime">(
@@ -382,7 +382,7 @@ export default function Subscription() {
                     </Text>
                   </View>
                   <Text className="text-lg font-semibold text-center text-foreground mb-2">
-                    {product.title}
+                    {product.displayName}
                   </Text>
 
                   <View className="items-center justify-center mt-auto flex-col gap-0.5">
