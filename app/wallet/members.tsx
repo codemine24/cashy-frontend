@@ -12,14 +12,14 @@ import { Stack, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-    ActivityIndicator,
-    Alert,
-    FlatList,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Alert,
+  FlatList,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import Toast from "react-native-toast-message";
 
@@ -303,18 +303,16 @@ export default function MembersScreen() {
               <View className="flex-row items-center gap-3">
                 <TouchableOpacity
                   onPress={() => setRole("VIEWER")}
-                  className={`flex-1 py-3.5 items-center rounded-xl border ${
-                    role === "VIEWER"
+                  className={`flex-1 py-3.5 items-center rounded-xl border ${role === "VIEWER"
                       ? "bg-primary/10 border-primary"
                       : "bg-surface border-border"
-                  }`}
+                    }`}
                 >
                   <Text
-                    className={`font-semibold text-base ${
-                      role === "VIEWER"
+                    className={`font-semibold text-base ${role === "VIEWER"
                         ? "text-primary"
                         : "text-muted-foreground"
-                    }`}
+                      }`}
                   >
                     Viewer
                   </Text>
@@ -322,18 +320,16 @@ export default function MembersScreen() {
 
                 <TouchableOpacity
                   onPress={() => setRole("EDITOR")}
-                  className={`flex-1 py-3.5 items-center rounded-xl border ${
-                    role === "EDITOR"
+                  className={`flex-1 py-3.5 items-center rounded-xl border ${role === "EDITOR"
                       ? "bg-primary/10 border-primary"
                       : "bg-surface border-border"
-                  }`}
+                    }`}
                 >
                   <Text
-                    className={`font-semibold text-base ${
-                      role === "EDITOR"
+                    className={`font-semibold text-base ${role === "EDITOR"
                         ? "text-primary"
                         : "text-muted-foreground"
-                    }`}
+                      }`}
                   >
                     Editor
                   </Text>
@@ -341,18 +337,16 @@ export default function MembersScreen() {
 
                 <TouchableOpacity
                   onPress={() => setRole("ADMIN")}
-                  className={`flex-1 py-3.5 items-center rounded-xl border ${
-                    role === "ADMIN"
+                  className={`flex-1 py-3.5 items-center rounded-xl border ${role === "ADMIN"
                       ? "bg-primary/10 border-primary"
                       : "bg-surface border-border"
-                  }`}
+                    }`}
                 >
                   <Text
-                    className={`font-semibold text-base ${
-                      role === "ADMIN"
+                    className={`font-semibold text-base ${role === "ADMIN"
                         ? "text-primary"
                         : "text-muted-foreground"
-                    }`}
+                      }`}
                   >
                     Admin
                   </Text>
@@ -371,24 +365,24 @@ export default function MembersScreen() {
               </Text>
               {(role === "VIEWER"
                 ? [
-                    { icon: "✅", label: "View all transactions" },
-                    { icon: "✅", label: "View balance & summary" },
-                    { icon: "❌", label: "Add or edit transactions" },
-                    { icon: "❌", label: "Manage members" },
-                  ]
+                  { icon: "✅", label: "View all transactions" },
+                  { icon: "✅", label: "View balance & summary" },
+                  { icon: "❌", label: "Add or edit transactions" },
+                  { icon: "❌", label: "Manage members" },
+                ]
                 : role === "EDITOR"
                   ? [
-                      { icon: "✅", label: "View all transactions" },
-                      { icon: "✅", label: "Add & edit transactions" },
-                      { icon: "✅", label: "Delete own transactions" },
-                      { icon: "❌", label: "Manage members" },
-                    ]
+                    { icon: "✅", label: "View all transactions" },
+                    { icon: "✅", label: "Add & edit transactions" },
+                    { icon: "✅", label: "Delete own transactions" },
+                    { icon: "❌", label: "Manage members" },
+                  ]
                   : [
-                      { icon: "✅", label: "View all transactions" },
-                      { icon: "✅", label: "Add & edit transactions" },
-                      { icon: "✅", label: "Delete any transactions" },
-                      { icon: "✅", label: "Manage & invite members" },
-                    ]
+                    { icon: "✅", label: "View all transactions" },
+                    { icon: "✅", label: "Add & edit transactions" },
+                    { icon: "✅", label: "Delete any transactions" },
+                    { icon: "✅", label: "Manage & invite members" },
+                  ]
               ).map((item, i) => (
                 <View key={i} className="flex-row items-center mb-1.5">
                   <Text className="text-sm mr-2">{item.icon}</Text>
@@ -400,9 +394,8 @@ export default function MembersScreen() {
             <TouchableOpacity
               onPress={handleSubmitModal}
               disabled={addMemberMutation.isPending}
-              className={`w-full rounded-lg py-3 items-center justify-center flex-row ${
-                addMemberMutation.isPending ? "bg-primary/50" : "bg-primary"
-              }`}
+              className={`w-full rounded-lg py-3 items-center justify-center flex-row ${addMemberMutation.isPending ? "bg-primary/50" : "bg-primary"
+                }`}
             >
               {addMemberMutation.isPending && (
                 <ActivityIndicator
