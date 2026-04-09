@@ -1,3 +1,4 @@
+import { useAuth } from "@/context/auth-context";
 import { Member } from "@/interface/wallet";
 import {
   Edit3,
@@ -5,6 +6,7 @@ import {
   Trash2,
   User as UserIcon,
 } from "@/lib/icons";
+import { isOwner } from "@/utils/is-owner";
 import { useState } from "react";
 import {
   Text,
@@ -21,6 +23,9 @@ interface MemberCardProps {
 
 export const MemberCard = ({ member, onEdit, onRemove }: MemberCardProps) => {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
+
+  const { authState } = useAuth();
+  const owner = isOwner(authState?.user?.email, member.email)
 
   // Extract display values depending on structure
   const name = member.name || member.user?.name || "No name";
@@ -74,7 +79,8 @@ export const MemberCard = ({ member, onEdit, onRemove }: MemberCardProps) => {
           from={
             <TouchableOpacity
               onPress={() => setIsMenuVisible(true)}
-              className="py-2 pl-2 rounded-full"
+              className={`${owner ? "invisible" : "flex"} py-2 pl-2 rounded-full`}
+              disabled={owner}
             >
               <MoreVertical size={20} className="text-muted-foreground" />
             </TouchableOpacity>
