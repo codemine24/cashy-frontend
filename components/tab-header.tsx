@@ -1,4 +1,5 @@
 import { useGetUnreadCount } from "@/api/notification";
+import { useIsPremium } from "@/hooks/use-is-premium";
 import { BellIcon } from "@/icons/bell-icon";
 import { Menu } from "@/lib/icons";
 import { useRouter } from "expo-router";
@@ -7,7 +8,6 @@ import { Animated, Easing, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Logo } from "./logo";
 import { PremiumAnimatedIcon } from "./premium-animated-icon";
-
 
 function PremiumIcon() {
   const spinAnim = useRef(new Animated.Value(0)).current;
@@ -22,7 +22,7 @@ function PremiumIcon() {
         duration: 2200,
         easing: Easing.linear,
         useNativeDriver: true,
-      })
+      }),
     ).start();
 
     // Soft background breathe
@@ -40,7 +40,7 @@ function PremiumIcon() {
           easing: Easing.inOut(Easing.ease),
           useNativeDriver: true,
         }),
-      ])
+      ]),
     ).start();
 
     // Crown gentle float
@@ -58,7 +58,7 @@ function PremiumIcon() {
           easing: Easing.inOut(Easing.ease),
           useNativeDriver: true,
         }),
-      ])
+      ]),
     ).start();
   }, [bounceAnim, pulseAnim, spinAnim]);
 
@@ -77,8 +77,14 @@ function PremiumIcon() {
   });
 
   return (
-    <View style={{ width: 42, height: 42, alignItems: "center", justifyContent: "center" }}>
-
+    <View
+      style={{
+        width: 42,
+        height: 42,
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
       {/* Breathing glow background */}
       <Animated.View
         style={{
@@ -127,7 +133,10 @@ function PremiumIcon() {
       {/* Twinkling sparkle dots — staggered so they never all fire at once */}
       <SparkleDot delay={0} style={{ top: 1, left: "50%", marginLeft: -2 }} />
       <SparkleDot delay={350} style={{ right: 1, top: "50%", marginTop: -2 }} />
-      <SparkleDot delay={800} style={{ bottom: 1, left: "50%", marginLeft: -2 }} />
+      <SparkleDot
+        delay={800}
+        style={{ bottom: 1, left: "50%", marginLeft: -2 }}
+      />
       <SparkleDot delay={1200} style={{ left: 1, top: "50%", marginTop: -2 }} />
 
       {/* Crown — gently floating */}
@@ -164,7 +173,7 @@ function SparkleDot({ delay, style }: { delay: number; style: object }) {
           useNativeDriver: true,
         }),
         Animated.delay(600),
-      ])
+      ]),
     ).start();
   }, []);
 
@@ -190,6 +199,7 @@ export const TabHeader = () => {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { data: unreadCount = 0 } = useGetUnreadCount();
+  const { isPremium } = useIsPremium();
 
   // TODO: Replace with actual unread notifications count from your state/context
   const hasUnreadNotifications = true;
@@ -212,14 +222,16 @@ export const TabHeader = () => {
         {/* Right: Premium + Notification + Menu */}
         <View className="flex-row items-center gap-2.5">
           {/* Premium animated icon */}
-          <TouchableOpacity
-            activeOpacity={0.75}
-            onPress={() => router.push("/settings/subscription")}
-            className="size-10 items-center justify-center"
-            hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
-          >
-            <PremiumAnimatedIcon />
-          </TouchableOpacity>
+          {!isPremium && (
+            <TouchableOpacity
+              activeOpacity={0.75}
+              onPress={() => router.push("/settings/subscription")}
+              className="size-10 items-center justify-center"
+              hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+            >
+              <PremiumAnimatedIcon />
+            </TouchableOpacity>
+          )}
 
           {/* Notification */}
           <TouchableOpacity
@@ -274,5 +286,3 @@ export const TabHeader = () => {
     </View>
   );
 };
-
-
