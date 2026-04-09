@@ -9,7 +9,7 @@ import { Mail } from "@/lib/icons";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Platform, Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 
@@ -21,10 +21,12 @@ export default function LoginTypeScreen() {
   const googleLoginMutation = useGoogleLogin();
 
   useEffect(() => {
-    // Configure Google Sign-In
+    // Configure Google Sign-In with forced account selection
     GoogleSignin.configure({
       webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID || "",
       offlineAccess: true,
+      hostedDomain: "", // Leave empty to allow any domain
+      forceCodeForRefreshToken: true, // Forces refresh token
     });
   }, []);
 
@@ -38,12 +40,12 @@ export default function LoginTypeScreen() {
   const signInWithGoogle = async () => {
     try {
       setLoading(true);
-      // Ensure Play Services are available on Android
-      if (Platform.OS === "android") {
-        await GoogleSignin.hasPlayServices({
-          showPlayServicesUpdateDialog: true,
-        });
-      }
+
+      // Check if device supports Google Play Services
+      await GoogleSignin.hasPlayServices();
+
+      // Force sign-out to show account picker every time
+      await GoogleSignin.signOut();
 
       // Open Google Sign-In modal
       const userInfo = await GoogleSignin.signIn();
