@@ -8,6 +8,7 @@ import {
 } from "@/api/transaction";
 import { BookDetailSkeleton } from "@/components/skeletons/book-detail-skeleton";
 import { Button } from "@/components/ui/button";
+import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-modal";
 import { ReportModal, ReportType } from "@/components/wallet/report-modal";
 import {
   DEFAULT_FILTERS,
@@ -32,14 +33,13 @@ import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
-  Alert,
   Platform,
   RefreshControl,
   SectionList,
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import Toast from "react-native-toast-message";
 
@@ -111,6 +111,7 @@ export default function BookDetailScreen() {
   const [reportModalVisible, setReportModalVisible] = useState(false);
   const [selectedReport, setSelectedReport] = useState<ReportType>("all");
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const { authState } = useAuth();
 
@@ -357,36 +358,36 @@ export default function BookDetailScreen() {
 
   const handleDelete = () => {
     if (!selectedTransaction) return;
-    Alert.alert(
-      "Delete Transaction",
-      "Are you sure you want to delete this transaction?",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: async () => {
-            const res: any = await deleteTransaction.mutateAsync(
-              selectedTransaction.id,
-            );
+    setShowDeleteModal(true);
+  };
 
-            if (res?.success) {
-              Toast.show({
-                type: "success",
-                text1: "Transaction deleted successfully",
-              });
-              setSelectedTransaction(null);
-              refetch();
-            } else {
-              Toast.show({
-                type: "error",
-                text1: res?.message || "Failed to delete transaction",
-              });
-            }
-          },
-        },
-      ],
-    );
+  const handleConfirmDelete = async () => {
+    if (!selectedTransaction) return;
+
+    try {
+      const res: any = await deleteTransaction.mutateAsync(
+        selectedTransaction.id,
+      );
+
+      if (res?.success) {
+        Toast.show({
+          type: "success",
+          text1: "Transaction deleted successfully",
+        });
+        setSelectedTransaction(null);
+        refetch();
+      } else {
+        Toast.show({
+          type: "error",
+          text1: res?.message || "Failed to delete transaction",
+        });
+      }
+    } catch (error: any) {
+      Toast.show({
+        type: "error",
+        text1: error?.message || "Failed to delete transaction",
+      });
+    }
   };
 
   const handleOpenTransaction = (item: any) => {
@@ -572,7 +573,7 @@ export default function BookDetailScreen() {
               </View>
 
               {/* Members Section */}
-              {book?.data?.others_member?.length > 2 &&
+              {book?.data?.others_member?.length > 1 &&
                 isOwner(authState.user?.id, book.data.created_by) && (
                   <View className="bg-card rounded-2xl mb-4 border border-border shadow-sm">
                     {/* Header */}
@@ -810,7 +811,7 @@ export default function BookDetailScreen() {
         />
 
         {/* Floating Action Buttons */}
-        <View className="absolute bottom-0 left-0 right-0 flex-row p-3 bg-card border-t border-border shadow-sm gap-3">
+        <View className="absolute bottom-6 left-0 right-0 flex-row p-3 bg-card border-t border-border shadow-sm gap-3">
           <Button
             onPress={() => {
               router.push({
@@ -849,6 +850,16 @@ export default function BookDetailScreen() {
           onGeneratePdf={handleGeneratePdf}
           onClose={() => setReportModalVisible(false)}
           isGenerating={isGeneratingPdf}
+        />
+
+        {/* Delete Confirmation Modal */}
+        <DeleteConfirmationModal
+          visible={showDeleteModal}
+          onClose={() => setShowDeleteModal(false)}
+          onConfirm={handleConfirmDelete}
+          title="Delete Transaction"
+          message="Are you sure you want to delete this transaction?"
+          isLoading={deleteTransaction.isPending}
         />
       </View>
     </ScreenContainer>

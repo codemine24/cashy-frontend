@@ -3,6 +3,7 @@ import { BottomSheetModal } from "@/components/bottom-sheet-modal";
 import { ScreenContainer } from "@/components/screen-container";
 import { WalletsSkeleton } from "@/components/skeletons/wallets-skeleton";
 import { Button } from "@/components/ui/button";
+import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-modal";
 import { H3, Muted } from "@/components/ui/typography";
 import { CreateWalletModal } from "@/components/wallet/create-wallet-modal";
 import { WalletCard } from "@/components/wallet/wallet-card";
@@ -17,14 +18,13 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  Alert,
   FlatList,
   RefreshControl,
   ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import Toast from "react-native-toast-message";
 
@@ -55,6 +55,8 @@ export default function HomeScreen() {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(searchQuery, 400);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [bookToDelete, setBookToDelete] = useState<Book | null>(null);
 
   const [tempSortBy, setTempSortBy] = useState<SortOption>("updated_at");
   const [tempSortOrder, setTempSortOrder] = useState<"asc" | "desc">("asc");
@@ -86,41 +88,37 @@ export default function HomeScreen() {
   const finalShowSkeleton = isLoading || showSkeleton;
 
   const handleDeleteBook = (book: Book) => {
-    Alert.alert(
-      "Delete Wallet",
-      `Are you sure you want to delete "${book.name}"? This action can not be undone and will remove all associated transactions.`,
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              const res: any = await deleteBookMutation.mutateAsync(book.id);
-              if (res?.success) {
-                Toast.show({
-                  type: "success",
-                  text1: "Success",
-                  text2: "Wallet deleted successfully",
-                });
-              } else {
-                Toast.show({
-                  type: "error",
-                  text1: "Error",
-                  text2: res?.message || "Failed to delete wallet",
-                });
-              }
-            } catch (error: any) {
-              Toast.show({
-                type: "error",
-                text1: "Error",
-                text2: error?.message || "Something went wrong",
-              });
-            }
-          },
-        },
-      ],
-    );
+    setBookToDelete(book);
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDeleteBook = async () => {
+    if (!bookToDelete) return;
+
+    try {
+      const res: any = await deleteBookMutation.mutateAsync(bookToDelete.id);
+      if (res?.success) {
+        Toast.show({
+          type: "success",
+          text1: "Success",
+          text2: "Wallet deleted successfully",
+        });
+      } else {
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: res?.message || "Failed to delete wallet",
+        });
+      }
+    } catch (error: any) {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: error?.message || "Something went wrong",
+      });
+    } finally {
+      setBookToDelete(null);
+    }
   };
 
   const handleRename = (book: Book) => {
@@ -301,6 +299,17 @@ export default function HomeScreen() {
           </Button>
         </View>
       </BottomSheetModal>
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        visible={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleConfirmDeleteBook}
+        title="Delete Wallet"
+        itemName={bookToDelete?.name}
+        message="This action cannot be undone and will remove all associated transactions."
+        isLoading={deleteBookMutation.isPending}
+      />
     </>
   );
 }
