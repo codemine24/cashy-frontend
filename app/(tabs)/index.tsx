@@ -14,7 +14,6 @@ import { PlusIcon } from "@/icons/plus-icon";
 import { SearchIcon } from "@/icons/search-icon";
 import { Book } from "@/interface/wallet";
 import { useRouter } from "expo-router";
-import { Wallet } from "lucide-react-native";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -167,18 +166,17 @@ export default function HomeScreen() {
           </View>
 
           {/* Header */}
-          <View className="mb-2 flex-row items-center justify-between">
-            <View className="flex-row items-center gap-2 flex-1">
-              <Wallet className="text-primary size-5" />
+          <View className="mb-2 flex-row items-center">
+            <View className="flex-row items-center gap-2">
               <Text className="text-sm font-semibold text-muted-foreground mr-2">
                 {t("wallets.yourWallets")}
               </Text>
             </View>
             <TouchableOpacity
               onPress={openSortModal}
-              className="p-2 rounded-xl"
+              className="p-2 rounded-xl "
             >
-              <FilterIcon className="text-primary size-6" />
+              <FilterIcon className="text-primary size-6 " />
             </TouchableOpacity>
           </View>
 
