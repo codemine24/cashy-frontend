@@ -52,9 +52,6 @@
       "eas": {
         "projectId": "428b74db-754f-4501-835c-69c5372d0bd3"
       }
-    },
-    "ios": {
-      "bundleIdentifier": "com.codemine.cashy"
     }
   }
 }

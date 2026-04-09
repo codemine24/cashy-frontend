@@ -67,12 +67,15 @@ export default function LoginTypeScreen() {
       </View>
 
       <View className="flex-1 mt-6 p-6 gap-4">
+      <View className="flex-1 mt-6 p-6 gap-4">
         <TouchableOpacity
           onPress={() => router.push("/auth")}
           activeOpacity={0.85}
           className="w-full flex-row items-center justify-center gap-3 rounded-xl py-4 border border-border"
+          className="w-full flex-row items-center justify-center gap-3 rounded-xl py-4 border border-border"
         >
           <Mail size={20} className="text-primary" />
+          <Text className="text-base font-semibold tracking-widest text-primary">
           <Text className="text-base font-semibold tracking-widest text-primary">
             Continue with Email
           </Text>
@@ -84,6 +87,8 @@ export default function LoginTypeScreen() {
           disabled={loading}
           className="w-full flex-row items-center justify-center gap-3 rounded-xl py-4 border border-border disabled:opacity-50"
         >
+          <GoogleIcon width={24} height={24} />
+          <Text className="text-base font-semibold tracking-widest text-primary">
           <GoogleIcon width={24} height={24} />
           <Text className="text-base font-semibold tracking-widest text-primary">
             Continue with Google
