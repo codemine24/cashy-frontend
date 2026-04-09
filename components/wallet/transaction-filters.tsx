@@ -243,7 +243,7 @@ export function TransactionFilters({
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 16 }}
+          contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 16, paddingLeft: 0 }}
         >
           <View className="flex-row items-center gap-2">
             <FilterChip
@@ -380,7 +380,7 @@ function BottomSheetModalWrapper({
 }) {
   return (
     <BottomSheetModal visible={visible} onClose={onClose}>
-      <View className="px-6 pt-3 pb-4">
+      <View className="px-6 pt-3 pb-2">
         {/* Header */}
         <View className="flex-row justify-between items-center mb-6 border-b border-border pb-3">
           <Text className="text-xl font-bold text-foreground">{title}</Text>
@@ -468,16 +468,16 @@ function ModalFooter({
   applyDisabled: boolean;
 }) {
   return (
-    <View className="px-0 pt-3 pb-6">
+    <View className="px-0 pt-3 pb-10">
       <TouchableOpacity
         onPress={onApply}
         disabled={applyDisabled}
         activeOpacity={0.7}
-        className={`flex-1 py-3 rounded-xl items-center ${applyDisabled ? "bg-primary/30" : "bg-primary"
+        className={`w-full py-4 rounded-xl items-center ${applyDisabled ? "bg-primary/30" : "bg-primary"
           }`}
       >
         <Text
-          className={`font-bold text-[14px] ${applyDisabled ? "text-white/50" : "text-white"
+          className={`font-bold text-[15px] ${applyDisabled ? "text-white/50" : "text-white"
             }`}
         >
           Apply

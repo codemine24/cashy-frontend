@@ -39,7 +39,7 @@ type Period = "today" | "last_7_days" | "last_30_days" | "custom";
 export default function StatisticsPage() {
   const router = useRouter();
   const { book_id } = useLocalSearchParams<{ book_id?: string }>();
-  const [period, setPeriod] = useState<Period>("last_30_days");
+  const [period, setPeriod] = useState<Period>("last_7_days");
   const { isDark } = useTheme();
   const [refreshing, setRefreshing] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -157,7 +157,7 @@ export default function StatisticsPage() {
   };
 
   return (
-    <ScreenContainer className="bg-background">
+    <ScreenContainer edges={["left", "right"]} className="p-4 bg-background">
       <ScrollView
         showsVerticalScrollIndicator={false}
         className="flex-1"
@@ -170,7 +170,7 @@ export default function StatisticsPage() {
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ paddingHorizontal: 24, gap: 12 }}
+            contentContainerStyle={{ gap: 12 }}
           >
             <Pressable
               onPress={() => router.setParams({ book_id: "all" })}
@@ -223,7 +223,7 @@ export default function StatisticsPage() {
         </View>
 
         {/* Period Tabs */}
-        <View className="px-6 mb-8 border-b border-border/30">
+        <View className="mb-8 border-b border-border/30">
           <View className="flex-row items-center justify-around">
             {(
               ["today", "last_7_days", "last_30_days", "custom"] as Period[]
@@ -239,7 +239,7 @@ export default function StatisticsPage() {
                     setEndDate(null);
                   }
                 }}
-                className="py-1 px-1 items-center"
+                className="py-1 px-1 items-center flex-col flex-1"
               >
                 <P
                   className={cn(
@@ -267,10 +267,10 @@ export default function StatisticsPage() {
         </View>
 
         {/* Summary Cards */}
-        <View className="px-6 mb-6">
-          <View className="grid grid-cols-3 gap-2">
+        <View className="mb-6">
+          <View className="flex-row gap-2">
             <View
-              className={`${isDark ? "bg-card" : "bg-white"} border border-border rounded-2xl shadow-sm p-3`}
+              className={`${isDark ? "bg-card" : "bg-white"} flex-1 border border-border rounded-2xl shadow-sm p-3`}
             >
               <P className="text-[10px] text-muted-foreground mb-1">Total In</P>
               <P className="text-base font-bold text-green-600">
@@ -279,7 +279,7 @@ export default function StatisticsPage() {
               </P>
             </View>
             <View
-              className={`${isDark ? "bg-card" : "bg-white"} border border-border rounded-2xl shadow-sm p-3`}
+              className={`${isDark ? "bg-card" : "bg-white"} flex-1 border border-border rounded-2xl shadow-sm p-3`}
             >
               <P className="text-[10px] text-muted-foreground mb-1">
                 Total Out
@@ -291,19 +291,18 @@ export default function StatisticsPage() {
               </P>
             </View>
             <View
-              className={`${isDark ? "bg-card" : "bg-white"} border border-border rounded-2xl shadow-sm p-3`}
+              className={`${isDark ? "bg-card" : "bg-white"} flex-1 border border-border rounded-2xl shadow-sm p-3`}
             >
               <P className="text-[10px] text-muted-foreground mb-1">
                 Net Balance
               </P>
               <P
-                className={`text-base font-bold ${
-                  (walletStats.income_vs_expense?.income || 0) -
-                    (walletStats.income_vs_expense?.expense || 0) >=
+                className={`text-base font-bold ${(walletStats.income_vs_expense?.income || 0) -
+                  (walletStats.income_vs_expense?.expense || 0) >=
                   0
-                    ? "text-green-600"
-                    : "text-red-600"
-                }`}
+                  ? "text-green-600"
+                  : "text-red-600"
+                  }`}
               >
                 $
                 {(
@@ -320,7 +319,7 @@ export default function StatisticsPage() {
             <ActivityIndicator size="large" color="rgb(2, 146, 154)" />
           </View>
         ) : (
-          <View className="px-6 pb-12">
+          <View className="pb-12">
             {/* Net Balance Trend Chart */}
             <View className="mb-8">
               <View
@@ -573,13 +572,13 @@ function TransactionTrendChart({ data }: { data: any[] }) {
 
                 const incomeHeight = d.total_income
                   ? (d.total_income / maxVal) *
-                    (chartHeight - paddingBottom - paddingTop)
+                  (chartHeight - paddingBottom - paddingTop)
                   : 0;
                 const incomeY = chartHeight - paddingBottom - incomeHeight;
 
                 const expenseHeight = d.total_expense
                   ? (d.total_expense / maxVal) *
-                    (chartHeight - paddingBottom - paddingTop)
+                  (chartHeight - paddingBottom - paddingTop)
                   : 0;
                 const expenseY = chartHeight - paddingBottom - expenseHeight;
 

@@ -157,7 +157,7 @@ export default function ProfileScreen() {
               <TextInput
                 value={name}
                 onChangeText={setName}
-                placeholder="Your name"
+                placeholder="Enter Your name"
                 placeholderTextColor="#9CA3AF"
                 // TODO: placeholderTextColor={colors.muted}
                 className="text-base text-foreground"
@@ -204,9 +204,8 @@ export default function ProfileScreen() {
           <TouchableOpacity
             onPress={handleSave}
             disabled={isSaving}
-            className={`rounded-2xl py-4 items-center justify-center ${
-              isSaving ? "bg-primary/50" : "bg-primary"
-            }`}
+            className={`rounded-2xl py-4 items-center justify-center ${isSaving ? "bg-primary/50" : "bg-primary"
+              }`}
           >
             <Text className="text-white font-bold text-base">
               {isSaving ? t("profile.saving") : t("profile.saveChanges")}
