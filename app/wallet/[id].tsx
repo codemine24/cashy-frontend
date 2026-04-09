@@ -572,7 +572,7 @@ export default function BookDetailScreen() {
               </View>
 
               {/* Members Section */}
-              {book?.data?.others_member?.length > 2 &&
+              {book?.data?.others_member?.length > 1 &&
                 isOwner(authState.user?.id, book.data.created_by) && (
                   <View className="bg-card rounded-2xl mb-4 border border-border shadow-sm">
                     {/* Header */}
