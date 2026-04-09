@@ -19,7 +19,10 @@
         "foregroundImage": "./assets/images/app-icon-foreground.png",
         "monochromeImage": "./assets/images/app-icon-monochromic.png"
       },
-      "permissions": ["INTERNET", "CAMERA"],
+      "permissions": [
+        "INTERNET",
+        "CAMERA"
+      ],
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
     },
@@ -52,6 +55,9 @@
       "eas": {
         "projectId": "428b74db-754f-4501-835c-69c5372d0bd3"
       }
+    },
+    "ios": {
+      "bundleIdentifier": "com.codemine.cashy"
     }
   }
 }
