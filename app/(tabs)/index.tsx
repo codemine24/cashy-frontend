@@ -14,6 +14,7 @@ import { PlusIcon } from "@/icons/plus-icon";
 import { SearchIcon } from "@/icons/search-icon";
 import { Book } from "@/interface/wallet";
 import { useRouter } from "expo-router";
+import { Wallet } from "lucide-react-native";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -37,10 +38,10 @@ const SORT_OPTIONS = (
   label: string;
   order: "asc" | "desc";
 }[] => [
-  { key: "updated_at", label: t("wallets.lastUpdated"), order: "desc" },
-  { key: "name", label: t("wallets.nameAZ"), order: "asc" },
-  { key: "created_at", label: t("wallets.lastCreated"), order: "desc" },
-];
+    { key: "updated_at", label: t("wallets.lastUpdated"), order: "desc" },
+    { key: "name", label: t("wallets.nameAZ"), order: "asc" },
+    { key: "created_at", label: t("wallets.lastCreated"), order: "desc" },
+  ];
 
 export default function HomeScreen() {
   const { t } = useTranslation();
@@ -88,7 +89,7 @@ export default function HomeScreen() {
   const handleDeleteBook = (book: Book) => {
     Alert.alert(
       "Delete Wallet",
-      `Are you sure you want to delete "${book.name}"? This action cannot be undone and will remove all associated transactions.`,
+      `Are you sure you want to delete "${book.name}"? This action can not be undone and will remove all associated transactions.`,
       [
         { text: "Cancel", style: "cancel" },
         {
@@ -167,12 +168,15 @@ export default function HomeScreen() {
 
           {/* Header */}
           <View className="mb-2 flex-row items-center justify-between">
-            <Text className="text-sm font-semibold text-muted-foreground flex-1 mr-2">
-              {t("wallets.yourWallets")}
-            </Text>
+            <View className="flex-row items-center gap-2 flex-1">
+              <Wallet className="text-primary size-5" />
+              <Text className="text-sm font-semibold text-muted-foreground mr-2">
+                {t("wallets.yourWallets")}
+              </Text>
+            </View>
             <TouchableOpacity
               onPress={openSortModal}
-              className="p-2.5 rounded-xl"
+              className="p-2 rounded-xl"
             >
               <FilterIcon className="text-primary size-6" />
             </TouchableOpacity>
@@ -257,7 +261,7 @@ export default function HomeScreen() {
               onPress={() => setShowSortModal(false)}
               className="p-1"
             >
-              <CrossIcon className="size-4" />
+              <CrossIcon className="size-4 text-foreground" />
             </TouchableOpacity>
           </View>
 

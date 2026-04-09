@@ -11,11 +11,11 @@ import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
-    Animated,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Animated,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
@@ -204,7 +204,6 @@ export default function AuthScreen() {
                   placeholderClassName="text-muted-foreground"
                   keyboardType="email-address"
                   autoCapitalize="none"
-                  autoCorrect={false}
                   textContentType="emailAddress"
                   autoComplete="email"
                   className={`${emailForm.formState.errors.email ? "border-destructive" : "border-border"}`}
