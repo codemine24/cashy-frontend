@@ -106,12 +106,12 @@ export default function SettingsScreen() {
         >
           <View className="mb-6 flex-row items-center gap-3 bg-card rounded-2xl border border-border px-4 py-4">
             <Image
-              source={{ uri: makeImageUrl(authState?.user?.avatar, "user") }}
+              source={{ uri: makeImageUrl(authState?.user?.avatar, "user") || "https://cdn-icons-png.flaticon.com/512/149/149071.png" }}
               className="size-11 rounded-full"
             />
             <View>
               <Text className="text-2xl font-bold text-foreground">
-                {authState?.user?.name}
+                {authState?.user?.name || "Unknown"}
               </Text>
               <Text className="text-sm text-muted-foreground mt-1">
                 {authState?.user?.email}
