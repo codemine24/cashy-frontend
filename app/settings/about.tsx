@@ -1,4 +1,6 @@
+import { useDeleteUser } from "@/api/user";
 import { ScreenContainer } from "@/components/screen-container";
+import { useAuth } from "@/context/auth-context";
 import {
   ChevronRight,
   FileText,
@@ -6,9 +8,11 @@ import {
   Trash2,
   Users,
 } from "@/lib/icons";
+import { clearUserInfo, removeAccessToken } from "@/utils/auth";
 import { Stack, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import Toast from "react-native-toast-message";
 
 // ─── Reusable row component ───────────────────────────────────────────────
 function AboutRow({
@@ -62,6 +66,8 @@ function Divider() {
 export default function AboutScreen() {
   const router = useRouter();
   const { t } = useTranslation();
+  const { setAuthState } = useAuth();
+  const deleteAccountMutation = useDeleteUser();
 
   const handlePrivacyPolicy = () => {
     // Show privacy policy in a modal or navigate to a dedicated screen
@@ -92,9 +98,20 @@ export default function AboutScreen() {
         {
           text: "Delete",
           style: "destructive",
-          onPress: () => {
-            // TODO: Implement backend API call for account deletion
-            console.log("Account deletion requested");
+          onPress: async () => {
+            const result = await deleteAccountMutation.mutateAsync();
+            if (result?.success) {
+              await removeAccessToken();
+              await clearUserInfo();
+              setAuthState({ isAuthenticated: false, user: null });
+              router.replace("/");
+            } else {
+              Toast.show({
+                type: "error",
+                text1: "Error",
+                text2: "Failed to delete account",
+              });
+            }
           },
         },
       ],
