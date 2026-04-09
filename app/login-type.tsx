@@ -1,4 +1,3 @@
-// LoginTypeScreen.tsx
 import { useGoogleLogin } from "@/api/auth";
 import { BackButton } from "@/components/ui/back-button";
 import { H2, Muted } from "@/components/ui/typography";
@@ -25,8 +24,8 @@ export default function LoginTypeScreen() {
     GoogleSignin.configure({
       webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID || "",
       offlineAccess: true,
-      hostedDomain: "", // Leave empty to allow any domain
-      forceCodeForRefreshToken: true, // Forces refresh token
+      hostedDomain: "",
+      forceCodeForRefreshToken: true,
     });
   }, []);
 
