@@ -1,4 +1,3 @@
-// LoginTypeScreen.tsx
 import { useGoogleLogin } from "@/api/auth";
 import { BackButton } from "@/components/ui/back-button";
 import { H2, Muted } from "@/components/ui/typography";
