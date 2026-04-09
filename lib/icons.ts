@@ -11,6 +11,7 @@ import {
   ChevronDown,
   ChevronRight,
   Clock,
+  Crown,
   Copy,
   Download,
   Edit3,
@@ -100,6 +101,7 @@ interopIcon(MessageSquare);
 interopIcon(Tag);
 interopIcon(Wallet)
 interopIcon(Menu)
+interopIcon(Crown)
 
 // Re-export so the rest of the app imports from here
 export {
@@ -119,6 +121,6 @@ export {
   Search, Share, Share2,
   Settings,
   ShieldCheck, Tag, Target, Trash2, User,
-  UserPlus, Users, Wallet, X, Menu
+  UserPlus, Users, Wallet, X, Menu, Crown
 };
 

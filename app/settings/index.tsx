@@ -10,8 +10,10 @@ import {
   View,
 } from "react-native";
 
+import { PremiumBadge } from "@/components/premium-badge";
 import { PremiumUpSellCard } from "@/components/premium-upsell-card";
 import { useAuth } from "@/context/auth-context";
+import { useIsPremium } from "@/hooks/use-is-premium";
 import { ChevronRight, Info, LogOut, Settings, User } from "@/lib/icons";
 import { clearUserInfo, removeAccessToken } from "@/utils/auth";
 import { makeImageUrl } from "@/utils/helper";
@@ -77,6 +79,7 @@ export default function SettingsScreen() {
   const router = useRouter();
   const { authState, setAuthState } = useAuth();
   const { t } = useTranslation();
+  const { isPremium } = useIsPremium();
 
   const handleLogout = async () => {
     await removeAccessToken();
@@ -110,16 +113,30 @@ export default function SettingsScreen() {
               className="size-11 rounded-full"
             />
             <View>
-              <Text className="text-2xl font-bold text-foreground">
-                {authState?.user?.name}
-              </Text>
-              <Text className="text-sm text-muted-foreground mt-1">
-                {authState?.user?.email}
-              </Text>
+              {authState?.user?.name ? (
+                <>
+                  <View className="flex-row items-center gap-2.5">
+                    <Text className="text-2xl font-bold text-foreground">
+                      {authState.user.name}
+                    </Text>
+                    {isPremium && <PremiumBadge />}
+                  </View>
+                  <Text className="text-sm text-muted-foreground mt-1">
+                    {authState?.user?.email}
+                  </Text>
+                </>
+              ) : (
+                <View className="flex-row items-center gap-2.5">
+                  <Text className="text-sm text-muted-foreground">
+                    {authState?.user?.email}
+                  </Text>
+                  {isPremium && <PremiumBadge size="sm" />}
+                </View>
+              )}
             </View>
           </View>
 
-          <PremiumUpSellCard />
+          {!isPremium && <PremiumUpSellCard />}
 
           {/* ── Main settings group ── */}
           <View className="bg-card rounded-2xl border border-border px-4 my-6">
