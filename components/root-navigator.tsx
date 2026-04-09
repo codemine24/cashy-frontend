@@ -1,8 +1,8 @@
 import { ThemeVarsProvider, useTheme } from "@/context/theme-context";
 import {
-    DarkTheme,
-    DefaultTheme,
-    ThemeProvider as NavThemeProvider,
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider as NavThemeProvider,
 } from "@react-navigation/native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -67,15 +67,6 @@ export const RootNavigator = () => {
               <Stack.Screen
                 name="(tabs)"
                 options={{
-                  contentStyle: {
-                    backgroundColor: isDark ? "#0f172a" : "#f8fafc",
-                  },
-                }}
-              />
-              <Stack.Screen
-                name="notifications"
-                options={{
-                  headerShown: true,
                   contentStyle: {
                     backgroundColor: isDark ? "#0f172a" : "#f8fafc",
                   },

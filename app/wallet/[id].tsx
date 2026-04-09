@@ -810,7 +810,7 @@ export default function BookDetailScreen() {
         />
 
         {/* Floating Action Buttons */}
-        <View className="absolute bottom-0 left-0 right-0 flex-row p-3 bg-card border-t border-border shadow-sm gap-3">
+        <View className="absolute bottom-6 left-0 right-0 flex-row p-3 bg-card border-t border-border shadow-sm gap-3">
           <Button
             onPress={() => {
               router.push({

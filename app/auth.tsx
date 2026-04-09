@@ -201,7 +201,7 @@ export default function AuthScreen() {
                   onChangeText={onChange}
                   onBlur={onBlur}
                   placeholder="Email address"
-                  placeholderClassName="text-muted-foreground"
+                  placeholderClassName="text-foreground"
                   keyboardType="email-address"
                   autoCapitalize="none"
                   textContentType="emailAddress"
