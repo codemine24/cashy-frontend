@@ -5,7 +5,6 @@ import { useCallback, useRef, useState } from "react";
 import {
   Dimensions,
   FlatList,
-  Image,
   TouchableOpacity,
   View,
   ViewToken,

@@ -1,10 +1,11 @@
 import { useDeleteCategory, useGetCategories } from "@/api/category";
 import { CategoryModal } from "@/components/category/category-modal";
 import { ManageCategoriesSkeleton } from "@/components/skeletons/manage-categories-skeleton";
+import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { Edit3, MoreVertical, Trash2 } from "@/lib/icons";
 import { Stack } from "expo-router";
 import React, { useState } from "react";
-import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import Popover from "react-native-popover-view";
 import Toast from "react-native-toast-message";
 
@@ -19,6 +20,10 @@ export default function ManageCategoriesScreen() {
 
   // Context Menu State
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
+
+  // Delete Modal State
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null);
 
   // APIs
   const { data: categoriesResponse, isLoading } = useGetCategories();
@@ -36,33 +41,26 @@ export default function ManageCategoriesScreen() {
 
   const handleDeleteCategory = (id: string) => {
     setActiveMenuId(null);
-    Alert.alert(
-      "Delete Category",
-      "Are you sure you want to delete this category? This action cannot be undone.",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await deleteCategoryMutation.mutateAsync(id);
-              Toast.show({
-                type: "success",
-                text1: "Success",
-                text2: "Category deleted successfully",
-              });
-            } catch (e: any) {
-              Toast.show({
-                type: "error",
-                text1: "Error",
-                text2: e?.message || "Failed to delete category",
-              });
-            }
-          },
-        },
-      ],
-    );
+    setCategoryToDelete(id);
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteCategoryConfirm = async () => {
+    if (!categoryToDelete) return;
+    try {
+      await deleteCategoryMutation.mutateAsync(categoryToDelete);
+      Toast.show({
+        type: "success",
+        text1: "Success",
+        text2: "Category deleted successfully",
+      });
+    } catch (e: any) {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: e?.message || "Failed to delete category",
+      });
+    }
   };
 
   const handleClose = () => {
@@ -175,6 +173,20 @@ export default function ManageCategoriesScreen() {
         isEditing={isEditing}
         initialName={editingCategoryName}
         categoryId={editingCategoryId || undefined}
+      />
+
+      <ConfirmationModal
+        visible={showDeleteModal}
+        onClose={() => {
+          setShowDeleteModal(false);
+          setCategoryToDelete(null);
+        }}
+        onConfirm={handleDeleteCategoryConfirm}
+        title="Delete Category"
+        message="Are you sure you want to delete this category? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        isLoading={deleteCategoryMutation.isPending}
       />
     </>
   );

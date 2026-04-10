@@ -24,7 +24,7 @@ import {
 
 import { AppModal } from "@/components/app-modal";
 import { TransactionDetailSkeleton } from "@/components/skeletons/transaction-detail-skeleton";
-import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-modal";
+import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { useAuth } from "@/context/auth-context";
 import { useTheme } from "@/context/theme-context";
 import { makeImageUrl } from "@/utils/helper";
@@ -599,7 +599,7 @@ export default function TransactionDetailScreen() {
       </AppModal>
 
       {/* Delete Confirmation Modal */}
-      <DeleteConfirmationModal
+      <ConfirmationModal
         visible={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
         onConfirm={handleConfirmDelete}

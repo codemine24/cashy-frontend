@@ -15,7 +15,7 @@ interface DeleteConfirmationModalProps {
   isLoading?: boolean;
 }
 
-export function DeleteConfirmationModal({
+export function ConfirmationModal({
   visible,
   onClose,
   onConfirm,
@@ -37,6 +37,7 @@ export function DeleteConfirmationModal({
       transparent={true}
       animationType="fade"
       onRequestClose={onClose}
+      statusBarTranslucent={true}
     >
       <View className="flex-1 items-center justify-center bg-black/50">
         <View className="bg-background rounded-2xl p-6 mx-4 max-w-sm w-full shadow-2xl">
@@ -53,9 +54,9 @@ export function DeleteConfirmationModal({
 
           {/* Message */}
           <Muted className="mb-6">
-            {message || itemName
+            {message || (itemName
               ? `Are you sure you want to delete "${itemName}"?`
-              : "Are you sure you want to delete this item? This action cannot be undone."}
+              : "Are you sure you want to delete this item? This action cannot be undone.")}
           </Muted>
 
           {/* Action Buttons */}
@@ -64,6 +65,7 @@ export function DeleteConfirmationModal({
               onPress={onClose}
               className="flex-1"
               variant="outline"
+              size="sm"
             >
               <View className="flex-row items-center justify-center">
                 <Muted className="text-foreground font-medium">{cancelText}</Muted>
@@ -74,6 +76,7 @@ export function DeleteConfirmationModal({
               onPress={handleConfirm}
               className="flex-1 bg-destructive"
               disabled={isLoading}
+              size="sm"
             >
               <View className="flex-row items-center justify-center">
                 <Muted className="text-white font-medium">

@@ -8,7 +8,7 @@ import {
 } from "@/api/transaction";
 import { BookDetailSkeleton } from "@/components/skeletons/book-detail-skeleton";
 import { Button } from "@/components/ui/button";
-import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-modal";
+import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { ReportModal, ReportType } from "@/components/wallet/report-modal";
 import {
   DEFAULT_FILTERS,
@@ -853,7 +853,7 @@ export default function BookDetailScreen() {
         />
 
         {/* Delete Confirmation Modal */}
-        <DeleteConfirmationModal
+        <ConfirmationModal
           visible={showDeleteModal}
           onClose={() => setShowDeleteModal(false)}
           onConfirm={handleConfirmDelete}

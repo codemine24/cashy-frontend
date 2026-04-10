@@ -5,6 +5,7 @@ import { MemberCard } from "@/components/memeber/member-card";
 import { ScreenContainer } from "@/components/screen-container";
 import { MembersSkeleton } from "@/components/skeletons/members-skeleton";
 import { Button } from "@/components/ui/button";
+import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { useDebounce } from "@/hooks/use-debounce";
 import { PlusIcon } from "@/icons/plus-icon";
 import { Member } from "@/interface/wallet";
@@ -33,6 +34,8 @@ export default function MembersScreen() {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [editingMember, setEditingMember] = useState<Member | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [memberToDelete, setMemberToDelete] = useState<Member | null>(null);
 
   // Form states
   const [searchValue, setSearchValue] = useState("");
@@ -68,33 +71,29 @@ export default function MembersScreen() {
   };
 
   const handleRemoveMember = (member: Member) => {
-    const email = member.email || member.user?.email || "this member";
-    Alert.alert("Remove Member", `Are you sure you want to remove ${email}?`, [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Remove",
-        style: "destructive",
-        onPress: async () => {
-          try {
-            const response = await removeMemberMutation.mutateAsync({
-              book_id: bookId,
-              user_id: member.id,
-            });
-            if (response.success) {
-              Toast.show({
-                type: "success",
-                text1: "Member removed successfully",
-              });
-            }
-          } catch (error: any) {
-            Toast.show({
-              type: "error",
-              text1: error?.message || "Failed to remove member",
-            });
-          }
-        },
-      },
-    ]);
+    setMemberToDelete(member);
+    setShowDeleteModal(true);
+  };
+
+  const handleRemoveMemberConfirm = async () => {
+    if (!memberToDelete) return;
+    try {
+      const response = await removeMemberMutation.mutateAsync({
+        book_id: bookId,
+        user_id: memberToDelete.id,
+      });
+      if (response.success) {
+        Toast.show({
+          type: "success",
+          text1: "Member removed successfully",
+        });
+      }
+    } catch (error: any) {
+      Toast.show({
+        type: "error",
+        text1: error?.message || "Failed to remove member",
+      });
+    }
   };
 
   const handleSubmitModal = async () => {
@@ -304,14 +303,14 @@ export default function MembersScreen() {
                 <TouchableOpacity
                   onPress={() => setRole("VIEWER")}
                   className={`flex-1 py-3.5 items-center rounded-xl border ${role === "VIEWER"
-                      ? "bg-primary/10 border-primary"
-                      : "bg-surface border-border"
+                    ? "bg-primary/10 border-primary"
+                    : "bg-surface border-border"
                     }`}
                 >
                   <Text
                     className={`font-semibold text-base ${role === "VIEWER"
-                        ? "text-primary"
-                        : "text-muted-foreground"
+                      ? "text-primary"
+                      : "text-muted-foreground"
                       }`}
                   >
                     Viewer
@@ -321,14 +320,14 @@ export default function MembersScreen() {
                 <TouchableOpacity
                   onPress={() => setRole("EDITOR")}
                   className={`flex-1 py-3.5 items-center rounded-xl border ${role === "EDITOR"
-                      ? "bg-primary/10 border-primary"
-                      : "bg-surface border-border"
+                    ? "bg-primary/10 border-primary"
+                    : "bg-surface border-border"
                     }`}
                 >
                   <Text
                     className={`font-semibold text-base ${role === "EDITOR"
-                        ? "text-primary"
-                        : "text-muted-foreground"
+                      ? "text-primary"
+                      : "text-muted-foreground"
                       }`}
                   >
                     Editor
@@ -338,14 +337,14 @@ export default function MembersScreen() {
                 <TouchableOpacity
                   onPress={() => setRole("ADMIN")}
                   className={`flex-1 py-3.5 items-center rounded-xl border ${role === "ADMIN"
-                      ? "bg-primary/10 border-primary"
-                      : "bg-surface border-border"
+                    ? "bg-primary/10 border-primary"
+                    : "bg-surface border-border"
                     }`}
                 >
                   <Text
                     className={`font-semibold text-base ${role === "ADMIN"
-                        ? "text-primary"
-                        : "text-muted-foreground"
+                      ? "text-primary"
+                      : "text-muted-foreground"
                       }`}
                   >
                     Admin
@@ -411,6 +410,20 @@ export default function MembersScreen() {
           </ScrollView>
         </View>
       </BottomSheetModal>
+
+      <ConfirmationModal
+        visible={showDeleteModal}
+        onClose={() => {
+          setShowDeleteModal(false);
+          setMemberToDelete(null);
+        }}
+        onConfirm={handleRemoveMemberConfirm}
+        title="Remove Member"
+        message={`Are you sure you want to remove ${memberToDelete?.email || memberToDelete?.user?.email || "this member"}?`}
+        confirmText="Remove"
+        cancelText="Cancel"
+        isLoading={removeMemberMutation.isPending}
+      />
     </>
   );
 }
