@@ -4,9 +4,9 @@ import {
   KeyboardAvoidingView,
   ModalProps,
   Modal as RNModal,
-  Platform,
   TouchableOpacity,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 
 interface BottomSheetModalProps extends ModalProps {
@@ -22,6 +22,7 @@ export function BottomSheetModal({
   ...modalProps
 }: BottomSheetModalProps) {
   const slideAnimation = useRef(new Animated.Value(300)).current;
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     if (visible) {
@@ -63,10 +64,11 @@ export function BottomSheetModal({
 
       {/* Sheet anchored to bottom */}
       <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        // behavior={Platform.OS === "ios" ? "padding" : "height"}
+        behavior="height"
         style={{
           position: "absolute",
-          bottom: 0,
+          bottom: insets.bottom,
           left: 0,
           right: 0,
         }}

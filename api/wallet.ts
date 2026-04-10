@@ -58,7 +58,10 @@ export const useCreateBook = () => {
         throwApiError(error);
       }
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: keys.all }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: keys.all });
+      queryClient.invalidateQueries({ queryKey: ["statistics"] });
+    },
   });
 };
 
@@ -75,7 +78,10 @@ export const useUpdateBook = () => {
         throwApiError(error);
       }
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: keys.all }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: keys.all });
+      queryClient.invalidateQueries({ queryKey: ["statistics"] });
+    },
   });
 };
 
@@ -92,7 +98,10 @@ export const useDeleteBook = () => {
         throwApiError(error);
       }
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: keys.all }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: keys.all });
+      queryClient.invalidateQueries({ queryKey: ["statistics"] });
+    },
   });
 };
 
@@ -119,7 +128,9 @@ export const useShareBook = () => {
         throwApiError(error);
       }
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: keys.all }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: keys.all });
+    },
   });
 };
 
@@ -143,6 +154,8 @@ export const useRemoveMember = () => {
         throwApiError(error);
       }
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: keys.all }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: keys.all });
+    },
   });
 };
