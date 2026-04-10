@@ -82,6 +82,7 @@
   "wallets": {
     "title": "ওয়ালেট",
     "createWallet": "ওয়ালেট তৈরি করুন",
+    "createFirstWallet": "আপনার প্রথম ওয়ালেট তৈরি করুন",
     "noWallets": "কোনো ওয়ালেট নেই",
     "cashIn": "ক্যাশ ইন",
     "cashOut": "ক্যাশ আউট",
