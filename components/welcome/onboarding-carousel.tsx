@@ -3,16 +3,18 @@ import { onboardingSlides, type OnboardingSlide } from "@/constants/onboarding";
 import { ChevronRight } from "@/lib/icons";
 import { useCallback, useRef, useState } from "react";
 import {
-    Dimensions,
-    FlatList,
-    Image,
-    TouchableOpacity,
-    View,
-    ViewToken,
+  Dimensions,
+  FlatList,
+  TouchableOpacity,
+  View,
+  ViewToken,
 } from "react-native";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const SLIDE_WIDTH = SCREEN_WIDTH;
+
+const SVG_WIDTH = SCREEN_WIDTH * 0.85;
+const SVG_HEIGHT = SVG_WIDTH / 0.75; // matches aspectRatio: 0.75
 
 export function OnboardingCarousel() {
   const flatListRef = useRef<FlatList<OnboardingSlide>>(null);
@@ -42,23 +44,20 @@ export function OnboardingCarousel() {
     }
   };
 
-  const renderSlide = ({ item }: { item: OnboardingSlide }) => (
-    <View
-      style={{ width: SLIDE_WIDTH }}
-      className="flex-1 items-center justify-center"
-    >
-      <View
-        className="overflow-hidden rounded-xl"
-        style={{ width: SLIDE_WIDTH * 0.7, height: SLIDE_WIDTH * 1 }}
-      >
-        <Image
-          source={item.image}
-          style={{ width: "100%", height: "100%" }}
-          resizeMode="cover"
-        />
+  const renderSlide = ({ item }: { item: OnboardingSlide }) => {
+    const SvgImage = item.image;
+
+    return (
+      <View style={{ width: SLIDE_WIDTH }} className="flex-1 items-center justify-center">
+        <View
+          className="overflow-hidden rounded-xl"
+          style={{ width: SVG_WIDTH, height: SVG_HEIGHT }}
+        >
+          <SvgImage width={SVG_WIDTH} height={SVG_HEIGHT} />
+        </View>
       </View>
-    </View>
-  );
+    );
+  };
 
   return (
     <View className="flex-1">
@@ -95,11 +94,10 @@ export function OnboardingCarousel() {
           {onboardingSlides.map((_, index) => (
             <View
               key={index}
-              className={`rounded-full ${
-                index === activeIndex
-                  ? "h-2.5 w-2.5 bg-primary"
-                  : "h-2 w-2 bg-border"
-              }`}
+              className={`rounded-full ${index === activeIndex
+                ? "h-2.5 w-2.5 bg-primary"
+                : "h-2 w-2 bg-border"
+                }`}
             />
           ))}
         </View>

@@ -1,8 +1,9 @@
 import { ScreenContainer } from "@/components/screen-container";
+import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { Stack, useRouter } from "expo-router";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  Alert,
   Image,
   ScrollView,
   Text,
@@ -80,12 +81,17 @@ export default function SettingsScreen() {
   const { authState, setAuthState } = useAuth();
   const { t } = useTranslation();
   const { isPremium } = useIsPremium();
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const handleLogout = async () => {
     await removeAccessToken();
     await clearUserInfo();
     setAuthState({ isAuthenticated: false, user: null });
     router.replace("/");
+  };
+
+  const handleLogoutConfirm = async () => {
+    await handleLogout();
   };
 
   return (
@@ -117,26 +123,15 @@ export default function SettingsScreen() {
               className="size-11 rounded-full"
             />
             <View>
-              {authState?.user?.name ? (
-                <>
-                  <View className="flex-row items-center gap-2.5">
-                    <Text className="text-2xl font-bold text-foreground">
-                      {authState.user.name}
-                    </Text>
-                    {isPremium && <PremiumBadge />}
-                  </View>
-                  <Text className="text-sm text-muted-foreground mt-1">
-                    {authState?.user?.email}
-                  </Text>
-                </>
-              ) : (
-                <View className="flex-row items-center gap-2.5">
-                  <Text className="text-sm text-muted-foreground">
-                    {authState?.user?.email}
-                  </Text>
-                  {isPremium && <PremiumBadge size="sm" />}
-                </View>
-              )}
+              <View className="flex-row items-center gap-2.5">
+                <Text className="text-2xl font-bold text-foreground">
+                  {authState?.user?.name || "N/A"}
+                </Text>
+                {isPremium && <PremiumBadge />}
+              </View>
+              <Text className="text-sm text-muted-foreground mt-1">
+                {authState?.user?.email || "N/A"}
+              </Text>
             </View>
           </View>
 
@@ -184,16 +179,7 @@ export default function SettingsScreen() {
           {/* ── Logout ── */}
           <View className="bg-card rounded-2xl border border-border px-4">
             <TouchableOpacity
-              onPress={() =>
-                Alert.alert(t("settings.logOut"), t("settings.logOutConfirm"), [
-                  { text: t("common.cancel"), style: "cancel" },
-                  {
-                    text: t("settings.logOut"),
-                    style: "destructive",
-                    onPress: handleLogout,
-                  },
-                ])
-              }
+              onPress={() => setShowLogoutModal(true)}
               activeOpacity={0.7}
               className="flex-row items-center py-4 gap-3"
             >
@@ -207,6 +193,16 @@ export default function SettingsScreen() {
           </View>
         </ScrollView>
       </ScreenContainer>
+
+      <ConfirmationModal
+        visible={showLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+        onConfirm={handleLogoutConfirm}
+        title={t("settings.logOut")}
+        message="Are you sure you want to log out?"
+        confirmText={t("settings.logOut")}
+        cancelText={t("common.cancel")}
+      />
     </>
   );
 }

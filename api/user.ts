@@ -24,7 +24,14 @@ type UpdateProfilePayload = {
   };
 };
 
-export const useGetAllUsers = (searchParams: { search?: string, sort?: string, sort_order?: string, limit?: number } = {}) => {
+export const useGetAllUsers = (
+  searchParams: {
+    search?: string;
+    sort?: string;
+    sort_order?: string;
+    limit?: number;
+  } = {},
+) => {
   // Filter out empty/undefined params
   const params: Record<string, string> = {};
   if (searchParams.search) params.search_term = searchParams.search;
@@ -69,6 +76,15 @@ const updateProfile = async (payload: UpdateProfilePayload) => {
   );
 
   return response.data;
+};
+
+export const useDeleteUser = () => {
+  return useMutation({
+    mutationFn: async () => {
+      const response = await apiClient.delete(`${USER_API_URL}/delete-profile`);
+      return response.data;
+    },
+  });
 };
 
 export const useUpdateProfile = () => {

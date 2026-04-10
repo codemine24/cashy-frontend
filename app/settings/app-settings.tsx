@@ -56,7 +56,7 @@ function ThemeSelector({
       </Text>
 
       {/* Segmented control */}
-      <View className="flex-row bg-muted rounded-xl overflow-hidden">
+      <View className="flex-row bg-background rounded-xl overflow-hidden">
         {THEME_OPTIONS.map((opt) => {
           const isActive = opt.value === selected;
           return (
@@ -110,7 +110,7 @@ function LanguageSelector({
           <TouchableOpacity
             onPress={() => setShowDropdown(true)}
             activeOpacity={0.7}
-            className="flex-row items-center bg-muted rounded-xl px-3 py-2 w-16"
+            className="flex-row items-center bg-background rounded-xl px-3 py-2 w-16"
           >
             <Text className="text-sm font-medium text-foreground flex-1 text-center">
               {selectedLanguage?.code.toUpperCase()}
@@ -133,13 +133,12 @@ function LanguageSelector({
           shadowColor: "#000",
           shadowOpacity: 0.1,
           shadowRadius: 8,
-          borderColor: "#e5e7eb",
-          borderWidth: 1,
+          borderWidth: 0,
         }}
         backgroundStyle={{ backgroundColor: "transparent" }}
         arrowSize={{ width: 0, height: 0 }}
       >
-        <View className="bg-card">
+        <View className="bg-card border border-border">
           {languages.map((lang) => {
             const isActive = lang.code === selected;
             return (
@@ -155,7 +154,7 @@ function LanguageSelector({
               >
                 <View>
                   <Text
-                    className={`text-sm font-medium ${isActive ? "text-primary" : "text-black"
+                    className={`text-sm font-medium ${isActive ? "text-primary" : "text-foreground"
                       }`}
                   >
                     {lang.label}

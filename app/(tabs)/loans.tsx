@@ -4,6 +4,7 @@ import { LoanCard } from "@/components/loan/loan-card";
 import { ScreenContainer } from "@/components/screen-container";
 import { LoansSkeleton } from "@/components/skeletons/loans-skeleton";
 import { Button } from "@/components/ui/button";
+import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { H3, Muted } from "@/components/ui/typography";
 import { useDebounce } from "@/hooks/use-debounce";
 import { usePullToRefreshSkeletonWithSearch } from "@/hooks/use-pull-to-refresh-skeleton";
@@ -16,13 +17,12 @@ import { formatCurrency } from "@/utils/index";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
-  Alert,
   FlatList,
   RefreshControl,
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import Toast from "react-native-toast-message";
 
@@ -33,10 +33,10 @@ const SORT_OPTIONS: {
   label: string;
   order: "asc" | "desc";
 }[] = [
-  { key: "updated_at", label: "Last Updated", order: "desc" },
-  { key: "person_name", label: "Name (A-Z)", order: "asc" },
-  { key: "created_at", label: "Last Created", order: "desc" },
-];
+    { key: "updated_at", label: "Last Updated", order: "desc" },
+    { key: "person_name", label: "Name (A-Z)", order: "asc" },
+    { key: "created_at", label: "Last Created", order: "desc" },
+  ];
 
 type LoanTab = "GIVEN" | "TAKEN";
 
@@ -52,14 +52,12 @@ function TabButton({
   return (
     <TouchableOpacity
       onPress={onPress}
-      className={`flex-1 py-2.5 rounded-md items-center justify-center ${
-        active ? "bg-primary" : ""
-      }`}
+      className={`flex-1 py-2.5 rounded-md items-center justify-center ${active ? "bg-primary" : ""
+        }`}
     >
       <Text
-        className={`font-semibold text-sm ${
-          active ? "text-white" : "text-muted-foreground"
-        }`}
+        className={`font-semibold text-sm ${active ? "text-white" : "text-muted-foreground"
+          }`}
       >
         {label}
       </Text>
@@ -75,6 +73,8 @@ export default function LoansScreen() {
   const [showSortModal, setShowSortModal] = useState(false);
   const [sortBy, setSortBy] = useState<SortOption>("updated_at");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [loanToDelete, setLoanToDelete] = useState<Loan | null>(null);
 
   const [tempSortBy, setTempSortBy] = useState<SortOption>("updated_at");
   const [tempSortOrder, setTempSortOrder] = useState<"asc" | "desc">("desc");
@@ -104,39 +104,39 @@ export default function LoansScreen() {
   const finalShowSkeleton = isLoading || showSkeleton;
 
   const handleDeleteLoan = (loan: Loan) => {
-    Alert.alert("Delete Loan", `Delete loan for "${loan.person_name}"?`, [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Delete",
-        style: "destructive",
-        onPress: async () => {
-          try {
-            const res: any = await deleteLoanMutation.mutateAsync(loan.id);
+    setLoanToDelete(loan);
+    setShowDeleteModal(true);
+  };
 
-            if (res?.success) {
-              Toast.show({
-                type: "success",
-                text1: "success",
-                text2: res?.message || "Loan deleted successfully",
-              });
-              refetch();
-            } else {
-              Toast.show({
-                type: "error",
-                text1: "error",
-                text2: res?.message || "Delete failed",
-              });
-            }
-          } catch (e: any) {
-            Toast.show({
-              type: "error",
-              text1: "error",
-              text2: e?.message || "Something went wrong",
-            });
-          }
-        },
-      },
-    ]);
+  const handleConfirmDelete = async () => {
+    if (!loanToDelete) return;
+
+    try {
+      const res: any = await deleteLoanMutation.mutateAsync(loanToDelete.id);
+
+      if (res?.success) {
+        Toast.show({
+          type: "success",
+          text1: "success",
+          text2: res?.message || "Loan deleted successfully",
+        });
+        refetch();
+      } else {
+        Toast.show({
+          type: "error",
+          text1: "error",
+          text2: res?.message || "Delete failed",
+        });
+      }
+    } catch (e: any) {
+      Toast.show({
+        type: "error",
+        text1: "error",
+        text2: e?.message || "Something went wrong",
+      });
+    } finally {
+      setLoanToDelete(null);
+    }
   };
 
   const handleEditLoan = (loan: Loan) => {
@@ -390,6 +390,16 @@ export default function LoansScreen() {
           </Button>
         </View>
       </BottomSheetModal>
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmationModal
+        visible={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleConfirmDelete}
+        title="Delete Loan"
+        itemName={loanToDelete?.person_name}
+        isLoading={deleteLoanMutation.isPending}
+      />
     </ScreenContainer>
   );
 }

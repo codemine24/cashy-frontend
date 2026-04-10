@@ -14,17 +14,17 @@ import {
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import {
-  Alert,
   Image,
   RefreshControl,
   ScrollView,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 
 import { AppModal } from "@/components/app-modal";
 import { TransactionDetailSkeleton } from "@/components/skeletons/transaction-detail-skeleton";
+import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { useAuth } from "@/context/auth-context";
 import { useTheme } from "@/context/theme-context";
 import { makeImageUrl } from "@/utils/helper";
@@ -139,6 +139,7 @@ export default function TransactionDetailScreen() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -201,35 +202,33 @@ export default function TransactionDetailScreen() {
   };
 
   const handleDelete = () => {
-    Alert.alert(
-      "Delete Transaction",
-      "Are you sure you want to delete this transaction?",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: async () => {
-            const res: any = await deleteTransaction.mutateAsync(
-              params.transactionId,
-            );
+    setShowDeleteModal(true);
+  };
 
-            if (res?.success) {
-              Toast.show({
-                type: "success",
-                text1: "Transaction deleted successfully",
-              });
-              router.back();
-            } else {
-              Toast.show({
-                type: "error",
-                text1: res?.message || "Failed to delete transaction",
-              });
-            }
-          },
-        },
-      ],
-    );
+  const handleConfirmDelete = async () => {
+    try {
+      const res: any = await deleteTransaction.mutateAsync(
+        params.transactionId,
+      );
+
+      if (res?.success) {
+        Toast.show({
+          type: "success",
+          text1: "Transaction deleted successfully",
+        });
+        router.back();
+      } else {
+        Toast.show({
+          type: "error",
+          text1: res?.message || "Failed to delete transaction",
+        });
+      }
+    } catch (error: any) {
+      Toast.show({
+        type: "error",
+        text1: error?.message || "Failed to delete transaction",
+      });
+    }
   };
 
   const handleShare = async () => {
@@ -598,6 +597,16 @@ export default function TransactionDetailScreen() {
           </View>
         </View>
       </AppModal>
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmationModal
+        visible={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleConfirmDelete}
+        title="Delete Transaction"
+        message="Are you sure you want to delete this transaction?"
+        isLoading={deleteTransaction.isPending}
+      />
     </>
   );
 }

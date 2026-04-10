@@ -32,7 +32,7 @@ export default function WelcomeScreen() {
 
       {/* ── Bottom CTA ── */}
       <View className="mb-16">
-        <Button onPress={() => router.push("/auth")}>Get Started</Button>
+        <Button onPress={() => router.push("/login-type" as any)}>Get Started 2</Button>
       </View>
       {/* </View> */}
     </ScreenWrapper>

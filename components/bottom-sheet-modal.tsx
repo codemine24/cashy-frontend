@@ -4,8 +4,8 @@ import {
   KeyboardAvoidingView,
   ModalProps,
   Modal as RNModal,
+  Platform,
   TouchableOpacity,
-  View,
 } from "react-native";
 import Toast from "react-native-toast-message";
 
@@ -50,23 +50,37 @@ export function BottomSheetModal({
       statusBarTranslucent={true}
       {...modalProps}
     >
-      <KeyboardAvoidingView behavior="height" style={{ flex: 1 }}>
-        <View style={{ flex: 1 }}>
-          <TouchableOpacity
-            style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.4)" }}
-            activeOpacity={1}
-            onPress={onClose}
-          />
-          <Animated.View
-            className="bg-background rounded-t-3xl"
-            style={{
-              transform: [{ translateY: slideAnimation }],
-            }}
-          >
-            {children}
-          </Animated.View>
-        </View>
+      {/* Backdrop — fully covers screen behind sheet */}
+      <TouchableOpacity
+        style={{
+          position: "absolute",
+          top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: "rgba(0,0,0,0.4)",
+        }}
+        activeOpacity={1}
+        onPress={onClose}
+      />
+
+      {/* Sheet anchored to bottom */}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          right: 0,
+        }}
+      >
+        <Animated.View
+          className="bg-background rounded-t-3xl pb-3"
+          style={{
+            transform: [{ translateY: slideAnimation }],
+          }}
+        >
+          {children}
+        </Animated.View>
       </KeyboardAvoidingView>
+
       <Toast />
     </RNModal>
   );

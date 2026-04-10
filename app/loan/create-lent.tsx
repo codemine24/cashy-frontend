@@ -1,5 +1,6 @@
 import { useCreateLoan, useUpdateLoan } from "@/api/loan";
 import { InputError } from "@/components/ui/input-error";
+import { useKeyboardVisible } from "@/hooks/use-keyboard-visible";
 import { useKeyboardOffset } from "@/hooks/useKeyboardOffset";
 import { zodResolver } from "@hookform/resolvers/zod";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -8,6 +9,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
   KeyboardAvoidingView,
+  Platform,
   ScrollView,
   Text,
   TextInput,
@@ -46,6 +48,7 @@ export default function CreateLentLoanScreen() {
   const isEditing = !!params.editId;
 
   const keyboardOffset = useKeyboardOffset();
+  const isKeyboardVisible = useKeyboardVisible();
 
   const createLoanMutation = useCreateLoan();
   const updateLoanMutation = useUpdateLoan();
@@ -164,21 +167,20 @@ export default function CreateLentLoanScreen() {
         }}
       />
       <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior="height"
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={keyboardOffset}
+        style={{ flex: 1 }}
       >
-        <View className="flex-1 bg-background">
+        <View style={{ flex: 1 }} className={`bg-background ${isKeyboardVisible ? "pb-0" : "pb-8"}`}>
+
+          {/* Scrollable content */}
           <ScrollView
-            className="flex-1 bg-background"
-            contentContainerStyle={{
-              paddingHorizontal: 20,
-            }}
+            contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 24 }}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
           >
             {/* Person Name */}
-            <View className="mb-5 mt-4">
+            <View className="mb-5">
               <Text className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
                 Person Name
               </Text>
@@ -196,15 +198,13 @@ export default function CreateLentLoanScreen() {
                       className={`bg-card rounded-xl px-4 py-3.5 border ${form.formState.errors.person_name ? "border-destructive" : "border-border"} text-foreground text-base`}
                       autoCapitalize="words"
                     />
-                    <InputError
-                      error={form.formState.errors.person_name?.message}
-                    />
+                    <InputError error={form.formState.errors.person_name?.message} />
                   </View>
                 )}
               />
             </View>
 
-            {/* Amount Input */}
+            {/* Amount */}
             <View className="mb-5">
               <Text className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
                 Amount
@@ -217,15 +217,10 @@ export default function CreateLentLoanScreen() {
                     <View
                       className={`flex-row items-center rounded-xl px-4 py-3.5 border-2 ${accentBorderClassMap} ${accentBgClassMap} ${form.formState.errors.amount ? "border-destructive" : ""}`}
                     >
-                      <Text className={`text-2xl font-bold ${accentTextClass}`}>
-                        $
-                      </Text>
+                      <Text className={`text-2xl font-bold ${accentTextClass}`}>$</Text>
                       <TextInput
                         value={value}
-                        onChangeText={(text) => {
-                          onChange(text);
-                          setAmount(text);
-                        }}
+                        onChangeText={(text) => { onChange(text); setAmount(text); }}
                         onBlur={onBlur}
                         placeholder="0.00"
                         placeholderTextColor="#A1A1AA"
@@ -240,26 +235,19 @@ export default function CreateLentLoanScreen() {
               />
             </View>
 
-            {/* Date & Time */}
+            {/* Due Date */}
             <View className="mb-5">
               <Text className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
                 Due Date
               </Text>
-              <View className="flex-row gap-3">
-                <View className="flex-1">
-                  <TouchableOpacity
-                    onPress={() => setShowDatePicker(true)}
-                    className={`flex-1 bg-card rounded-xl px-4 py-3.5 border flex-row items-center justify-between ${accentBorderClassMap} ${accentBgClassMap}`}
-                  >
-                    <Text
-                      className={`text-base font-medium ${accentTextClass}`}
-                    >
-                      {date.toLocaleDateString()}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-
+              <TouchableOpacity
+                onPress={() => setShowDatePicker(true)}
+                className={`bg-card rounded-xl px-4 py-3.5 border flex-row items-center justify-between ${accentBorderClassMap} ${accentBgClassMap}`}
+              >
+                <Text className={`text-base font-medium ${accentTextClass}`}>
+                  {date.toLocaleDateString()}
+                </Text>
+              </TouchableOpacity>
               {showDatePicker && (
                 <DateTimePicker
                   value={date}
@@ -268,16 +256,14 @@ export default function CreateLentLoanScreen() {
                   minimumDate={new Date()}
                   onChange={(event, selectedDate) => {
                     setShowDatePicker(false);
-                    if (selectedDate) {
-                      setDate(selectedDate);
-                    }
+                    if (selectedDate) setDate(selectedDate);
                   }}
                 />
               )}
             </View>
           </ScrollView>
 
-          {/* Submit Button - Sticks above keyboard */}
+          {/* Submit button — always sticks to bottom */}
           <View
             className="px-5 py-3 bg-background border-t border-border"
             style={{ paddingBottom: Math.max(insets.bottom, 16) }}
@@ -293,6 +279,7 @@ export default function CreateLentLoanScreen() {
               </Text>
             </TouchableOpacity>
           </View>
+
         </View>
       </KeyboardAvoidingView>
     </>

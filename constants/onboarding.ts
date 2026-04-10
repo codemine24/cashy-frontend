@@ -1,10 +1,12 @@
-import { ImageSourcePropType } from "react-native";
+import Slide1 from "@/assets/images/onboarding-1.svg";
+import { ComponentType } from "react";
+import { SvgProps } from "react-native-svg";
 
 export interface OnboardingSlide {
   id: string;
   title: string;
   subtitle: string;
-  image: ImageSourcePropType;
+  image: ComponentType<SvgProps>;
 }
 
 export const onboardingSlides: OnboardingSlide[] = [
@@ -12,7 +14,7 @@ export const onboardingSlides: OnboardingSlide[] = [
     id: "1",
     title: "Manage Expense",
     subtitle: "Create multiple wallet to track your expense separately. ",
-    image: require("../assets/images/onboarding-1.svg"),
+    image: Slide1,
   },
 ];
 
