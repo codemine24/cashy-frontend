@@ -266,7 +266,7 @@ export default function CreateLentLoanScreen() {
           {/* Submit button — always sticks to bottom */}
           <View
             className="px-5 py-3 bg-background border-t border-border"
-            style={{ paddingBottom: Math.max(insets.bottom, 16) }}
+            style={{ paddingBottom: Math.max(insets.bottom, isEditing ? 6 : 16) }}
           >
             <TouchableOpacity
               onPress={form.handleSubmit(handleSubmit)}
@@ -279,7 +279,6 @@ export default function CreateLentLoanScreen() {
               </Text>
             </TouchableOpacity>
           </View>
-
         </View>
       </KeyboardAvoidingView>
     </>

@@ -1,5 +1,6 @@
 import { useCreateTransaction, useUpdateTransaction } from "@/api/transaction";
 import { InputError } from "@/components/ui/input-error";
+import { useKeyboardVisible } from "@/hooks/use-keyboard-visible";
 import { useKeyboardOffset } from "@/hooks/useKeyboardOffset";
 import { ChevronRight, Paperclip, X } from "@/lib/icons";
 import { formatDateToUTC, formatTimeToUTC } from "@/utils";
@@ -14,6 +15,7 @@ import {
   Alert,
   Image,
   KeyboardAvoidingView,
+  Platform,
   ScrollView,
   Text,
   TextInput,
@@ -75,6 +77,7 @@ export default function AddTransactionScreen() {
   const isEditing = !!params.editId;
 
   const keyboardOffset = useKeyboardOffset();
+  const isKeyboardVisible = useKeyboardVisible();
 
   const createTransactionMutation = useCreateTransaction();
   const updateTransactionMutation = useUpdateTransaction();
@@ -317,17 +320,14 @@ export default function AddTransactionScreen() {
           headerBackTitle: "Back",
         }}
       />
-      <View className="flex-1 bg-background">
-        <KeyboardAvoidingView
-          style={{ flex: 1 }}
-          behavior="height"
-          keyboardVerticalOffset={keyboardOffset}
-        >
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={keyboardOffset}
+        style={{ flex: 1 }}
+      >
+        <View style={{ flex: 1 }} className={`bg-background ${isKeyboardVisible ? "pb-0" : "pb-8"}`}>
           <ScrollView
-            className="flex-1 bg-background"
-            contentContainerStyle={{
-              paddingHorizontal: 20,
-            }}
+            contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 24 }}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
           >
@@ -559,34 +559,34 @@ export default function AddTransactionScreen() {
               </TouchableOpacity>
             </View>
           </ScrollView>
+        </View>
 
-          {/* Submit Button - Sticks above keyboard */}
-          <View
-            className="px-5 py-3 bg-background border-t border-border"
-            style={{ paddingBottom: Math.max(insets.bottom, 16) }}
+        {/* Submit Button - Sticks above keyboard */}
+        <View
+          className="px-5 py-3 bg-background border-t border-border"
+          style={{ paddingBottom: Math.max(insets.bottom, 40) }}
+        >
+          <TouchableOpacity
+            onPress={form.handleSubmit(handleSubmit)}
+            disabled={isPending}
+            className={`rounded-xl py-4 items-center justify-center w-full ${btnClassMap} ${isPending ? "opacity-50" : "opacity-100"}`}
+            activeOpacity={0.8}
           >
-            <TouchableOpacity
-              onPress={form.handleSubmit(handleSubmit)}
-              disabled={isPending}
-              className={`rounded-xl py-4 items-center justify-center w-full ${btnClassMap} ${isPending ? "opacity-50" : "opacity-100"}`}
-              activeOpacity={0.8}
+            <Text
+              className="text-white font-bold text-base tracking-wider text-center w-full"
+              numberOfLines={1}
             >
-              <Text
-                className="text-white font-bold text-base tracking-wider text-center w-full"
-                numberOfLines={1}
-              >
-                {isPending
-                  ? "SAVING..."
-                  : isEditing
-                    ? "SAVE CHANGES"
-                    : isDeposit
-                      ? "CASH IN"
-                      : "CASH OUT"}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </KeyboardAvoidingView>
-      </View>
+              {isPending
+                ? "SAVING..."
+                : isEditing
+                  ? "SAVE CHANGES"
+                  : isDeposit
+                    ? "CASH IN"
+                    : "CASH OUT"}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </KeyboardAvoidingView>
     </>
   );
 }

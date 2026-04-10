@@ -417,7 +417,7 @@ function RadioRow({
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.7}
-      className="flex-row items-center px-5 py-3.5 gap-3"
+      className="flex-row items-center py-3.5 gap-3"
     >
       <View
         className={`w-5 h-5 rounded-full border-2 items-center justify-center ${selected ? "border-primary bg-primary" : "border-muted-foreground"
@@ -445,7 +445,7 @@ function CheckboxRow({
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.7}
-      className="flex-row items-center px-5 py-3.5 gap-3"
+      className="flex-row items-center py-3.5 gap-3"
     >
       <View
         className={`w-5 h-5 rounded-full border-2 items-center justify-center ${checked ? "border-primary bg-primary" : "border-muted-foreground"
@@ -763,8 +763,8 @@ function MembersFilterModal({
     >
       <View>
         {/* Search */}
-        <View className="px-5 pt-3 pb-1">
-          <View className="flex-row items-center bg-muted rounded-xl px-3 py-2 gap-2">
+        <View className="pb-1">
+          <View className="flex-row items-center bg-muted border border-border rounded-xl px-3 gap-2">
             <Search size={16} className="text-muted-foreground" />
             <TextInput
               value={search}
@@ -869,8 +869,8 @@ function CategoryFilterModal({
     >
       <View>
         {/* Search */}
-        <View className="px-5 pt-3 pb-1">
-          <View className="flex-row items-center bg-muted rounded-xl px-3 py-2 gap-2">
+        <View className="pb-1">
+          <View className="flex-row items-center bg-muted border border-border rounded-xl px-3 gap-2">
             <Search size={16} className="text-muted-foreground" />
             <TextInput
               value={search}
