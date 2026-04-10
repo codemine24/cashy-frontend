@@ -4,6 +4,7 @@ import {
   KeyboardAvoidingView,
   ModalProps,
   Modal as RNModal,
+  Platform,
   TouchableOpacity,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -22,25 +23,43 @@ export function BottomSheetModal({
   ...modalProps
 }: BottomSheetModalProps) {
   const slideAnimation = useRef(new Animated.Value(300)).current;
+  const backdropOpacity = useRef(new Animated.Value(0)).current;
   const insets = useSafeAreaInsets();
 
   useEffect(() => {
     if (visible) {
       slideAnimation.setValue(300);
-      Animated.spring(slideAnimation, {
-        toValue: 0,
-        useNativeDriver: true,
-        tension: 65,
-        friction: 8,
-      }).start();
+      backdropOpacity.setValue(0);
+
+      // 👈 run both animations in parallel
+      Animated.parallel([
+        Animated.spring(slideAnimation, {
+          toValue: 0,
+          useNativeDriver: true,
+          tension: 65,
+          friction: 8,
+        }),
+        Animated.timing(backdropOpacity, {
+          toValue: 1,
+          duration: 250,
+          useNativeDriver: true,
+        }),
+      ]).start();
     } else {
-      Animated.timing(slideAnimation, {
-        toValue: 300,
-        duration: 250,
-        useNativeDriver: true,
-      }).start();
+      Animated.parallel([
+        Animated.timing(slideAnimation, {
+          toValue: 300,
+          duration: 250,
+          useNativeDriver: true,
+        }),
+        Animated.timing(backdropOpacity, {
+          toValue: 0,
+          duration: 250,
+          useNativeDriver: true,
+        }),
+      ]).start();
     }
-  }, [visible, slideAnimation]);
+  }, [visible, backdropOpacity, slideAnimation]);
 
   return (
     <RNModal
@@ -51,21 +70,25 @@ export function BottomSheetModal({
       statusBarTranslucent={true}
       {...modalProps}
     >
-      {/* Backdrop — fully covers screen behind sheet */}
-      <TouchableOpacity
+      {/* Backdrop — fades in/out smoothly */}
+      <Animated.View
         style={{
           position: "absolute",
           top: 0, left: 0, right: 0, bottom: 0,
           backgroundColor: "rgba(0,0,0,0.4)",
+          opacity: backdropOpacity, // 👈 animated opacity
         }}
-        activeOpacity={1}
-        onPress={onClose}
-      />
+      >
+        <TouchableOpacity
+          style={{ flex: 1 }}
+          activeOpacity={1}
+          onPress={onClose}
+        />
+      </Animated.View>
 
       {/* Sheet anchored to bottom */}
       <KeyboardAvoidingView
-        // behavior={Platform.OS === "ios" ? "padding" : "height"}
-        behavior="height"
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{
           position: "absolute",
           bottom: insets.bottom,
