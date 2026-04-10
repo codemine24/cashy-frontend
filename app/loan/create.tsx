@@ -10,12 +10,12 @@ import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
-    KeyboardAvoidingView,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  KeyboardAvoidingView,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import Toast from "react-native-toast-message";
 import { z } from "zod";
@@ -129,20 +129,17 @@ export default function CreateLoanScreen() {
               onPress={() =>
                 form.setValue("type", "GIVEN", { shouldValidate: true })
               }
-              className={`flex-1 rounded-lg py-3 items-center justify-center ${
-                isGiven ? "bg-primary shadow-sm" : "bg-transparent"
-              }`}
+              className={`flex-1 rounded-lg py-3 items-center justify-center ${isGiven ? "bg-primary shadow-sm" : "bg-transparent"
+                }`}
               activeOpacity={0.8}
             >
               <PlusIcon
-                className={`mr-2 size-4 ${
-                  isGiven ? "text-primary-foreground" : "text-foreground"
-                }`}
+                className={`mr-2 size-4 ${isGiven ? "text-primary-foreground" : "text-foreground"
+                  }`}
               />
               <Text
-                className={`font-semibold text-base ${
-                  isGiven ? "text-primary-foreground" : "text-muted-foreground"
-                }`}
+                className={`font-semibold text-base ${isGiven ? "text-primary-foreground" : "text-muted-foreground"
+                  }`}
               >
                 Lent Loan
               </Text>
@@ -151,20 +148,17 @@ export default function CreateLoanScreen() {
               onPress={() =>
                 form.setValue("type", "TAKEN", { shouldValidate: true })
               }
-              className={`flex-1 rounded-lg py-3 items-center justify-center ${
-                !isGiven ? "bg-primary shadow-sm" : "bg-transparent"
-              }`}
+              className={`flex-1 rounded-lg py-3 items-center justify-center ${!isGiven ? "bg-primary shadow-sm" : "bg-transparent"
+                }`}
               activeOpacity={0.8}
             >
               <PlusIcon
-                className={`mr-2 size-4 ${
-                  !isGiven ? "text-primary-foreground" : "text-foreground"
-                }`}
+                className={`mr-2 size-4 ${!isGiven ? "text-primary-foreground" : "text-foreground"
+                  }`}
               />
               <Text
-                className={`font-semibold text-base ${
-                  !isGiven ? "text-primary-foreground" : "text-muted-foreground"
-                }`}
+                className={`font-semibold text-base ${!isGiven ? "text-primary-foreground" : "text-muted-foreground"
+                  }`}
               >
                 Borrowed Loan
               </Text>
@@ -191,11 +185,10 @@ export default function CreateLoanScreen() {
                         : "Who did you borrow from?"
                     }
                     autoCapitalize="words"
-                    className={`${
-                      form.formState.errors.person_name
+                    className={`${form.formState.errors.person_name
                         ? "border-destructive"
                         : "border-border"
-                    }`}
+                      }`}
                   />
                   <InputError
                     error={form.formState.errors.person_name?.message}
@@ -216,11 +209,10 @@ export default function CreateLoanScreen() {
               render={({ field: { onChange, onBlur, value } }) => (
                 <View>
                   <View
-                    className={`flex-row items-center rounded-xl px-4 py-4 border ${
-                      form.formState.errors.amount
+                    className={`flex-row items-center rounded-xl px-4 py-4 border ${form.formState.errors.amount
                         ? "border-destructive"
                         : "border-border"
-                    }`}
+                      }`}
                   >
                     <Text className="text-2xl font-bold text-primary mr-2">
                       $
@@ -259,9 +251,8 @@ export default function CreateLoanScreen() {
                     className="bg-card rounded-xl px-4 py-4 border border-border flex-row items-center justify-between"
                   >
                     <Text
-                      className={`text-base ${
-                        value ? "text-foreground" : "text-muted-foreground"
-                      }`}
+                      className={`text-base ${value ? "text-foreground" : "text-muted-foreground"
+                        }`}
                     >
                       {formatDateForDisplay(value)}
                     </Text>

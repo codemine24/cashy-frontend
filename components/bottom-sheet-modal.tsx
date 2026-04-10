@@ -53,7 +53,7 @@ export function BottomSheetModal({
       {/* Backdrop — fully covers screen behind sheet */}
       <TouchableOpacity
         style={{
-          position: "absolute", // 👈 absolute so it doesn't affect sheet position
+          position: "absolute",
           top: 0, left: 0, right: 0, bottom: 0,
           backgroundColor: "rgba(0,0,0,0.4)",
         }}
@@ -63,9 +63,9 @@ export function BottomSheetModal({
 
       {/* Sheet anchored to bottom */}
       <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"} // 👈 padding on iOS
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{
-          position: "absolute", // 👈 anchor to bottom, no gap
+          position: "absolute",
           bottom: 0,
           left: 0,
           right: 0,
