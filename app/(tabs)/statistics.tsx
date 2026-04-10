@@ -86,6 +86,8 @@ export default function StatisticsPage() {
     top_sources: [],
   };
 
+  console.log("walletStats", walletStats);
+
   const books = booksData?.data || [];
 
   const handleGeneratePdf = async () => {
