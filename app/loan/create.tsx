@@ -186,8 +186,8 @@ export default function CreateLoanScreen() {
                     }
                     autoCapitalize="words"
                     className={`${form.formState.errors.person_name
-                        ? "border-destructive"
-                        : "border-border"
+                      ? "border-destructive"
+                      : "border-border"
                       }`}
                   />
                   <InputError
@@ -210,8 +210,8 @@ export default function CreateLoanScreen() {
                 <View>
                   <View
                     className={`flex-row items-center rounded-xl px-4 py-4 border ${form.formState.errors.amount
-                        ? "border-destructive"
-                        : "border-border"
+                      ? "border-destructive"
+                      : "border-border"
                       }`}
                   >
                     <Text className="text-2xl font-bold text-primary mr-2">
