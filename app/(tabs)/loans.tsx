@@ -4,7 +4,7 @@ import { LoanCard } from "@/components/loan/loan-card";
 import { ScreenContainer } from "@/components/screen-container";
 import { LoansSkeleton } from "@/components/skeletons/loans-skeleton";
 import { Button } from "@/components/ui/button";
-import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-modal";
+import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { H3, Muted } from "@/components/ui/typography";
 import { useDebounce } from "@/hooks/use-debounce";
 import { usePullToRefreshSkeletonWithSearch } from "@/hooks/use-pull-to-refresh-skeleton";
@@ -392,7 +392,7 @@ export default function LoansScreen() {
       </BottomSheetModal>
 
       {/* Delete Confirmation Modal */}
-      <DeleteConfirmationModal
+      <ConfirmationModal
         visible={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
         onConfirm={handleConfirmDelete}

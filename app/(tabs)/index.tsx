@@ -3,7 +3,7 @@ import { BottomSheetModal } from "@/components/bottom-sheet-modal";
 import { ScreenContainer } from "@/components/screen-container";
 import { WalletsSkeleton } from "@/components/skeletons/wallets-skeleton";
 import { Button } from "@/components/ui/button";
-import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-modal";
+import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { H3, Muted } from "@/components/ui/typography";
 import { CreateWalletModal } from "@/components/wallet/create-wallet-modal";
 import { WalletCard } from "@/components/wallet/wallet-card";
@@ -301,7 +301,7 @@ export default function HomeScreen() {
       </BottomSheetModal>
 
       {/* Delete Confirmation Modal */}
-      <DeleteConfirmationModal
+      <ConfirmationModal
         visible={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
         onConfirm={handleConfirmDeleteBook}

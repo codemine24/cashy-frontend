@@ -86,6 +86,8 @@ export default function StatisticsPage() {
     top_sources: [],
   };
 
+  console.log("walletStats", walletStats);
+
   const books = booksData?.data || [];
 
   const handleGeneratePdf = async () => {
@@ -593,6 +595,32 @@ function TransactionTrendChart({ data }: { data: any[] }) {
                       fill="url(#incomeGrad)"
                       rx="3"
                     />
+
+                    {d.total_income > 0 && (
+                      <SvgText
+                        x={x + barWidth / 2}
+                        y={incomeY - 4}          // 👈 4px above the bar
+                        fontSize="7"
+                        fill="#02929A"
+                        textAnchor="middle"
+                        fontWeight="bold"
+                      >
+                        {d.total_income}
+                      </SvgText>
+                    )}
+
+                    {d.total_expense > 0 && (
+                      <SvgText
+                        x={x + barWidth + 4 + barWidth / 2}
+                        y={expenseY - 4}          // 👈 4px above the bar
+                        fontSize="7"
+                        fill="#FF6B6B"
+                        textAnchor="middle"
+                        fontWeight="bold"
+                      >
+                        {d.total_expense}
+                      </SvgText>
+                    )}
 
                     {/* Expense Bar */}
                     <Rect

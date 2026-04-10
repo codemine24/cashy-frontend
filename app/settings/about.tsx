@@ -1,5 +1,6 @@
 import { useDeleteUser } from "@/api/user";
 import { ScreenContainer } from "@/components/screen-container";
+import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { useAuth } from "@/context/auth-context";
 import {
   ChevronRight,
@@ -10,8 +11,9 @@ import {
 } from "@/lib/icons";
 import { clearUserInfo, removeAccessToken } from "@/utils/auth";
 import { Stack, useRouter } from "expo-router";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
 
 // ─── Reusable row component ───────────────────────────────────────────────
@@ -68,6 +70,7 @@ export default function AboutScreen() {
   const { t } = useTranslation();
   const { setAuthState } = useAuth();
   const deleteAccountMutation = useDeleteUser();
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const handlePrivacyPolicy = () => {
     // Show privacy policy in a modal or navigate to a dedicated screen
@@ -87,36 +90,23 @@ export default function AboutScreen() {
   };
 
   const handleDeleteAccount = () => {
-    Alert.alert(
-      "Delete Account",
-      "Are you sure you want to permanently delete your account? This action cannot be undone and all your data will be lost.",
-      [
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: async () => {
-            const result = await deleteAccountMutation.mutateAsync();
-            if (result?.success) {
-              await removeAccessToken();
-              await clearUserInfo();
-              setAuthState({ isAuthenticated: false, user: null });
-              router.replace("/");
-            } else {
-              Toast.show({
-                type: "error",
-                text1: "Error",
-                text2: "Failed to delete account",
-              });
-            }
-          },
-        },
-      ],
-      { cancelable: true },
-    );
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteAccountConfirm = async () => {
+    const result = await deleteAccountMutation.mutateAsync();
+    if (result?.success) {
+      await removeAccessToken();
+      await clearUserInfo();
+      setAuthState({ isAuthenticated: false, user: null });
+      router.replace("/");
+    } else {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Failed to delete account",
+      });
+    }
   };
 
   return (
@@ -201,6 +191,17 @@ export default function AboutScreen() {
           </View>
         </ScrollView>
       </ScreenContainer>
+
+      <ConfirmationModal
+        visible={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDeleteAccountConfirm}
+        title="Delete Account"
+        message="Are you sure you want to permanently delete your account? This action cannot be undone and all your data will be lost."
+        confirmText="Delete"
+        cancelText="Cancel"
+        isLoading={deleteAccountMutation.isPending}
+      />
     </>
   );
 }
