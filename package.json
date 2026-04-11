@@ -13,7 +13,8 @@
     "format": "prettier --write .",
     "test": "vitest run",
     "android": "expo run:android",
-    "qr": "node scripts/generate_qr.mjs"
+    "qr": "node scripts/generate_qr.mjs",
+    "ios": "expo run:ios"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
