@@ -22,7 +22,7 @@ import { useAuth } from "@/context/auth-context";
 import { useDebounce } from "@/hooks/use-debounce";
 import { usePullToRefreshSkeletonWithSearch } from "@/hooks/use-pull-to-refresh-skeleton";
 import { SearchIcon } from "@/icons/search-icon";
-import { ChevronRight, Copy, Edit3, Trash2, UserPlus, Users, X } from "@/lib/icons";
+import { ChevronRight, Copy, Edit3, Trash2, User, UserPlus, Users, X } from "@/lib/icons";
 import { formatNumber } from "@/utils";
 import { getAccessToken } from "@/utils/auth";
 import { isOwner, isWalletViewer } from "@/utils/is-owner";
@@ -41,8 +41,8 @@ import {
   TouchableOpacity,
   View
 } from "react-native";
-import Toast from "react-native-toast-message";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Toast from "react-native-toast-message";
 
 // Transaction interface
 interface Transaction {
@@ -467,7 +467,6 @@ export default function BookDetailScreen() {
                   </View>
                 );
               }
-              const userIsOwner = isOwner(authState.user?.id, book.data.created_by);
               return (
                 <TouchableOpacity
                   onPress={() =>
@@ -481,10 +480,10 @@ export default function BookDetailScreen() {
                     padding: 6,
                   }}
                 >
-                  {userIsOwner ? (
+                  {isOwner(authState.user?.id, book.data.created_by) ? (
                     <UserPlus size={22} className="text-foreground" />
                   ) : (
-                    <Users size={22} className="text-foreground" />
+                    <User size={22} className="text-foreground" />
                   )}
                 </TouchableOpacity>
               );
@@ -524,7 +523,9 @@ export default function BookDetailScreen() {
             keyExtractor={(item) => item.id}
             stickySectionHeadersEnabled={false}
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingBottom: insets.bottom + 190 }}
+            contentContainerStyle={{
+              paddingBottom: insets.bottom + 200, // ✅ FIXED (dynamic padding)
+            }}
             onEndReached={handleLoadMore}
             onEndReachedThreshold={0.3}
             refreshControl={<RefreshControl {...refreshControlProps} />}
@@ -818,9 +819,10 @@ export default function BookDetailScreen() {
             position: "absolute",
             left: 0,
             right: 0,
-            bottom: insets.bottom,
+            bottom: 0,
+            paddingBottom: insets.bottom
           }}
-          className="flex-row px-3 pt-3 pb-3 bg-card border-t border-border shadow-sm gap-3"
+          className="flex-row px-3 pt-3 pb-3 bg-card border-t border-border gap-3"
         >
           <Button
             onPress={() => {

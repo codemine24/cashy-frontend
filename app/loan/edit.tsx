@@ -9,13 +9,13 @@ import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
-    ActivityIndicator,
-    KeyboardAvoidingView,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from "react-native";
 import Toast from "react-native-toast-message";
 import { z } from "zod";
@@ -178,28 +178,24 @@ export default function EditLoanScreen() {
           <View className="flex-row bg-muted rounded-2xl p-1 my-6">
             <TouchableOpacity
               onPress={() => form.setValue("type", "GIVEN")}
-              className={`flex-1 py-3.5 rounded-xl items-center justify-center ${
-                isGiven ? "bg-primary shadow-sm" : "bg-transparent"
-              }`}
+              className={`flex-1 py-3.5 rounded-xl items-center justify-center ${isGiven ? "bg-primary shadow-sm" : "bg-transparent"
+                }`}
             >
               <Text
-                className={`font-semibold text-sm ${
-                  isGiven ? "text-white" : "text-muted-foreground"
-                }`}
+                className={`font-semibold text-sm ${isGiven ? "text-white" : "text-muted-foreground"
+                  }`}
               >
                 Lent (Given)
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => form.setValue("type", "TAKEN")}
-              className={`flex-1 py-3.5 rounded-xl items-center justify-center ${
-                !isGiven ? "bg-primary shadow-sm" : "bg-transparent"
-              }`}
+              className={`flex-1 py-3.5 rounded-xl items-center justify-center ${!isGiven ? "bg-primary shadow-sm" : "bg-transparent"
+                }`}
             >
               <Text
-                className={`font-semibold text-sm ${
-                  !isGiven ? "text-white" : "text-muted-foreground"
-                }`}
+                className={`font-semibold text-sm ${!isGiven ? "text-white" : "text-muted-foreground"
+                  }`}
               >
                 Borrowed (Taken)
               </Text>
@@ -208,8 +204,8 @@ export default function EditLoanScreen() {
 
           {/* Person Name */}
           <View className="mb-5">
-            <Text className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
-              Person Name
+            <Text className="text-sm font-semibold text-foreground mb-2">
+              Person name
             </Text>
             <Controller
               control={form.control}
@@ -222,11 +218,10 @@ export default function EditLoanScreen() {
                     onBlur={onBlur}
                     placeholder="Person name"
                     autoCapitalize="words"
-                    className={`${
-                      form.formState.errors.person_name
+                    className={`${form.formState.errors.person_name
                         ? "border-destructive"
                         : "border-border"
-                    }`}
+                      }`}
                   />
                   <InputError
                     error={form.formState.errors.person_name?.message}
@@ -238,7 +233,7 @@ export default function EditLoanScreen() {
 
           {/* Amount */}
           <View className="mb-5">
-            <Text className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
+            <Text className="text-sm font-semibold text-foreground mb-2">
               Amount
             </Text>
             <Controller
@@ -247,11 +242,10 @@ export default function EditLoanScreen() {
               render={({ field: { onChange, onBlur, value } }) => (
                 <View>
                   <View
-                    className={`flex-row items-center rounded-xl px-4 py-4 border ${
-                      form.formState.errors.amount
+                    className={`flex-row items-center rounded-xl px-4 py-4 border ${form.formState.errors.amount
                         ? "border-destructive"
                         : "border-border"
-                    }`}
+                      }`}
                   >
                     <Text className="text-2xl font-bold text-primary mr-2">
                       $
@@ -274,7 +268,7 @@ export default function EditLoanScreen() {
 
           {/* Status */}
           <View className="mb-5">
-            <Text className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
+            <Text className="text-sm font-semibold text-foreground mb-2">
               Status
             </Text>
             <View className="flex-row gap-2">
@@ -306,16 +300,14 @@ export default function EditLoanScreen() {
                   <TouchableOpacity
                     key={option.key}
                     onPress={() => form.setValue("status", option.key)}
-                    className={`flex-1 py-3 rounded-xl items-center justify-center border ${
-                      isActive
+                    className={`flex-1 py-3 rounded-xl items-center justify-center border ${isActive
                         ? `${colors.activeBg} border-transparent`
                         : `${colors.bg} border-border`
-                    }`}
+                      }`}
                   >
                     <Text
-                      className={`font-semibold text-sm ${
-                        isActive ? colors.text : "text-muted-foreground"
-                      }`}
+                      className={`font-semibold text-sm ${isActive ? colors.text : "text-muted-foreground"
+                        }`}
                     >
                       {option.label}
                     </Text>
@@ -326,9 +318,9 @@ export default function EditLoanScreen() {
           </View>
 
           {/* Due Date */}
-          <View className="mb-5">
-            <Text className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
-              Due Date
+          <View className="mb-6">
+            <Text className="text-sm font-semibold text-foreground mb-2">
+              Due date
             </Text>
             <Controller
               control={form.control}
@@ -343,9 +335,8 @@ export default function EditLoanScreen() {
                     className="bg-card rounded-xl px-4 py-4 border border-border flex-row items-center justify-between"
                   >
                     <Text
-                      className={`text-base ${
-                        value ? "text-foreground" : "text-muted-foreground"
-                      }`}
+                      className={`text-base ${value ? "text-foreground" : "text-muted-foreground"
+                        }`}
                     >
                       {formatDateForDisplay(value)}
                     </Text>

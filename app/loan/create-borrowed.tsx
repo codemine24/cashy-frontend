@@ -124,16 +124,16 @@ export default function CreateBorrowedLoanScreen() {
       >
         <ScrollView
           className="flex-1 bg-background"
-          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 120 }}
+          contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 24 }}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="always"
           keyboardDismissMode="on-drag"
           nestedScrollEnabled
         >
           {/* Person Name */}
-          <View className="mb-5 mt-4">
-            <Text className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
-              Person Name
+          <View className="mb-4">
+            <Text className="text-sm font-semibold text-foreground mb-2">
+              Person name
             </Text>
             <Controller
               control={form.control}
@@ -158,8 +158,8 @@ export default function CreateBorrowedLoanScreen() {
           </View>
 
           {/* Amount */}
-          <View className="mb-5">
-            <Text className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
+          <View className="mb-4">
+            <Text className="text-sm font-semibold text-foreground mb-2">
               Amount
             </Text>
             <Controller
@@ -193,9 +193,9 @@ export default function CreateBorrowedLoanScreen() {
           </View>
 
           {/* Due Date */}
-          <View className="mb-5">
-            <Text className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
-              Due Date
+          <View className="mb-4">
+            <Text className="text-sm font-semibold text-foreground mb-2">
+              Due date
             </Text>
             <View className="flex-row gap-3">
               <View className="flex-1">

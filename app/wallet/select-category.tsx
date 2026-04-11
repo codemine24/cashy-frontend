@@ -1,5 +1,6 @@
 import { useGetCategories } from "@/api/category";
 import { CategoryModal } from "@/components/category/category-modal";
+import { Button } from "@/components/ui/button";
 import { Check, Plus, Settings } from "@/lib/icons";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
@@ -10,9 +11,11 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function SelectCategoryScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{
     bookId: string;
     currentSelectedId?: string;
@@ -136,15 +139,16 @@ export default function SelectCategoryScreen() {
         )}
 
         {/* Floating Action Button */}
-        <TouchableOpacity
+        <Button
           onPress={() => setModalVisible(true)}
-          className="rounded-full py-4 px-4 absolute bottom-8 right-4 bg-primary flex-row items-center justify-center shadow-lg"
+          className="rounded-full py-4 absolute right-4"
+          style={{ bottom: insets.bottom + 32 }}
         >
           <Plus className="text-primary-foreground size-6" />
           <Text className="text-primary-foreground text-lg text-center ml-2">
             Add Category
           </Text>
-        </TouchableOpacity>
+        </Button>
       </View>
 
       {/* Add New Category Modal */}
