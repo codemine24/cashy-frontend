@@ -45,6 +45,7 @@
         "@react-native-google-signin/google-signin",
         {
           "iosUrl": "ios://bundle",
+          "iosUrlScheme": "com.googleusercontent.apps.68140526274-cbimppqqje5k18q1aqf4cqlng98ibi5b",
           "androidUrl": "com.codemine.cashy"
         }
       ]
