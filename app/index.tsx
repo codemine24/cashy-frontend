@@ -32,7 +32,18 @@ export default function WelcomeScreen() {
 
       {/* ── Bottom CTA ── */}
       <View className="mb-16">
-        <Button onPress={() => router.push("/login-type" as any)}>Get Started</Button>
+        <Button
+          onPress={() => {
+            try {
+              console.log("Navigating to login-type");
+              router.push("/login-type");
+            } catch (error) {
+              console.error("Navigation error:", error);
+            }
+          }}
+        >
+          Get Started
+        </Button>
       </View>
       {/* </View> */}
     </ScreenWrapper>

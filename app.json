@@ -11,8 +11,8 @@
     "backgroundColor": "#ffffff",
     "android": {
       "package": "com.codemine.cashy",
-      "versionCode": 9,
-      "version": "1.0.9",
+      "versionCode": 10,
+      "version": "1.0.10",
       "softwareKeyboardLayoutMode": "pan",
       "adaptiveIcon": {
         "backgroundColor": "#02929a",
@@ -41,7 +41,13 @@
       "expo-localization",
       "expo-secure-store",
       "expo-web-browser",
-      "@react-native-google-signin/google-signin"
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrl": "ios://bundle",
+          "androidUrl": "com.codemine.cashy"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
