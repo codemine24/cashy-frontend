@@ -8,7 +8,9 @@ import { Button } from "@/components/ui/button";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { useDebounce } from "@/hooks/use-debounce";
 import { PlusIcon } from "@/icons/plus-icon";
+import { useAuth } from "@/context/auth-context";
 import { Member } from "@/interface/wallet";
+import { isOwner } from "@/utils/is-owner";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -30,6 +32,24 @@ export default function MembersScreen() {
   const bookId = params.bookId;
 
   const { data: bookData, isLoading: bookLoading } = useBook(bookId);
+  const { authState } = useAuth();
+  const currentUserId = authState.user?.id;
+  const isOwnerUser = isOwner(currentUserId, bookData?.data?.created_by);
+
+  const membersList = (bookData?.data?.others_member || []) as Member[];
+
+  const currentUserMember = membersList.find(
+    (m: any) => m.id === currentUserId
+  );
+  const isAdminUser = currentUserMember?.role === "ADMIN";
+
+  const canManage = isOwnerUser || isAdminUser;
+
+  const members = canManage
+    ? membersList
+    : membersList.filter(
+      (m: any) => m.role === "OWNER" || m.id === currentUserId
+    );
   const removeMemberMutation = useRemoveMember();
 
   const [modalVisible, setModalVisible] = useState(false);
@@ -130,7 +150,7 @@ export default function MembersScreen() {
     }
   };
 
-  const members = (bookData?.data?.others_member || []) as Member[];
+
 
   return (
     <>
@@ -157,6 +177,7 @@ export default function MembersScreen() {
                 member={item}
                 onEdit={handleEditMember}
                 onRemove={handleRemoveMember}
+                canManage={canManage}
               />
             )}
             ListEmptyComponent={
@@ -171,15 +192,17 @@ export default function MembersScreen() {
       </ScreenContainer>
 
       {/* Floating Action Button */}
-      <Button
-        onPress={handleOpenAddModal}
-        className="rounded-full py-4 absolute bottom-8 right-4"
-      >
-        <PlusIcon className="text-primary-foreground size-6" />
-        <Text className="text-primary-foreground text-lg text-center ml-2">
-          {t("members.addMember")}
-        </Text>
-      </Button>
+      {canManage && (
+        <Button
+          onPress={handleOpenAddModal}
+          className="rounded-full py-4 absolute bottom-8 right-4"
+        >
+          <PlusIcon className="text-primary-foreground size-6" />
+          <Text className="text-primary-foreground text-lg text-center ml-2">
+            {t("members.addMember")}
+          </Text>
+        </Button>
+      )}
 
       {/* Add / Edit Member Modal */}
       <BottomSheetModal

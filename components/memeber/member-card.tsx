@@ -19,9 +19,10 @@ interface MemberCardProps {
   member: Member;
   onEdit: (member: Member) => void;
   onRemove: (member: Member) => void;
+  canManage?: boolean;
 }
 
-export const MemberCard = ({ member, onEdit, onRemove }: MemberCardProps) => {
+export const MemberCard = ({ member, onEdit, onRemove, canManage = true }: MemberCardProps) => {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
 
   const { authState } = useAuth();
@@ -79,8 +80,8 @@ export const MemberCard = ({ member, onEdit, onRemove }: MemberCardProps) => {
           from={
             <TouchableOpacity
               onPress={() => setIsMenuVisible(true)}
-              className={`${owner ? "invisible" : "flex"} py-2 pl-2 rounded-full`}
-              disabled={owner}
+              className={`${owner || !canManage ? "invisible" : "flex"} py-2 pl-2 rounded-full`}
+              disabled={owner || !canManage}
             >
               <MoreVertical size={20} className="text-muted-foreground" />
             </TouchableOpacity>
