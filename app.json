@@ -11,18 +11,15 @@
     "backgroundColor": "#ffffff",
     "android": {
       "package": "com.codemine.cashy",
-      "versionCode": 4,
-      "version": "1.0.4",
+      "versionCode": 6,
+      "version": "1.0.6",
       "softwareKeyboardLayoutMode": "pan",
       "adaptiveIcon": {
         "backgroundColor": "#02929a",
         "foregroundImage": "./assets/images/app-icon-foreground.png",
         "monochromeImage": "./assets/images/app-icon-monochromic.png"
       },
-      "permissions": [
-        "INTERNET",
-        "CAMERA"
-      ],
+      "permissions": ["INTERNET", "CAMERA"],
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
     },
