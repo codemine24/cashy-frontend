@@ -1,12 +1,15 @@
 export function formatCurrency(
   amount: number | string,
-  currency: string = "USD",
+  options?: {
+    currency?: string;
+    showSymbol?: boolean;
+  },
 ): string {
   const numericAmount =
     typeof amount === "string" ? parseFloat(amount) : amount;
   return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: currency,
+    style: options?.showSymbol ? "currency" : "decimal",
+    currency: options?.currency || "USD",
   }).format(numericAmount || 0);
 }
 

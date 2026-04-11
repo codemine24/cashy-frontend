@@ -526,9 +526,7 @@ export default function BookDetailScreen() {
             keyExtractor={(item) => item.id}
             stickySectionHeadersEnabled={false}
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{
-              paddingBottom: insets.bottom + 90, // ✅ FIXED (dynamic padding)
-            }}
+            contentContainerStyle={{ paddingBottom: insets.bottom + 190 }}
             onEndReached={handleLoadMore}
             onEndReachedThreshold={0.3}
             refreshControl={<RefreshControl {...refreshControlProps} />}

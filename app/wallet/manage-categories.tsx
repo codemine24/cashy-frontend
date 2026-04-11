@@ -94,7 +94,7 @@ export default function ManageCategoriesScreen() {
           </View>
         ) : (
           <ScrollView
-            className="flex-1 px-5"
+            className="flex-1 px-5 mt-5"
             contentContainerStyle={{ paddingBottom: 100 }}
           >
             {categories.map((cat: any) => (

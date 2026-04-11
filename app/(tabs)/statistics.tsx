@@ -4,6 +4,7 @@ import { DateRangeModal } from "@/components/date-range-modal";
 import { ScreenContainer } from "@/components/screen-container";
 import { H3, P } from "@/components/ui/typography";
 import { useTheme } from "@/context/theme-context";
+import { formatCurrency } from "@/utils";
 import { getAccessToken } from "@/utils/auth";
 import { cn } from "@/utils/cn";
 import { File as ExpoFile, Paths } from "expo-file-system";
@@ -599,26 +600,26 @@ function TransactionTrendChart({ data }: { data: any[] }) {
                     {d.total_income > 0 && (
                       <SvgText
                         x={x + barWidth / 2}
-                        y={incomeY - 4}          // 👈 4px above the bar
+                        y={incomeY - 4}
                         fontSize="7"
                         fill="#02929A"
                         textAnchor="middle"
                         fontWeight="bold"
                       >
-                        {d.total_income}
+                        {formatCurrency(d.total_income, { showSymbol: false })}
                       </SvgText>
                     )}
 
                     {d.total_expense > 0 && (
                       <SvgText
                         x={x + barWidth + 4 + barWidth / 2}
-                        y={expenseY - 4}          // 👈 4px above the bar
+                        y={expenseY - 4}
                         fontSize="7"
                         fill="#FF6B6B"
                         textAnchor="middle"
                         fontWeight="bold"
                       >
-                        {d.total_expense}
+                        {formatCurrency(d.total_expense, { showSymbol: false })}
                       </SvgText>
                     )}
 

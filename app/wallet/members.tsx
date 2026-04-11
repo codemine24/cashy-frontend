@@ -184,6 +184,7 @@ export default function MembersScreen() {
       {/* Add / Edit Member Modal */}
       <BottomSheetModal
         visible={modalVisible}
+        statusBarTranslucent={true}
         onClose={() => setModalVisible(false)}
       >
         <View className="px-6 pt-3 pb-4">
@@ -203,10 +204,10 @@ export default function MembersScreen() {
           <ScrollView
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
-            contentContainerStyle={{ paddingBottom: 20 }}
+          // contentContainerStyle={{ paddingBottom: 20 }}
           >
             {/* Email Field */}
-            <View className="mb-6 relative" style={{ zIndex: 100 }}>
+            <View className="mb-3 relative" style={{ zIndex: 100 }}>
               <Text className="text-sm font-semibold text-foreground mb-2">
                 Email / User
               </Text>
@@ -295,7 +296,7 @@ export default function MembersScreen() {
             </View>
 
             {/* Role Selector */}
-            <View className="mb-4" style={{ zIndex: 1 }}>
+            <View className="mb-3" style={{ zIndex: 1 }}>
               <Text className="text-sm font-semibold text-foreground mb-2">
                 Role
               </Text>
@@ -354,7 +355,7 @@ export default function MembersScreen() {
             </View>
 
             {/* Role Permissions Info */}
-            <View className="mb-8 rounded-xl bg-muted border border-border p-4">
+            <View className="mb-3 rounded-xl bg-muted border border-border p-4">
               <Text className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3">
                 {role === "VIEWER"
                   ? "Viewer can"
