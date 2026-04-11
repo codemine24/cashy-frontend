@@ -180,9 +180,9 @@ export default function CreateLentLoanScreen() {
             keyboardShouldPersistTaps="handled"
           >
             {/* Person Name */}
-            <View className="mb-5">
-              <Text className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
-                Person Name
+            <View className="mb-4">
+              <Text className="text-sm font-semibold text-foreground mb-2">
+                Person name
               </Text>
               <Controller
                 control={form.control}
@@ -205,8 +205,8 @@ export default function CreateLentLoanScreen() {
             </View>
 
             {/* Amount */}
-            <View className="mb-5">
-              <Text className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
+            <View className="mb-4">
+              <Text className="text-sm font-semibold text-foreground mb-2">
                 Amount
               </Text>
               <Controller
@@ -236,9 +236,9 @@ export default function CreateLentLoanScreen() {
             </View>
 
             {/* Due Date */}
-            <View className="mb-5">
-              <Text className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
-                Due Date
+            <View className="mb-4">
+              <Text className="text-sm font-semibold text-foreground mb-2">
+                Due date
               </Text>
               <TouchableOpacity
                 onPress={() => setShowDatePicker(true)}

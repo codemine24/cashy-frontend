@@ -115,6 +115,17 @@
     "addMember": "সদস্য যোগ করুন",
     "noMembersAdded": "এখনও কোনো সদস্য যোগ করা হয়নি"
   },
+  "loans": {
+    "lent": "পাওনা",
+    "searchLoans": "লোন সার্চ করুন",
+    "noLoansGivenYet": "আপনি এখনো ধার দেননি ",
+    "recordMoneyYouveLent": "ধার দেয়ার হিসাব যুক্ত করুন",
+    "addLoan": "লোন যুক্ত করণ",
+    "sortLoansBy": "ফিল্টার করুন",
+    "borrowed": "দেনা",
+    "noLoansBorrowedYet": "কোন দেনা নেই",
+    "recordMoneyYouveBorrowed": "ধার নেয়ার হিসাব যুক্ত করণ"
+  },
   "profile": {
     "title": "আপনার প্রোফাইল",
     "fullName": "নামের",

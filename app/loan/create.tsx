@@ -167,8 +167,8 @@ export default function CreateLoanScreen() {
 
           {/* Person Name */}
           <View className="mb-5">
-            <Text className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
-              Person Name
+            <Text className="text-sm font-semibold text-foreground mb-2">
+              Person name
             </Text>
             <Controller
               control={form.control}
@@ -200,7 +200,7 @@ export default function CreateLoanScreen() {
 
           {/* Amount */}
           <View className="mb-5">
-            <Text className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
+            <Text className="text-sm font-semibold text-foreground mb-2">
               Amount
             </Text>
             <Controller
@@ -234,9 +234,9 @@ export default function CreateLoanScreen() {
           </View>
 
           {/* Due Date */}
-          <View className="mb-5">
-            <Text className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
-              Due Date
+          <View className="mb-6">
+            <Text className="text-sm font-semibold text-foreground mb-2">
+              Due date
             </Text>
             <Controller
               control={form.control}

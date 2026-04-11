@@ -16,6 +16,7 @@ import { Loan } from "@/interface/loan";
 import { formatCurrency } from "@/utils/index";
 import { useRouter } from "expo-router";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   FlatList,
   RefreshControl,
@@ -66,6 +67,7 @@ function TabButton({
 }
 
 export default function LoansScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<LoanTab>("GIVEN");
   const [searchQuery, setSearchQuery] = useState("");
@@ -195,7 +197,7 @@ export default function LoansScreen() {
           <TextInput
             value={searchQuery}
             onChangeText={setSearchQuery}
-            placeholder="Search loans..."
+            placeholder={t("loans.searchLoans")}
             placeholderClassName="text-muted-foreground"
             className="flex-1 ml-2 text-base text-foreground"
             placeholderTextColor="#94a3b8"
@@ -216,13 +218,13 @@ export default function LoansScreen() {
         {/* Tabs */}
         <View className="flex-1 flex-row bg-muted rounded-lg p-1">
           <TabButton
-            label="Lent"
+            label={t("loans.lent")}
             active={activeTab === "GIVEN"}
             onPress={() => setActiveTab("GIVEN")}
           />
 
           <TabButton
-            label="Borrowed"
+            label={t("loans.borrowed")}
             active={activeTab === "TAKEN"}
             onPress={() => setActiveTab("TAKEN")}
           />
@@ -245,12 +247,12 @@ export default function LoansScreen() {
           <Text className="text-muted-foreground text-base mt-2">
             {searchQuery.trim()
               ? `No loans found for "${searchQuery}"`
-              : `No ${activeTab === "GIVEN" ? "debtor" : "creditor"} loans`}
+              : `${activeTab === "GIVEN" ? t("loans.noLoansGivenYet") : t("loans.noLoansBorrowedYet")}`}
           </Text>
           <Text className="text-sm text-muted-foreground text-center mb-4">
             {activeTab === "GIVEN"
-              ? "Record money you've lent"
-              : "Record money you've borrowed"}
+              ? t("loans.recordMoneyYouveLent")
+              : t("loans.recordMoneyYouveBorrowed")}
           </Text>
         </View>
       ) : (
@@ -312,7 +314,7 @@ export default function LoansScreen() {
       >
         <PlusIcon className="text-primary-foreground size-6" />
         <Text className="text-primary-foreground text-lg text-center ml-2">
-          Add loan
+          {t("loans.addLoan")}
         </Text>
       </Button>
 
@@ -329,7 +331,7 @@ export default function LoansScreen() {
 
           {/* Title */}
           <View className="flex-row items-center justify-between mb-2 border-b border-border pb-4">
-            <H3>Sort loans by</H3>
+            <H3>{t("loans.sortLoansBy")}</H3>
             <TouchableOpacity
               onPress={() => setShowSortModal(false)}
               className="p-1"

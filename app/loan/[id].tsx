@@ -9,17 +9,19 @@ import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useMemo, useState } from "react";
 import {
   Alert,
+  FlatList,
   RefreshControl,
-  SectionList,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 
 export default function LoanDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { data: loanData, isLoading, refetch } = useGetLoanDetail(id!);
 
   const { showSkeleton, refreshControlProps } = usePullToRefreshSkeleton(
@@ -40,39 +42,16 @@ export default function LoanDetailScreen() {
   // Show skeleton when initially loading or refreshing
   const finalShowSkeleton = isLoading || showSkeleton;
 
-  // Group payments by date (similar to wallet) - moved before early returns
-  const groupedPayments = useMemo(() => {
+  // Sort payments by date (without grouping)
+  const sortedPayments = useMemo(() => {
     if (!loanData?.data?.payments || loanData.data.payments.length === 0)
       return [];
 
-    const sorted = [...loanData.data.payments].sort(
+    return [...loanData.data.payments].sort(
       (a, b) =>
         new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
     );
-
-    const groups: { date: string; data: typeof sorted }[] = [];
-    sorted.forEach((payment) => {
-      const date = new Date(payment.created_at).toLocaleDateString("en-GB", {
-        day: "2-digit",
-        month: "long",
-        year: "numeric",
-      });
-      const group = groups.find((g) => g.date === date);
-      if (group) {
-        group.data.push(payment);
-      } else {
-        groups.push({ date, data: [payment] });
-      }
-    });
-
-    return groups;
   }, [loanData?.data?.payments]);
-
-  // Convert to SectionList format - moved before early returns
-  const sections = useMemo(
-    () => groupedPayments.map((g) => ({ title: g.date, data: g.data })),
-    [groupedPayments],
-  );
 
   const openAddPayment = () => {
     setEditingPayment(null);
@@ -257,14 +236,53 @@ export default function LoanDetailScreen() {
       />
 
       <View className="flex-1 bg-background px-4">
-        <SectionList
-          sections={sections}
+        <FlatList
+          data={sortedPayments}
           keyExtractor={(item) => item.id}
-          stickySectionHeadersEnabled={false}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 100 }}
+          contentContainerStyle={{ paddingBottom: 140 }}
           refreshControl={<RefreshControl {...refreshControlProps} />}
-          renderItem={() => null}
+          renderItem={({ item, index }) => (
+            <TouchableOpacity
+              key={item.id}
+              activeOpacity={0.7}
+              onPress={() => {
+                if (selectedPayment) {
+                  setSelectedPayment(
+                    item.id === selectedPayment.id ? null : item,
+                  );
+                } else {
+                  // Optionally open details or do nothing
+                }
+              }}
+              onLongPress={() => setSelectedPayment(item)}
+              className={`px-4 py-4 flex-row justify-between bg-card rounded-2xl mb-2 border border-border ${selectedPayment?.id === item.id ? "bg-primary/10" : ""}`}
+            >
+              <View className="flex-1 mr-3">
+                <Text
+                  className={`text-base mb-2 font-medium ${item.remark ? "text-foreground" : "text-muted-foreground"}`}
+                >
+                  {item.remark || "No remark"}
+                </Text>
+                <Text className="text-sm text-muted-foreground">
+                  {new Date(item.created_at).toLocaleDateString("en-GB", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                  })}{" "}
+                  {new Date(item.created_at).toLocaleTimeString("en-US", {
+                    hour: "numeric",
+                    minute: "2-digit",
+                  })}
+                </Text>
+              </View>
+              <View className="items-end justify-center">
+                <Text className="text-base font-bold mb-2 text-green-600">
+                  {formatCurrency(item.amount)}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          )}
           ListHeaderComponent={
             <>
               {/* Top Summary Card - matching wallet structure */}
@@ -343,52 +361,6 @@ export default function LoanDetailScreen() {
               )}
             </>
           }
-          renderSectionHeader={({ section: { title, data } }) => (
-            <View className="bg-card rounded-2xl mb-2 border border-border">
-              <View className="px-3 py-3 border-b border-border">
-                <Text className="text-foreground text-sm font-semibold tracking-wide">
-                  {title}
-                </Text>
-              </View>
-              {data.map((item, index) => (
-                <TouchableOpacity
-                  key={item.id}
-                  activeOpacity={0.7}
-                  onPress={() => {
-                    if (selectedPayment) {
-                      setSelectedPayment(
-                        item.id === selectedPayment.id ? null : item,
-                      );
-                    } else {
-                      // Optionally open details or do nothing
-                    }
-                  }}
-                  onLongPress={() => setSelectedPayment(item)}
-                  className={`px-4 py-4 flex-row justify-between ${selectedPayment?.id === item.id ? "bg-primary/10" : ""
-                    } ${index !== data.length - 1 ? "border-b border-border" : ""}`}
-                >
-                  <View className="flex-1 mr-3">
-                    <Text
-                      className={`text-base mb-2 font-medium ${item.remark ? "text-foreground" : "text-muted-foreground"}`}
-                    >
-                      {item.remark || "No remark"}
-                    </Text>
-                    <Text className="text-sm text-muted-foreground">
-                      {new Date(item.created_at).toLocaleTimeString("en-US", {
-                        hour: "numeric",
-                        minute: "2-digit",
-                      })}
-                    </Text>
-                  </View>
-                  <View className="items-end justify-center">
-                    <Text className="text-base font-bold mb-2 text-green-600">
-                      +{formatCurrency(item.amount)}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-              ))}
-            </View>
-          )}
           ListEmptyComponent={
             <View className="bg-card rounded-2xl p-8 items-center justify-center border border-border">
               <Text className="text-lg font-semibold text-foreground mb-2">
@@ -402,7 +374,7 @@ export default function LoanDetailScreen() {
         />
 
         {/* Floating Action Button */}
-        <View className="absolute bottom-0 left-0 right-0 px-4 pb-8 pt-3 bg-background border-t border-border shadow-2xl">
+        <View className="absolute bottom-0 left-0 right-0 px-4 pt-3 bg-background border-t border-border shadow-2xl" style={{ paddingBottom: insets.bottom + 16 }}>
           <TouchableOpacity
             onPress={openAddPayment}
             className="rounded-2xl bg-primary py-3.5 items-center justify-center"
