@@ -11,8 +11,8 @@
     "backgroundColor": "#ffffff",
     "android": {
       "package": "com.codemine.cashy",
-      "versionCode": 10,
-      "version": "1.0.10",
+      "versionCode": 11,
+      "version": "1.0.11",
       "softwareKeyboardLayoutMode": "pan",
       "adaptiveIcon": {
         "backgroundColor": "#02929a",
@@ -44,8 +44,7 @@
       [
         "@react-native-google-signin/google-signin",
         {
-          "iosUrl": "ios://bundle",
-          "iosUrlScheme": "com.googleusercontent.apps.68140526274-cbimppqqje5k18q1aqf4cqlng98ibi5b",
+          "iosUrlScheme": "com.googleusercontent.apps.placeholder",
           "androidUrl": "com.codemine.cashy"
         }
       ]
