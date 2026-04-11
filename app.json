@@ -20,11 +20,8 @@
 
     "android": {
       "package": "com.codemine.cashy",
-
-      "versionCode": 6,
-
-      "version": "1.0.6",
-
+      "versionCode": 12,
+      "version": "1.0.12",
       "softwareKeyboardLayoutMode": "pan",
 
       "adaptiveIcon": {

@@ -20,13 +20,27 @@ export default function LoginTypeScreen() {
   const googleLoginMutation = useGoogleLogin();
 
   useEffect(() => {
-    // Configure Google Sign-In with forced account selection
-    GoogleSignin.configure({
-      webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID || "",
-      offlineAccess: true,
-      hostedDomain: "", // Leave empty to allow any domain
-      forceCodeForRefreshToken: true, // Forces refresh token
-    });
+    try {
+      // Configure Google Sign-In with forced account selection
+      const webClientId = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID;
+      if (!webClientId) {
+        console.error(
+          "Google Sign-In: EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID not found",
+        );
+        return;
+      }
+
+      GoogleSignin.configure({
+        webClientId: webClientId,
+        offlineAccess: true,
+        hostedDomain: "", // Leave empty to allow any domain
+        forceCodeForRefreshToken: true, // Forces refresh token
+      });
+
+      console.log("Google Sign-In configured successfully");
+    } catch (error) {
+      console.error("Google Sign-In configuration error:", error);
+    }
   }, []);
 
   // If user already logged in, redirect
