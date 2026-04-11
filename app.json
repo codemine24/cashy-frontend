@@ -5,14 +5,14 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/app-icon.png",
-    "scheme": "cashy-expense-manager",
+    "scheme": "cashy",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "backgroundColor": "#ffffff",
     "android": {
       "package": "com.codemine.cashy",
-      "versionCode": 7,
-      "version": "1.0.7",
+      "versionCode": 8,
+      "version": "1.0.8",
       "softwareKeyboardLayoutMode": "pan",
       "adaptiveIcon": {
         "backgroundColor": "#02929a",
