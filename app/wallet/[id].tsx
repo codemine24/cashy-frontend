@@ -467,6 +467,7 @@ export default function BookDetailScreen() {
                   </View>
                 );
               }
+              const userIsOwner = isOwner(authState.user?.id, book.data.created_by);
               return (
                 <TouchableOpacity
                   onPress={() =>
@@ -478,16 +479,13 @@ export default function BookDetailScreen() {
                   style={{
                     marginRight: 4,
                     padding: 6,
-                    opacity: isOwner(authState.user?.id, book.data.created_by)
-                      ? 1
-                      : 0.4,
-                    display: isOwner(authState.user?.id, book.data.created_by)
-                      ? "flex"
-                      : "none",
                   }}
-                  disabled={!isOwner(authState.user?.id, book.data.created_by)}
                 >
-                  <UserPlus size={22} className="text-foreground" />
+                  {userIsOwner ? (
+                    <UserPlus size={22} className="text-foreground" />
+                  ) : (
+                    <Users size={22} className="text-foreground" />
+                  )}
                 </TouchableOpacity>
               );
             },
