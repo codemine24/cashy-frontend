@@ -82,6 +82,7 @@
   "wallets": {
     "title": "Wallets",
     "createWallet": "Create Wallet",
+    "createFirstWallet": "Create your first wallet",
     "noWallets": "No wallets yet",
     "cashIn": "Cash In",
     "cashOut": "Cash Out",

@@ -139,6 +139,7 @@ export default function HomeScreen() {
         <ScrollView
           showsVerticalScrollIndicator={false}
           refreshControl={<RefreshControl {...refreshControlProps} />}
+          contentContainerStyle={{ flexGrow: 1 }}
         >
           {/* Search Input */}
           <View className="relative mb-4">
@@ -166,9 +167,7 @@ export default function HomeScreen() {
           {/* Header */}
           <View className="mb-2 flex-row items-center">
             <View className="flex-row items-center gap-2">
-              <Text className="text-sm font-semibold text-muted-foreground mr-2">
-                {t("wallets.yourWallets")}
-              </Text>
+              <Text numberOfLines={1} className="text-sm font-semibold text-muted-foreground mr-2">{t("wallets.yourWallets")}</Text>
             </View>
             <TouchableOpacity
               onPress={openSortModal}
@@ -182,21 +181,10 @@ export default function HomeScreen() {
           {finalShowSkeleton ? (
             <WalletsSkeleton />
           ) : booksData?.data?.length === 0 ? (
-            <View className="bg-surface rounded-xl p-8 items-center justify-center border border-border">
-              <Text className="text-lg font-semibold text-foreground mb-2">
-                {t("wallets.noWallets")}
-              </Text>
-              <Text className="text-sm text-foreground text-center mb-4">
-                {t("wallets.createWallet")}
-              </Text>
-              <TouchableOpacity
-                onPress={() => setShowCreateModal(true)}
-                className="bg-primary rounded-lg px-6 py-2"
-              >
-                <Text className="text-white font-semibold">
-                  {t("wallets.createWallet")}
-                </Text>
-              </TouchableOpacity>
+            <View className="flex-1 justify-center items-center -mt-16 py-8">
+              <SearchIcon className="text-muted-foreground size-12" />
+              <Text numberOfLines={1} className="text-muted-foreground mt-2 text-base">{searchQuery.trim() ? `No wallet found for "${searchQuery}"` : t("wallets.noWallets")}</Text>
+              <Text numberOfLines={1} className="text-sm text-muted-foreground text-center mb-4">{t("wallets.createFirstWallet")}</Text>
             </View>
           ) : (
             <FlatList
