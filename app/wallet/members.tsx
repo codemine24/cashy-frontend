@@ -1,17 +1,22 @@
 import { useGetAllUsers } from "@/api/user";
-import { useBook, useRemoveMember, useShareBook } from "@/api/wallet";
+import {
+  useBook,
+  useLeaveBook,
+  useRemoveMember,
+  useShareBook,
+} from "@/api/wallet";
 import { BottomSheetModal } from "@/components/bottom-sheet-modal";
 import { MemberCard } from "@/components/memeber/member-card";
 import { ScreenContainer } from "@/components/screen-container";
 import { MembersSkeleton } from "@/components/skeletons/members-skeleton";
 import { Button } from "@/components/ui/button";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
+import { useAuth } from "@/context/auth-context";
 import { useDebounce } from "@/hooks/use-debounce";
 import { PlusIcon } from "@/icons/plus-icon";
-import { useAuth } from "@/context/auth-context";
 import { Member } from "@/interface/wallet";
 import { isOwner } from "@/utils/is-owner";
-import { Stack, useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -29,6 +34,7 @@ import Toast from "react-native-toast-message";
 export default function MembersScreen() {
   const { t } = useTranslation();
   const params = useLocalSearchParams<{ bookId: string; bookName?: string }>();
+  const router = useRouter();
   const bookId = params.bookId;
 
   const { data: bookData, isLoading: bookLoading } = useBook(bookId);
@@ -39,7 +45,7 @@ export default function MembersScreen() {
   const membersList = (bookData?.data?.others_member || []) as Member[];
 
   const currentUserMember = membersList.find(
-    (m: any) => m.id === currentUserId
+    (m: any) => m.id === currentUserId,
   );
   const isAdminUser = currentUserMember?.role === "ADMIN";
 
@@ -48,14 +54,16 @@ export default function MembersScreen() {
   const members = canManage
     ? membersList
     : membersList.filter(
-      (m: any) => m.role === "OWNER" || m.id === currentUserId
-    );
+        (m: any) => m.role === "OWNER" || m.id === currentUserId,
+      );
   const removeMemberMutation = useRemoveMember();
+  const leaveBookMutation = useLeaveBook();
 
   const [modalVisible, setModalVisible] = useState(false);
   const [editingMember, setEditingMember] = useState<Member | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [memberToDelete, setMemberToDelete] = useState<Member | null>(null);
+  const [showLeaveModal, setShowLeaveModal] = useState(false);
 
   // Form states
   const [searchValue, setSearchValue] = useState("");
@@ -116,6 +124,24 @@ export default function MembersScreen() {
     }
   };
 
+  const handleLeaveBookConfirm = async () => {
+    try {
+      const response = await leaveBookMutation.mutateAsync(bookId);
+      if (response.success) {
+        Toast.show({
+          type: "success",
+          text1: "Successfully left the book",
+        });
+        router.replace("/(tabs)");
+      }
+    } catch (error: any) {
+      Toast.show({
+        type: "error",
+        text1: error?.message || "Failed to leave from this wallet",
+      });
+    }
+  };
+
   const handleSubmitModal = async () => {
     if (!editingMember && !selectedUser) {
       Alert.alert("Error", "Please select a user to add.");
@@ -150,8 +176,6 @@ export default function MembersScreen() {
     }
   };
 
-
-
   return (
     <>
       <Stack.Screen
@@ -180,6 +204,21 @@ export default function MembersScreen() {
                 canManage={canManage}
               />
             )}
+            ListFooterComponent={
+              !isOwnerUser ? (
+                <View className="mt-4 px-1">
+                  <Button
+                    variant="outline"
+                    className="border-destructive py-3"
+                    onPress={() => setShowLeaveModal(true)}
+                  >
+                    <Text className="text-destructive font-semibold">
+                      Leave From {bookData?.data?.name}
+                    </Text>
+                  </Button>
+                </View>
+              ) : null
+            }
             ListEmptyComponent={
               <View className="items-center justify-center p-8 mt-10">
                 <Text className="text-muted-foreground text-center">
@@ -227,7 +266,7 @@ export default function MembersScreen() {
           <ScrollView
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
-          // contentContainerStyle={{ paddingBottom: 20 }}
+            // contentContainerStyle={{ paddingBottom: 20 }}
           >
             {/* Email Field */}
             <View className="mb-3 relative" style={{ zIndex: 100 }}>
@@ -326,16 +365,18 @@ export default function MembersScreen() {
               <View className="flex-row items-center gap-3">
                 <TouchableOpacity
                   onPress={() => setRole("VIEWER")}
-                  className={`flex-1 py-3.5 items-center rounded-xl border ${role === "VIEWER"
-                    ? "bg-primary/10 border-primary"
-                    : "bg-surface border-border"
-                    }`}
+                  className={`flex-1 py-3.5 items-center rounded-xl border ${
+                    role === "VIEWER"
+                      ? "bg-primary/10 border-primary"
+                      : "bg-surface border-border"
+                  }`}
                 >
                   <Text
-                    className={`font-semibold text-base ${role === "VIEWER"
-                      ? "text-primary"
-                      : "text-muted-foreground"
-                      }`}
+                    className={`font-semibold text-base ${
+                      role === "VIEWER"
+                        ? "text-primary"
+                        : "text-muted-foreground"
+                    }`}
                   >
                     Viewer
                   </Text>
@@ -343,16 +384,18 @@ export default function MembersScreen() {
 
                 <TouchableOpacity
                   onPress={() => setRole("EDITOR")}
-                  className={`flex-1 py-3.5 items-center rounded-xl border ${role === "EDITOR"
-                    ? "bg-primary/10 border-primary"
-                    : "bg-surface border-border"
-                    }`}
+                  className={`flex-1 py-3.5 items-center rounded-xl border ${
+                    role === "EDITOR"
+                      ? "bg-primary/10 border-primary"
+                      : "bg-surface border-border"
+                  }`}
                 >
                   <Text
-                    className={`font-semibold text-base ${role === "EDITOR"
-                      ? "text-primary"
-                      : "text-muted-foreground"
-                      }`}
+                    className={`font-semibold text-base ${
+                      role === "EDITOR"
+                        ? "text-primary"
+                        : "text-muted-foreground"
+                    }`}
                   >
                     Editor
                   </Text>
@@ -360,16 +403,18 @@ export default function MembersScreen() {
 
                 <TouchableOpacity
                   onPress={() => setRole("ADMIN")}
-                  className={`flex-1 py-3.5 items-center rounded-xl border ${role === "ADMIN"
-                    ? "bg-primary/10 border-primary"
-                    : "bg-surface border-border"
-                    }`}
+                  className={`flex-1 py-3.5 items-center rounded-xl border ${
+                    role === "ADMIN"
+                      ? "bg-primary/10 border-primary"
+                      : "bg-surface border-border"
+                  }`}
                 >
                   <Text
-                    className={`font-semibold text-base ${role === "ADMIN"
-                      ? "text-primary"
-                      : "text-muted-foreground"
-                      }`}
+                    className={`font-semibold text-base ${
+                      role === "ADMIN"
+                        ? "text-primary"
+                        : "text-muted-foreground"
+                    }`}
                   >
                     Admin
                   </Text>
@@ -388,24 +433,24 @@ export default function MembersScreen() {
               </Text>
               {(role === "VIEWER"
                 ? [
-                  { icon: "✅", label: "View all transactions" },
-                  { icon: "✅", label: "View balance & summary" },
-                  { icon: "❌", label: "Add or edit transactions" },
-                  { icon: "❌", label: "Manage members" },
-                ]
-                : role === "EDITOR"
-                  ? [
                     { icon: "✅", label: "View all transactions" },
-                    { icon: "✅", label: "Add & edit transactions" },
-                    { icon: "✅", label: "Delete own transactions" },
+                    { icon: "✅", label: "View balance & summary" },
+                    { icon: "❌", label: "Add or edit transactions" },
                     { icon: "❌", label: "Manage members" },
                   ]
+                : role === "EDITOR"
+                  ? [
+                      { icon: "✅", label: "View all transactions" },
+                      { icon: "✅", label: "Add & edit transactions" },
+                      { icon: "✅", label: "Delete own transactions" },
+                      { icon: "❌", label: "Manage members" },
+                    ]
                   : [
-                    { icon: "✅", label: "View all transactions" },
-                    { icon: "✅", label: "Add & edit transactions" },
-                    { icon: "✅", label: "Delete any transactions" },
-                    { icon: "✅", label: "Manage & invite members" },
-                  ]
+                      { icon: "✅", label: "View all transactions" },
+                      { icon: "✅", label: "Add & edit transactions" },
+                      { icon: "✅", label: "Delete any transactions" },
+                      { icon: "✅", label: "Manage & invite members" },
+                    ]
               ).map((item, i) => (
                 <View key={i} className="flex-row items-center mb-1.5">
                   <Text className="text-sm mr-2">{item.icon}</Text>
@@ -417,8 +462,9 @@ export default function MembersScreen() {
             <TouchableOpacity
               onPress={handleSubmitModal}
               disabled={addMemberMutation.isPending}
-              className={`w-full rounded-lg py-3 items-center justify-center flex-row ${addMemberMutation.isPending ? "bg-primary/50" : "bg-primary"
-                }`}
+              className={`w-full rounded-lg py-3 items-center justify-center flex-row ${
+                addMemberMutation.isPending ? "bg-primary/50" : "bg-primary"
+              }`}
             >
               {addMemberMutation.isPending && (
                 <ActivityIndicator
@@ -447,6 +493,16 @@ export default function MembersScreen() {
         confirmText="Remove"
         cancelText="Cancel"
         isLoading={removeMemberMutation.isPending}
+      />
+      <ConfirmationModal
+        visible={showLeaveModal}
+        onClose={() => setShowLeaveModal(false)}
+        onConfirm={handleLeaveBookConfirm}
+        title="Leave Book"
+        message="Are you sure you want to leave this book? You will no longer have access to its transactions."
+        confirmText="Leave"
+        cancelText="Cancel"
+        isLoading={leaveBookMutation.isPending}
       />
     </>
   );

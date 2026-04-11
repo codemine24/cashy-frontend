@@ -159,3 +159,20 @@ export const useRemoveMember = () => {
     },
   });
 };
+export const useLeaveBook = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      try {
+        const response = await apiClient.post(`${BOOK_API_URL}/${id}/leave`);
+        return response.data;
+      } catch (error) {
+        throwApiError(error);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: keys.all });
+      queryClient.invalidateQueries({ queryKey: ["statistics"] });
+    },
+  });
+};
