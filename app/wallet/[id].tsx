@@ -22,7 +22,7 @@ import { useAuth } from "@/context/auth-context";
 import { useDebounce } from "@/hooks/use-debounce";
 import { usePullToRefreshSkeletonWithSearch } from "@/hooks/use-pull-to-refresh-skeleton";
 import { SearchIcon } from "@/icons/search-icon";
-import { ChevronRight, Copy, Edit3, Trash2, UserPlus, Users, X } from "@/lib/icons";
+import { ChevronRight, Copy, Edit3, Trash2, User, UserPlus, Users, X } from "@/lib/icons";
 import { formatNumber } from "@/utils";
 import { getAccessToken } from "@/utils/auth";
 import { isOwner, isWalletViewer } from "@/utils/is-owner";
@@ -41,8 +41,8 @@ import {
   TouchableOpacity,
   View
 } from "react-native";
-import Toast from "react-native-toast-message";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Toast from "react-native-toast-message";
 
 // Transaction interface
 interface Transaction {
@@ -478,16 +478,13 @@ export default function BookDetailScreen() {
                   style={{
                     marginRight: 4,
                     padding: 6,
-                    opacity: isOwner(authState.user?.id, book.data.created_by)
-                      ? 1
-                      : 0.4,
-                    display: isOwner(authState.user?.id, book.data.created_by)
-                      ? "flex"
-                      : "none",
                   }}
-                  disabled={!isOwner(authState.user?.id, book.data.created_by)}
                 >
-                  <UserPlus size={22} className="text-foreground" />
+                  {isOwner(authState.user?.id, book.data.created_by) ? (
+                    <UserPlus size={22} className="text-foreground" />
+                  ) : (
+                    <User size={22} className="text-foreground" />
+                  )}
                 </TouchableOpacity>
               );
             },

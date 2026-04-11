@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { useAuth } from "@/context/auth-context";
 import { useDebounce } from "@/hooks/use-debounce";
+import { LeaveIcon } from "@/icons/leave-icon";
 import { PlusIcon } from "@/icons/plus-icon";
 import { Member } from "@/interface/wallet";
 import { isOwner } from "@/utils/is-owner";
@@ -214,9 +215,12 @@ export default function MembersScreen() {
                     className="border-destructive py-3"
                     onPress={() => setShowLeaveModal(true)}
                   >
-                    <Text className="text-destructive font-semibold">
-                      Leave From {bookData?.data?.name}
-                    </Text>
+                    <View className="flex-row items-center gap-2">
+                      <Text className="text-destructive font-semibold">
+                        Leave This Wallet
+                      </Text>
+                      <LeaveIcon style={{ color: "#ef4444", width: 20, height: 20 }} />
+                    </View>
                   </Button>
                 </View>
               ) : null
