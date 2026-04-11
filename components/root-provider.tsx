@@ -20,7 +20,7 @@ export const RootProvider = ({ children }: { children: React.ReactNode }) => {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         {children}
-        <Toast visibilityTime={1000} />
+        <Toast visibilityTime={2000} />
       </AuthProvider>
     </QueryClientProvider>
   );
