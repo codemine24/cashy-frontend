@@ -240,9 +240,9 @@ export default function LoansScreen() {
       {finalShowSkeleton ? (
         <LoansSkeleton />
       ) : loans.length === 0 ? (
-        <View className="flex-1 items-center justify-center py-8">
-          <SearchIcon className="text-muted-foreground size-12 mb-4" />
-          <Text className="text-muted-foreground text-base">
+        <View className="flex-1 items-center justify-center -mt-14 py-8">
+          <SearchIcon className="text-muted-foreground size-12" />
+          <Text className="text-muted-foreground text-base mt-2">
             {searchQuery.trim()
               ? `No loans found for "${searchQuery}"`
               : `No ${activeTab === "GIVEN" ? "debtor" : "creditor"} loans`}
@@ -252,20 +252,6 @@ export default function LoansScreen() {
               ? "Record money you've lent"
               : "Record money you've borrowed"}
           </Text>
-          <TouchableOpacity
-            onPress={() =>
-              router.push(
-                activeTab === "GIVEN"
-                  ? "/loan/create-lent"
-                  : "/loan/create-borrowed",
-              )
-            }
-            className="bg-primary px-6 py-2 rounded-lg"
-          >
-            <Text className="text-primary-foreground font-semibold">
-              Add Loan
-            </Text>
-          </TouchableOpacity>
         </View>
       ) : (
         <FlatList
