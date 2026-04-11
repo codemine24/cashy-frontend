@@ -5,7 +5,7 @@ import { useAuth } from "@/context/auth-context";
 import { useTheme } from "@/context/theme-context";
 import { GoogleIcon } from "@/icons/google-icon";
 import { Mail } from "@/lib/icons";
-// import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
@@ -19,15 +19,15 @@ export default function LoginTypeScreen() {
   const { applyUserTheme } = useTheme();
   const googleLoginMutation = useGoogleLogin();
 
-  // useEffect(() => {
-  //   // Configure Google Sign-In with forced account selection
-  //   GoogleSignin.configure({
-  //     webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID || "",
-  //     offlineAccess: true,
-  //     hostedDomain: "", // Leave empty to allow any domain
-  //     forceCodeForRefreshToken: true, // Forces refresh token
-  //   });
-  // }, []);
+  useEffect(() => {
+    // Configure Google Sign-In with forced account selection
+    GoogleSignin.configure({
+      webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID || "",
+      offlineAccess: true,
+      hostedDomain: "", // Leave empty to allow any domain
+      forceCodeForRefreshToken: true, // Forces refresh token
+    });
+  }, []);
 
   // If user already logged in, redirect
   useEffect(() => {
@@ -36,71 +36,71 @@ export default function LoginTypeScreen() {
     }
   }, [authReady, router, authState.isAuthenticated]);
 
-  // const signInWithGoogle = async () => {
-  //   try {
-  //     setLoading(true);
+  const signInWithGoogle = async () => {
+    try {
+      setLoading(true);
 
-  //     // Check if device supports Google Play Services
-  //     await GoogleSignin.hasPlayServices();
+      // Check if device supports Google Play Services
+      await GoogleSignin.hasPlayServices();
 
-  //     // Force sign-out to show account picker every time
-  //     await GoogleSignin.signOut();
+      // Force sign-out to show account picker every time
+      await GoogleSignin.signOut();
 
-  //     // Open Google Sign-In modal
-  //     const userInfo = await GoogleSignin.signIn();
-  //     const idToken = userInfo?.data?.idToken;
+      // Open Google Sign-In modal
+      const userInfo = await GoogleSignin.signIn();
+      const idToken = userInfo?.data?.idToken;
 
-  //     if (idToken) {
-  //       const result = await googleLoginMutation.mutateAsync(idToken);
-  //       if (result?.success) {
-  //         Toast.show({
-  //           type: "success",
-  //           text1: result?.message || "Verified!",
-  //         });
+      if (idToken) {
+        const result = await googleLoginMutation.mutateAsync(idToken);
+        if (result?.success) {
+          Toast.show({
+            type: "success",
+            text1: result?.message || "Verified!",
+          });
 
-  //         setAuthState({
-  //           isAuthenticated: true,
-  //           user: {
-  //             id: result?.data?.user?.id,
-  //             name: result?.data?.user?.name,
-  //             email: result?.data?.user?.email,
-  //             contact_number: result?.data?.user?.contact_number,
-  //             role: result?.data?.user?.role,
-  //             avatar: result?.data?.user?.avatar,
-  //             status: result?.data?.user?.status,
-  //             theme: result?.data?.user?.theme,
-  //             language: result?.data?.user?.language,
-  //             currency: result?.data?.user?.currency,
-  //             push_notification: result?.data?.user?.push_notification,
-  //           },
-  //         });
+          setAuthState({
+            isAuthenticated: true,
+            user: {
+              id: result?.data?.user?.id,
+              name: result?.data?.user?.name,
+              email: result?.data?.user?.email,
+              contact_number: result?.data?.user?.contact_number,
+              role: result?.data?.user?.role,
+              avatar: result?.data?.user?.avatar,
+              status: result?.data?.user?.status,
+              theme: result?.data?.user?.theme,
+              language: result?.data?.user?.language,
+              currency: result?.data?.user?.currency,
+              push_notification: result?.data?.user?.push_notification,
+            },
+          });
 
-  //         // Apply theme immediately on login
-  //         const userTheme = result?.data?.user?.theme ?? "LIGHT";
-  //         applyUserTheme(userTheme);
+          // Apply theme immediately on login
+          const userTheme = result?.data?.user?.theme ?? "LIGHT";
+          applyUserTheme(userTheme);
 
-  //         router.replace("/(tabs)");
-  //       } else {
-  //         Toast.show({
-  //           type: "error",
-  //           text1: result?.data?.message || "Login failed",
-  //         });
-  //       }
-  //     } else {
-  //       Toast.show({
-  //         type: "error",
-  //         text1: "No ID token found",
-  //       });
-  //     }
-  //   } catch (err) {
-  //     Toast.show({
-  //       type: "error",
-  //       text1: "Login failed",
-  //     });
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
+          router.replace("/(tabs)");
+        } else {
+          Toast.show({
+            type: "error",
+            text1: result?.data?.message || "Login failed",
+          });
+        }
+      } else {
+        Toast.show({
+          type: "error",
+          text1: "No ID token found",
+        });
+      }
+    } catch (err) {
+      Toast.show({
+        type: "error",
+        text1: "Login failed",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-background">
@@ -127,7 +127,7 @@ export default function LoginTypeScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity
-          // onPress={signInWithGoogle}
+          onPress={signInWithGoogle}
           activeOpacity={0.85}
           disabled={loading}
           className="w-full flex-row items-center justify-center gap-3 rounded-xl py-4 border border-border disabled:opacity-50"

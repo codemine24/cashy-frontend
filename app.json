@@ -11,8 +11,8 @@
     "backgroundColor": "#ffffff",
     "android": {
       "package": "com.codemine.cashy",
-      "versionCode": 8,
-      "version": "1.0.8",
+      "versionCode": 9,
+      "version": "1.0.9",
       "softwareKeyboardLayoutMode": "pan",
       "adaptiveIcon": {
         "backgroundColor": "#02929a",
