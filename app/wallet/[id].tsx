@@ -467,7 +467,6 @@ export default function BookDetailScreen() {
                   </View>
                 );
               }
-              const userIsOwner = isOwner(authState.user?.id, book.data.created_by);
               return (
                 <TouchableOpacity
                   onPress={() =>
@@ -479,13 +478,16 @@ export default function BookDetailScreen() {
                   style={{
                     marginRight: 4,
                     padding: 6,
+                    opacity: isOwner(authState.user?.id, book.data.created_by)
+                      ? 1
+                      : 0.4,
+                    display: isOwner(authState.user?.id, book.data.created_by)
+                      ? "flex"
+                      : "none",
                   }}
+                  disabled={!isOwner(authState.user?.id, book.data.created_by)}
                 >
-                  {userIsOwner ? (
-                    <UserPlus size={22} className="text-foreground" />
-                  ) : (
-                    <Users size={22} className="text-foreground" />
-                  )}
+                  <UserPlus size={22} className="text-foreground" />
                 </TouchableOpacity>
               );
             },
@@ -524,7 +526,9 @@ export default function BookDetailScreen() {
             keyExtractor={(item) => item.id}
             stickySectionHeadersEnabled={false}
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingBottom: insets.bottom + 190 }}
+            contentContainerStyle={{
+              paddingBottom: insets.bottom + 200, // ✅ FIXED (dynamic padding)
+            }}
             onEndReached={handleLoadMore}
             onEndReachedThreshold={0.3}
             refreshControl={<RefreshControl {...refreshControlProps} />}
@@ -818,9 +822,10 @@ export default function BookDetailScreen() {
             position: "absolute",
             left: 0,
             right: 0,
-            bottom: insets.bottom,
+            bottom: 0,
+            paddingBottom: insets.bottom
           }}
-          className="flex-row px-3 pt-3 pb-3 bg-card border-t border-border shadow-sm gap-3"
+          className="flex-row px-3 pt-3 pb-3 bg-card border-t border-border gap-3"
         >
           <Button
             onPress={() => {

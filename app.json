@@ -1,58 +1,95 @@
 {
   "expo": {
     "name": "Cashy",
+
     "slug": "cashy",
+
     "version": "1.0.0",
+
     "orientation": "portrait",
+
     "icon": "./assets/images/app-icon.png",
-    "scheme": "cashy",
+
+    "scheme": "cashy-expense-manager",
+
     "userInterfaceStyle": "light",
+
     "newArchEnabled": true,
+
     "backgroundColor": "#ffffff",
+
     "android": {
       "package": "com.codemine.cashy",
-      "versionCode": 9,
-      "version": "1.0.9",
+
+      "versionCode": 6,
+
+      "version": "1.0.6",
+
       "softwareKeyboardLayoutMode": "pan",
+
       "adaptiveIcon": {
         "backgroundColor": "#02929a",
+
         "foregroundImage": "./assets/images/app-icon-foreground.png",
+
         "monochromeImage": "./assets/images/app-icon-monochromic.png"
       },
+
       "permissions": ["INTERNET", "CAMERA"],
+
       "edgeToEdgeEnabled": true,
+
       "predictiveBackGestureEnabled": false
     },
+
     "plugins": [
       "expo-router",
+
       [
         "expo-splash-screen",
+
         {
           "image": "./assets/images/splash-icon.png",
+
           "imageWidth": 200,
+
           "resizeMode": "contain",
+
           "backgroundColor": "#ffffff",
+
           "dark": {
             "backgroundColor": "#000000"
           }
         }
       ],
+
       "@react-native-community/datetimepicker",
+
       "expo-localization",
+
+      "expo-navigation-bar",
+
       "expo-secure-store",
+
       "expo-web-browser",
+
       "@react-native-google-signin/google-signin"
     ],
+
     "experiments": {
       "typedRoutes": true,
+
       "reactCompiler": true
     },
+
     "extra": {
       "router": {},
+
       "eas": {
         "projectId": "428b74db-754f-4501-835c-69c5372d0bd3"
       }
     },
+
     "ios": {
       "bundleIdentifier": "com.codemine.cashy"
     }

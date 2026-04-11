@@ -1,3 +1,4 @@
+import { useKeyboardVisible } from "@/hooks/use-keyboard-visible";
 import React, { useEffect, useRef } from "react";
 import {
   Animated,
@@ -22,9 +23,10 @@ export function BottomSheetModal({
   children,
   ...modalProps
 }: BottomSheetModalProps) {
-  const slideAnimation = useRef(new Animated.Value(300)).current;
+  const slideAnimation = useRef(new Animated.Value(100)).current;
   const backdropOpacity = useRef(new Animated.Value(0)).current;
   const insets = useSafeAreaInsets();
+  const isKeyboardVisible = useKeyboardVisible();
 
   useEffect(() => {
     if (visible) {
@@ -66,10 +68,10 @@ export function BottomSheetModal({
       animationType="none"
       transparent={true}
       onRequestClose={onClose}
-      statusBarTranslucent={true}
+      // statusBarTranslucent={true}
       {...modalProps}
     >
-      {/* Backdrop — fades in/out smoothly */}
+      {/* Backdrop */}
       <Animated.View
         style={{
           position: "absolute",
@@ -85,20 +87,16 @@ export function BottomSheetModal({
         />
       </Animated.View>
 
-      {/* Sheet anchored to bottom */}
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{
-          position: "absolute",
-          bottom: insets.bottom,
-          left: 0,
-          right: 0,
-        }}
+        style={{ flex: 1, justifyContent: "flex-end" }}
+        keyboardVerticalOffset={Platform.OS === "ios" ? insets.top : 0}
       >
         <Animated.View
-          className="bg-background rounded-t-3xl pb-3"
+          className="bg-background rounded-t-3xl"
           style={{
             transform: [{ translateY: slideAnimation }],
+            paddingBottom: isKeyboardVisible ? insets.bottom : 0,
           }}
         >
           {children}
