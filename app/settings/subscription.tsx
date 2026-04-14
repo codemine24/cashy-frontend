@@ -1,12 +1,13 @@
 import { useCreateSubscription } from "@/api/subscription";
 import { ScreenContainer } from "@/components/screen-container";
-import { Check, ChevronDown, X } from "@/lib/icons";
+import { Check, ChevronDown, ChevronLeft, X } from "@/lib/icons";
 import { useIAP } from "expo-iap";
-import { router, Stack } from "expo-router";
-import React, { useEffect, useState } from "react";
+import { router, Stack, useFocusEffect } from "expo-router";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  BackHandler,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -85,6 +86,22 @@ export default function Subscription() {
       });
     }
   }, [connected, fetchProducts]);
+
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        router.navigate("/settings");
+        return true;
+      };
+
+      const subscription = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress,
+      );
+
+      return () => subscription.remove();
+    }, []),
+  );
 
   // const handleSaveProducts = async () => {
   //   if (!products || products.length === 0) {
@@ -188,7 +205,18 @@ export default function Subscription() {
   return (
     <>
       <Stack.Screen
-        options={{ title: "Cashy Subscription", headerTitleAlign: "left" }}
+        options={{
+          title: "Cashy Subscription",
+          headerTitleAlign: "left",
+          headerLeft: () => (
+            <TouchableOpacity
+              onPress={() => router.navigate("/settings")}
+              style={{ marginRight: 4 }}
+            >
+              <ChevronLeft size={26} className="text-foreground" />
+            </TouchableOpacity>
+          ),
+        }}
       />
       <ScreenContainer edges={[]} className="bg-background relative">
         <ScrollView

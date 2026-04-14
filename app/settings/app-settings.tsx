@@ -3,18 +3,20 @@ import { ScreenContainer } from "@/components/screen-container";
 import { languages, type LanguageCode } from "@/constants/onboarding";
 import { useAuth } from "@/context/auth-context";
 import { useTheme } from "@/context/theme-context";
+import { ChevronLeft } from "@/lib/icons";
 import { setUserInfo } from "@/utils/auth";
 import Feather from "@expo/vector-icons/Feather";
-import { Stack } from "expo-router";
-import Popover from "react-native-popover-view";
+import { Stack, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
+  BackHandler,
   ScrollView,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import Popover from "react-native-popover-view";
 
 // ─── Theme selector (3-state: LIGHT / DARK / SYSTEM) ────────────────
 
@@ -23,9 +25,9 @@ const THEME_OPTIONS: {
   label: string;
   icon: string;
 }[] = [
-    { value: "LIGHT", label: "Light", icon: "sun" },
-    { value: "DARK", label: "Dark", icon: "moon" },
-  ];
+  { value: "LIGHT", label: "Light", icon: "sun" },
+  { value: "DARK", label: "Dark", icon: "moon" },
+];
 
 function ThemeSelector({
   selected,
@@ -149,13 +151,15 @@ function LanguageSelector({
                   setShowDropdown(false);
                 }}
                 activeOpacity={0.7}
-                className={`flex-row items-center justify-between px-3 py-2.5 ${isActive ? "bg-primary/10" : ""
-                  }`}
+                className={`flex-row items-center justify-between px-3 py-2.5 ${
+                  isActive ? "bg-primary/10" : ""
+                }`}
               >
                 <View>
                   <Text
-                    className={`text-sm font-medium ${isActive ? "text-primary" : "text-foreground"
-                      }`}
+                    className={`text-sm font-medium ${
+                      isActive ? "text-primary" : "text-foreground"
+                    }`}
                   >
                     {lang.label}
                   </Text>
@@ -176,6 +180,7 @@ function LanguageSelector({
 // ─── Main screen ────────────────────────────────────────────────────
 
 export default function AppSettingsScreen() {
+  const router = useRouter();
   const { authState, setAuthState } = useAuth();
   const { applyUserTheme } = useTheme();
   const user = authState.user;
@@ -190,7 +195,6 @@ export default function AppSettingsScreen() {
   const updateSetting = useCallback(
     (field: string, value: any) => {
       if (!user) return;
-
 
       updateProfile(
         { [field]: value },
@@ -231,9 +235,37 @@ export default function AppSettingsScreen() {
     [updateSetting],
   );
 
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        router.navigate("/settings");
+        return true;
+      };
+
+      const subscription = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress,
+      );
+
+      return () => subscription.remove();
+    }, [router]),
+  );
+
   return (
     <>
-      <Stack.Screen options={{ title: t("settings.appSettings") }} />
+      <Stack.Screen
+        options={{
+          title: t("settings.appSettings"),
+          headerLeft: () => (
+            <TouchableOpacity
+              onPress={() => router.navigate("/settings")}
+              style={{ marginRight: 4 }}
+            >
+              <ChevronLeft size={26} className="text-foreground" />
+            </TouchableOpacity>
+          ),
+        }}
+      />
       {/* edges={["bottom"]} — top is handled by the native header */}
       <ScreenContainer edges={["bottom"]} className="bg-background">
         <ScrollView
