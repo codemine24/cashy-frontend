@@ -622,7 +622,9 @@ export default function AddTransactionScreen() {
         {/* Submit Button - Sticks above keyboard */}
         <View
           className="px-5 pt-3 pb-2 bg-background border-t border-border"
-          style={{ marginBottom: isKeyboardVisible ? 0 : insets.bottom }}
+          style={{
+            marginBottom: isKeyboardVisible ? 0 : Math.min(insets.bottom, 16),
+          }}
         >
           <TouchableOpacity
             onPress={form.handleSubmit(handleSubmit)}
