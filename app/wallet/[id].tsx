@@ -578,12 +578,12 @@ export default function BookDetailScreen() {
                     </View>
                   </View>
 
-                  <View className="flex-row justify-between items-center border-t border-border">
+                  <View className="border-t border-border">
                     <TouchableOpacity
                       onPress={() => setReportModalVisible(true)}
-                      className="flex-1 items-center py-2.5 gap-x-2 flex-row justify-center"
+                      className="items-center py-2.5 gap-x-2 flex-row justify-center"
                     >
-                      <Text className="text-primary font-semibold text-sm">
+                      <Text className="text-primary font-semibold text-sm" numberOfLines={1}>
                         {t("wallets.viewReport")}
                       </Text>
                       <ChevronRight size={16} className="text-primary" />
