@@ -765,7 +765,12 @@ export default function BookDetailScreen() {
                         {item.remark || "No remark"}
                       </Text>
                       <Text className="text-sm text-muted-foreground">
-                        Updated on:{" "}
+                        {Math.abs(
+                          new Date(item.created_at).getTime() -
+                            new Date(item.updated_at).getTime(),
+                        ) < 30000
+                          ? "Created: "
+                          : "Updated: "}{" "}
                         {new Date(item.updated_at).toLocaleDateString("en-GB", {
                           day: "2-digit",
                           month: "short",
