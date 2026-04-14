@@ -2,7 +2,7 @@ import { useCreateTransaction, useUpdateTransaction } from "@/api/transaction";
 import { InputError } from "@/components/ui/input-error";
 import { useKeyboardVisible } from "@/hooks/use-keyboard-visible";
 import { useKeyboardOffset } from "@/hooks/useKeyboardOffset";
-import { ChevronRight, Paperclip, X } from "@/lib/icons";
+import { ArrowLeft, ChevronRight, Paperclip, X } from "@/lib/icons";
 import { formatDateToUTC, formatTimeToUTC } from "@/utils";
 import { makeImageUrl } from "@/utils/helper";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -220,32 +220,32 @@ export default function AddTransactionScreen() {
   const buildFormData = (isUpdate = false) => {
     const dataPayload = isUpdate
       ? {
-        amount: parseFloat(amount),
-        category_id: !isDeposit
-          ? selectedCategory === "other" || !selectedCategory
-            ? undefined
-            : selectedCategory
-          : undefined,
-        remark,
-        date: formatDateToUTC(date),
-        time: formatTimeToUTC(date),
-        attachment: attachments
-          .filter((a) => a.isExisting)
-          .map((a) => a.name),
-      }
+          amount: parseFloat(amount),
+          category_id: !isDeposit
+            ? selectedCategory === "other" || !selectedCategory
+              ? undefined
+              : selectedCategory
+            : undefined,
+          remark,
+          date: formatDateToUTC(date),
+          time: formatTimeToUTC(date),
+          attachment: attachments
+            .filter((a) => a.isExisting)
+            .map((a) => a.name),
+        }
       : {
-        book_id: bookId,
-        type,
-        amount: parseFloat(amount),
-        category_id: !isDeposit
-          ? selectedCategory === "other" || !selectedCategory
-            ? undefined
-            : selectedCategory
-          : undefined,
-        remark,
-        date: formatDateToUTC(date),
-        time: formatTimeToUTC(date),
-      };
+          book_id: bookId,
+          type,
+          amount: parseFloat(amount),
+          category_id: !isDeposit
+            ? selectedCategory === "other" || !selectedCategory
+              ? undefined
+              : selectedCategory
+            : undefined,
+          remark,
+          date: formatDateToUTC(date),
+          time: formatTimeToUTC(date),
+        };
 
     const formData = new FormData();
     formData.append("data", JSON.stringify(dataPayload));
@@ -317,7 +317,14 @@ export default function AddTransactionScreen() {
         options={{
           headerShown: true,
           title: screenTitle,
-          headerBackTitle: "Back",
+          headerLeft: () => (
+            <TouchableOpacity
+              onPress={() => router.replace(`/wallet/transaction-detail`)}
+              style={{ marginLeft: 8, padding: 6 }}
+            >
+              <ArrowLeft size={22} className="text-foreground" />
+            </TouchableOpacity>
+          ),
         }}
       />
       <KeyboardAvoidingView
@@ -325,9 +332,16 @@ export default function AddTransactionScreen() {
         keyboardVerticalOffset={keyboardOffset}
         style={{ flex: 1 }}
       >
-        <View style={{ flex: 1 }} className={`bg-background ${isKeyboardVisible ? "pb-0" : "pb-8"}`}>
+        <View
+          style={{ flex: 1 }}
+          className={`bg-background ${isKeyboardVisible ? "pb-0" : "pb-8"}`}
+        >
           <ScrollView
-            contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 24 }}
+            contentContainerStyle={{
+              paddingHorizontal: 20,
+              paddingTop: 16,
+              paddingBottom: 24,
+            }}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
           >
