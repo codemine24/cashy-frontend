@@ -22,7 +22,16 @@ import { useAuth } from "@/context/auth-context";
 import { useDebounce } from "@/hooks/use-debounce";
 import { usePullToRefreshSkeletonWithSearch } from "@/hooks/use-pull-to-refresh-skeleton";
 import { SearchIcon } from "@/icons/search-icon";
-import { ChevronRight, Copy, Edit3, Trash2, User, UserPlus, Users, X } from "@/lib/icons";
+import {
+  ChevronRight,
+  Copy,
+  Edit3,
+  Trash2,
+  User,
+  UserPlus,
+  Users,
+  X,
+} from "@/lib/icons";
 import { formatNumber } from "@/utils";
 import { getAccessToken } from "@/utils/auth";
 import { isOwner, isWalletViewer } from "@/utils/is-owner";
@@ -39,7 +48,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
@@ -302,10 +311,12 @@ export default function BookDetailScreen() {
   };
 
   if (finalShowSkeleton) {
-    return <>
-      <Stack.Screen options={{ title: "" }} />
-      <BookDetailSkeleton />
-    </>;
+    return (
+      <>
+        <Stack.Screen options={{ title: "" }} />
+        <BookDetailSkeleton />
+      </>
+    );
   }
 
   if (!book) {
@@ -410,13 +421,13 @@ export default function BookDetailScreen() {
             title: selectedTransaction ? "1 Selected" : book.data.name,
             headerLeft: selectedTransaction
               ? () => (
-                <TouchableOpacity
-                  onPress={() => setSelectedTransaction(null)}
-                  style={{ marginLeft: 8, padding: 6 }}
-                >
-                  <X size={22} className="text-foreground" />
-                </TouchableOpacity>
-              )
+                  <TouchableOpacity
+                    onPress={() => setSelectedTransaction(null)}
+                    style={{ marginLeft: 8, padding: 6 }}
+                  >
+                    <X size={22} className="text-foreground" />
+                  </TouchableOpacity>
+                )
               : undefined,
             headerRight: () => {
               if (selectedTransaction) {
@@ -454,9 +465,15 @@ export default function BookDetailScreen() {
                           onPress={handleDelete}
                           className="p-2"
                           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                          disabled={isWalletViewer(authState.user?.id, book.data)}
+                          disabled={isWalletViewer(
+                            authState.user?.id,
+                            book.data,
+                          )}
                           style={{
-                            opacity: isWalletViewer(authState.user?.id, book.data)
+                            opacity: isWalletViewer(
+                              authState.user?.id,
+                              book.data,
+                            )
                               ? 0.4
                               : 1,
                           }}
@@ -599,11 +616,12 @@ export default function BookDetailScreen() {
                           return (
                             <View
                               key={member.id || index}
-                              className={`px-3 py-2 flex-row items-center justify-between ${index !==
+                              className={`px-3 py-2 flex-row items-center justify-between ${
+                                index !==
                                 Math.min(book.data.others_member.length, 2) - 1
-                                ? "border-b border-border"
-                                : ""
-                                }`}
+                                  ? "border-b border-border"
+                                  : ""
+                              }`}
                             >
                               <View className="flex-row items-center flex-1">
                                 {/* Avatar */}
@@ -716,8 +734,9 @@ export default function BookDetailScreen() {
                       }
                     }}
                     onLongPress={() => setSelectedTransaction(item)}
-                    className={`px-4 py-4 flex-row justify-between ${selectedTransaction?.id === item.id ? "bg-primary/10" : ""
-                      } ${index !== data.length - 1 ? "border-b border-border" : ""}`}
+                    className={`px-4 py-4 flex-row justify-between ${
+                      selectedTransaction?.id === item.id ? "bg-primary/10" : ""
+                    } ${index !== data.length - 1 ? "border-b border-border" : ""}`}
                   >
                     <View className="flex-1 mr-3">
                       <View className="flex-row items-center justify-between mb-2">
@@ -746,7 +765,7 @@ export default function BookDetailScreen() {
                         {item.remark || "No remark"}
                       </Text>
                       <Text className="text-sm text-muted-foreground">
-                        Updated:{" "}
+                        Updated on:{" "}
                         {new Date(item.updated_at).toLocaleDateString("en-GB", {
                           day: "2-digit",
                           month: "short",
@@ -760,8 +779,11 @@ export default function BookDetailScreen() {
                     </View>
                     <View className="items-end justify-center">
                       <Text
-                        className={`text-base font-bold mb-2 ${item.type === "IN" ? "text-success" : "text-destructive"
-                          }`}
+                        className={`text-base font-bold mb-2 ${
+                          item.type === "IN"
+                            ? "text-success"
+                            : "text-destructive"
+                        }`}
                       >
                         {formatNumber(item.amount)}
                       </Text>
@@ -820,7 +842,7 @@ export default function BookDetailScreen() {
             left: 0,
             right: 0,
             bottom: 0,
-            paddingBottom: insets.bottom
+            paddingBottom: insets.bottom,
           }}
           className="flex-row px-3 pt-3 pb-3 bg-card border-t border-border gap-3"
         >
