@@ -2,17 +2,23 @@ import { useCreateTransaction, useUpdateTransaction } from "@/api/transaction";
 import { InputError } from "@/components/ui/input-error";
 import { useKeyboardVisible } from "@/hooks/use-keyboard-visible";
 import { useKeyboardOffset } from "@/hooks/useKeyboardOffset";
-import { ArrowLeft, ChevronRight, Paperclip, X } from "@/lib/icons";
+import { ChevronLeft, ChevronRight, Paperclip, X } from "@/lib/icons";
 import { formatDateToUTC, formatTimeToUTC } from "@/utils";
 import { makeImageUrl } from "@/utils/helper";
 import { zodResolver } from "@hookform/resolvers/zod";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import * as ImagePicker from "expo-image-picker";
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import {
+  Stack,
+  useFocusEffect,
+  useLocalSearchParams,
+  useRouter,
+} from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
   Alert,
+  BackHandler,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -82,6 +88,32 @@ export default function AddTransactionScreen() {
   const createTransactionMutation = useCreateTransaction();
   const updateTransactionMutation = useUpdateTransaction();
   const [type, setType] = useState<"IN" | "OUT">(initialType);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        router.replace(
+          isEditing
+            ? {
+                pathname: "/wallet/transaction-detail",
+                params: {
+                  bookId,
+                  transactionId: params.editId,
+                },
+              }
+            : `/wallet/${bookId}`,
+        );
+        return true;
+      };
+
+      const subscription = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress,
+      );
+
+      return () => subscription.remove();
+    }, [router, isEditing, bookId, params.editId]),
+  );
   const [amount, setAmount] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedCategoryName, setSelectedCategoryName] = useState("");
@@ -319,10 +351,22 @@ export default function AddTransactionScreen() {
           title: screenTitle,
           headerLeft: () => (
             <TouchableOpacity
-              onPress={() => router.replace(`/wallet/transaction-detail`)}
-              style={{ marginLeft: 8, padding: 6 }}
+              onPress={() =>
+                router.replace(
+                  isEditing
+                    ? {
+                        pathname: "/wallet/transaction-detail",
+                        params: {
+                          bookId,
+                          transactionId: params.editId,
+                        },
+                      }
+                    : `/wallet/${bookId}`,
+                )
+              }
+              style={{ marginRight: 4 }}
             >
-              <ArrowLeft size={22} className="text-foreground" />
+              <ChevronLeft size={26} className="text-foreground" />
             </TouchableOpacity>
           ),
         }}
