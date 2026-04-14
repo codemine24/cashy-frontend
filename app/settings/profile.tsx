@@ -239,7 +239,7 @@ export default function ProfileScreen() {
               isSaving ? "bg-primary/50" : "bg-primary"
             }`}
           >
-            <Text className="text-white font-bold text-base">
+            <Text className="text-white font-bold text-base" numberOfLines={1}>
               {isSaving ? t("profile.saving") : t("profile.saveChanges")}
             </Text>
           </TouchableOpacity>

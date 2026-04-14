@@ -436,7 +436,7 @@ export default function Subscription() {
               {isProcessing ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <Text className="font-bold text-lg text-white">
+                <Text className="font-bold text-lg text-white" numberOfLines={1}>
                   Get Started
                 </Text>
               )}
