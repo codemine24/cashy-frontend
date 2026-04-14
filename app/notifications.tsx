@@ -8,11 +8,17 @@ import { Notification } from "@/interface/notification";
 import { Bell, Check, ChevronLeft, Info, Settings } from "@/lib/icons";
 import { timeAgo } from "@/utils";
 import { useQueryClient } from "@tanstack/react-query";
-import { Stack, useRouter } from "expo-router";
-import { useEffect } from "react";
+import {
+  Stack,
+  useFocusEffect,
+  useLocalSearchParams,
+  useRouter,
+} from "expo-router";
+import { useCallback, useEffect } from "react";
 
 import {
   ActivityIndicator,
+  BackHandler,
   FlatList,
   Text,
   TouchableOpacity,
@@ -38,6 +44,25 @@ const getNotificationIcon = (type: string) => {
 
 export default function NotificationsScreen() {
   const router = useRouter();
+  const { from } = useLocalSearchParams<{ from?: string }>();
+
+  console.log("from", from);
+
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        router.replace(from === "loans" ? "/loans" : "/");
+        return true;
+      };
+
+      const subscription = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress,
+      );
+
+      return () => subscription.remove();
+    }, [router, from]),
+  );
 
   const { data, isLoading, isError, refetch } = useGetNotifications({
     page: 1,
@@ -65,7 +90,7 @@ export default function NotificationsScreen() {
           title: "Notifications check",
           headerLeft: () => (
             <TouchableOpacity
-              onPress={() => router.replace("/")}
+              onPress={() => router.replace(from === "loans" ? "/loans" : "/")}
               style={{ marginRight: 4 }}
             >
               <ChevronLeft size={26} className="text-foreground" />
