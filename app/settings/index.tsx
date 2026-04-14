@@ -16,7 +16,14 @@ import { PremiumBadge } from "@/components/premium-badge";
 import { PremiumUpSellCard } from "@/components/premium-upsell-card";
 import { useAuth } from "@/context/auth-context";
 import { useIsPremium } from "@/hooks/use-is-premium";
-import { ChevronRight, Info, LogOut, Settings, User } from "@/lib/icons";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Info,
+  LogOut,
+  Settings,
+  User,
+} from "@/lib/icons";
 import { clearUserInfo, removeAccessToken } from "@/utils/auth";
 import { makeImageUrl } from "@/utils/helper";
 
@@ -98,7 +105,7 @@ export default function SettingsScreen() {
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
-        router.replace("/");
+        router.navigate("/");
         return true;
       };
 
@@ -119,14 +126,14 @@ export default function SettingsScreen() {
           title: t("settings.more"),
           headerBackTitle: t("common.back"),
           headerShadowVisible: true,
-          // headerLeft: () => (
-          //   <TouchableOpacity
-          //     onPress={() => router.replace("/")}
-          //     style={{ marginRight: 4 }}
-          //   >
-          //     <ChevronLeft size={26} className="text-foreground" />
-          //   </TouchableOpacity>
-          // ),
+          headerLeft: () => (
+            <TouchableOpacity
+              onPress={() => router.navigate("/")}
+              style={{ marginRight: 4 }}
+            >
+              <ChevronLeft size={26} className="text-foreground" />
+            </TouchableOpacity>
+          ),
         }}
       />
       <ScreenContainer edges={["left", "right"]} className="bg-background">

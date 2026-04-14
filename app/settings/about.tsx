@@ -3,6 +3,7 @@ import { ScreenContainer } from "@/components/screen-container";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { useAuth } from "@/context/auth-context";
 import {
+  ChevronLeft,
   ChevronRight,
   FileText,
   ShieldCheck,
@@ -117,6 +118,14 @@ export default function AboutScreen() {
           title: t("about.title"),
           headerBackTitle: t("common.back"),
           headerShadowVisible: true,
+          headerLeft: () => (
+            <TouchableOpacity
+              onPress={() => router.navigate("/settings")}
+              style={{ marginRight: 4 }}
+            >
+              <ChevronLeft size={26} className="text-foreground" />
+            </TouchableOpacity>
+          ),
         }}
       />
       <ScreenContainer edges={["left", "right"]} className="bg-background">

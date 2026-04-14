@@ -92,7 +92,7 @@ export default function AddTransactionScreen() {
   useFocusEffect(
     React.useCallback(() => {
       const onBackPress = () => {
-        router.replace(
+        router.navigate(
           isEditing
             ? {
                 pathname: "/wallet/transaction-detail",
@@ -352,7 +352,7 @@ export default function AddTransactionScreen() {
           headerLeft: () => (
             <TouchableOpacity
               onPress={() =>
-                router.replace(
+                router.navigate(
                   isEditing
                     ? {
                         pathname: "/wallet/transaction-detail",

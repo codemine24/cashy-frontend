@@ -317,7 +317,7 @@ export default function TransactionDetailScreen() {
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
-        router.replace(`/wallet/${params.bookId}`);
+        router.navigate(`/wallet/${params.bookId}`);
         return true;
       };
 
@@ -353,7 +353,7 @@ export default function TransactionDetailScreen() {
           },
           headerLeft: () => (
             <TouchableOpacity
-              onPress={() => router.replace(`/wallet/${params.bookId}`)}
+              onPress={() => router.navigate(`/wallet/${params.bookId}`)}
               style={{ marginRight: 4 }}
             >
               <ChevronLeft size={26} className="text-white" />

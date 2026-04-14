@@ -46,12 +46,10 @@ export default function NotificationsScreen() {
   const router = useRouter();
   const { from } = useLocalSearchParams<{ from?: string }>();
 
-  console.log("from", from);
-
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
-        router.replace(from === "loans" ? "/loans" : "/");
+        router.navigate(from === "loans" ? "/loans" : "/");
         return true;
       };
 
@@ -83,7 +81,7 @@ export default function NotificationsScreen() {
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
-        router.replace("/");
+        router.navigate("/");
         return true;
       };
 
@@ -106,7 +104,7 @@ export default function NotificationsScreen() {
           title: "Notifications check",
           headerLeft: () => (
             <TouchableOpacity
-              onPress={() => router.replace("/")}
+              onPress={() => router.navigate("/")}
               style={{ marginRight: 4 }}
             >
               <ChevronLeft size={26} className="text-foreground" />

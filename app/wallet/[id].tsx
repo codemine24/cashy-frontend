@@ -244,7 +244,7 @@ export default function BookDetailScreen() {
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
-        router.replace("/");
+        router.navigate("/");
         return true;
       };
 
@@ -341,7 +341,7 @@ export default function BookDetailScreen() {
             title: "",
             headerLeft: () => (
               <TouchableOpacity
-                onPress={() => router.replace("/")}
+                onPress={() => router.navigate("/")}
                 style={{ marginRight: 4 }}
               >
                 <ChevronLeft size={26} className="text-foreground" />
@@ -467,7 +467,7 @@ export default function BookDetailScreen() {
               }
               return (
                 <TouchableOpacity
-                  onPress={() => router.replace("/")}
+                  onPress={() => router.navigate("/")}
                   style={{ marginRight: 4 }}
                 >
                   <ChevronLeft size={26} className="text-foreground" />
