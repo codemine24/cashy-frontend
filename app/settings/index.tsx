@@ -1,9 +1,10 @@
 import { ScreenContainer } from "@/components/screen-container";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
-import { Stack, useRouter } from "expo-router";
-import { useState } from "react";
+import { Stack, useFocusEffect, useRouter } from "expo-router";
+import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
+  BackHandler,
   Image,
   ScrollView,
   Text,
@@ -94,6 +95,22 @@ export default function SettingsScreen() {
     await handleLogout();
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        router.replace("/");
+        return true;
+      };
+
+      const subscription = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress,
+      );
+
+      return () => subscription.remove();
+    }, [router]),
+  );
+
   return (
     <>
       <Stack.Screen
@@ -102,6 +119,14 @@ export default function SettingsScreen() {
           title: t("settings.more"),
           headerBackTitle: t("common.back"),
           headerShadowVisible: true,
+          // headerLeft: () => (
+          //   <TouchableOpacity
+          //     onPress={() => router.replace("/")}
+          //     style={{ marginRight: 4 }}
+          //   >
+          //     <ChevronLeft size={26} className="text-foreground" />
+          //   </TouchableOpacity>
+          // ),
         }}
       />
       <ScreenContainer edges={["left", "right"]} className="bg-background">

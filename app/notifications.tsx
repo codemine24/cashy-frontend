@@ -80,6 +80,22 @@ export default function NotificationsScreen() {
     });
   }, [markAsRead, queryClient]);
 
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        router.replace("/");
+        return true;
+      };
+
+      const subscription = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress,
+      );
+
+      return () => subscription.remove();
+    }, [router]),
+  );
+
   const notifications = data?.data || [];
 
   return (
@@ -90,7 +106,7 @@ export default function NotificationsScreen() {
           title: "Notifications check",
           headerLeft: () => (
             <TouchableOpacity
-              onPress={() => router.replace(from === "loans" ? "/loans" : "/")}
+              onPress={() => router.replace("/")}
               style={{ marginRight: 4 }}
             >
               <ChevronLeft size={26} className="text-foreground" />
