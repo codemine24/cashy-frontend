@@ -23,6 +23,7 @@ import { useDebounce } from "@/hooks/use-debounce";
 import { usePullToRefreshSkeletonWithSearch } from "@/hooks/use-pull-to-refresh-skeleton";
 import { SearchIcon } from "@/icons/search-icon";
 import {
+  ArrowLeft,
   ChevronRight,
   Copy,
   Edit3,
@@ -419,16 +420,26 @@ export default function BookDetailScreen() {
         <Stack.Screen
           options={{
             title: selectedTransaction ? "1 Selected" : book.data.name,
-            headerLeft: selectedTransaction
-              ? () => (
+            headerLeft: () => {
+              if (selectedTransaction) {
+                return (
                   <TouchableOpacity
                     onPress={() => setSelectedTransaction(null)}
                     style={{ marginLeft: 8, padding: 6 }}
                   >
                     <X size={22} className="text-foreground" />
                   </TouchableOpacity>
-                )
-              : undefined,
+                );
+              }
+              return (
+                <TouchableOpacity
+                  onPress={() => router.replace("/")}
+                  style={{ marginLeft: 8, padding: 6 }}
+                >
+                  <ArrowLeft size={22} className="text-foreground" />
+                </TouchableOpacity>
+              );
+            },
             headerRight: () => {
               if (selectedTransaction) {
                 return (
