@@ -81,7 +81,7 @@ export default function NotificationsScreen() {
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
-        router.navigate("/");
+        router.navigate(from === "loans" ? "/loans" : "/");
         return true;
       };
 
@@ -91,7 +91,7 @@ export default function NotificationsScreen() {
       );
 
       return () => subscription.remove();
-    }, [router]),
+    }, [router, from]),
   );
 
   const notifications = data?.data || [];
@@ -104,7 +104,7 @@ export default function NotificationsScreen() {
           title: "Notifications check",
           headerLeft: () => (
             <TouchableOpacity
-              onPress={() => router.navigate("/")}
+              onPress={() => router.navigate(from === "loans" ? "/loans" : "/")}
               style={{ marginRight: 4 }}
             >
               <ChevronLeft size={26} className="text-foreground" />

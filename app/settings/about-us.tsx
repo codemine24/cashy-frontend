@@ -1,8 +1,34 @@
 import { ScreenContainer } from "@/components/screen-container";
-import { Stack } from "expo-router";
-import { ScrollView, Text, View } from "react-native";
+import { ChevronLeft } from "@/lib/icons";
+import { Stack, useFocusEffect, useRouter } from "expo-router";
+import { useCallback } from "react";
+import {
+  BackHandler,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 export default function AboutUsScreen() {
+  const router = useRouter();
+
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        router.navigate("/settings/about");
+        return true;
+      };
+
+      const subscription = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress,
+      );
+
+      return () => subscription.remove();
+    }, [router]),
+  );
+
   return (
     <>
       <Stack.Screen
@@ -11,6 +37,14 @@ export default function AboutUsScreen() {
           title: "About Us",
           headerBackTitle: "Back",
           headerShadowVisible: true,
+          headerLeft: () => (
+            <TouchableOpacity
+              onPress={() => router.navigate("/settings/about")}
+              style={{ marginRight: 4 }}
+            >
+              <ChevronLeft size={26} className="text-foreground" />
+            </TouchableOpacity>
+          ),
         }}
       />
       <ScreenContainer edges={["left", "right"]} className="bg-background">
