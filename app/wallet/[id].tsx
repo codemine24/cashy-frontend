@@ -23,7 +23,7 @@ import { useDebounce } from "@/hooks/use-debounce";
 import { usePullToRefreshSkeletonWithSearch } from "@/hooks/use-pull-to-refresh-skeleton";
 import { SearchIcon } from "@/icons/search-icon";
 import {
-  ArrowLeft,
+  ChevronLeft,
   ChevronRight,
   Copy,
   Edit3,
@@ -37,12 +37,18 @@ import { formatNumber } from "@/utils";
 import { getAccessToken } from "@/utils/auth";
 import { isOwner, isWalletViewer } from "@/utils/is-owner";
 import { File as ExpoFile, Paths } from "expo-file-system";
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import {
+  Stack,
+  useFocusEffect,
+  useLocalSearchParams,
+  useRouter,
+} from "expo-router";
 import * as Sharing from "expo-sharing";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
+  BackHandler,
   Platform,
   RefreshControl,
   SectionList,
@@ -235,6 +241,22 @@ export default function BookDetailScreen() {
     }
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        router.replace("/");
+        return true;
+      };
+
+      const subscription = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress,
+      );
+
+      return () => subscription.remove();
+    }, [router]),
+  );
+
   const handleGeneratePdf = async () => {
     try {
       setIsGeneratingPdf(true);
@@ -314,7 +336,19 @@ export default function BookDetailScreen() {
   if (finalShowSkeleton) {
     return (
       <>
-        <Stack.Screen options={{ title: "" }} />
+        <Stack.Screen
+          options={{
+            title: "",
+            headerLeft: () => (
+              <TouchableOpacity
+                onPress={() => router.replace("/")}
+                style={{ marginRight: 4 }}
+              >
+                <ChevronLeft size={26} className="text-foreground" />
+              </TouchableOpacity>
+            ),
+          }}
+        />
         <BookDetailSkeleton />
       </>
     );
@@ -425,7 +459,7 @@ export default function BookDetailScreen() {
                 return (
                   <TouchableOpacity
                     onPress={() => setSelectedTransaction(null)}
-                    style={{ marginLeft: 8, padding: 6 }}
+                    style={{ marginRight: 8 }}
                   >
                     <X size={22} className="text-foreground" />
                   </TouchableOpacity>
@@ -434,9 +468,9 @@ export default function BookDetailScreen() {
               return (
                 <TouchableOpacity
                   onPress={() => router.replace("/")}
-                  style={{ marginLeft: 8, padding: 6 }}
+                  style={{ marginRight: 4 }}
                 >
-                  <ArrowLeft size={22} className="text-foreground" />
+                  <ChevronLeft size={26} className="text-foreground" />
                 </TouchableOpacity>
               );
             },
@@ -594,7 +628,10 @@ export default function BookDetailScreen() {
                       onPress={() => setReportModalVisible(true)}
                       className="items-center py-2.5 gap-x-2 flex-row justify-center"
                     >
-                      <Text className="text-primary font-semibold text-sm" numberOfLines={1}>
+                      <Text
+                        className="text-primary font-semibold text-sm"
+                        numberOfLines={1}
+                      >
                         {t("wallets.viewReport")}
                       </Text>
                       <ChevronRight size={16} className="text-primary" />
