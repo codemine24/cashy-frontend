@@ -5,12 +5,18 @@ import { useKeyboardOffset } from "@/hooks/useKeyboardOffset";
 import { ChevronLeft } from "@/lib/icons";
 import { zodResolver } from "@hookform/resolvers/zod";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import {
+  Stack,
+  useFocusEffect,
+  useLocalSearchParams,
+  useRouter,
+} from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
-  KeyboardAvoidingView,
+  BackHandler,
   InteractionManager,
+  KeyboardAvoidingView,
   Platform,
   ScrollView,
   Text,
@@ -165,6 +171,22 @@ export default function CreateLentScreen() {
 
     return () => interaction.cancel();
   }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        router.navigate("/loans");
+        return true;
+      };
+
+      const subscription = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress,
+      );
+
+      return () => subscription.remove();
+    }, [router]),
+  );
 
   return (
     <>
