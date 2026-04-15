@@ -123,12 +123,15 @@ export default function TabLayout() {
     return 0;
   };
 
+  const prevPathname = useRef(pathname);
+
   useEffect(() => {
-    const index = getIndexFromPathname(pathname);
-    if (index !== activeIndex) {
+    if (prevPathname.current !== pathname) {
+      prevPathname.current = pathname;
+      const index = getIndexFromPathname(pathname);
       pagerRef.current?.setPage(index);
     }
-  }, [pathname, activeIndex]);
+  }, [pathname]);
 
   return (
     <View style={{ flex: 1 }}>
