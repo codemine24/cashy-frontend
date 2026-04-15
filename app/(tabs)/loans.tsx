@@ -14,8 +14,8 @@ import { PlusIcon } from "@/icons/plus-icon";
 import { SearchIcon } from "@/icons/search-icon";
 import { Loan } from "@/interface/loan";
 import { formatCurrency } from "@/utils/index";
-import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   FlatList,
@@ -71,7 +71,14 @@ function TabButton({
 export default function LoansScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<LoanTab>("GIVEN");
+  const params = useLocalSearchParams<{ tab?: LoanTab }>();
+  const [activeTab, setActiveTab] = useState<LoanTab>(params.tab || "GIVEN");
+
+  useEffect(() => {
+    if (params.tab && (params.tab === "GIVEN" || params.tab === "TAKEN")) {
+      setActiveTab(params.tab);
+    }
+  }, [params.tab]);
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
   const [showSortModal, setShowSortModal] = useState(false);

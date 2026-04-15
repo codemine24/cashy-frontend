@@ -116,7 +116,7 @@ export default function CreateLentScreen() {
           response?.message ||
           `Loan ${isEditing ? "updated" : "created"} successfully`,
       });
-      router.back();
+      router.navigate("/loans?tab=GIVEN");
     } catch (error: any) {
       Toast.show({
         type: "error",
@@ -175,7 +175,7 @@ export default function CreateLentScreen() {
   useFocusEffect(
     React.useCallback(() => {
       const onBackPress = () => {
-        router.navigate("/loans");
+        router.navigate("/loans?tab=GIVEN");
         return true;
       };
 
@@ -196,7 +196,7 @@ export default function CreateLentScreen() {
           title: screenTitle,
           headerLeft: () => (
             <TouchableOpacity
-              onPress={() => router.navigate("/loans")}
+              onPress={() => router.navigate("/loans?tab=GIVEN")}
               style={{ marginRight: 4 }}
             >
               <ChevronLeft size={26} className="text-foreground" />

@@ -5,12 +5,13 @@ import { useKeyboardOffset } from "@/hooks/useKeyboardOffset";
 import { ChevronLeft } from "@/lib/icons";
 import { zodResolver } from "@hookform/resolvers/zod";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { Stack, useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
-  KeyboardAvoidingView,
+  BackHandler,
   InteractionManager,
+  KeyboardAvoidingView,
   Platform,
   ScrollView,
   Text,
@@ -109,7 +110,7 @@ export default function CreateBorrowedScreen() {
           response?.message ||
           `Loan ${isEditing ? "updated" : "created"} successfully`,
       });
-      router.back();
+      router.navigate("/loans?tab=TAKEN");
     } catch (error: any) {
       Toast.show({
         type: "error",
@@ -165,6 +166,22 @@ export default function CreateBorrowedScreen() {
     return () => interaction.cancel();
   }, []);
 
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        router.navigate("/loans?tab=TAKEN");
+        return true;
+      };
+
+      const subscription = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress,
+      );
+
+      return () => subscription.remove();
+    }, [router]),
+  );
+
   return (
     <>
       <Stack.Screen
@@ -173,7 +190,7 @@ export default function CreateBorrowedScreen() {
           title: screenTitle,
           headerLeft: () => (
             <TouchableOpacity
-              onPress={() => router.navigate("/loans")}
+              onPress={() => router.navigate("/loans?tab=TAKEN")}
               style={{ marginRight: 4 }}
             >
               <ChevronLeft size={26} className="text-foreground" />
