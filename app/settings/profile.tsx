@@ -1,25 +1,33 @@
 import { useUpdateProfile } from "@/api/user";
 import { ScreenContainer } from "@/components/screen-container";
 import { useAuth } from "@/context/auth-context";
+import { useKeyboardVisible } from "@/hooks/use-keyboard-visible";
+import { useKeyboardOffset } from "@/hooks/useKeyboardOffset";
+import { ChevronLeft } from "@/lib/icons";
 import { setUserInfo } from "@/utils/auth";
 import { makeImageUrl } from "@/utils/helper";
 import type { ImagePickerAsset } from "expo-image-picker";
 import * as ImagePicker from "expo-image-picker";
-import { Stack } from "expo-router";
+import { Stack, useFocusEffect, useRouter } from "expo-router";
 import { Camera, User } from "lucide-react-native";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Alert,
+  BackHandler,
   Image,
+  KeyboardAvoidingView,
+  Platform,
   ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function ProfileScreen() {
+  const router = useRouter();
   const { authState, setAuthState } = useAuth();
   const { t } = useTranslation();
   const user = authState.user;
@@ -33,6 +41,9 @@ export default function ProfileScreen() {
     makeImageUrl(user?.avatar, "user"),
   );
   const [pickedAsset, setPickedAsset] = useState<ImagePickerAsset | null>(null);
+  const insets = useSafeAreaInsets();
+  const keyboardOffset = useKeyboardOffset();
+  const isKeyboardVisible = useKeyboardVisible();
   const { mutate: updateProfile, isPending: isSaving } = useUpdateProfile();
 
   const handlePickAvatar = async () => {
@@ -106,112 +117,160 @@ export default function ProfileScreen() {
     });
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        router.navigate("/settings");
+        return true;
+      };
+
+      const subscription = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress,
+      );
+
+      return () => subscription.remove();
+    }, [router]),
+  );
+
   return (
     <>
-      <Stack.Screen options={{ title: t("profile.title") }} />
+      <Stack.Screen
+        options={{
+          title: t("profile.title"),
+          headerLeft: () => (
+            <TouchableOpacity
+              onPress={() => router.navigate("/settings")}
+              style={{ marginRight: 4 }}
+            >
+              <ChevronLeft size={26} className="text-foreground" />
+            </TouchableOpacity>
+          ),
+        }}
+      />
       <ScreenContainer edges={["bottom"]} className="bg-background">
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{
-            paddingHorizontal: 20,
-            paddingTop: 24,
-            paddingBottom: 40,
-          }}
-          keyboardShouldPersistTaps="handled"
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          keyboardVerticalOffset={keyboardOffset}
+          style={{ flex: 1 }}
         >
-          {/* ── Avatar ── */}
-          <View className="items-center mb-8">
-            <View className="relative">
-              <View className="w-24 h-24 rounded-full bg-surface border-2 border-border items-center justify-center overflow-hidden">
-                {avatarUri ? (
-                  <Image
-                    source={{ uri: avatarUri }}
-                    className="w-24 h-24 rounded-full"
-                    resizeMode="cover"
-                  />
-                ) : (
-                  <User size={44} /> // TODO: color={colors.muted}
-                )}
-              </View>
-              <TouchableOpacity
-                onPress={handlePickAvatar}
-                className="absolute bottom-0 right-0 w-8 h-8 bg-primary rounded-full items-center justify-center border-2 border-background"
-              >
-                <Camera size={14} color="#fff" />
-              </TouchableOpacity>
-            </View>
-            <Text className="text-xs text-muted-foreground mt-3">
-              {t("profile.changeAvatar")}
-            </Text>
-          </View>
-
-          {/* ── Name (editable) ── */}
-          <Text className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-3 px-1">
-            {t("profile.accountInfo")}
-          </Text>
-          <View className="bg-card rounded-2xl border border-border px-4 mb-6">
-            <View className="pt-4 border-b border-border">
-              <Text className="text-xs text-muted-foreground mb-1">
-                {t("profile.fullName")}
-              </Text>
-              <TextInput
-                value={name}
-                onChangeText={setName}
-                placeholder="Enter Your name"
-                placeholderTextColor="#9CA3AF"
-                // TODO: placeholderTextColor={colors.muted}
-                className="text-base text-foreground"
-              />
-            </View>
-
-            {/* ── Email (locked) ── */}
-            <View className="py-4 border-b border-border">
-              <View className="flex-row items-center gap-2 mb-1">
-                <Text className="text-xs text-muted-foreground">
-                  {t("profile.email")}
+          <View
+            style={{ flex: 1 }}
+            className={`bg-background ${isKeyboardVisible ? "pb-0" : "pb-8"}`}
+          >
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{
+                paddingHorizontal: 20,
+                paddingTop: 24,
+                paddingBottom: 40,
+              }}
+              keyboardShouldPersistTaps="handled"
+            >
+              {/* ── Avatar ── */}
+              <View className="items-center mb-8">
+                <View className="relative">
+                  <View className="w-24 h-24 rounded-full bg-surface border-2 border-border items-center justify-center overflow-hidden">
+                    {avatarUri ? (
+                      <Image
+                        source={{ uri: avatarUri }}
+                        className="w-24 h-24 rounded-full"
+                        resizeMode="cover"
+                      />
+                    ) : (
+                      <User size={44} /> // TODO: color={colors.muted}
+                    )}
+                  </View>
+                  <TouchableOpacity
+                    onPress={handlePickAvatar}
+                    className="absolute bottom-0 right-0 w-8 h-8 bg-primary rounded-full items-center justify-center border-2 border-background"
+                  >
+                    <Camera size={14} color="#fff" />
+                  </TouchableOpacity>
+                </View>
+                <Text className="text-xs text-muted-foreground mt-3">
+                  {t("profile.changeAvatar")}
                 </Text>
-                <View className="bg-primary border border-border rounded-full px-2 py-0.5">
-                  <Text className="text-xs text-white">
-                    {t("profile.locked")}
+              </View>
+
+              {/* ── Name (editable) ── */}
+              <Text className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-3 px-1">
+                {t("profile.accountInfo")}
+              </Text>
+              <View className="bg-card rounded-2xl border border-border px-4 mb-6">
+                <View className="pt-4 border-b border-border">
+                  <Text className="text-xs text-muted-foreground mb-1">
+                    {t("profile.fullName")}
                   </Text>
+                  <TextInput
+                    value={name}
+                    onChangeText={setName}
+                    placeholder="Enter your name"
+                    placeholderTextColor="#9CA3AF"
+                    className="text-base text-foreground"
+                  />
+                </View>
+
+                {/* ── Contact Number (editable) ── */}
+                <View className="pt-4 border-b border-border">
+                  <Text className="text-xs text-muted-foreground mb-1">
+                    {t("profile.contactNumber")}
+                  </Text>
+                  <TextInput
+                    value={contactNumber}
+                    onChangeText={setContactNumber}
+                    placeholder="Enter your contact number"
+                    placeholderTextColor="#9CA3AF"
+                    className="text-base text-foreground"
+                    keyboardType="phone-pad"
+                  />
+                </View>
+
+                {/* ── Email (locked) ── */}
+                <View className="py-4 border-b border-border">
+                  <View className="flex-row items-center gap-2 mb-1">
+                    <Text className="text-xs text-muted-foreground">
+                      {t("profile.email")}
+                    </Text>
+                    <View className="bg-primary border border-border rounded-full px-2 py-0.5">
+                      <Text className="text-xs text-white">
+                        {t("profile.locked")}
+                      </Text>
+                    </View>
+                  </View>
+                  <Text className="text-base text-foreground">{email}</Text>
                 </View>
               </View>
-              <Text className="text-base text-foreground">{email}</Text>
-            </View>
 
-            {/* ── Contact Number (editable) ── */}
-            <View className="py-4">
-              <Text className="text-xs text-muted-foreground mb-1">
-                {t("profile.contactNumber")}
+              <Text className="text-xs text-muted-foreground mb-6 px-1">
+                {t("profile.emailLocked")}
               </Text>
-              <TextInput
-                value={contactNumber}
-                onChangeText={setContactNumber}
-                placeholder="Your contact number"
-                // TODO: placeholderTextColor={colors.muted}
-                keyboardType="phone-pad"
-                placeholderTextColor="#9CA3AF"
-                className="text-base text-foreground"
-              />
-            </View>
+            </ScrollView>
           </View>
 
-          <Text className="text-xs text-muted-foreground mb-6 px-1">
-            {t("profile.emailLocked")}
-          </Text>
-
           {/* ── Save button ── */}
-          <TouchableOpacity
-            onPress={handleSave}
-            disabled={isSaving}
-            className={`rounded-2xl py-4 items-center justify-center ${isSaving ? "bg-primary/50" : "bg-primary"
-              }`}
+          <View
+            className="px-5 pt-3 pb-2 bg-background border-t border-border"
+            style={{
+              marginBottom: isKeyboardVisible ? 0 : Math.min(insets.bottom, 16),
+            }}
           >
-            <Text className="text-white font-bold text-base">
-              {isSaving ? t("profile.saving") : t("profile.saveChanges")}
-            </Text>
-          </TouchableOpacity>
-        </ScrollView>
+            <TouchableOpacity
+              onPress={handleSave}
+              disabled={isSaving}
+              className={`rounded-2xl py-4 items-center justify-center ${
+                isSaving ? "bg-primary/50" : "bg-primary"
+              }`}
+            >
+              <Text
+                className="text-white font-bold text-base"
+                numberOfLines={1}
+              >
+                {isSaving ? t("profile.saving") : t("profile.saveChanges")}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </KeyboardAvoidingView>
       </ScreenContainer>
     </>
   );

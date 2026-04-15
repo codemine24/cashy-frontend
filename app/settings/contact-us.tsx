@@ -1,7 +1,9 @@
 import { ScreenContainer } from "@/components/screen-container";
-import { Mail, User } from "@/lib/icons";
-import { Stack } from "expo-router";
+import { ChevronLeft, Mail, User } from "@/lib/icons";
+import { Stack, useFocusEffect, useRouter } from "expo-router";
+import { useCallback } from "react";
 import {
+  BackHandler,
   Linking,
   ScrollView,
   Text,
@@ -10,6 +12,8 @@ import {
 } from "react-native";
 
 export default function ContactUsScreen() {
+  const router = useRouter();
+
   const handleEmailPress = () => {
     Linking.openURL("mailto:codemine24@gmail.com");
   };
@@ -20,6 +24,22 @@ export default function ContactUsScreen() {
     );
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        router.navigate("/settings/about");
+        return true;
+      };
+
+      const subscription = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress,
+      );
+
+      return () => subscription.remove();
+    }, [router]),
+  );
+
   return (
     <>
       <Stack.Screen
@@ -28,6 +48,14 @@ export default function ContactUsScreen() {
           title: "Contact Us",
           headerBackTitle: "Back",
           headerShadowVisible: true,
+          headerLeft: () => (
+            <TouchableOpacity
+              onPress={() => router.navigate("/settings/about")}
+              style={{ marginRight: 4 }}
+            >
+              <ChevronLeft size={26} className="text-foreground" />
+            </TouchableOpacity>
+          ),
         }}
       />
       <ScreenContainer edges={["left", "right"]} className="bg-background">

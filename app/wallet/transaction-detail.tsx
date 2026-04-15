@@ -2,6 +2,7 @@ import { useDeleteTransaction, useTransaction } from "@/api/transaction";
 import {
   BookOpen,
   Calendar,
+  ChevronLeft,
   Copy,
   Download,
   Edit3,
@@ -11,15 +12,21 @@ import {
   Trash2,
   X,
 } from "@/lib/icons";
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import {
+  Stack,
+  useFocusEffect,
+  useLocalSearchParams,
+  useRouter,
+} from "expo-router";
 import { useCallback, useState } from "react";
 import {
+  BackHandler,
   Image,
   RefreshControl,
   ScrollView,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 
 import { AppModal } from "@/components/app-modal";
@@ -253,6 +260,7 @@ export default function TransactionDetailScreen() {
           text1: "Sharing not available",
         });
       }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       Toast.show({
         type: "error",
@@ -295,6 +303,7 @@ export default function TransactionDetailScreen() {
         text1: "Download successful",
         text2: "Saved to gallery",
       });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       Toast.show({
         type: "error",
@@ -305,12 +314,27 @@ export default function TransactionDetailScreen() {
     }
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        router.navigate(`/wallet/${params.bookId}`);
+        return true;
+      };
+
+      const subscription = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress,
+      );
+
+      return () => subscription.remove();
+    }, [router, params.bookId]),
+  );
+
   return (
     <>
       <Stack.Screen
         options={{
           headerShown: true,
-          headerBackTitle: "Back",
           title: "Transaction Details",
           headerStyle: {
             backgroundColor: isLoading
@@ -327,6 +351,14 @@ export default function TransactionDetailScreen() {
           headerTitleStyle: {
             color: isLoading ? (isDark ? "#ffffff" : "#000000") : "#fff",
           },
+          headerLeft: () => (
+            <TouchableOpacity
+              onPress={() => router.navigate(`/wallet/${params.bookId}`)}
+              style={{ marginRight: 4 }}
+            >
+              <ChevronLeft size={26} className="text-white" />
+            </TouchableOpacity>
+          ),
           headerRight: () => (
             <View className="flex-row items-center gap-2">
               {!isLoading && (
@@ -385,7 +417,10 @@ export default function TransactionDetailScreen() {
           >
             {/* ── Colored Header: Amount ── */}
             <View className="items-center pt-7 pb-9 px-6">
-              <Text className="text-white/95 text-xs font-semibold tracking-widest uppercase mb-2">
+              <Text
+                className="text-white/95 text-xs font-semibold tracking-widest uppercase mb-2"
+                numberOfLines={1}
+              >
                 {typeLabel}
               </Text>
               <Text className="text-white text-5xl font-extrabold tracking-tight">

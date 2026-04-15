@@ -2,17 +2,23 @@ import { useCreateTransaction, useUpdateTransaction } from "@/api/transaction";
 import { InputError } from "@/components/ui/input-error";
 import { useKeyboardVisible } from "@/hooks/use-keyboard-visible";
 import { useKeyboardOffset } from "@/hooks/useKeyboardOffset";
-import { ChevronRight, Paperclip, X } from "@/lib/icons";
+import { ChevronLeft, ChevronRight, Paperclip, X } from "@/lib/icons";
 import { formatDateToUTC, formatTimeToUTC } from "@/utils";
 import { makeImageUrl } from "@/utils/helper";
 import { zodResolver } from "@hookform/resolvers/zod";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import * as ImagePicker from "expo-image-picker";
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import {
+  Stack,
+  useFocusEffect,
+  useLocalSearchParams,
+  useRouter,
+} from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
   Alert,
+  BackHandler,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -82,6 +88,32 @@ export default function AddTransactionScreen() {
   const createTransactionMutation = useCreateTransaction();
   const updateTransactionMutation = useUpdateTransaction();
   const [type, setType] = useState<"IN" | "OUT">(initialType);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        router.navigate(
+          isEditing
+            ? {
+                pathname: "/wallet/transaction-detail",
+                params: {
+                  bookId,
+                  transactionId: params.editId,
+                },
+              }
+            : `/wallet/${bookId}`,
+        );
+        return true;
+      };
+
+      const subscription = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress,
+      );
+
+      return () => subscription.remove();
+    }, [router, isEditing, bookId, params.editId]),
+  );
   const [amount, setAmount] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedCategoryName, setSelectedCategoryName] = useState("");
@@ -220,32 +252,32 @@ export default function AddTransactionScreen() {
   const buildFormData = (isUpdate = false) => {
     const dataPayload = isUpdate
       ? {
-        amount: parseFloat(amount),
-        category_id: !isDeposit
-          ? selectedCategory === "other" || !selectedCategory
-            ? undefined
-            : selectedCategory
-          : undefined,
-        remark,
-        date: formatDateToUTC(date),
-        time: formatTimeToUTC(date),
-        attachment: attachments
-          .filter((a) => a.isExisting)
-          .map((a) => a.name),
-      }
+          amount: parseFloat(amount),
+          category_id: !isDeposit
+            ? selectedCategory === "other" || !selectedCategory
+              ? undefined
+              : selectedCategory
+            : undefined,
+          remark,
+          date: formatDateToUTC(date),
+          time: formatTimeToUTC(date),
+          attachment: attachments
+            .filter((a) => a.isExisting)
+            .map((a) => a.name),
+        }
       : {
-        book_id: bookId,
-        type,
-        amount: parseFloat(amount),
-        category_id: !isDeposit
-          ? selectedCategory === "other" || !selectedCategory
-            ? undefined
-            : selectedCategory
-          : undefined,
-        remark,
-        date: formatDateToUTC(date),
-        time: formatTimeToUTC(date),
-      };
+          book_id: bookId,
+          type,
+          amount: parseFloat(amount),
+          category_id: !isDeposit
+            ? selectedCategory === "other" || !selectedCategory
+              ? undefined
+              : selectedCategory
+            : undefined,
+          remark,
+          date: formatDateToUTC(date),
+          time: formatTimeToUTC(date),
+        };
 
     const formData = new FormData();
     formData.append("data", JSON.stringify(dataPayload));
@@ -317,7 +349,26 @@ export default function AddTransactionScreen() {
         options={{
           headerShown: true,
           title: screenTitle,
-          headerBackTitle: "Back",
+          headerLeft: () => (
+            <TouchableOpacity
+              onPress={() =>
+                router.navigate(
+                  isEditing
+                    ? {
+                        pathname: "/wallet/transaction-detail",
+                        params: {
+                          bookId,
+                          transactionId: params.editId,
+                        },
+                      }
+                    : `/wallet/${bookId}`,
+                )
+              }
+              style={{ marginRight: 4 }}
+            >
+              <ChevronLeft size={26} className="text-foreground" />
+            </TouchableOpacity>
+          ),
         }}
       />
       <KeyboardAvoidingView
@@ -325,9 +376,16 @@ export default function AddTransactionScreen() {
         keyboardVerticalOffset={keyboardOffset}
         style={{ flex: 1 }}
       >
-        <View style={{ flex: 1 }} className={`bg-background ${isKeyboardVisible ? "pb-0" : "pb-8"}`}>
+        <View
+          style={{ flex: 1 }}
+          className={`bg-background ${isKeyboardVisible ? "pb-0" : "pb-8"}`}
+        >
           <ScrollView
-            contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 24 }}
+            contentContainerStyle={{
+              paddingHorizontal: 20,
+              paddingTop: 16,
+              paddingBottom: 24,
+            }}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
           >
@@ -563,8 +621,10 @@ export default function AddTransactionScreen() {
 
         {/* Submit Button - Sticks above keyboard */}
         <View
-          className="px-5 py-3 bg-background border border-border"
-          style={{ marginBottom: isKeyboardVisible ? 0 : insets.bottom }}
+          className="px-5 pt-3 pb-2 bg-background border-t border-border"
+          style={{
+            marginBottom: isKeyboardVisible ? 0 : Math.min(insets.bottom, 16),
+          }}
         >
           <TouchableOpacity
             onPress={form.handleSubmit(handleSubmit)}

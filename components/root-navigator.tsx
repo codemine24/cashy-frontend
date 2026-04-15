@@ -49,7 +49,7 @@ export const RootNavigator = () => {
                 }}
               />
               <Stack.Screen
-                name="login-type"
+                name="login"
                 options={{
                   contentStyle: {
                     backgroundColor: isDark ? "#0f172a" : "#f8fafc",

@@ -14,17 +14,18 @@ import { FilterIcon } from "@/icons/filter-icon";
 import { PlusIcon } from "@/icons/plus-icon";
 import { SearchIcon } from "@/icons/search-icon";
 import { Book } from "@/interface/wallet";
-import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useFocusEffect, useRouter } from "expo-router";
+import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
+  BackHandler,
   FlatList,
   RefreshControl,
   ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 import Toast from "react-native-toast-message";
 
@@ -37,10 +38,10 @@ const SORT_OPTIONS = (
   label: string;
   order: "asc" | "desc";
 }[] => [
-    { key: "updated_at", label: t("wallets.lastUpdated"), order: "desc" },
-    { key: "name", label: t("wallets.nameAZ"), order: "asc" },
-    { key: "created_at", label: t("wallets.lastCreated"), order: "desc" },
-  ];
+  { key: "updated_at", label: t("wallets.lastUpdated"), order: "desc" },
+  { key: "name", label: t("wallets.nameAZ"), order: "asc" },
+  { key: "created_at", label: t("wallets.lastCreated"), order: "desc" },
+];
 
 export default function HomeScreen() {
   const { t } = useTranslation();
@@ -57,6 +58,7 @@ export default function HomeScreen() {
   const debouncedSearchQuery = useDebounce(searchQuery, 400);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [bookToDelete, setBookToDelete] = useState<Book | null>(null);
+  const [showExitModal, setShowExitModal] = useState(false);
 
   const [tempSortBy, setTempSortBy] = useState<SortOption>("updated_at");
   const [tempSortOrder, setTempSortOrder] = useState<"asc" | "desc">("asc");
@@ -133,6 +135,22 @@ export default function HomeScreen() {
     } as any);
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        setShowExitModal(true);
+        return true;
+      };
+
+      const subscription = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress,
+      );
+
+      return () => subscription.remove();
+    }, []),
+  );
+
   return (
     <>
       <ScreenContainer edges={["left", "right"]} className="p-4 bg-background">
@@ -167,7 +185,12 @@ export default function HomeScreen() {
           {/* Header */}
           <View className="mb-2 flex-row items-center">
             <View className="flex-row items-center gap-2">
-              <Text numberOfLines={1} className="text-sm font-semibold text-muted-foreground mr-2">{t("wallets.yourWallets")}</Text>
+              <Text
+                numberOfLines={1}
+                className="text-sm font-semibold text-muted-foreground mr-2"
+              >
+                {t("wallets.yourWallets")}
+              </Text>
             </View>
             <TouchableOpacity
               onPress={openSortModal}
@@ -183,8 +206,20 @@ export default function HomeScreen() {
           ) : booksData?.data?.length === 0 ? (
             <View className="flex-1 justify-center items-center -mt-16 py-8">
               <SearchIcon className="text-muted-foreground size-12" />
-              <Text numberOfLines={1} className="text-muted-foreground mt-2 text-base">{searchQuery.trim() ? `No wallet found for "${searchQuery}"` : t("wallets.noWallets")}</Text>
-              <Text numberOfLines={1} className="text-sm text-muted-foreground text-center mb-4">{t("wallets.createFirstWallet")}</Text>
+              <Text
+                numberOfLines={1}
+                className="text-muted-foreground mt-2 text-base"
+              >
+                {searchQuery.trim()
+                  ? `No wallet found for "${searchQuery}"`
+                  : t("wallets.noWallets")}
+              </Text>
+              <Text
+                numberOfLines={1}
+                className="text-sm text-muted-foreground text-center mb-4"
+              >
+                {t("wallets.createFirstWallet")}
+              </Text>
             </View>
           ) : (
             <FlatList
@@ -297,6 +332,16 @@ export default function HomeScreen() {
         itemName={bookToDelete?.name}
         message="This action cannot be undone and will remove all associated transactions."
         isLoading={deleteBookMutation.isPending}
+      />
+
+      {/* Exit Confirmation Modal */}
+      <ConfirmationModal
+        visible={showExitModal}
+        onClose={() => setShowExitModal(false)}
+        onConfirm={() => BackHandler.exitApp()}
+        title="Exit App"
+        message="Are you sure you want to exit the app?"
+        confirmText="Exit"
       />
     </>
   );

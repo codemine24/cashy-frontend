@@ -87,8 +87,6 @@ export default function StatisticsPage() {
     top_sources: [],
   };
 
-  console.log("walletStats", walletStats);
-
   const books = booksData?.data || [];
 
   const handleGeneratePdf = async () => {
@@ -300,12 +298,13 @@ export default function StatisticsPage() {
                 Net Balance
               </P>
               <P
-                className={`text-base font-bold ${(walletStats.income_vs_expense?.income || 0) -
-                  (walletStats.income_vs_expense?.expense || 0) >=
+                className={`text-base font-bold ${
+                  (walletStats.income_vs_expense?.income || 0) -
+                    (walletStats.income_vs_expense?.expense || 0) >=
                   0
-                  ? "text-green-600"
-                  : "text-red-600"
-                  }`}
+                    ? "text-green-600"
+                    : "text-red-600"
+                }`}
               >
                 $
                 {(
@@ -575,13 +574,13 @@ function TransactionTrendChart({ data }: { data: any[] }) {
 
                 const incomeHeight = d.total_income
                   ? (d.total_income / maxVal) *
-                  (chartHeight - paddingBottom - paddingTop)
+                    (chartHeight - paddingBottom - paddingTop)
                   : 0;
                 const incomeY = chartHeight - paddingBottom - incomeHeight;
 
                 const expenseHeight = d.total_expense
                   ? (d.total_expense / maxVal) *
-                  (chartHeight - paddingBottom - paddingTop)
+                    (chartHeight - paddingBottom - paddingTop)
                   : 0;
                 const expenseY = chartHeight - paddingBottom - expenseHeight;
 

@@ -22,24 +22,40 @@ import { useAuth } from "@/context/auth-context";
 import { useDebounce } from "@/hooks/use-debounce";
 import { usePullToRefreshSkeletonWithSearch } from "@/hooks/use-pull-to-refresh-skeleton";
 import { SearchIcon } from "@/icons/search-icon";
-import { ChevronRight, Copy, Edit3, Trash2, User, UserPlus, Users, X } from "@/lib/icons";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Copy,
+  Edit3,
+  Trash2,
+  User,
+  UserPlus,
+  Users,
+  X,
+} from "@/lib/icons";
 import { formatNumber } from "@/utils";
 import { getAccessToken } from "@/utils/auth";
 import { isOwner, isWalletViewer } from "@/utils/is-owner";
 import { File as ExpoFile, Paths } from "expo-file-system";
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import {
+  Stack,
+  useFocusEffect,
+  useLocalSearchParams,
+  useRouter,
+} from "expo-router";
 import * as Sharing from "expo-sharing";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
+  BackHandler,
   Platform,
   RefreshControl,
   SectionList,
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
@@ -225,6 +241,22 @@ export default function BookDetailScreen() {
     }
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        router.navigate("/");
+        return true;
+      };
+
+      const subscription = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress,
+      );
+
+      return () => subscription.remove();
+    }, [router]),
+  );
+
   const handleGeneratePdf = async () => {
     try {
       setIsGeneratingPdf(true);
@@ -302,10 +334,24 @@ export default function BookDetailScreen() {
   };
 
   if (finalShowSkeleton) {
-    return <>
-      <Stack.Screen options={{ title: "" }} />
-      <BookDetailSkeleton />
-    </>;
+    return (
+      <>
+        <Stack.Screen
+          options={{
+            title: "",
+            headerLeft: () => (
+              <TouchableOpacity
+                onPress={() => router.navigate("/")}
+                style={{ marginRight: 4 }}
+              >
+                <ChevronLeft size={26} className="text-foreground" />
+              </TouchableOpacity>
+            ),
+          }}
+        />
+        <BookDetailSkeleton />
+      </>
+    );
   }
 
   if (!book) {
@@ -408,16 +454,26 @@ export default function BookDetailScreen() {
         <Stack.Screen
           options={{
             title: selectedTransaction ? "1 Selected" : book.data.name,
-            headerLeft: selectedTransaction
-              ? () => (
+            headerLeft: () => {
+              if (selectedTransaction) {
+                return (
+                  <TouchableOpacity
+                    onPress={() => setSelectedTransaction(null)}
+                    style={{ marginRight: 8 }}
+                  >
+                    <X size={22} className="text-foreground" />
+                  </TouchableOpacity>
+                );
+              }
+              return (
                 <TouchableOpacity
-                  onPress={() => setSelectedTransaction(null)}
-                  style={{ marginLeft: 8, padding: 6 }}
+                  onPress={() => router.navigate("/")}
+                  style={{ marginRight: 4 }}
                 >
-                  <X size={22} className="text-foreground" />
+                  <ChevronLeft size={26} className="text-foreground" />
                 </TouchableOpacity>
-              )
-              : undefined,
+              );
+            },
             headerRight: () => {
               if (selectedTransaction) {
                 return (
@@ -454,9 +510,15 @@ export default function BookDetailScreen() {
                           onPress={handleDelete}
                           className="p-2"
                           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                          disabled={isWalletViewer(authState.user?.id, book.data)}
+                          disabled={isWalletViewer(
+                            authState.user?.id,
+                            book.data,
+                          )}
                           style={{
-                            opacity: isWalletViewer(authState.user?.id, book.data)
+                            opacity: isWalletViewer(
+                              authState.user?.id,
+                              book.data,
+                            )
                               ? 0.4
                               : 1,
                           }}
@@ -561,12 +623,15 @@ export default function BookDetailScreen() {
                     </View>
                   </View>
 
-                  <View className="flex-row justify-between items-center border-t border-border">
+                  <View className="border-t border-border">
                     <TouchableOpacity
                       onPress={() => setReportModalVisible(true)}
-                      className="flex-1 items-center py-2.5 gap-x-2 flex-row justify-center"
+                      className="items-center py-2.5 gap-x-2 flex-row justify-center"
                     >
-                      <Text className="text-primary font-semibold text-sm">
+                      <Text
+                        className="text-primary font-semibold text-sm"
+                        numberOfLines={1}
+                      >
                         {t("wallets.viewReport")}
                       </Text>
                       <ChevronRight size={16} className="text-primary" />
@@ -599,11 +664,12 @@ export default function BookDetailScreen() {
                           return (
                             <View
                               key={member.id || index}
-                              className={`px-3 py-2 flex-row items-center justify-between ${index !==
+                              className={`px-3 py-2 flex-row items-center justify-between ${
+                                index !==
                                 Math.min(book.data.others_member.length, 2) - 1
-                                ? "border-b border-border"
-                                : ""
-                                }`}
+                                  ? "border-b border-border"
+                                  : ""
+                              }`}
                             >
                               <View className="flex-row items-center flex-1">
                                 {/* Avatar */}
@@ -716,8 +782,9 @@ export default function BookDetailScreen() {
                       }
                     }}
                     onLongPress={() => setSelectedTransaction(item)}
-                    className={`px-4 py-4 flex-row justify-between ${selectedTransaction?.id === item.id ? "bg-primary/10" : ""
-                      } ${index !== data.length - 1 ? "border-b border-border" : ""}`}
+                    className={`px-4 py-4 flex-row justify-between ${
+                      selectedTransaction?.id === item.id ? "bg-primary/10" : ""
+                    } ${index !== data.length - 1 ? "border-b border-border" : ""}`}
                   >
                     <View className="flex-1 mr-3">
                       <View className="flex-row items-center justify-between mb-2">
@@ -746,7 +813,12 @@ export default function BookDetailScreen() {
                         {item.remark || "No remark"}
                       </Text>
                       <Text className="text-sm text-muted-foreground">
-                        Updated:{" "}
+                        {Math.abs(
+                          new Date(item.created_at).getTime() -
+                            new Date(item.updated_at).getTime(),
+                        ) < 30000
+                          ? "Created: "
+                          : "Updated: "}{" "}
                         {new Date(item.updated_at).toLocaleDateString("en-GB", {
                           day: "2-digit",
                           month: "short",
@@ -760,8 +832,11 @@ export default function BookDetailScreen() {
                     </View>
                     <View className="items-end justify-center">
                       <Text
-                        className={`text-base font-bold mb-2 ${item.type === "IN" ? "text-success" : "text-destructive"
-                          }`}
+                        className={`text-base font-bold mb-2 ${
+                          item.type === "IN"
+                            ? "text-success"
+                            : "text-destructive"
+                        }`}
                       >
                         {formatNumber(item.amount)}
                       </Text>
@@ -820,7 +895,7 @@ export default function BookDetailScreen() {
             left: 0,
             right: 0,
             bottom: 0,
-            paddingBottom: insets.bottom
+            paddingBottom: insets.bottom,
           }}
           className="flex-row px-3 pt-3 pb-3 bg-card border-t border-border gap-3"
         >

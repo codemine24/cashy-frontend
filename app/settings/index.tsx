@@ -1,9 +1,10 @@
 import { ScreenContainer } from "@/components/screen-container";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
-import { Stack, useRouter } from "expo-router";
-import { useState } from "react";
+import { Stack, useFocusEffect, useRouter } from "expo-router";
+import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
+  BackHandler,
   Image,
   ScrollView,
   Text,
@@ -15,7 +16,14 @@ import { PremiumBadge } from "@/components/premium-badge";
 import { PremiumUpSellCard } from "@/components/premium-upsell-card";
 import { useAuth } from "@/context/auth-context";
 import { useIsPremium } from "@/hooks/use-is-premium";
-import { ChevronRight, Info, LogOut, Settings, User } from "@/lib/icons";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Info,
+  LogOut,
+  Settings,
+  User,
+} from "@/lib/icons";
 import { clearUserInfo, removeAccessToken } from "@/utils/auth";
 import { makeImageUrl } from "@/utils/helper";
 
@@ -94,6 +102,22 @@ export default function SettingsScreen() {
     await handleLogout();
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        router.navigate("/");
+        return true;
+      };
+
+      const subscription = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress,
+      );
+
+      return () => subscription.remove();
+    }, [router]),
+  );
+
   return (
     <>
       <Stack.Screen
@@ -102,6 +126,14 @@ export default function SettingsScreen() {
           title: t("settings.more"),
           headerBackTitle: t("common.back"),
           headerShadowVisible: true,
+          headerLeft: () => (
+            <TouchableOpacity
+              onPress={() => router.navigate("/")}
+              style={{ marginRight: 4 }}
+            >
+              <ChevronLeft size={26} className="text-foreground" />
+            </TouchableOpacity>
+          ),
         }}
       />
       <ScreenContainer edges={["left", "right"]} className="bg-background">

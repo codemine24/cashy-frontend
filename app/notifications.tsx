@@ -1,21 +1,29 @@
-import { useGetNotifications, useMarkNotificationsAsRead } from "@/api/notification";
+import {
+  useGetNotifications,
+  useMarkNotificationsAsRead,
+} from "@/api/notification";
 
 import { ScreenContainer } from "@/components/screen-container";
 import { Notification } from "@/interface/notification";
-import { ArrowLeft, Bell, Check, Info, Settings } from "@/lib/icons";
+import { Bell, Check, ChevronLeft, Info, Settings } from "@/lib/icons";
 import { timeAgo } from "@/utils";
 import { useQueryClient } from "@tanstack/react-query";
-import { Stack, useRouter } from "expo-router";
-import { useEffect } from "react";
+import {
+  Stack,
+  useFocusEffect,
+  useLocalSearchParams,
+  useRouter,
+} from "expo-router";
+import { useCallback, useEffect } from "react";
 
 import {
-    ActivityIndicator,
-    FlatList,
-    Text,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  BackHandler,
+  FlatList,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const getNotificationIcon = (type: string) => {
   // Simple check for now based on title or message if type is not available in backend
@@ -36,7 +44,23 @@ const getNotificationIcon = (type: string) => {
 
 export default function NotificationsScreen() {
   const router = useRouter();
-  const insets = useSafeAreaInsets();
+  const { from } = useLocalSearchParams<{ from?: string }>();
+
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        router.navigate(from === "loans" ? "/loans" : "/");
+        return true;
+      };
+
+      const subscription = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress,
+      );
+
+      return () => subscription.remove();
+    }, [router, from]),
+  );
 
   const { data, isLoading, isError, refetch } = useGetNotifications({
     page: 1,
@@ -52,38 +76,43 @@ export default function NotificationsScreen() {
         queryClient.refetchQueries({ queryKey: ["notifications"] });
       },
     });
-  }, []);
+  }, [markAsRead, queryClient]);
 
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        router.navigate(from === "loans" ? "/loans" : "/");
+        return true;
+      };
+
+      const subscription = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress,
+      );
+
+      return () => subscription.remove();
+    }, [router, from]),
+  );
 
   const notifications = data?.data || [];
 
   return (
     <>
-      <Stack.Screen options={{ headerShown: false }} />
-      <View className="flex-1 bg-background">
-        {/* Custom Header */}
-        <View
-          style={{
-            paddingTop: insets.top + 4,
-            paddingBottom: 12,
-            paddingHorizontal: 20,
-          }}
-          className="bg-background border-b border-border"
-        >
-          <View className="flex-row items-center gap-4">
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          title: "Notifications check",
+          headerLeft: () => (
             <TouchableOpacity
-              onPress={() => router.back()}
-              activeOpacity={0.7}
-              className="p-2 -ml-2 rounded-full"
+              onPress={() => router.navigate(from === "loans" ? "/loans" : "/")}
+              style={{ marginRight: 4 }}
             >
-              <ArrowLeft size={24} className="text-foreground" />
+              <ChevronLeft size={26} className="text-foreground" />
             </TouchableOpacity>
-            <Text className="text-xl font-bold text-foreground">
-              Notifications
-            </Text>
-          </View>
-        </View>
-
+          ),
+        }}
+      />
+      <View className="flex-1 bg-background">
         <ScreenContainer edges={["bottom"]} className="bg-background">
           {isLoading ? (
             <View className="flex-1 items-center justify-center">
@@ -123,41 +152,46 @@ export default function NotificationsScreen() {
                   </Text>
                 </View>
               }
-              renderItem={({ item }: { item: Notification }) => (
-                <View
-                  className={`flex-row p-4 rounded-2xl border ${item.is_read
-                      ? "bg-surface/50 border-border/50"
-                      : "bg-surface border-border shadow-sm"
-                    }`}
-                >
+              renderItem={({ item }: { item: Notification }) => {
+                const isRead = !!item.is_read;
+                return (
                   <View
-                    className={`size-10 rounded-full items-center justify-center mr-4 ${item.is_read ? "bg-background" : "bg-primary/10"
-                      }`}
+                    className={`flex-row p-4 rounded-2xl border ${
+                      isRead
+                        ? "bg-surface/50 border-border/50"
+                        : "bg-surface border-border shadow-sm"
+                    }`}
                   >
-                    {getNotificationIcon(item.title)}
-                  </View>
-                  <View className="flex-1">
-                    <View className="flex-row justify-between items-start mb-1">
-                      <Text
-                        className={`text-base flex-1 pr-2 ${item.is_read ? "font-medium text-foreground/70" : "font-bold text-foreground"}`}
-                      >
-                        {item.title}
-                      </Text>
-                      {!item.is_read && (
-                        <View className="size-2 rounded-full bg-primary mt-2" />
-                      )}
-                    </View>
-                    <Text
-                      className={`text-sm leading-relaxed ${item.is_read ? "text-muted-foreground/70" : "text-muted-foreground"}`}
+                    <View
+                      className={`size-10 rounded-full items-center justify-center mr-4 ${
+                        isRead ? "bg-background" : "bg-primary/10"
+                      }`}
                     >
-                      {item.message}
-                    </Text>
-                    <Text className="text-[10px] text-muted-foreground/60 mt-2 font-medium uppercase tracking-wider">
-                      {item.created_at ? timeAgo(item.created_at) : ""}
-                    </Text>
+                      {getNotificationIcon(item.title)}
+                    </View>
+                    <View className="flex-1">
+                      <View className="flex-row justify-between items-start mb-1">
+                        <Text
+                          className={`text-base flex-1 pr-2 ${isRead ? "font-medium text-foreground/70" : "font-bold text-foreground"}`}
+                        >
+                          {item.title}
+                        </Text>
+                        {!isRead && (
+                          <View className="size-2 rounded-full bg-primary mt-2" />
+                        )}
+                      </View>
+                      <Text
+                        className={`text-sm leading-relaxed ${isRead ? "text-muted-foreground/70" : "text-muted-foreground"}`}
+                      >
+                        {item.message}
+                      </Text>
+                      <Text className="text-[10px] text-muted-foreground/60 mt-2 font-medium uppercase tracking-wider">
+                        {item.created_at ? timeAgo(item.created_at) : ""}
+                      </Text>
+                    </View>
                   </View>
-                </View>
-              )}
+                );
+              }}
             />
           )}
         </ScreenContainer>
