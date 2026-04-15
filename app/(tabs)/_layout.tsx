@@ -56,8 +56,6 @@ function BottomTabBar({
         backgroundColor: bg,
         borderTopWidth: 1,
         borderTopColor: border,
-        borderBottomWidth: 1,
-        borderBottomColor: "red",
         paddingBottom: pb,
         height: 56 + pb,
       }}

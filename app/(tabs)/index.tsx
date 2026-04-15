@@ -153,10 +153,7 @@ export default function HomeScreen() {
 
   return (
     <>
-      <ScreenContainer
-        edges={["left", "right"]}
-        className="p-4 bg-background border border-red-500"
-      >
+      <ScreenContainer edges={["left", "right"]} className="p-4 bg-background">
         <ScrollView
           showsVerticalScrollIndicator={false}
           refreshControl={<RefreshControl {...refreshControlProps} />}
