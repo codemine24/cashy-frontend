@@ -893,7 +893,7 @@ export default function BookDetailScreen() {
           style={{
             marginBottom: Math.min(insets.bottom, 28),
           }}
-          className="flex-row gap-3 px-4 pt-3 pb-2 bg-background border-t border-b border-border"
+          className="flex-row gap-3 px-4 pt-3 pb-2 bg-background border-t border-border"
         >
           <Button
             onPress={() => {
