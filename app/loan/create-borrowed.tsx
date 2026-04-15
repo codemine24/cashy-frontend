@@ -10,6 +10,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
   KeyboardAvoidingView,
+  InteractionManager,
   Platform,
   ScrollView,
   Text,
@@ -41,6 +42,7 @@ export default function CreateBorrowedScreen() {
   const [amount, setAmount] = useState("");
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const amountInputRef = useRef<TextInput>(null);
 
   const router = useRouter();
   const keyboardOffset = useKeyboardOffset();
@@ -152,6 +154,17 @@ export default function CreateBorrowedScreen() {
     params.editDueDate,
   ]);
 
+  useEffect(() => {
+    const interaction = InteractionManager.runAfterInteractions(() => {
+      const timer = setTimeout(() => {
+        amountInputRef.current?.focus();
+      }, 400);
+      return () => clearTimeout(timer);
+    });
+
+    return () => interaction.cancel();
+  }, []);
+
   return (
     <>
       <Stack.Screen
@@ -240,7 +253,7 @@ export default function CreateBorrowedScreen() {
                         placeholderTextColor="#A1A1AA"
                         keyboardType="decimal-pad"
                         className={`flex-1 ml-2 text-2xl font-bold text-destructive`}
-                        autoFocus={true}
+                        ref={amountInputRef}
                       />
                     </View>
                     <InputError error={form.formState.errors.amount?.message} />

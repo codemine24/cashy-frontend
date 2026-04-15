@@ -14,12 +14,13 @@ import {
   useLocalSearchParams,
   useRouter,
 } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
   Alert,
   BackHandler,
   Image,
+  InteractionManager,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -122,6 +123,7 @@ export default function AddTransactionScreen() {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [attachments, setAttachments] = useState<PickedFile[]>([]);
+  const amountInputRef = useRef<TextInput>(null);
 
   // Form setup
   const form = useForm<TransactionFormValues>({
@@ -213,8 +215,18 @@ export default function AddTransactionScreen() {
     params.selectedCategoryName,
     params.attachments,
     params.currentAttachments,
-    // Only run this effect when these specific params change, not on every render
   ]);
+
+  useEffect(() => {
+    const interaction = InteractionManager.runAfterInteractions(() => {
+      const timer = setTimeout(() => {
+        amountInputRef.current?.focus();
+      }, 400);
+      return () => clearTimeout(timer);
+    });
+
+    return () => interaction.cancel();
+  }, []);
 
   // ── Attachment picker ──────────────────────────────────────────────────────
   const pickAttachments = async () => {
@@ -416,7 +428,7 @@ export default function AddTransactionScreen() {
                         placeholderTextColor="#A1A1AA"
                         keyboardType="decimal-pad"
                         className={`flex-1 ml-2 text-2xl font-bold ${accentTextClass}`}
-                        autoFocus={true}
+                        ref={amountInputRef}
                       />
                     </View>
                     <InputError error={form.formState.errors.amount?.message} />

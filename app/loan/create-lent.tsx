@@ -10,6 +10,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
   KeyboardAvoidingView,
+  InteractionManager,
   Platform,
   ScrollView,
   Text,
@@ -41,13 +42,13 @@ export default function CreateLentScreen() {
   const [amount, setAmount] = useState("");
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const amountInputRef = useRef<TextInput>(null);
 
   const router = useRouter();
   const keyboardOffset = useKeyboardOffset();
   const isKeyboardVisible = useKeyboardVisible();
   const insets = useSafeAreaInsets();
 
-  console.log("insets: ", insets);
   const createLoanMutation = useCreateLoan();
   const updateLoanMutation = useUpdateLoan();
   const params = useLocalSearchParams<{
@@ -154,6 +155,17 @@ export default function CreateLentScreen() {
     params.editDueDate,
   ]);
 
+  useEffect(() => {
+    const interaction = InteractionManager.runAfterInteractions(() => {
+      const timer = setTimeout(() => {
+        amountInputRef.current?.focus();
+      }, 400);
+      return () => clearTimeout(timer);
+    });
+
+    return () => interaction.cancel();
+  }, []);
+
   return (
     <>
       <Stack.Screen
@@ -242,7 +254,7 @@ export default function CreateLentScreen() {
                         placeholderTextColor="#A1A1AA"
                         keyboardType="decimal-pad"
                         className={`flex-1 ml-2 text-2xl font-bold text-green-600`}
-                        autoFocus={true}
+                        ref={amountInputRef}
                       />
                     </View>
                     <InputError error={form.formState.errors.amount?.message} />
@@ -284,7 +296,7 @@ export default function CreateLentScreen() {
         <View
           className="px-5 pt-3 pb-2 bg-background border-t border-border"
           style={{
-            marginBottom: isKeyboardVisible ? 0 : 16,
+            marginBottom: isKeyboardVisible ? 0 : Math.min(insets.bottom, 16),
           }}
         >
           <TouchableOpacity
