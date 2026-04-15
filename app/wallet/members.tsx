@@ -258,7 +258,7 @@ export default function MembersScreen() {
         <View className="px-6 pt-3 pb-4">
           {/* Header */}
           <View className="flex-row justify-between items-center mb-6 border-b border-border pb-3">
-            <Text className="text-xl font-bold text-foreground">
+            <Text className="text-xl font-bold text-foreground" numberOfLines={1}>
               {editingMember ? "Edit Member Role" : "Add Member"}
             </Text>
             <TouchableOpacity
