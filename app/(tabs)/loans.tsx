@@ -14,8 +14,8 @@ import { PlusIcon } from "@/icons/plus-icon";
 import { SearchIcon } from "@/icons/search-icon";
 import { Loan } from "@/interface/loan";
 import { formatCurrency } from "@/utils/index";
-import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   FlatList,
@@ -23,7 +23,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 import Toast from "react-native-toast-message";
 
@@ -34,10 +34,10 @@ const SORT_OPTIONS: {
   label: string;
   order: "asc" | "desc";
 }[] = [
-    { key: "updated_at", label: "Last Updated", order: "desc" },
-    { key: "person_name", label: "Name (A-Z)", order: "asc" },
-    { key: "created_at", label: "Last Created", order: "desc" },
-  ];
+  { key: "updated_at", label: "Last Updated", order: "desc" },
+  { key: "person_name", label: "Name (A-Z)", order: "asc" },
+  { key: "created_at", label: "Last Created", order: "desc" },
+];
 
 type LoanTab = "GIVEN" | "TAKEN";
 
@@ -53,12 +53,14 @@ function TabButton({
   return (
     <TouchableOpacity
       onPress={onPress}
-      className={`flex-1 py-2.5 rounded-md items-center justify-center ${active ? "bg-primary" : ""
-        }`}
+      className={`flex-1 py-2.5 rounded-md items-center justify-center ${
+        active ? "bg-primary" : ""
+      }`}
     >
       <Text
-        className={`font-semibold text-sm ${active ? "text-white" : "text-muted-foreground"
-          }`}
+        className={`font-semibold text-sm ${
+          active ? "text-white" : "text-muted-foreground"
+        }`}
       >
         {label}
       </Text>
@@ -69,7 +71,14 @@ function TabButton({
 export default function LoansScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<LoanTab>("GIVEN");
+  const params = useLocalSearchParams<{ tab?: LoanTab }>();
+  const [activeTab, setActiveTab] = useState<LoanTab>(params.tab || "GIVEN");
+
+  useEffect(() => {
+    if (params.tab && (params.tab === "GIVEN" || params.tab === "TAKEN")) {
+      setActiveTab(params.tab);
+    }
+  }, [params.tab]);
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
   const [showSortModal, setShowSortModal] = useState(false);
@@ -143,7 +152,8 @@ export default function LoansScreen() {
 
   const handleEditLoan = (loan: Loan) => {
     router.push({
-      pathname: "/loan/create-lent",
+      pathname:
+        activeTab === "GIVEN" ? "/loan/create-lent" : "/loan/create-borrowed",
       params: {
         editId: loan.id,
         editPersonName: loan.person_name,

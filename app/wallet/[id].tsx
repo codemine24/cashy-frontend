@@ -553,7 +553,7 @@ export default function BookDetailScreen() {
           }}
         />
 
-        <View className="px-4">
+        <View className="flex-1 px-4">
           {/* Search Bar */}
           <View className="flex-row items-center bg-muted rounded-xl px-3 border border-border mt-2">
             <SearchIcon className="text-muted-foreground size-5" />
@@ -586,7 +586,7 @@ export default function BookDetailScreen() {
             stickySectionHeadersEnabled={false}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{
-              paddingBottom: insets.bottom + 200, // ✅ FIXED (dynamic padding)
+              paddingBottom: 20,
             }}
             onEndReached={handleLoadMore}
             onEndReachedThreshold={0.3}
@@ -891,13 +891,9 @@ export default function BookDetailScreen() {
         {/* Floating Action Buttons */}
         <View
           style={{
-            position: "absolute",
-            left: 0,
-            right: 0,
-            bottom: 0,
-            paddingBottom: insets.bottom,
+            marginBottom: Math.min(insets.bottom, 28),
           }}
-          className="flex-row px-3 pt-3 pb-3 bg-card border-t border-border gap-3"
+          className="flex-row gap-3 px-4 pt-3 pb-2 bg-background border-t border-border"
         >
           <Button
             onPress={() => {
