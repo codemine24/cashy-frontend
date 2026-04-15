@@ -152,24 +152,7 @@ export const RootNavigator = () => {
                   },
                 }}
               />
-              <Stack.Screen
-                name="loan/create"
-                options={{
-                  headerShown: true,
-                  contentStyle: {
-                    backgroundColor: isDark ? "#0f172a" : "#f8fafc",
-                  },
-                }}
-              />
-              <Stack.Screen
-                name="loan/edit"
-                options={{
-                  headerShown: true,
-                  contentStyle: {
-                    backgroundColor: isDark ? "#0f172a" : "#f8fafc",
-                  },
-                }}
-              />
+
               {/* <Stack.Screen name="settings" options={{ headerShown: true }} /> */}
               <Stack.Screen
                 name="settings/app-settings"
