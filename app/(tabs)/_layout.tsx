@@ -4,7 +4,7 @@ import { LoanIcon } from "@/icons/loan-icon";
 import { StatisticsIcon } from "@/icons/statistics-icon";
 import { WalletIcon } from "@/icons/wallet-icon";
 import { usePathname } from "expo-router";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Platform, Pressable, Text, View } from "react-native";
 import PagerView from "react-native-pager-view";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -117,6 +117,19 @@ export default function TabLayout() {
     setActiveIndex(e.nativeEvent.position);
   }, []);
 
+  const getIndexFromPathname = (path: string) => {
+    if (path === "/loans") return 1;
+    if (path === "/statistics") return 2;
+    return 0;
+  };
+
+  useEffect(() => {
+    const index = getIndexFromPathname(pathname);
+    if (index !== activeIndex) {
+      pagerRef.current?.setPage(index);
+    }
+  }, [pathname, activeIndex]);
+
   return (
     <View style={{ flex: 1 }}>
       {/* Shared header across all tabs */}
@@ -125,7 +138,7 @@ export default function TabLayout() {
       <PagerView
         ref={pagerRef}
         style={{ flex: 1 }}
-        initialPage={0}
+        initialPage={getIndexFromPathname(pathname)}
         overdrag
         offscreenPageLimit={1}
         onPageSelected={handlePageSelected}
