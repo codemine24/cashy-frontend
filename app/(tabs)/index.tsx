@@ -27,6 +27,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 
 type SortOption = "name" | "created_at" | "updated_at";
@@ -46,6 +47,8 @@ const SORT_OPTIONS = (
 export default function HomeScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
+
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingBook, setEditingBook] = useState<{
     id: string;
@@ -321,6 +324,7 @@ export default function HomeScreen() {
               setSortOrder(tempSortOrder);
               setShowSortModal(false);
             }}
+            style={{ marginBottom: Math.min(insets.bottom, 20) }}
           >
             Apply
           </Button>
