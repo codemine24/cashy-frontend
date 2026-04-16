@@ -32,6 +32,8 @@ export default function Subscription() {
     fetchProducts,
     requestPurchase,
     finishTransaction,
+    getAvailablePurchases,
+    availablePurchases,
   } = useIAP({
     onPurchaseSuccess: async (purchase) => {
       try {
@@ -84,8 +86,9 @@ export default function Subscription() {
         skus: productIds,
         type: "in-app",
       });
+      getAvailablePurchases();
     }
-  }, [connected, fetchProducts]);
+  }, [connected, fetchProducts, getAvailablePurchases]);
 
   useFocusEffect(
     useCallback(() => {
@@ -128,6 +131,37 @@ export default function Subscription() {
   const handleBuy = async () => {
     try {
       setIsProcessing(true);
+
+      const owned = (availablePurchases || []).find(
+        (p) => p.productId === "cashy_lifetime",
+      );
+
+      if (owned) {
+        const product = products.find((p) => p.id === owned.productId);
+        const discountOffer = (product as any)?.discountOffers?.find(
+          (i: any) => i.id === "opening-discount",
+        );
+        const originalPrice = product?.displayPrice ?? "";
+        const discountPrice = discountOffer?.displayPrice;
+
+        await createSubscription({
+          plan: "LIFETIME",
+          price: discountPrice || originalPrice,
+          product_id: owned.productId,
+          package_name: "com.codemine.cashy",
+          purchase_token: owned.purchaseToken,
+        });
+
+        await finishTransaction({
+          purchase: owned,
+          isConsumable: false,
+        });
+
+        setIsProcessing(false);
+        setShowSuccess(true);
+        return;
+      }
+
       await requestPurchase({
         request: {
           google: {
@@ -137,12 +171,11 @@ export default function Subscription() {
         type: "in-app",
       });
     } catch (error: any) {
+      setIsProcessing(false);
       Alert.alert(
         "Purchase failed",
         error?.message || "Unable to start purchase",
       );
-    } finally {
-      setIsProcessing(false);
     }
   };
 
