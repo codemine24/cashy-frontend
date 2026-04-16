@@ -144,7 +144,7 @@ export function ReportModal({
 
         {/* Generate Button */}
         <View
-          className="pt-5 pb-10"
+          className="pt-5"
           style={{ marginBottom: Math.min(insets.bottom, 20) }}
         >
           <TouchableOpacity
