@@ -167,7 +167,7 @@ export default function StatisticsPage() {
         }
       >
         {/* Wallet Filter Chips */}
-        <View className="mb-6">
+        <View className="mb-4">
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -215,6 +215,7 @@ export default function StatisticsPage() {
                       ? "text-foreground"
                       : "text-muted-foreground",
                   )}
+                  numberOfLines={1}
                 >
                   {book.name}
                 </P>
@@ -224,7 +225,7 @@ export default function StatisticsPage() {
         </View>
 
         {/* Period Tabs */}
-        <View className="mb-8 border-b border-border/30">
+        <View className="mb-4 border-b border-border/30">
           <View className="flex-row items-center justify-around">
             {(
               ["today", "last_7_days", "last_30_days", "custom"] as Period[]
