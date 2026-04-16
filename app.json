@@ -20,7 +20,7 @@
 
     "android": {
       "package": "com.codemine.cashy",
-      "versionCode": 13,
+      "versionCode": 14,
       "version": "1.0.13",
       "softwareKeyboardLayoutMode": "pan",
 

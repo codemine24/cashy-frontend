@@ -252,7 +252,7 @@ export default function ProfileScreen() {
           <View
             className="px-5 pt-3 pb-2 bg-background border-t border-border"
             style={{
-              marginBottom: isKeyboardVisible ? 0 : Math.min(insets.bottom, 16),
+              marginBottom: isKeyboardVisible ? 0 : Math.min(insets.bottom, 20),
             }}
           >
             <TouchableOpacity

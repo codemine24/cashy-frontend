@@ -26,6 +26,7 @@ import {
 } from "@/lib/icons";
 import { clearUserInfo, removeAccessToken } from "@/utils/auth";
 import { makeImageUrl } from "@/utils/helper";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 // ─── Reusable row component ───────────────────────────────────────────────
 function SettingsRow({
@@ -85,6 +86,7 @@ function Divider() {
 
 // ─── Main screen ─────────────────────────────────────────────────────────
 export default function SettingsScreen() {
+  const insets = useSafeAreaInsets();
   const router = useRouter();
   const { authState, setAuthState } = useAuth();
   const { t } = useTranslation();
@@ -209,7 +211,10 @@ export default function SettingsScreen() {
           </View>
 
           {/* ── Logout ── */}
-          <View className="bg-card rounded-2xl border border-border px-4">
+          <View
+            className="bg-card rounded-2xl border border-border px-4"
+            style={{ marginBottom: Math.min(insets.bottom, 20) }}
+          >
             <TouchableOpacity
               onPress={() => setShowLogoutModal(true)}
               activeOpacity={0.7}

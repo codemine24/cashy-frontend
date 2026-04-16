@@ -137,7 +137,7 @@ export default function PrivacyPolicyScreen() {
         {/* External Link */}
         <View
           className="px-4 py-4 border-t border-border bg-card"
-          style={{ paddingBottom: Math.max(insets.bottom + 6, 16) }}
+          style={{ paddingBottom: Math.min(insets.bottom + 6, 32) }}
         >
           <TouchableOpacity onPress={() => Linking.openURL(PRIVACY_URL)}>
             <Text className="text-primary text-sm text-center font-medium">

@@ -16,13 +16,20 @@ import { useDebounce } from "@/hooks/use-debounce";
 import { LeaveIcon } from "@/icons/leave-icon";
 import { PlusIcon } from "@/icons/plus-icon";
 import { Member } from "@/interface/wallet";
+import { ChevronLeft } from "@/lib/icons";
 import { isOwner } from "@/utils/is-owner";
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { useState } from "react";
+import {
+  Stack,
+  useFocusEffect,
+  useLocalSearchParams,
+  useRouter,
+} from "expo-router";
+import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   Alert,
+  BackHandler,
   FlatList,
   ScrollView,
   Text,
@@ -57,8 +64,8 @@ export default function MembersScreen() {
   const members = canManage
     ? membersList
     : membersList.filter(
-      (m: any) => m.role === "OWNER" || m.id === currentUserId,
-    );
+        (m: any) => m.role === "OWNER" || m.id === currentUserId,
+      );
   const removeMemberMutation = useRemoveMember();
   const leaveBookMutation = useLeaveBook();
 
@@ -179,10 +186,37 @@ export default function MembersScreen() {
     }
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        router.navigate(`/wallet/${bookId}`);
+        return true;
+      };
+
+      const subscription = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress,
+      );
+
+      return () => subscription.remove();
+    }, [router, bookId]),
+  );
+
   return (
     <>
       <Stack.Screen
-        options={{ title: t("members.title"), headerBackTitle: "Back" }}
+        options={{
+          title: t("members.title"),
+          headerBackTitle: "Back",
+          headerLeft: () => (
+            <TouchableOpacity
+              onPress={() => router.navigate(`/wallet/${bookId}`)}
+              style={{ marginRight: 4 }}
+            >
+              <ChevronLeft size={26} className="text-foreground" />
+            </TouchableOpacity>
+          ),
+        }}
       />
       <ScreenContainer
         edges={["left", "right"]}
@@ -219,7 +253,9 @@ export default function MembersScreen() {
                       <Text className="text-destructive font-semibold">
                         Leave This Wallet
                       </Text>
-                      <LeaveIcon style={{ color: "#ef4444", width: 20, height: 20 }} />
+                      <LeaveIcon
+                        style={{ color: "#ef4444", width: 20, height: 20 }}
+                      />
                     </View>
                   </Button>
                 </View>
@@ -258,7 +294,10 @@ export default function MembersScreen() {
         <View className="px-6 pt-3 pb-4">
           {/* Header */}
           <View className="flex-row justify-between items-center mb-6 border-b border-border pb-3">
-            <Text className="text-xl font-bold text-foreground" numberOfLines={1}>
+            <Text
+              className="text-xl font-bold text-foreground"
+              numberOfLines={1}
+            >
               {editingMember ? "Edit Member Role" : "Add Member"}
             </Text>
             <TouchableOpacity
@@ -272,7 +311,7 @@ export default function MembersScreen() {
           <ScrollView
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
-          // contentContainerStyle={{ paddingBottom: 20 }}
+            // contentContainerStyle={{ paddingBottom: 20 }}
           >
             {/* Email Field */}
             <View className="mb-3 relative" style={{ zIndex: 100 }}>
@@ -371,16 +410,18 @@ export default function MembersScreen() {
               <View className="flex-row items-center gap-3">
                 <TouchableOpacity
                   onPress={() => setRole("VIEWER")}
-                  className={`flex-1 py-3.5 items-center rounded-xl border ${role === "VIEWER"
-                    ? "bg-primary/10 border-primary"
-                    : "bg-surface border-border"
-                    }`}
+                  className={`flex-1 py-3.5 items-center rounded-xl border ${
+                    role === "VIEWER"
+                      ? "bg-primary/10 border-primary"
+                      : "bg-surface border-border"
+                  }`}
                 >
                   <Text
-                    className={`font-semibold text-base ${role === "VIEWER"
-                      ? "text-primary"
-                      : "text-muted-foreground"
-                      }`}
+                    className={`font-semibold text-base ${
+                      role === "VIEWER"
+                        ? "text-primary"
+                        : "text-muted-foreground"
+                    }`}
                   >
                     Viewer
                   </Text>
@@ -388,16 +429,18 @@ export default function MembersScreen() {
 
                 <TouchableOpacity
                   onPress={() => setRole("EDITOR")}
-                  className={`flex-1 py-3.5 items-center rounded-xl border ${role === "EDITOR"
-                    ? "bg-primary/10 border-primary"
-                    : "bg-surface border-border"
-                    }`}
+                  className={`flex-1 py-3.5 items-center rounded-xl border ${
+                    role === "EDITOR"
+                      ? "bg-primary/10 border-primary"
+                      : "bg-surface border-border"
+                  }`}
                 >
                   <Text
-                    className={`font-semibold text-base ${role === "EDITOR"
-                      ? "text-primary"
-                      : "text-muted-foreground"
-                      }`}
+                    className={`font-semibold text-base ${
+                      role === "EDITOR"
+                        ? "text-primary"
+                        : "text-muted-foreground"
+                    }`}
                   >
                     Editor
                   </Text>
@@ -405,16 +448,18 @@ export default function MembersScreen() {
 
                 <TouchableOpacity
                   onPress={() => setRole("ADMIN")}
-                  className={`flex-1 py-3.5 items-center rounded-xl border ${role === "ADMIN"
-                    ? "bg-primary/10 border-primary"
-                    : "bg-surface border-border"
-                    }`}
+                  className={`flex-1 py-3.5 items-center rounded-xl border ${
+                    role === "ADMIN"
+                      ? "bg-primary/10 border-primary"
+                      : "bg-surface border-border"
+                  }`}
                 >
                   <Text
-                    className={`font-semibold text-base ${role === "ADMIN"
-                      ? "text-primary"
-                      : "text-muted-foreground"
-                      }`}
+                    className={`font-semibold text-base ${
+                      role === "ADMIN"
+                        ? "text-primary"
+                        : "text-muted-foreground"
+                    }`}
                   >
                     Admin
                   </Text>
@@ -433,24 +478,24 @@ export default function MembersScreen() {
               </Text>
               {(role === "VIEWER"
                 ? [
-                  { icon: "✅", label: "View all transactions" },
-                  { icon: "✅", label: "View balance & summary" },
-                  { icon: "❌", label: "Add or edit transactions" },
-                  { icon: "❌", label: "Manage members" },
-                ]
-                : role === "EDITOR"
-                  ? [
                     { icon: "✅", label: "View all transactions" },
-                    { icon: "✅", label: "Add & edit transactions" },
-                    { icon: "✅", label: "Delete own transactions" },
+                    { icon: "✅", label: "View balance & summary" },
+                    { icon: "❌", label: "Add or edit transactions" },
                     { icon: "❌", label: "Manage members" },
                   ]
+                : role === "EDITOR"
+                  ? [
+                      { icon: "✅", label: "View all transactions" },
+                      { icon: "✅", label: "Add & edit transactions" },
+                      { icon: "✅", label: "Delete own transactions" },
+                      { icon: "❌", label: "Manage members" },
+                    ]
                   : [
-                    { icon: "✅", label: "View all transactions" },
-                    { icon: "✅", label: "Add & edit transactions" },
-                    { icon: "✅", label: "Delete any transactions" },
-                    { icon: "✅", label: "Manage & invite members" },
-                  ]
+                      { icon: "✅", label: "View all transactions" },
+                      { icon: "✅", label: "Add & edit transactions" },
+                      { icon: "✅", label: "Delete any transactions" },
+                      { icon: "✅", label: "Manage & invite members" },
+                    ]
               ).map((item, i) => (
                 <View key={i} className="flex-row items-center mb-1.5">
                   <Text className="text-sm mr-2">{item.icon}</Text>
@@ -460,10 +505,12 @@ export default function MembersScreen() {
             </View>
 
             <TouchableOpacity
+              style={{ marginBottom: Math.min(20, insets.bottom) }}
               onPress={handleSubmitModal}
               disabled={addMemberMutation.isPending}
-              className={`w-full rounded-lg py-3 items-center justify-center flex-row ${addMemberMutation.isPending ? "bg-primary/50" : "bg-primary"
-                }`}
+              className={`w-full rounded-lg py-3 items-center justify-center flex-row ${
+                addMemberMutation.isPending ? "bg-primary/50" : "bg-primary"
+              }`}
             >
               {addMemberMutation.isPending && (
                 <ActivityIndicator

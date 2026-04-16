@@ -10,9 +10,11 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function ContactUsScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   const handleEmailPress = () => {
     Linking.openURL("mailto:codemine24@gmail.com");
@@ -175,13 +177,16 @@ export default function ContactUsScreen() {
               </Text>
             </View>
             <Text className="text-foreground text-sm leading-relaxed">
-              Cashy is developed by Fazly with passion for creating useful
+              Cashy is developed by Codemine with passion for creating useful
               financial tools that make everyday life easier.
             </Text>
           </View>
 
           {/* Footer */}
-          <View className="mt-8 items-center">
+          <View
+            className="mt-8 items-center"
+            style={{ marginBottom: Math.min(insets.bottom, 20) }}
+          >
             <Text className="text-muted-foreground text-sm text-center">
               Thank you using Cashy! 🎉
             </Text>

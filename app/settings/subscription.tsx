@@ -432,11 +432,15 @@ export default function Subscription() {
               className={`rounded-full py-4 items-center justify-center relative overflow-hidden ${
                 isProcessing ? "bg-amber-500/70" : "bg-amber-500"
               }`}
+              style={{ marginBottom: Math.min(insets.bottom, 20) }}
             >
               {isProcessing ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <Text className="font-bold text-lg text-white" numberOfLines={1}>
+                <Text
+                  className="font-bold text-lg text-white"
+                  numberOfLines={1}
+                >
                   Get Started
                 </Text>
               )}

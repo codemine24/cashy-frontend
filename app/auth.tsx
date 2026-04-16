@@ -272,7 +272,10 @@ export default function AuthScreen() {
             disabled={verifyOtpMutation.isPending}
             className="mt-6 "
           >
-            <Text className="text-primary-foreground font-semibold text-base tracking-wide">
+            <Text
+              className="text-primary-foreground font-semibold text-base tracking-wide"
+              numberOfLines={1}
+            >
               {verifyOtpMutation.isPending ? "Verifying OTP..." : "Verify OTP"}
             </Text>
           </Button>

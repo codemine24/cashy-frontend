@@ -224,7 +224,11 @@ export default function HomeScreen() {
           ) : (
             <FlatList
               scrollEnabled={false}
-              data={booksData?.data}
+              data={booksData?.data?.sort(
+                (a, b) =>
+                  new Date(b.updated_at).getTime() -
+                  new Date(a.updated_at).getTime(),
+              )}
               keyExtractor={(item) => item.id}
               contentContainerStyle={{ paddingBottom: 80 }}
               renderItem={({ item: book }) => (
