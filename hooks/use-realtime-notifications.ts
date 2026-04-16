@@ -18,7 +18,7 @@ export const useRealtimeNotifications = (userId?: string) => {
           // Only filter by user_id if provided
           ...(userId ? { filter: `user_id=eq.${userId}` } : {}),
         },
-        (payload) => {
+        (payload: any) => {
           // Invalidate relevant queries to update UI
           queryClient.invalidateQueries({ queryKey: ["notifications"] });
           queryClient.invalidateQueries({ queryKey: ["books"] });
