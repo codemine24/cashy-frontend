@@ -95,7 +95,7 @@ export default function SettingsScreen() {
     await removeAccessToken();
     await clearUserInfo();
     setAuthState({ isAuthenticated: false, user: null });
-    router.replace("/");
+    router.replace("/auth");
   };
 
   const handleLogoutConfirm = async () => {
