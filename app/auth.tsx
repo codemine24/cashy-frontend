@@ -1,17 +1,19 @@
 import { useSendOtp, useVerifyOtp } from "@/api/auth";
-import { BackButton } from "@/components/ui/back-button";
 import { Button } from "@/components/ui/button";
 import { InputError } from "@/components/ui/input-error";
 import { InputField } from "@/components/ui/input-field";
 import { H2, Muted } from "@/components/ui/typography";
 import { useAuth } from "@/context/auth-context";
+import { ChevronLeft } from "@/lib/icons";
 import { useTheme } from "@/context/theme-context";
+import { PasteIcon } from "@/icons/paste-icon";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
   Animated,
+  Clipboard,
   Text,
   TextInput,
   TouchableOpacity,
@@ -171,9 +173,14 @@ export default function AuthScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-background">
-      <BackButton
-        onPress={step === "otp" ? () => animateToStep("email") : undefined}
-      />
+      <View className="px-6 mt-4">
+        <TouchableOpacity
+          onPress={step === "otp" ? () => animateToStep("email") : () => router.back()}
+          className="h-10 w-10 items-center justify-center rounded-full bg-muted"
+        >
+          <ChevronLeft size={26} className="text-foreground" />
+        </TouchableOpacity>
+      </View>
       <View style={{ flex: 1, paddingHorizontal: 24 }}>
         {/* EMAIL STEP */}
         <Animated.View
@@ -243,17 +250,31 @@ export default function AuthScreen() {
             name="otp"
             render={({ field: { onChange, onBlur, value } }) => (
               <View>
-                <TextInput
-                  value={value}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  placeholder="Enter OTP"
-                  placeholderClassName="text-secondary"
-                  keyboardType="number-pad"
-                  maxLength={6}
-                  editable={!verifyOtpMutation.isPending}
-                  className={`border rounded-xl p-4 text-foreground ${otpForm.formState.errors.otp ? "border-destructive" : "border-border"}`}
-                />
+                <View
+                  className={`flex-row items-center border rounded-xl ${otpForm.formState.errors.otp ? "border-destructive" : "border-border"}`}
+                >
+                  <TextInput
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    placeholder="Enter OTP"
+                    placeholderClassName="text-secondary"
+                    keyboardType="number-pad"
+                    maxLength={6}
+                    editable={!verifyOtpMutation.isPending}
+                    className="flex-1 p-4 text-foreground"
+                  />
+                  <TouchableOpacity
+                    onPress={async () => {
+                      const text = await Clipboard.getString();
+                      if (text) onChange(text.replace(/\D/g, "").slice(0, 6));
+                    }}
+                    className="px-4 py-3"
+                    hitSlop={8}
+                  >
+                    <PasteIcon size={20} className="text-muted-foreground" />
+                  </TouchableOpacity>
+                </View>
                 <InputError error={otpForm.formState.errors.otp?.message} />
               </View>
             )}

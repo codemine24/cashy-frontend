@@ -153,79 +153,42 @@ export const RootNavigator = () => {
                   }}
                 />
 
-                {/* <Stack.Screen name="settings" options={{ headerShown: true }} /> */}
                 <Stack.Screen
-                  name="settings/app-settings"
+                  name="settings/index"
                   options={{
                     headerShown: true,
+                    headerStyle: {
+                      backgroundColor: isDark ? "#0f172a" : "#f8fafc",
+                    },
                     contentStyle: {
                       backgroundColor: isDark ? "#0f172a" : "#f8fafc",
                     },
                   }}
                 />
-                <Stack.Screen
-                  name="settings/subscription"
-                  options={{
-                    headerShown: true,
-                    contentStyle: {
-                      backgroundColor: isDark ? "#0f172a" : "#f8fafc",
-                    },
-                  }}
-                />
-                <Stack.Screen
-                  name="settings/profile"
-                  options={{
-                    headerShown: true,
-                    contentStyle: {
-                      backgroundColor: isDark ? "#0f172a" : "#f8fafc",
-                    },
-                  }}
-                />
-                <Stack.Screen
-                  name="settings/about"
-                  options={{
-                    headerShown: true,
-                    contentStyle: {
-                      backgroundColor: isDark ? "#0f172a" : "#f8fafc",
-                    },
-                  }}
-                />
-                <Stack.Screen
-                  name="settings/privacy-policy"
-                  options={{
-                    headerShown: true,
-                    contentStyle: {
-                      backgroundColor: isDark ? "#0f172a" : "#f8fafc",
-                    },
-                  }}
-                />
-                <Stack.Screen
-                  name="settings/terms-and-conditions"
-                  options={{
-                    headerShown: true,
-                    contentStyle: {
-                      backgroundColor: isDark ? "#0f172a" : "#f8fafc",
-                    },
-                  }}
-                />
-                <Stack.Screen
-                  name="settings/about-us"
-                  options={{
-                    headerShown: true,
-                    contentStyle: {
-                      backgroundColor: isDark ? "#0f172a" : "#f8fafc",
-                    },
-                  }}
-                />
-                <Stack.Screen
-                  name="settings/contact-us"
-                  options={{
-                    headerShown: true,
-                    contentStyle: {
-                      backgroundColor: isDark ? "#0f172a" : "#f8fafc",
-                    },
-                  }}
-                />
+                {[
+                  "settings/app-settings",
+                  "settings/subscription",
+                  "settings/profile",
+                  "settings/about",
+                  "settings/privacy-policy",
+                  "settings/terms-and-conditions",
+                  "settings/about-us",
+                  "settings/contact-us",
+                ].map((name) => (
+                  <Stack.Screen
+                    key={name}
+                    name={name as any}
+                    options={{
+                      headerShown: true,
+                      headerStyle: {
+                        backgroundColor: isDark ? "#0f172a" : "#f8fafc",
+                      },
+                      contentStyle: {
+                        backgroundColor: isDark ? "#0f172a" : "#f8fafc",
+                      },
+                    }}
+                  />
+                ))}
               </Stack>
             </ErrorBoundary>
           </RootProvider>
