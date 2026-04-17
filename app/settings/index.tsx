@@ -4,12 +4,12 @@ import { Stack, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  BackHandler,
-  Image,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
+    BackHandler,
+    Image,
+    ScrollView,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 
 import { PremiumBadge } from "@/components/premium-badge";
@@ -17,12 +17,12 @@ import { PremiumUpSellCard } from "@/components/premium-upsell-card";
 import { useAuth } from "@/context/auth-context";
 import { useIsPremium } from "@/hooks/use-is-premium";
 import {
-  ChevronLeft,
-  ChevronRight,
-  Info,
-  LogOut,
-  Settings,
-  User,
+    ChevronLeft,
+    ChevronRight,
+    Info,
+    LogOut,
+    Settings,
+    User,
 } from "@/lib/icons";
 import { clearUserInfo, removeAccessToken } from "@/utils/auth";
 import { makeImageUrl } from "@/utils/helper";
@@ -107,7 +107,7 @@ export default function SettingsScreen() {
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
-        router.navigate("/");
+        router.navigate("/(tabs)");
         return true;
       };
 
@@ -130,7 +130,7 @@ export default function SettingsScreen() {
           headerShadowVisible: true,
           headerLeft: () => (
             <TouchableOpacity
-              onPress={() => router.navigate("/")}
+              onPress={() => router.navigate("/(tabs)")}
               style={{ marginRight: 4 }}
             >
               <ChevronLeft size={26} className="text-foreground" />

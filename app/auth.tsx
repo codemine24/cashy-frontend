@@ -172,7 +172,6 @@ export default function AuthScreen() {
   return (
     <SafeAreaView className="flex-1 bg-background">
       <BackButton
-        path={step === "otp" ? undefined : "/login"}
         onPress={step === "otp" ? () => animateToStep("email") : undefined}
       />
       <View style={{ flex: 1, paddingHorizontal: 24 }}>

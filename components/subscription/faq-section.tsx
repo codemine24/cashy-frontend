@@ -1,8 +1,11 @@
 import { ChevronDown } from "@/lib/icons";
+import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 
 export function FAQSection() {
+  const router = useRouter();
+
   return (
     <View className="mb-8">
       <Text className="text-xl font-bold text-foreground mb-3 px-1">FAQs</Text>
@@ -36,7 +39,10 @@ export function FAQSection() {
             our friendly team.
           </Text>
         </View>
-        <TouchableOpacity className="bg-foreground px-5 py-2.5 rounded-full">
+        <TouchableOpacity
+          onPress={() => router.navigate("/settings/contact-us")}
+          className="bg-foreground px-5 py-2.5 rounded-full"
+        >
           <Text className="text-sm font-bold text-background">Contact</Text>
         </TouchableOpacity>
       </View>
