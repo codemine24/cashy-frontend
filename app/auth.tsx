@@ -172,7 +172,6 @@ export default function AuthScreen() {
   return (
     <SafeAreaView className="flex-1 bg-background">
       <BackButton
-        path={step === "otp" ? undefined : "/login"}
         onPress={step === "otp" ? () => animateToStep("email") : undefined}
       />
       <View style={{ flex: 1, paddingHorizontal: 24 }}>
@@ -272,7 +271,10 @@ export default function AuthScreen() {
             disabled={verifyOtpMutation.isPending}
             className="mt-6 "
           >
-            <Text className="text-primary-foreground font-semibold text-base tracking-wide">
+            <Text
+              className="text-primary-foreground font-semibold text-base tracking-wide"
+              numberOfLines={1}
+            >
               {verifyOtpMutation.isPending ? "Verifying OTP..." : "Verify OTP"}
             </Text>
           </Button>

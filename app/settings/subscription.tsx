@@ -1,6 +1,10 @@
 import { useCreateSubscription } from "@/api/subscription";
 import { ScreenContainer } from "@/components/screen-container";
-import { Check, ChevronDown, ChevronLeft, X } from "@/lib/icons";
+import { ComparisonTable } from "@/components/subscription/comparison-table";
+import { FAQSection } from "@/components/subscription/faq-section";
+import { useAuth } from "@/context/auth-context";
+import { Check, ChevronLeft } from "@/lib/icons";
+import * as Crypto from "expo-crypto";
 import { useIAP } from "expo-iap";
 import { router, Stack, useFocusEffect } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
@@ -25,6 +29,8 @@ export default function Subscription() {
   const [showSuccess, setShowSuccess] = useState(false);
   const insets = useSafeAreaInsets();
   const { mutateAsync: createSubscription } = useCreateSubscription();
+  const { authState } = useAuth();
+  const userEmail = authState.user?.email;
 
   const {
     connected,
@@ -32,6 +38,8 @@ export default function Subscription() {
     fetchProducts,
     requestPurchase,
     finishTransaction,
+    getAvailablePurchases,
+    availablePurchases,
   } = useIAP({
     onPurchaseSuccess: async (purchase) => {
       try {
@@ -78,15 +86,82 @@ export default function Subscription() {
     },
   });
 
+  const handleBuy = async () => {
+    try {
+      if (!userEmail) {
+        Alert.alert("Not signed in", "Please sign in to continue.");
+        return;
+      }
+
+      setIsProcessing(true);
+
+      const accountHash = await Crypto.digestStringAsync(
+        Crypto.CryptoDigestAlgorithm.SHA256,
+        userEmail.trim().toLowerCase(),
+      );
+
+      const product = products.find((p) => p.id === "cashy_lifetime");
+      const discountOffer = (product as any)?.discountOffers?.find(
+        (i: any) => i.id === "opening-discount",
+      );
+      const offerToken = discountOffer?.offerTokenAndroid;
+
+      const owned = (availablePurchases || []).find(
+        (p) => p.productId === "cashy_lifetime",
+      );
+
+      if (owned) {
+        const originalPrice = product?.displayPrice ?? "";
+        const discountPrice = discountOffer?.displayPrice;
+
+        await createSubscription({
+          plan: "LIFETIME",
+          price: discountPrice || originalPrice,
+          product_id: owned.productId,
+          package_name: "com.codemine.cashy",
+          purchase_token: owned.purchaseToken,
+        });
+
+        await finishTransaction({
+          purchase: owned,
+          isConsumable: false,
+        });
+
+        setIsProcessing(false);
+        setShowSuccess(true);
+        return;
+      }
+
+      await requestPurchase({
+        request: {
+          google: {
+            skus: ["cashy_lifetime"],
+            obfuscatedAccountId: accountHash,
+            offerToken,
+          },
+        },
+        type: "in-app",
+      });
+    } catch (error: any) {
+      setIsProcessing(false);
+      Alert.alert(
+        "Purchase failed",
+        error?.message || "Unable to start purchase",
+      );
+    }
+  };
+
   useEffect(() => {
     if (connected) {
       fetchProducts({
         skus: productIds,
         type: "in-app",
       });
+      getAvailablePurchases();
     }
-  }, [connected, fetchProducts]);
+  }, [connected, fetchProducts, getAvailablePurchases]);
 
+  // Handle device back button press
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
@@ -102,49 +177,6 @@ export default function Subscription() {
       return () => subscription.remove();
     }, []),
   );
-
-  // const handleSaveProducts = async () => {
-  //   if (!products || products.length === 0) {
-  //     Alert.alert("No products", "No products data available to save");
-  //     return;
-  //   }
-
-  //   try {
-  //     setIsProcessing(true);
-  //     await apiClient.post("/temporary", { products });
-  //     Alert.alert("Success", "Products data saved successfully");
-  //   } catch (error: any) {
-  //     Alert.alert(
-  //       "Error",
-  //       error?.response?.data?.message ||
-  //         error?.message ||
-  //         "Failed to save products data",
-  //     );
-  //   } finally {
-  //     setIsProcessing(false);
-  //   }
-  // };
-
-  const handleBuy = async () => {
-    try {
-      setIsProcessing(true);
-      await requestPurchase({
-        request: {
-          google: {
-            skus: ["cashy_lifetime"],
-          },
-        },
-        type: "in-app",
-      });
-    } catch (error: any) {
-      Alert.alert(
-        "Purchase failed",
-        error?.message || "Unable to start purchase",
-      );
-    } finally {
-      setIsProcessing(false);
-    }
-  };
 
   if (showSuccess) {
     return (
@@ -236,92 +268,10 @@ export default function Subscription() {
           </View>
 
           {/* Comparison Table */}
-          <View className="bg-card rounded-3xl border border-border p-5 mb-8">
-            <Text className="text-xl font-bold text-foreground mb-4 mt-2">
-              Whats included in Pro
-            </Text>
-
-            <View className="flex-row items-center justify-between pb-3 border-b border-border">
-              <Text className="flex-1 text-sm text-muted-foreground font-medium">
-                Features
-              </Text>
-              <Text className="w-16 text-center text-sm text-foreground font-medium">
-                Free
-              </Text>
-              <Text className="w-16 text-center text-sm text-amber-500 font-bold">
-                Pro
-              </Text>
-            </View>
-
-            {/* 5 Comparisons */}
-            <ComparisonRow
-              feature="Number of wallet"
-              type="text"
-              free={"5"}
-              pro={"Unlimited"}
-            />
-            <ComparisonRow
-              feature="Each wallet can be shared with"
-              type="text"
-              free={"1 member"}
-              pro={"Unlimited"}
-            />
-            <ComparisonRow
-              feature="Advance analytics"
-              type="boolean"
-              free={false}
-              pro={true}
-            />
-            <ComparisonRow
-              feature="Attach image with transaction"
-              type="boolean"
-              free={false}
-              pro={true}
-            />
-          </View>
+          <ComparisonTable />
 
           {/* FAQ Section */}
-          <View className="mb-8">
-            <Text className="text-xl font-bold text-foreground mb-3 px-1">
-              FAQs
-            </Text>
-            <View className="bg-card rounded-3xl border border-border px-5">
-              <FAQItem
-                question="Is the lifetime deal really a one-time payment?"
-                answer="Yes! You pay once and get access to all current and future Pro features forever. No subscriptions, no hidden fees ever."
-              />
-              <FAQItem
-                question="How do I restore my purchase on a new device?"
-                answer="Your subscription is linked to your Store account (Apple or Google). Simply use the 'Restore Purchase' option in settings or log in with the same account to automatically sync your Pro status."
-              />
-              <FAQItem
-                question="Can I share my subscription with my family?"
-                answer="Yes, our Pro plan supports Family Sharing where applicable through the App Store or Play Store. You can also share specific wallets with other users directly."
-              />
-              <FAQItem
-                isLast
-                question="Is my financial data secure?"
-                answer="Security is our top priority. We use end-to-end encryption for your data and never share your financial information with third-party services. Your data remains private and secure."
-              />
-            </View>
-
-            <View className="mt-6 p-4 flex-row items-center justify-between bg-card rounded-3xl border border-border">
-              <View className="flex-1 pr-4">
-                <Text className="text-base font-bold text-foreground">
-                  Still have questions?
-                </Text>
-                <Text className="text-sm text-muted-foreground mt-1">
-                  Can&apos;t find the answer you&apos;re looking for? Please
-                  chat to our friendly team.
-                </Text>
-              </View>
-              <TouchableOpacity className="bg-foreground px-5 py-2.5 rounded-full">
-                <Text className="text-sm font-bold text-background">
-                  Contact
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
+          <FAQSection />
 
           {/* Sync Logic Button */}
           {/* <View className="mb-8">
@@ -432,11 +382,15 @@ export default function Subscription() {
               className={`rounded-full py-4 items-center justify-center relative overflow-hidden ${
                 isProcessing ? "bg-amber-500/70" : "bg-amber-500"
               }`}
+              style={{ marginBottom: Math.min(insets.bottom, 20) }}
             >
               {isProcessing ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <Text className="font-bold text-lg text-white" numberOfLines={1}>
+                <Text
+                  className="font-bold text-lg text-white"
+                  numberOfLines={1}
+                >
                   Get Started
                 </Text>
               )}
@@ -448,84 +402,27 @@ export default function Subscription() {
   );
 }
 
-type ComparisonProps =
-  | { type: "boolean"; free: boolean; pro: boolean }
-  | { type: "text"; free: string; pro: string };
+// const handleSaveProducts = async () => {
+//   if (!products || products.length === 0) {
+//     Alert.alert("No products", "No products data available to save");
+//     return;
+//   }
 
-function ComparisonRow(props: { feature: string } & ComparisonProps) {
-  const { feature, type, free, pro } = props;
-
-  return (
-    <View className="flex-row items-center justify-between py-4 border-b border-border">
-      <Text className="flex-1 text-base text-foreground font-medium pr-2">
-        {feature}
-      </Text>
-
-      <View className="w-20 items-center justify-center">
-        {type === "boolean" ? (
-          free ? (
-            <Check size={20} className="text-green-600" />
-          ) : (
-            <X size={20} className="text-muted-foreground" />
-          )
-        ) : (
-          <Text className="text-sm text-muted-foreground text-center">
-            {free}
-          </Text>
-        )}
-      </View>
-
-      <View className="w-20 items-center justify-center">
-        {type === "boolean" ? (
-          pro ? (
-            <Check size={20} className="text-green-600" />
-          ) : (
-            <X size={20} className="text-muted-foreground" />
-          )
-        ) : (
-          <Text className="text-sm text-muted-foreground">{pro}</Text>
-        )}
-      </View>
-    </View>
-  );
-}
-
-function FAQItem({
-  question,
-  answer,
-  isLast,
-}: {
-  question: string;
-  answer: string;
-  isLast?: boolean;
-}) {
-  const [isOpen, setIsOpen] = useState(false);
-
-  return (
-    <View className={`${isLast ? "" : "border-b border-border/50"}`}>
-      <TouchableOpacity
-        activeOpacity={0.7}
-        onPress={() => setIsOpen(!isOpen)}
-        className="py-4 flex-row items-center justify-between"
-      >
-        <Text className="flex-1 text-base font-medium text-foreground pr-4 leading-relaxed">
-          {question}
-        </Text>
-        <ChevronDown
-          size={18}
-          className={isOpen ? "text-foreground" : "text-muted-foreground"}
-        />
-      </TouchableOpacity>
-      {isOpen && (
-        <View className="pb-4">
-          <Text className="text-sm text-muted-foreground leading-relaxed">
-            {answer}
-          </Text>
-        </View>
-      )}
-    </View>
-  );
-}
+//   try {
+//     setIsProcessing(true);
+//     await apiClient.post("/temporary", { products });
+//     Alert.alert("Success", "Products data saved successfully");
+//   } catch (error: any) {
+//     Alert.alert(
+//       "Error",
+//       error?.response?.data?.message ||
+//         error?.message ||
+//         "Failed to save products data",
+//     );
+//   } finally {
+//     setIsProcessing(false);
+//   }
+// };
 
 // const handleRestore = async () => {
 //   try {

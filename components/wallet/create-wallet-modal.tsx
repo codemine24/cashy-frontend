@@ -81,7 +81,8 @@ export function CreateWalletModal({
     onClose();
   };
 
-  const isPending = createBookMutation.isPending || updateBookMutation.isPending;
+  const isPending =
+    createBookMutation.isPending || updateBookMutation.isPending;
 
   return (
     <BottomSheetModal visible={visible} onClose={onClose}>
@@ -122,13 +123,11 @@ export function CreateWalletModal({
             className={`flex-1 rounded-lg py-3 items-center justify-center ${isPending ? "bg-primary/50" : "bg-primary"}`}
           >
             <Text className="text-primary-foreground font-semibold text-base">
-              {/* {isPending
-                ? editBook
-                  ? "Renaming..."
-                  : "Adding..."
-                : "+ ADD NEW WALLET"} */}
-
-              {isPending ? "PENDING..." : editBook ? "RENAME WALLET" : "+ ADD NEW WALLET"}
+              {isPending
+                ? "PENDING..."
+                : editBook
+                  ? "RENAME WALLET"
+                  : "+ ADD NEW WALLET"}
             </Text>
           </TouchableOpacity>
         </View>

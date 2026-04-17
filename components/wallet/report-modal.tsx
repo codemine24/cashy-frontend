@@ -1,6 +1,7 @@
 import { FileText, LayoutList, Tag, X } from "@/lib/icons";
 import { useCallback } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BottomSheetModal } from "../bottom-sheet-modal";
 
 export type ReportType = "all" | "day_wise" | "category_wise";
@@ -53,6 +54,8 @@ export function ReportModal({
   const handleClose = useCallback(() => {
     onClose();
   }, [onClose]);
+
+  const insets = useSafeAreaInsets();
 
   return (
     <BottomSheetModal visible={visible} onClose={handleClose}>
@@ -140,7 +143,10 @@ export function ReportModal({
         </View>
 
         {/* Generate Button */}
-        <View className="pt-5 pb-10">
+        <View
+          className="pt-5"
+          style={{ marginBottom: Math.min(insets.bottom, 20) }}
+        >
           <TouchableOpacity
             onPress={onGeneratePdf}
             disabled={isGenerating}

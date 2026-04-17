@@ -9,9 +9,11 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function AboutUsScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   useFocusEffect(
     useCallback(() => {
@@ -118,7 +120,10 @@ export default function AboutUsScreen() {
           </View>
 
           {/* Footer */}
-          <View className="mt-8 items-center">
+          <View
+            className="mt-8 items-center"
+            style={{ marginBottom: Math.min(insets.bottom, 20) }}
+          >
             <Text className="text-muted-foreground text-sm">
               © 2026 Cashy: Expense Manager
             </Text>

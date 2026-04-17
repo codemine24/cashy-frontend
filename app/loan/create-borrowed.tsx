@@ -5,7 +5,12 @@ import { useKeyboardOffset } from "@/hooks/useKeyboardOffset";
 import { ChevronLeft } from "@/lib/icons";
 import { zodResolver } from "@hookform/resolvers/zod";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { Stack, useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
+import {
+  Stack,
+  useFocusEffect,
+  useLocalSearchParams,
+  useRouter,
+} from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
@@ -312,7 +317,7 @@ export default function CreateBorrowedScreen() {
         <View
           className="px-5 pt-3 pb-2 bg-background border-t border-border"
           style={{
-            marginBottom: isKeyboardVisible ? 0 : Math.min(insets.bottom, 16),
+            marginBottom: isKeyboardVisible ? 0 : Math.min(insets.bottom, 20),
           }}
         >
           <TouchableOpacity
