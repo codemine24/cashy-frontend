@@ -2,7 +2,9 @@ import { useCreateSubscription } from "@/api/subscription";
 import { ScreenContainer } from "@/components/screen-container";
 import { ComparisonTable } from "@/components/subscription/comparison-table";
 import { FAQSection } from "@/components/subscription/faq-section";
+import { useAuth } from "@/context/auth-context";
 import { Check, ChevronLeft } from "@/lib/icons";
+import * as Crypto from "expo-crypto";
 import { useIAP } from "expo-iap";
 import { router, Stack, useFocusEffect } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
@@ -27,6 +29,8 @@ export default function Subscription() {
   const [showSuccess, setShowSuccess] = useState(false);
   const insets = useSafeAreaInsets();
   const { mutateAsync: createSubscription } = useCreateSubscription();
+  const { authState } = useAuth();
+  const userEmail = authState.user?.email;
 
   const {
     connected,
@@ -46,20 +50,20 @@ export default function Subscription() {
           return;
         }
 
-        // const discountOffer = (product as any)?.discountOffers?.find(
-        //   (i: any) => i.id === "opening-discount",
-        // );
+        const discountOffer = (product as any)?.discountOffers?.find(
+          (i: any) => i.id === "opening-discount",
+        );
 
-        // let originalPrice = product.displayPrice;
-        // let discountPrice = discountOffer?.displayPrice;
+        let originalPrice = product.displayPrice;
+        let discountPrice = discountOffer?.displayPrice;
 
-        // await createSubscription({
-        //   plan: "LIFETIME",
-        //   price: discountPrice || originalPrice,
-        //   product_id: purchase.productId,
-        //   package_name: "com.codemine.cashy",
-        //   purchase_token: purchase.purchaseToken,
-        // });
+        await createSubscription({
+          plan: "LIFETIME",
+          price: discountPrice || originalPrice,
+          product_id: purchase.productId,
+          package_name: "com.codemine.cashy",
+          purchase_token: purchase.purchaseToken,
+        });
 
         await finishTransaction({
           purchase,
@@ -84,17 +88,29 @@ export default function Subscription() {
 
   const handleBuy = async () => {
     try {
+      if (!userEmail) {
+        Alert.alert("Not signed in", "Please sign in to continue.");
+        return;
+      }
+
       setIsProcessing(true);
+
+      const accountHash = await Crypto.digestStringAsync(
+        Crypto.CryptoDigestAlgorithm.SHA256,
+        userEmail.trim().toLowerCase(),
+      );
+
+      const product = products.find((p) => p.id === "cashy_lifetime");
+      const discountOffer = (product as any)?.discountOffers?.find(
+        (i: any) => i.id === "opening-discount",
+      );
+      const offerToken = discountOffer?.offerTokenAndroid;
 
       const owned = (availablePurchases || []).find(
         (p) => p.productId === "cashy_lifetime",
       );
 
       if (owned) {
-        const product = products.find((p) => p.id === owned.productId);
-        const discountOffer = (product as any)?.discountOffers?.find(
-          (i: any) => i.id === "opening-discount",
-        );
         const originalPrice = product?.displayPrice ?? "";
         const discountPrice = discountOffer?.displayPrice;
 
@@ -120,6 +136,8 @@ export default function Subscription() {
         request: {
           google: {
             skus: ["cashy_lifetime"],
+            obfuscatedAccountId: accountHash,
+            offerToken,
           },
         },
         type: "in-app",
