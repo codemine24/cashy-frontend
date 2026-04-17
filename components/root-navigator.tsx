@@ -1,8 +1,8 @@
 import { ThemeVarsProvider, useTheme } from "@/context/theme-context";
 import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider as NavThemeProvider,
+    DarkTheme,
+    DefaultTheme,
+    ThemeProvider as NavThemeProvider,
 } from "@react-navigation/native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -14,13 +14,11 @@ export const RootNavigator = () => {
 
   return (
     <NavThemeProvider value={isDark ? DarkTheme : DefaultTheme}>
-      <View
-        style={{ flex: 1, backgroundColor: isDark ? "#0f172a" : "#f8fafc" }}
-      >
+      <View className="flex-1 bg-background">
         <StatusBar
           style={isDark ? "light" : "dark"}
           translucent={false}
-          backgroundColor={isDark ? "#0f172a" : "#f8fafc"}
+          backgroundColor="transparent"
         />
         <ThemeVarsProvider>
           <RootProvider>
@@ -30,13 +28,13 @@ export const RootNavigator = () => {
                 headerBackTitle: "Back",
                 headerShadowVisible: true,
                 headerStyle: {
-                  backgroundColor: isDark ? "#0f172a" : "#f8fafc",
+                  backgroundColor: "transparent",
                 },
                 headerTintColor: isDark ? "#f8fafc" : "#111827",
                 headerTitleStyle: { fontSize: 17, fontWeight: "600" },
                 // Prevent white blink during transitions
                 contentStyle: {
-                  backgroundColor: isDark ? "#0f172a" : "#f8fafc",
+                  backgroundColor: "transparent",
                 },
               }}
             >
@@ -60,7 +58,7 @@ export const RootNavigator = () => {
                 name="auth"
                 options={{
                   contentStyle: {
-                    backgroundColor: isDark ? "#0f172a" : "#f8fafc",
+                    backgroundColor: "transparent",
                   },
                 }}
               />
