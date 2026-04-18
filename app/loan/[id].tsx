@@ -1,19 +1,26 @@
 import { useDeletePayment, useGetLoanDetail } from "@/api/loan";
 import { CreatePaymentModal } from "@/components/loan/create-payment-modal";
 import { ScreenContainer } from "@/components/screen-container";
+import { Button } from "@/components/ui/button";
 import { usePullToRefreshSkeleton } from "@/hooks/use-pull-to-refresh-skeleton";
 import { LoanPayment } from "@/interface/loan";
-import { Edit3, Trash2, X } from "@/lib/icons";
+import { ChevronLeft, Edit3, Trash2, X } from "@/lib/icons";
 import { formatCurrency } from "@/utils";
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { useMemo, useState } from "react";
+import {
+  Stack,
+  useFocusEffect,
+  useLocalSearchParams,
+  useRouter,
+} from "expo-router";
+import { useCallback, useMemo, useState } from "react";
 import {
   Alert,
+  BackHandler,
   FlatList,
   RefreshControl,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
@@ -23,6 +30,7 @@ export default function LoanDetailScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { data: loanData, isLoading, refetch } = useGetLoanDetail(id!);
+  const loan = loanData?.data;
 
   const { showSkeleton, refreshControlProps } = usePullToRefreshSkeleton(
     async () => {
@@ -109,6 +117,22 @@ export default function LoanDetailScreen() {
     );
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        router.navigate(loan ? `/loans?tab=${loan.type}` : "/loans");
+        return true;
+      };
+
+      const subscription = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress,
+      );
+
+      return () => subscription.remove();
+    }, [loan, router]),
+  );
+
   if (finalShowSkeleton) {
     return (
       <>
@@ -117,6 +141,14 @@ export default function LoanDetailScreen() {
             headerShown: true,
             title: "Loan Details",
             headerBackTitle: "Back",
+            headerLeft: () => (
+              <TouchableOpacity
+                onPress={() => router.navigate("/loans")}
+                style={{ marginRight: 4 }}
+              >
+                <ChevronLeft size={26} className="text-foreground" />
+              </TouchableOpacity>
+            ),
           }}
         />
         <ScreenContainer className="px-4 bg-background">
@@ -162,7 +194,7 @@ export default function LoanDetailScreen() {
     );
   }
 
-  if (!loanData?.data) {
+  if (!loan) {
     return (
       <>
         <Stack.Screen
@@ -170,6 +202,14 @@ export default function LoanDetailScreen() {
             headerShown: true,
             title: "Loan Details",
             headerBackTitle: "Back",
+            headerLeft: () => (
+              <TouchableOpacity
+                onPress={() => router.navigate("/loans")}
+                style={{ marginRight: 4 }}
+              >
+                <ChevronLeft size={26} className="text-foreground" />
+              </TouchableOpacity>
+            ),
           }}
         />
         <ScreenContainer className="p-4 items-center justify-center">
@@ -182,7 +222,6 @@ export default function LoanDetailScreen() {
     );
   }
 
-  const loan = loanData.data;
   const progress =
     loan.amount > 0
       ? Math.min(Math.max((loan.paid_amount / loan.amount) * 100, 0), 100)
@@ -191,57 +230,68 @@ export default function LoanDetailScreen() {
   const isComplete = progress >= 100;
 
   return (
-    <>
-      <Stack.Screen
-        options={{
-          headerShown: true,
-          title: selectedPayment
-            ? "1 Selected"
-            : loanData?.data?.person_name || "Loan Details",
-          headerBackTitle: "Back",
-          headerLeft: selectedPayment
-            ? () => (
-              <TouchableOpacity
-                onPress={() => setSelectedPayment(null)}
-                style={{ marginLeft: 8, padding: 6 }}
-              >
-                <X size={22} className="text-foreground" />
-              </TouchableOpacity>
-            )
-            : undefined,
-          headerRight: () => {
-            if (selectedPayment) {
+    <ScreenContainer edges={["left", "right"]} className="py-4 bg-background">
+      <View className="flex-1">
+        <Stack.Screen
+          options={{
+            headerShown: true,
+            title: selectedPayment
+              ? "1 Selected"
+              : loanData?.data?.person_name || "Loan Details",
+            headerBackTitle: "Back",
+            headerLeft: () => {
+              if (selectedPayment) {
+                return (
+                  <TouchableOpacity
+                    onPress={() => setSelectedPayment(null)}
+                    style={{ marginRight: 8 }}
+                  >
+                    <X size={22} className="text-foreground" />
+                  </TouchableOpacity>
+                );
+              }
               return (
-                <View className="flex-row items-center gap-4">
-                  <TouchableOpacity
-                    onPress={handleEditPayment}
-                    className="p-2"
-                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                  >
-                    <Edit3 size={20} className="text-foreground" />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={handleDeletePayment}
-                    className="p-2"
-                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                  >
-                    <Trash2 size={20} className="text-destructive" />
-                  </TouchableOpacity>
-                </View>
+                <TouchableOpacity
+                  onPress={() => router.navigate(`/loans?tab=${loan.type}`)}
+                  style={{ marginRight: 4 }}
+                >
+                  <ChevronLeft size={26} className="text-foreground" />
+                </TouchableOpacity>
               );
-            }
-            return null;
-          },
-        }}
-      />
+            },
+            headerRight: () => {
+              if (selectedPayment) {
+                return (
+                  <View className="flex-row items-center gap-4">
+                    <TouchableOpacity
+                      onPress={handleEditPayment}
+                      className="p-2"
+                      hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                    >
+                      <Edit3 size={20} className="text-foreground" />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={handleDeletePayment}
+                      className="p-2"
+                      hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                    >
+                      <Trash2 size={20} className="text-destructive" />
+                    </TouchableOpacity>
+                  </View>
+                );
+              }
+              return null;
+            },
+          }}
+        />
 
-      <View className="flex-1 bg-background px-4">
         <FlatList
           data={sortedPayments}
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 140 }}
           refreshControl={<RefreshControl {...refreshControlProps} />}
+          className="px-4"
           renderItem={({ item, index }) => (
             <TouchableOpacity
               key={item.id}
@@ -286,7 +336,7 @@ export default function LoanDetailScreen() {
           ListHeaderComponent={
             <>
               {/* Top Summary Card - matching wallet structure */}
-              <View className="bg-card mt-2 rounded-2xl mb-4 shadow-sm border border-border">
+              <View className="bg-card mb-4 rounded-2xl shadow-sm border border-border">
                 <View className="px-3 py-3 flex-row justify-between items-center border-b border-border">
                   <Text className="text-foreground font-bold text-[14px]">
                     Loan Amount
@@ -374,15 +424,17 @@ export default function LoanDetailScreen() {
         />
 
         {/* Floating Action Button */}
-        <View className="absolute bottom-0 left-0 right-0 px-4 pt-3 bg-background border-t border-border shadow-2xl" style={{ paddingBottom: insets.bottom + 16 }}>
-          <TouchableOpacity
-            onPress={openAddPayment}
-            className="rounded-2xl bg-primary py-3.5 items-center justify-center"
-          >
-            <Text className="text-primary-foreground font-bold text-sm tracking-widest">
+        <View
+          style={{
+            marginBottom: Math.min(insets.bottom, 28),
+          }}
+          className="px-4 pt-3 pb-2 bg-background border-t border-border"
+        >
+          <Button onPress={openAddPayment} className="bg-primary">
+            <Text className="text-success-foreground font-bold text-[14px]">
               + ADD PAYMENT
             </Text>
-          </TouchableOpacity>
+          </Button>
         </View>
       </View>
 
@@ -393,6 +445,6 @@ export default function LoanDetailScreen() {
         loanId={id!}
         editPayment={editingPayment}
       />
-    </>
+    </ScreenContainer>
   );
 }

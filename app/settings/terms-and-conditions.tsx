@@ -18,7 +18,7 @@ const TERMS_URL =
 const TERMS_AND_CONDITIONS = `
 Terms & Conditions
 
-These terms and conditions apply to the Cashy: Expense Manager app (hereby referred to as "Application") for mobile devices that was created by Fazly (hereby referred to as "Service Provider") as a Freemium service.
+These terms and conditions apply to the Cashy: Expense Manager app (hereby referred to as "Application") for mobile devices that was created by Codemine Technologies (hereby referred to as "Service Provider") as a premium service.
 
 Upon downloading or utilizing the Application, you are automatically agreeing to the following terms. It is strongly advised that you thoroughly read and understand these terms prior to using the Application.
 
@@ -107,7 +107,7 @@ export default function TermsAndConditionsScreen() {
         {/* External Link */}
         <View
           className="px-4 py-3 border-t border-border bg-card"
-          style={{ paddingBottom: Math.max(insets.bottom + 6, 16) }}
+          style={{ paddingBottom: Math.min(insets.bottom + 6, 32) }}
         >
           <TouchableOpacity onPress={() => Linking.openURL(TERMS_URL)}>
             <Text className="text-primary text-sm text-center font-medium">

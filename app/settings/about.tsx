@@ -106,7 +106,7 @@ export default function AboutScreen() {
       await removeAccessToken();
       await clearUserInfo();
       setAuthState({ isAuthenticated: false, user: null });
-      router.replace("/");
+      router.replace("/auth");
     } else {
       Toast.show({
         type: "error",

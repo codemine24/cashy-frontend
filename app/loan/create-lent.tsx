@@ -2,12 +2,20 @@ import { useCreateLoan, useUpdateLoan } from "@/api/loan";
 import { InputError } from "@/components/ui/input-error";
 import { useKeyboardVisible } from "@/hooks/use-keyboard-visible";
 import { useKeyboardOffset } from "@/hooks/useKeyboardOffset";
+import { ChevronLeft } from "@/lib/icons";
 import { zodResolver } from "@hookform/resolvers/zod";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import {
+  Stack,
+  useFocusEffect,
+  useLocalSearchParams,
+  useRouter,
+} from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
+  BackHandler,
+  InteractionManager,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -35,9 +43,20 @@ const createLoanSchema = z.object({
 
 type CreateLoanFormValues = z.infer<typeof createLoanSchema>;
 
-export default function CreateLentLoanScreen() {
+// ─── Main Screen ─────────────────────────────────────────────────────────────
+export default function CreateLentScreen() {
+  const [amount, setAmount] = useState("");
+  const [date, setDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const amountInputRef = useRef<TextInput>(null);
+
   const router = useRouter();
+  const keyboardOffset = useKeyboardOffset();
+  const isKeyboardVisible = useKeyboardVisible();
   const insets = useSafeAreaInsets();
+
+  const createLoanMutation = useCreateLoan();
+  const updateLoanMutation = useUpdateLoan();
   const params = useLocalSearchParams<{
     editId?: string;
     editPersonName?: string;
@@ -47,14 +66,8 @@ export default function CreateLentLoanScreen() {
 
   const isEditing = !!params.editId;
 
-  const keyboardOffset = useKeyboardOffset();
-  const isKeyboardVisible = useKeyboardVisible();
-
-  const createLoanMutation = useCreateLoan();
-  const updateLoanMutation = useUpdateLoan();
-  const [amount, setAmount] = useState("");
-  const [date, setDate] = useState(new Date());
-  const [showDatePicker, setShowDatePicker] = useState(false);
+  const screenTitle = isEditing ? "Edit Lent Loan" : "New Lent Loan";
+  const buttonText = isEditing ? "UPDATE LENT LOAN" : "+ ADD LENT LOAN";
 
   // Form setup
   const form = useForm<CreateLoanFormValues>({
@@ -71,6 +84,48 @@ export default function CreateLentLoanScreen() {
   // Store form instance in ref to avoid dependency issues
   const formRef = useRef(form);
   formRef.current = form;
+
+  const isPending = isEditing
+    ? updateLoanMutation.isPending
+    : createLoanMutation.isPending;
+
+  const handleSubmit = async () => {
+    try {
+      const payload = {
+        person_name: form.getValues("person_name"),
+        amount: parseFloat(amount),
+        type: "GIVEN" as const,
+        due_date: date.toISOString().split("T")[0],
+      };
+
+      let response: any;
+
+      if (isEditing) {
+        response = await updateLoanMutation.mutateAsync({
+          id: params.editId!,
+          payload,
+        });
+      } else {
+        response = await createLoanMutation.mutateAsync(payload);
+      }
+
+      Toast.show({
+        type: "success",
+        text1: "Success",
+        text2:
+          response?.message ||
+          `Loan ${isEditing ? "updated" : "created"} successfully`,
+      });
+      router.navigate("/loans?tab=GIVEN");
+    } catch (error: any) {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2:
+          error?.message || `Failed to ${isEditing ? "update" : "create"} loan`,
+      });
+    }
+  };
 
   useEffect(() => {
     if (isEditing && params.editId) {
@@ -106,56 +161,32 @@ export default function CreateLentLoanScreen() {
     params.editDueDate,
   ]);
 
-  // ── Submit ─────────────────────────────────────────────────────────────────
-  const accentTextClass = "text-green-600";
-  const accentBgClassMap = "bg-green-600/10";
-  const accentBorderClassMap = "border-green-600/30";
-  const btnClassMap = "bg-green-600";
+  useEffect(() => {
+    const interaction = InteractionManager.runAfterInteractions(() => {
+      const timer = setTimeout(() => {
+        amountInputRef.current?.focus();
+      }, 400);
+      return () => clearTimeout(timer);
+    });
 
-  const handleSubmit = async () => {
-    try {
-      const payload = {
-        person_name: form.getValues("person_name"),
-        amount: parseFloat(amount),
-        type: "GIVEN" as const,
-        due_date: date.toISOString().split("T")[0],
+    return () => interaction.cancel();
+  }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        router.navigate("/loans?tab=GIVEN");
+        return true;
       };
 
-      let response: any;
+      const subscription = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress,
+      );
 
-      if (isEditing) {
-        response = await updateLoanMutation.mutateAsync({
-          id: params.editId!,
-          payload,
-        });
-      } else {
-        response = await createLoanMutation.mutateAsync(payload);
-      }
-
-      Toast.show({
-        type: "success",
-        text1: "Success",
-        text2:
-          response?.message ||
-          `Loan ${isEditing ? "updated" : "created"} successfully`,
-      });
-      router.back();
-    } catch (error: any) {
-      Toast.show({
-        type: "error",
-        text1: "Error",
-        text2:
-          error?.message || `Failed to ${isEditing ? "update" : "create"} loan`,
-      });
-    }
-  };
-
-  const isPending = isEditing
-    ? updateLoanMutation.isPending
-    : createLoanMutation.isPending;
-
-  const screenTitle = isEditing ? "Edit Lent Loan" : "New Lent Loan";
-  const buttonText = isEditing ? "UPDATE LENT LOAN" : "+ ADD LENT LOAN";
+      return () => subscription.remove();
+    }, [router]),
+  );
 
   return (
     <>
@@ -163,7 +194,14 @@ export default function CreateLentLoanScreen() {
         options={{
           headerShown: true,
           title: screenTitle,
-          headerBackTitle: "Back",
+          headerLeft: () => (
+            <TouchableOpacity
+              onPress={() => router.navigate("/loans?tab=GIVEN")}
+              style={{ marginRight: 4 }}
+            >
+              <ChevronLeft size={26} className="text-foreground" />
+            </TouchableOpacity>
+          ),
         }}
       />
       <KeyboardAvoidingView
@@ -171,11 +209,16 @@ export default function CreateLentLoanScreen() {
         keyboardVerticalOffset={keyboardOffset}
         style={{ flex: 1 }}
       >
-        <View style={{ flex: 1 }} className={`bg-background ${isKeyboardVisible ? "pb-0" : "pb-8"}`}>
-
-          {/* Scrollable content */}
+        <View
+          style={{ flex: 1 }}
+          className={`bg-background ${isKeyboardVisible ? "pb-0" : "pb-8"}`}
+        >
           <ScrollView
-            contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 24 }}
+            contentContainerStyle={{
+              paddingHorizontal: 20,
+              paddingTop: 16,
+              paddingBottom: 24,
+            }}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
           >
@@ -198,7 +241,9 @@ export default function CreateLentLoanScreen() {
                       className={`bg-card rounded-xl px-4 py-3.5 border ${form.formState.errors.person_name ? "border-destructive" : "border-border"} text-foreground text-base`}
                       autoCapitalize="words"
                     />
-                    <InputError error={form.formState.errors.person_name?.message} />
+                    <InputError
+                      error={form.formState.errors.person_name?.message}
+                    />
                   </View>
                 )}
               />
@@ -215,18 +260,23 @@ export default function CreateLentLoanScreen() {
                 render={({ field: { onChange, onBlur, value } }) => (
                   <View>
                     <View
-                      className={`flex-row items-center rounded-xl px-4 py-3.5 border-2 ${accentBorderClassMap} ${accentBgClassMap} ${form.formState.errors.amount ? "border-destructive" : ""}`}
+                      className={`flex-row items-center rounded-xl px-4 py-3.5 border-2 border-green-600/30 bg-green-600/10 ${form.formState.errors.amount ? "border-destructive" : ""}`}
                     >
-                      <Text className={`text-2xl font-bold ${accentTextClass}`}>$</Text>
+                      <Text className={`text-2xl font-bold text-green-600`}>
+                        $
+                      </Text>
                       <TextInput
                         value={value}
-                        onChangeText={(text) => { onChange(text); setAmount(text); }}
+                        onChangeText={(text) => {
+                          onChange(text);
+                          setAmount(text);
+                        }}
                         onBlur={onBlur}
                         placeholder="0.00"
                         placeholderTextColor="#A1A1AA"
                         keyboardType="decimal-pad"
-                        className={`flex-1 ml-2 text-2xl font-bold ${accentTextClass}`}
-                        autoFocus={true}
+                        className={`flex-1 ml-2 text-2xl font-bold text-green-600`}
+                        ref={amountInputRef}
                       />
                     </View>
                     <InputError error={form.formState.errors.amount?.message} />
@@ -242,9 +292,9 @@ export default function CreateLentLoanScreen() {
               </Text>
               <TouchableOpacity
                 onPress={() => setShowDatePicker(true)}
-                className={`bg-card rounded-xl px-4 py-3.5 border flex-row items-center justify-between ${accentBorderClassMap} ${accentBgClassMap}`}
+                className={`rounded-xl px-4 py-3.5 border flex-row items-center justify-between border-green-600/30 bg-green-600/10`}
               >
-                <Text className={`text-base font-medium ${accentTextClass}`}>
+                <Text className={`text-base font-medium text-green-600`}>
                   {date.toLocaleDateString()}
                 </Text>
               </TouchableOpacity>
@@ -262,23 +312,28 @@ export default function CreateLentLoanScreen() {
               )}
             </View>
           </ScrollView>
+        </View>
 
-          {/* Submit button — always sticks to bottom */}
-          <View
-            className="px-5 py-3 bg-background border-t border-border"
-            style={{ paddingBottom: Math.max(insets.bottom, isEditing ? 6 : 16) }}
+        {/* Submit Button - Sticks above keyboard */}
+        <View
+          className="px-5 pt-3 pb-2 bg-background border-t border-border"
+          style={{
+            marginBottom: isKeyboardVisible ? 0 : Math.min(insets.bottom, 20),
+          }}
+        >
+          <TouchableOpacity
+            onPress={form.handleSubmit(handleSubmit)}
+            disabled={isPending}
+            className={`rounded-xl py-4 items-center justify-center w-full bg-green-600 ${isPending ? "opacity-50" : "opacity-100"}`}
+            activeOpacity={0.8}
           >
-            <TouchableOpacity
-              onPress={form.handleSubmit(handleSubmit)}
-              disabled={isPending}
-              className={`rounded-xl py-4 items-center justify-center ${btnClassMap} ${isPending ? "opacity-50" : "opacity-100"}`}
-              activeOpacity={0.8}
+            <Text
+              className="text-white font-bold text-base tracking-wider text-center w-full"
+              numberOfLines={1}
             >
-              <Text className="text-white font-bold text-base tracking-wider">
-                {isPending ? "SAVING..." : buttonText}
-              </Text>
-            </TouchableOpacity>
-          </View>
+              {isPending ? "SAVING..." : buttonText}
+            </Text>
+          </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
     </>

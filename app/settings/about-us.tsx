@@ -9,9 +9,11 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function AboutUsScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   useFocusEffect(
     useCallback(() => {
@@ -108,7 +110,7 @@ export default function AboutUsScreen() {
               Developer
             </Text>
             <Text className="text-foreground text-sm leading-relaxed mb-2">
-              Cashy is developed and maintained by Fazly.
+              Cashy is developed and maintained by Codemine Technologies.
             </Text>
             <Text className="text-foreground text-sm leading-relaxed">
               We&apos;re committed to providing you with the best expense
@@ -118,7 +120,10 @@ export default function AboutUsScreen() {
           </View>
 
           {/* Footer */}
-          <View className="mt-8 items-center">
+          <View
+            className="mt-8 items-center"
+            style={{ marginBottom: Math.min(insets.bottom, 20) }}
+          >
             <Text className="text-muted-foreground text-sm">
               © 2026 Cashy: Expense Manager
             </Text>

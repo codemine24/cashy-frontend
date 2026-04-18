@@ -14,8 +14,8 @@ import { PlusIcon } from "@/icons/plus-icon";
 import { SearchIcon } from "@/icons/search-icon";
 import { Loan } from "@/interface/loan";
 import { formatCurrency } from "@/utils/index";
-import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   FlatList,
@@ -23,7 +23,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 import Toast from "react-native-toast-message";
 
@@ -34,10 +34,10 @@ const SORT_OPTIONS: {
   label: string;
   order: "asc" | "desc";
 }[] = [
-    { key: "updated_at", label: "Last Updated", order: "desc" },
-    { key: "person_name", label: "Name (A-Z)", order: "asc" },
-    { key: "created_at", label: "Last Created", order: "desc" },
-  ];
+  { key: "updated_at", label: "Last Updated", order: "desc" },
+  { key: "person_name", label: "Name (A-Z)", order: "asc" },
+  { key: "created_at", label: "Last Created", order: "desc" },
+];
 
 type LoanTab = "GIVEN" | "TAKEN";
 
@@ -53,12 +53,14 @@ function TabButton({
   return (
     <TouchableOpacity
       onPress={onPress}
-      className={`flex-1 py-2.5 rounded-md items-center justify-center ${active ? "bg-primary" : ""
-        }`}
+      className={`flex-1 py-2.5 rounded-md items-center justify-center ${
+        active ? "bg-primary" : ""
+      }`}
     >
       <Text
-        className={`font-semibold text-sm ${active ? "text-white" : "text-muted-foreground"
-          }`}
+        className={`font-semibold text-sm ${
+          active ? "text-white" : "text-muted-foreground"
+        }`}
       >
         {label}
       </Text>
@@ -69,7 +71,14 @@ function TabButton({
 export default function LoansScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<LoanTab>("GIVEN");
+  const params = useLocalSearchParams<{ tab?: LoanTab }>();
+  const [activeTab, setActiveTab] = useState<LoanTab>(params.tab || "GIVEN");
+
+  useEffect(() => {
+    if (params.tab && (params.tab === "GIVEN" || params.tab === "TAKEN")) {
+      setActiveTab(params.tab);
+    }
+  }, [params.tab]);
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
   const [showSortModal, setShowSortModal] = useState(false);
@@ -143,7 +152,8 @@ export default function LoansScreen() {
 
   const handleEditLoan = (loan: Loan) => {
     router.push({
-      pathname: "/loan/create-lent",
+      pathname:
+        activeTab === "GIVEN" ? "/loan/create-lent" : "/loan/create-borrowed",
       params: {
         editId: loan.id,
         editPersonName: loan.person_name,
@@ -171,7 +181,7 @@ export default function LoansScreen() {
 
   if (error) {
     return (
-      <ScreenContainer className="p-4 bg-background">
+      <ScreenContainer className="p-4 pb-0 bg-background">
         <View className="bg-surface rounded-xl p-8 items-center border border-border">
           <Text className="text-lg font-semibold mb-2">
             Something went wrong
@@ -189,17 +199,20 @@ export default function LoansScreen() {
   }
 
   return (
-    <ScreenContainer edges={["left", "right"]} className="p-4 bg-background">
+    <ScreenContainer
+      edges={["left", "right"]}
+      className="p-4 pb-0 bg-background"
+    >
       {/* Search Input */}
-      <View className="relative mb-2">
-        <View className="flex-row items-center bg-muted rounded-xl px-3 border border-border">
-          <SearchIcon className="text-muted-foreground size-5" />
+      <View className="relative flex-row items-center gap-2 mb-2">
+        <View className="flex-row items-center bg-white rounded-xl px-3 border border-border flex-1">
+          <SearchIcon className="text-muted-foreground size-4" />
           <TextInput
             value={searchQuery}
             onChangeText={setSearchQuery}
             placeholder={t("loans.searchLoans")}
             placeholderClassName="text-muted-foreground"
-            className="flex-1 ml-2 text-base text-foreground"
+            className="flex-1 text-base text-foreground"
             placeholderTextColor="#94a3b8"
           />
           {searchQuery.length > 0 && (
@@ -211,31 +224,27 @@ export default function LoansScreen() {
             </TouchableOpacity>
           )}
         </View>
-      </View>
-
-      {/* Header with filter & Tabs in one line */}
-      <View className="mb-2 flex-row items-center gap-2">
-        {/* Tabs */}
-        <View className="flex-1 flex-row bg-muted rounded-lg p-1">
-          <TabButton
-            label={t("loans.lent")}
-            active={activeTab === "GIVEN"}
-            onPress={() => setActiveTab("GIVEN")}
-          />
-
-          <TabButton
-            label={t("loans.borrowed")}
-            active={activeTab === "TAKEN"}
-            onPress={() => setActiveTab("TAKEN")}
-          />
-        </View>
-
         <TouchableOpacity
           onPress={openSortModal}
-          className="p-2.5 rounded-xl bg-surface border border-border"
+          className="size-12 bg-card rounded-xl border border-border items-center justify-center"
         >
-          <FilterIcon className="text-primary size-6" />
+          <FilterIcon className="text-primary size-5" />
         </TouchableOpacity>
+      </View>
+
+      {/* Tabs */}
+      <View className="mb-2 flex-row bg-muted rounded-lg p-1">
+        <TabButton
+          label={t("loans.lent")}
+          active={activeTab === "GIVEN"}
+          onPress={() => setActiveTab("GIVEN")}
+        />
+
+        <TabButton
+          label={t("loans.borrowed")}
+          active={activeTab === "TAKEN"}
+          onPress={() => setActiveTab("TAKEN")}
+        />
       </View>
 
       {/* Content Area - Loading only here */}
@@ -260,9 +269,10 @@ export default function LoansScreen() {
           data={loans}
           extraData={activeTab}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
+          renderItem={({ item, index }) => (
             <LoanCard
               loan={item}
+              index={index}
               onEdit={handleEditLoan}
               onDelete={handleDeleteLoan}
             />

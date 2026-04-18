@@ -26,6 +26,7 @@ import {
 } from "@/lib/icons";
 import { clearUserInfo, removeAccessToken } from "@/utils/auth";
 import { makeImageUrl } from "@/utils/helper";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 // ─── Reusable row component ───────────────────────────────────────────────
 function SettingsRow({
@@ -85,6 +86,7 @@ function Divider() {
 
 // ─── Main screen ─────────────────────────────────────────────────────────
 export default function SettingsScreen() {
+  const insets = useSafeAreaInsets();
   const router = useRouter();
   const { authState, setAuthState } = useAuth();
   const { t } = useTranslation();
@@ -95,7 +97,7 @@ export default function SettingsScreen() {
     await removeAccessToken();
     await clearUserInfo();
     setAuthState({ isAuthenticated: false, user: null });
-    router.replace("/");
+    router.replace("/auth");
   };
 
   const handleLogoutConfirm = async () => {
@@ -105,7 +107,7 @@ export default function SettingsScreen() {
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
-        router.navigate("/");
+        router.navigate("/(tabs)");
         return true;
       };
 
@@ -128,7 +130,7 @@ export default function SettingsScreen() {
           headerShadowVisible: true,
           headerLeft: () => (
             <TouchableOpacity
-              onPress={() => router.navigate("/")}
+              onPress={() => router.navigate("/(tabs)")}
               style={{ marginRight: 4 }}
             >
               <ChevronLeft size={26} className="text-foreground" />
@@ -145,7 +147,7 @@ export default function SettingsScreen() {
             paddingBottom: 40,
           }}
         >
-          <View className="mb-6 flex-row items-center gap-3 bg-card rounded-2xl border border-border px-4 py-4">
+          <View className="flex-row items-center gap-3 bg-card rounded-2xl border border-border px-4 py-4">
             <Image
               source={{
                 uri:
@@ -170,7 +172,7 @@ export default function SettingsScreen() {
           {!isPremium && <PremiumUpSellCard />}
 
           {/* ── Main settings group ── */}
-          <View className="bg-card rounded-2xl border border-border px-4 my-6">
+          <View className="bg-card rounded-2xl border border-border px-4 my-4">
             <SettingsRow
               iconBgClass="bg-violet-500/10"
               icon={<Settings size={22} className="text-violet-500" />}
@@ -209,7 +211,10 @@ export default function SettingsScreen() {
           </View>
 
           {/* ── Logout ── */}
-          <View className="bg-card rounded-2xl border border-border px-4">
+          <View
+            className="bg-card rounded-2xl border border-border px-4"
+            style={{ marginBottom: Math.min(insets.bottom, 20) }}
+          >
             <TouchableOpacity
               onPress={() => setShowLogoutModal(true)}
               activeOpacity={0.7}
