@@ -158,7 +158,10 @@ export default function StatisticsPage() {
   };
 
   return (
-    <ScreenContainer edges={["left", "right"]} className="p-4 bg-background">
+    <ScreenContainer
+      edges={["left", "right"]}
+      className="p-4 pb-0 bg-background"
+    >
       <ScrollView
         showsVerticalScrollIndicator={false}
         className="flex-1"

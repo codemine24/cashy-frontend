@@ -181,7 +181,7 @@ export default function LoansScreen() {
 
   if (error) {
     return (
-      <ScreenContainer className="p-4 bg-background">
+      <ScreenContainer className="p-4 pb-0 bg-background">
         <View className="bg-surface rounded-xl p-8 items-center border border-border">
           <Text className="text-lg font-semibold mb-2">
             Something went wrong
@@ -199,7 +199,10 @@ export default function LoansScreen() {
   }
 
   return (
-    <ScreenContainer edges={["left", "right"]} className="p-4 bg-background">
+    <ScreenContainer
+      edges={["left", "right"]}
+      className="p-4 pb-0 bg-background"
+    >
       {/* Search Input */}
       <View className="relative flex-row items-center gap-2 mb-2">
         <View className="flex-row items-center bg-white rounded-xl px-3 border border-border flex-1">
