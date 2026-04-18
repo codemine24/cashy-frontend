@@ -110,6 +110,7 @@ export default function ProfileScreen() {
           avatar: data.data.avatar,
         });
         Alert.alert("Saved", "Your profile has been updated.");
+        router.push("/settings");
       },
       onError: (error) => {
         Alert.alert("Error", "Failed to update profile. Please try again.");
