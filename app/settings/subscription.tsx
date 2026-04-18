@@ -181,14 +181,29 @@ export default function Subscription() {
   if (showSuccess) {
     return (
       <>
-        <Stack.Screen options={{ title: "Success", headerLeft: () => null }} />
+        <Stack.Screen
+          options={{
+            title: "Success",
+            headerLeft: () => (
+              <TouchableOpacity
+                onPress={() => router.navigate("/settings")}
+                style={{ marginRight: 4 }}
+              >
+                <ChevronLeft size={26} className="text-foreground" />
+              </TouchableOpacity>
+            ),
+          }}
+        />
         <ScreenContainer edges={["bottom"]} className="bg-background">
           <View className="flex-1 items-center justify-center px-6">
-            <View className="items-center mb-10">
+            <View className="items-center mb-8">
               <View className="w-24 h-24 bg-amber-500 rounded-full items-center justify-center mb-6 shadow-xl shadow-amber-500/20">
                 <Check size={48} className="text-white" />
               </View>
-              <Text className="text-3xl font-bold text-foreground text-center mb-2">
+              <Text
+                className="text-3xl font-bold text-foreground text-center mb-2"
+                numberOfLines={1}
+              >
                 You&apos;re all set!
               </Text>
               <Text className="text-lg text-muted-foreground text-center">
@@ -196,7 +211,7 @@ export default function Subscription() {
               </Text>
             </View>
 
-            <View className="bg-card border border-border rounded-3xl p-6 w-full mb-12">
+            <View className="bg-card border border-border rounded-3xl p-6 w-full mb-6">
               <Text className="text-lg font-bold text-foreground mb-4">
                 Unlimited access unlocked:
               </Text>
@@ -222,9 +237,12 @@ export default function Subscription() {
             <TouchableOpacity
               activeOpacity={0.8}
               onPress={() => router.replace("/settings" as any)}
-              className="w-full bg-foreground py-4.5 rounded-2xl items-center justify-center shadow-lg"
+              className="rounded-xl py-4 w-full bg-amber-500 items-center justify-center shadow-lg"
             >
-              <Text className="text-lg font-bold text-background">
+              <Text
+                className="text-lg font-bold text-background"
+                numberOfLines={1}
+              >
                 Start Using Pro
               </Text>
             </TouchableOpacity>

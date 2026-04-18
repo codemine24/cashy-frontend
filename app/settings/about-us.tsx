@@ -110,7 +110,7 @@ export default function AboutUsScreen() {
               Developer
             </Text>
             <Text className="text-foreground text-sm leading-relaxed mb-2">
-              Cashy is developed and maintained by Fazly.
+              Cashy is developed and maintained by Codemine Technologies.
             </Text>
             <Text className="text-foreground text-sm leading-relaxed">
               We&apos;re committed to providing you with the best expense

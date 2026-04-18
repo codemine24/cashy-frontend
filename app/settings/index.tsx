@@ -4,12 +4,12 @@ import { Stack, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-    BackHandler,
-    Image,
-    ScrollView,
-    Text,
-    TouchableOpacity,
-    View,
+  BackHandler,
+  Image,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 import { PremiumBadge } from "@/components/premium-badge";
@@ -17,12 +17,12 @@ import { PremiumUpSellCard } from "@/components/premium-upsell-card";
 import { useAuth } from "@/context/auth-context";
 import { useIsPremium } from "@/hooks/use-is-premium";
 import {
-    ChevronLeft,
-    ChevronRight,
-    Info,
-    LogOut,
-    Settings,
-    User,
+  ChevronLeft,
+  ChevronRight,
+  Info,
+  LogOut,
+  Settings,
+  User,
 } from "@/lib/icons";
 import { clearUserInfo, removeAccessToken } from "@/utils/auth";
 import { makeImageUrl } from "@/utils/helper";
@@ -147,7 +147,7 @@ export default function SettingsScreen() {
             paddingBottom: 40,
           }}
         >
-          <View className="mb-6 flex-row items-center gap-3 bg-card rounded-2xl border border-border px-4 py-4">
+          <View className="flex-row items-center gap-3 bg-card rounded-2xl border border-border px-4 py-4">
             <Image
               source={{
                 uri:
@@ -172,7 +172,7 @@ export default function SettingsScreen() {
           {!isPremium && <PremiumUpSellCard />}
 
           {/* ── Main settings group ── */}
-          <View className="bg-card rounded-2xl border border-border px-4 my-6">
+          <View className="bg-card rounded-2xl border border-border px-4 my-4">
             <SettingsRow
               iconBgClass="bg-violet-500/10"
               icon={<Settings size={22} className="text-violet-500" />}
