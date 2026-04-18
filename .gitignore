@@ -52,3 +52,4 @@ android/app/build/
 # React Native build artifacts
 /build/
 /dist/
+/claude/

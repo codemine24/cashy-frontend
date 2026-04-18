@@ -1,7 +1,11 @@
 import { useAuth } from "@/context/auth-context";
 import { Book } from "@/interface/wallet";
-import { BookIcon, Edit3, MoreVertical, Trash2, UserPlus } from "@/lib/icons";
-import { formatNumber, formatUpdateDate } from "@/utils";
+import { Edit3, MoreVertical, Trash2, UserPlus } from "@/lib/icons";
+import {
+  formatNumber,
+  formatUpdateDate,
+  getWalletColorCombination,
+} from "@/utils";
 import { isOwner } from "@/utils/is-owner";
 import { useRouter } from "expo-router";
 import { useState } from "react";
@@ -10,6 +14,7 @@ import Popover from "react-native-popover-view";
 
 interface WalletCardProps {
   book: Book;
+  index: number;
   onRename?: (book: Book) => void;
   onAddMember?: (book: Book) => void;
   onDelete?: (book: Book) => void;
@@ -17,6 +22,7 @@ interface WalletCardProps {
 
 export const WalletCard = ({
   book,
+  index,
   onRename,
   onAddMember,
   onDelete,
@@ -25,6 +31,9 @@ export const WalletCard = ({
   const { authState } = useAuth();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const isCurrentUserOwner = isOwner(authState.user?.id, book.created_by);
+
+  // Get color combination based on wallet index for repeating color pattern
+  const colors = getWalletColorCombination(index);
 
   const handleAction = (action?: (book: Book) => void) => {
     setIsMenuVisible(false);
@@ -46,8 +55,17 @@ export const WalletCard = ({
     >
       {/* Left: Icon and Name/Date */}
       <View className="flex-row items-center flex-1">
-        <View className="size-13 items-center justify-center rounded-2xl mr-4 bg-primary/10">
-          <BookIcon size={26} className="text-primary" />
+        <View
+          className="size-13 items-center justify-center rounded-2xl mr-4"
+          style={{ backgroundColor: colors.bg }}
+        >
+          <Text
+            className="font-bold text-lg px-4 py-2"
+            style={{ color: colors.text }}
+            numberOfLines={1}
+          >
+            {book.name.slice(0, 1)}
+          </Text>
         </View>
         <View className="flex-1 mr-4">
           <Text className="text-foreground font-bold text-lg" numberOfLines={1}>
