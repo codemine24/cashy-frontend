@@ -115,7 +115,7 @@ export function PremiumUpSellCard({
 
   return (
     <View
-      className={`rounded-3xl overflow-hidden border ${
+      className={`rounded-3xl overflow-hidden border mt-4 ${
         isDark ? "border-violet-500/20" : "border-amber-500/20"
       }`}
     >
