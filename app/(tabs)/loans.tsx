@@ -204,15 +204,15 @@ export default function LoansScreen() {
       className="p-4 pb-0 bg-background"
     >
       {/* Search Input */}
-      <View className="relative mb-2">
-        <View className="flex-row items-center bg-muted rounded-xl px-3 border border-border">
-          <SearchIcon className="text-muted-foreground size-5" />
+      <View className="relative flex-row items-center gap-2 mb-2">
+        <View className="flex-row items-center bg-white rounded-xl px-3 border border-border flex-1">
+          <SearchIcon className="text-muted-foreground size-4" />
           <TextInput
             value={searchQuery}
             onChangeText={setSearchQuery}
             placeholder={t("loans.searchLoans")}
             placeholderClassName="text-muted-foreground"
-            className="flex-1 ml-2 text-base text-foreground"
+            className="flex-1 text-base text-foreground"
             placeholderTextColor="#94a3b8"
           />
           {searchQuery.length > 0 && (
@@ -224,31 +224,27 @@ export default function LoansScreen() {
             </TouchableOpacity>
           )}
         </View>
-      </View>
-
-      {/* Header with filter & Tabs in one line */}
-      <View className="mb-2 flex-row items-center gap-2">
-        {/* Tabs */}
-        <View className="flex-1 flex-row bg-muted rounded-lg p-1">
-          <TabButton
-            label={t("loans.lent")}
-            active={activeTab === "GIVEN"}
-            onPress={() => setActiveTab("GIVEN")}
-          />
-
-          <TabButton
-            label={t("loans.borrowed")}
-            active={activeTab === "TAKEN"}
-            onPress={() => setActiveTab("TAKEN")}
-          />
-        </View>
-
         <TouchableOpacity
           onPress={openSortModal}
-          className="p-2.5 rounded-xl bg-surface border border-border"
+          className="size-12 bg-card rounded-xl border border-border items-center justify-center"
         >
-          <FilterIcon className="text-primary size-6" />
+          <FilterIcon className="text-primary size-5" />
         </TouchableOpacity>
+      </View>
+
+      {/* Tabs */}
+      <View className="mb-2 flex-row bg-muted rounded-lg p-1">
+        <TabButton
+          label={t("loans.lent")}
+          active={activeTab === "GIVEN"}
+          onPress={() => setActiveTab("GIVEN")}
+        />
+
+        <TabButton
+          label={t("loans.borrowed")}
+          active={activeTab === "TAKEN"}
+          onPress={() => setActiveTab("TAKEN")}
+        />
       </View>
 
       {/* Content Area - Loading only here */}
@@ -273,9 +269,10 @@ export default function LoansScreen() {
           data={loans}
           extraData={activeTab}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
+          renderItem={({ item, index }) => (
             <LoanCard
               loan={item}
+              index={index}
               onEdit={handleEditLoan}
               onDelete={handleDeleteLoan}
             />

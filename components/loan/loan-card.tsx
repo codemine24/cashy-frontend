@@ -1,6 +1,6 @@
 import { Loan } from "@/interface/loan";
 import { Edit3, MoreVertical, Trash2 } from "@/lib/icons";
-import { formatNumber } from "@/utils";
+import { formatNumber, getWalletColorCombination } from "@/utils";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
@@ -8,15 +8,19 @@ import Popover from "react-native-popover-view";
 
 interface LoanCardProps {
   loan: Loan;
+  index: number;
   onEdit?: (loan: Loan) => void;
   onDelete?: (loan: Loan) => void;
 }
 
-export const LoanCard = ({ loan, onEdit, onDelete }: LoanCardProps) => {
+export const LoanCard = ({ loan, index, onEdit, onDelete }: LoanCardProps) => {
   const router = useRouter();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
 
   const showMenu = !!(onEdit || onDelete);
+
+  // Get color combination based on loan index for repeating color pattern
+  const colors = getWalletColorCombination(index);
 
   const handleAction = (action?: (loan: Loan) => void) => {
     setIsMenuVisible(false);
@@ -47,8 +51,15 @@ export const LoanCard = ({ loan, onEdit, onDelete }: LoanCardProps) => {
       {/* Top: Icon and Name/Date */}
       <View className="flex-row items-center justify-between mb-3">
         <View className="flex-row items-center flex-1">
-          <View className="w-8 h-8 rounded-lg bg-primary/10 items-center justify-center mr-3">
-            <Text className="text-primary font-bold text-[13px]">
+          <View
+            className="size-13 items-center justify-center rounded-2xl mr-4"
+            style={{ backgroundColor: colors.bg }}
+          >
+            <Text
+              className="font-bold text-lg px-4 py-2"
+              style={{ color: colors.text }}
+              numberOfLines={1}
+            >
               {loan.person_name.charAt(0).toUpperCase()}
             </Text>
           </View>

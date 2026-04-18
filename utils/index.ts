@@ -111,3 +111,15 @@ export function timeAgo(dateString: string | undefined): string {
 
   return formattedDate;
 }
+
+export function getWalletColorCombination(index: number) {
+  const colorCombinations = [
+    { bg: "#DBEAFE", text: "#2563EB" }, // blue
+    { bg: "#DCFCE7", text: "#16A34A" }, // green
+    { bg: "#F3E8FF", text: "#9333EA" }, // purple
+    { bg: "#FED7AA", text: "#EA580C" }, // orange
+    { bg: "#FCE7F3", text: "#EC4899" }, // pink
+  ];
+
+  return colorCombinations[index % colorCombinations.length];
+}

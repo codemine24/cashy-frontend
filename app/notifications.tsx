@@ -101,7 +101,7 @@ export default function NotificationsScreen() {
       <Stack.Screen
         options={{
           headerShown: true,
-          title: "Notifications check",
+          title: "Notifications",
           headerLeft: () => (
             <TouchableOpacity
               onPress={() => router.navigate(from === "loans" ? "/loans" : "/")}
@@ -156,10 +156,8 @@ export default function NotificationsScreen() {
                 const isRead = !!item.is_read;
                 return (
                   <View
-                    className={`flex-row p-4 rounded-2xl border ${
-                      isRead
-                        ? "bg-surface/50 border-border/50"
-                        : "bg-surface border-border shadow-sm"
+                    className={`flex-row  bg-card rounded-2xl p-3 border border-border active:opacity-70 ${
+                      isRead ? "opacity-70" : ""
                     }`}
                   >
                     <View
@@ -172,7 +170,7 @@ export default function NotificationsScreen() {
                     <View className="flex-1">
                       <View className="flex-row justify-between items-start mb-1">
                         <Text
-                          className={`text-base flex-1 pr-2 ${isRead ? "font-medium text-foreground/70" : "font-bold text-foreground"}`}
+                          className={`text-base flex-1 pr-2 ${isRead ? "font-medium text-foreground" : "font-bold text-foreground"}`}
                         >
                           {item.title}
                         </Text>
@@ -181,11 +179,11 @@ export default function NotificationsScreen() {
                         )}
                       </View>
                       <Text
-                        className={`text-sm leading-relaxed ${isRead ? "text-muted-foreground/70" : "text-muted-foreground"}`}
+                        className={`text-sm leading-relaxed ${isRead ? "text-muted-foreground" : "text-muted-foreground"}`}
                       >
                         {item.message}
                       </Text>
-                      <Text className="text-[10px] text-muted-foreground/60 mt-2 font-medium uppercase tracking-wider">
+                      <Text className="text-[10px] text-muted-foreground mt-2 font-medium uppercase tracking-wider">
                         {item.created_at ? timeAgo(item.created_at) : ""}
                       </Text>
                     </View>

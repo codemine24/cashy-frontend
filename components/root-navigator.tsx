@@ -1,8 +1,8 @@
 import { ThemeVarsProvider, useTheme } from "@/context/theme-context";
 import {
-    DarkTheme,
-    DefaultTheme,
-    ThemeProvider as NavThemeProvider,
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider as NavThemeProvider,
 } from "@react-navigation/native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -28,13 +28,12 @@ export const RootNavigator = () => {
                 screenOptions={{
                   headerShown: false,
                   headerBackTitle: "Back",
-                  headerShadowVisible: true,
+                  headerShadowVisible: false,
                   headerStyle: {
                     backgroundColor: "transparent",
                   },
                   headerTintColor: isDark ? "#f8fafc" : "#111827",
                   headerTitleStyle: { fontSize: 17, fontWeight: "600" },
-                  // Prevent white blink during transitions
                   contentStyle: {
                     backgroundColor: "transparent",
                   },

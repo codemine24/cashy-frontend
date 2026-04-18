@@ -161,9 +161,10 @@ export default function SearchWalletScreen() {
             keyExtractor={(item) => item.id}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ paddingBottom: 40 }}
-            renderItem={({ item: book }) => (
+            renderItem={({ item: book, index }) => (
               <WalletCard
                 book={book}
+                index={index}
                 onRename={handleRename}
                 onAddMember={handleAddMember}
                 onDelete={handleDeleteBook}

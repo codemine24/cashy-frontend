@@ -166,15 +166,15 @@ export default function HomeScreen() {
           contentContainerStyle={{ flexGrow: 1 }}
         >
           {/* Search Input */}
-          <View className="relative mb-4">
-            <View className="flex-row items-center bg-muted rounded-xl px-3 border border-border">
-              <SearchIcon className="text-muted-foreground size-5" />
+          <View className="relative flex-row items-center gap-2">
+            <View className="flex-row items-center bg-white rounded-xl px-3 border border-border flex-1">
+              <SearchIcon className="text-muted-foreground size-4" />
               <TextInput
                 value={searchQuery}
                 onChangeText={setSearchQuery}
                 placeholder={t("wallets.searchWallets")}
                 placeholderClassName="text-muted-foreground"
-                className="flex-1 ml-2 text-base text-foreground"
+                className="flex-1 text-base text-foreground"
                 placeholderTextColor="#94a3b8"
               />
               {searchQuery.length > 0 && (
@@ -186,23 +186,11 @@ export default function HomeScreen() {
                 </TouchableOpacity>
               )}
             </View>
-          </View>
-
-          {/* Header */}
-          <View className="mb-2 flex-row items-center">
-            <View className="flex-row items-center gap-2">
-              <Text
-                numberOfLines={1}
-                className="text-sm font-semibold text-muted-foreground mr-2"
-              >
-                {t("wallets.yourWallets")}
-              </Text>
-            </View>
             <TouchableOpacity
               onPress={openSortModal}
-              className="p-2 rounded-xl "
+              className="size-12 bg-card rounded-xl border border-border items-center justify-center"
             >
-              <FilterIcon className="text-primary size-6 " />
+              <FilterIcon className="text-primary size-5" />
             </TouchableOpacity>
           </View>
 
@@ -237,9 +225,10 @@ export default function HomeScreen() {
               )}
               keyExtractor={(item) => item.id}
               contentContainerStyle={{ paddingBottom: 80 }}
-              renderItem={({ item: book }) => (
+              renderItem={({ item: book, index }) => (
                 <WalletCard
                   book={book}
+                  index={index}
                   onRename={handleRename}
                   onAddMember={handleAddMember}
                   onDelete={handleDeleteBook}
