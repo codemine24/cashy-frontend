@@ -61,7 +61,8 @@
     "privacyPolicy": "Privacy Policy",
     "termsAndConditions": "T&C",
     "aboutUs": "About us",
-    "profileInfo": "Name, Avatar, Email"
+    "profileInfo": "Name, Avatar, Email",
+    "deleteAccount": "Delete Account"
   },
   "auth": {
     "welcome": "Welcome!",

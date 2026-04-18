@@ -101,13 +101,21 @@ export default function AboutScreen() {
   };
 
   const handleDeleteAccountConfirm = async () => {
-    const result = await deleteAccountMutation.mutateAsync();
-    if (result?.success) {
-      await removeAccessToken();
-      await clearUserInfo();
-      setAuthState({ isAuthenticated: false, user: null });
-      router.replace("/auth");
-    } else {
+    try {
+      const result = await deleteAccountMutation.mutateAsync();
+      if (result?.success) {
+        await removeAccessToken();
+        await clearUserInfo();
+        setAuthState({ isAuthenticated: false, user: null });
+        router.replace("/auth");
+      } else {
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: "Failed to delete account",
+        });
+      }
+    } catch (error) {
       Toast.show({
         type: "error",
         text1: "Error",
