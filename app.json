@@ -16,13 +16,12 @@
 
     "newArchEnabled": true,
 
-    "backgroundColor": "#ffffff",
-
     "android": {
       "package": "com.codemine.cashy",
       "versionCode": 18,
       "version": "1.0.18",
       "softwareKeyboardLayoutMode": "pan",
+      "backgroundColor": "#0f172a",
 
       "adaptiveIcon": {
         "backgroundColor": "#02929a",
@@ -91,6 +90,5 @@
         "projectId": "428b74db-754f-4501-835c-69c5372d0bd3"
       }
     }
-
   }
 }
