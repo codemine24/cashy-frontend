@@ -9,7 +9,6 @@ import { Pressable, Text, View } from "react-native";
 import PagerView from "react-native-pager-view";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-// Import each screen directly — PagerView needs to render them side-by-side
 import WalletsScreen from "./index";
 import LoansScreen from "./loans";
 import StatisticsScreen from "./statistics";
@@ -35,7 +34,6 @@ const TABS = [
   },
 ] as const;
 
-// ─── Custom bottom tab bar ────────────────────────────────────────────────
 function BottomTabBar({
   activeIndex,
   onPress,
@@ -100,7 +98,6 @@ function BottomTabBar({
   );
 }
 
-// ─── Layout ───────────────────────────────────────────────────────────────
 export default function TabLayout() {
   const [activeIndex, setActiveIndex] = useState(0);
   const pagerRef = useRef<PagerView>(null);
@@ -109,8 +106,6 @@ export default function TabLayout() {
 
   const handleTabPress = useCallback((i: number) => {
     pagerRef.current?.setPage(i);
-    // setActiveIndex is updated by onPageSelected, not here,
-    // so rapid taps don't cause a visual jump.
   }, []);
 
   const handlePageSelected = useCallback((e: any) => {
@@ -135,7 +130,6 @@ export default function TabLayout() {
 
   return (
     <View style={{ flex: 1 }}>
-      {/* Shared header across all tabs */}
       {!isSettings && <TabHeader />}
 
       <PagerView

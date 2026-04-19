@@ -18,8 +18,8 @@
 
     "android": {
       "package": "com.codemine.cashy",
-      "versionCode": 18,
-      "version": "1.0.18",
+      "versionCode": 19,
+      "version": "1.0.19",
       "softwareKeyboardLayoutMode": "pan",
       "backgroundColor": "#0f172a",
 
