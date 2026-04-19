@@ -261,9 +261,6 @@ export default function CreateBorrowedScreen() {
                     <View
                       className={`flex-row items-center rounded-xl px-4 py-3.5 border-2 border-destructive/30 bg-destructive/10 ${form.formState.errors.amount ? "border-destructive" : ""}`}
                     >
-                      <Text className={`text-2xl font-bold text-destructive`}>
-                        $
-                      </Text>
                       <TextInput
                         value={value}
                         onChangeText={(text) => {

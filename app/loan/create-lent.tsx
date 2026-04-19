@@ -262,9 +262,6 @@ export default function CreateLentScreen() {
                     <View
                       className={`flex-row items-center rounded-xl px-4 py-3.5 border-2 border-green-600/30 bg-green-600/10 ${form.formState.errors.amount ? "border-destructive" : ""}`}
                     >
-                      <Text className={`text-2xl font-bold text-green-600`}>
-                        $
-                      </Text>
                       <TextInput
                         value={value}
                         onChangeText={(text) => {

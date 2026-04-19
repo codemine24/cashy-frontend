@@ -147,7 +147,10 @@ export default function SettingsScreen() {
             paddingBottom: 40,
           }}
         >
-          <View className="flex-row items-center gap-3 bg-card rounded-2xl border border-border px-4 py-4">
+          <TouchableOpacity
+            className="flex-row items-center gap-3 bg-card rounded-2xl border border-border px-4 py-4"
+            onPress={() => router.navigate("/settings/profile")}
+          >
             <Image
               source={{
                 uri:
@@ -167,7 +170,7 @@ export default function SettingsScreen() {
                 {authState?.user?.email || "N/A"}
               </Text>
             </View>
-          </View>
+          </TouchableOpacity>
 
           {!isPremium && <PremiumUpSellCard />}
 
