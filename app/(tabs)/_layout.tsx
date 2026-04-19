@@ -5,7 +5,7 @@ import { StatisticsIcon } from "@/icons/statistics-icon";
 import { WalletIcon } from "@/icons/wallet-icon";
 import { usePathname } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Platform, Pressable, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import PagerView from "react-native-pager-view";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -45,7 +45,7 @@ function BottomTabBar({
 }) {
   const { isDark } = useTheme();
   const insets = useSafeAreaInsets();
-  const pb = Platform.OS === "web" ? 12 : Math.max(insets.bottom, 8);
+  const pb = Math.max(insets.bottom, 8);
   const bg = isDark ? "rgb(15, 23, 42)" : "rgb(248, 250, 252)";
   const border = isDark ? "rgb(51, 65, 85)" : "rgb(226, 232, 240)";
 

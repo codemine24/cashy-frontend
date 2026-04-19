@@ -3,9 +3,8 @@ import { ScreenContainer } from "@/components/screen-container";
 import { languages, type LanguageCode } from "@/constants/onboarding";
 import { useAuth } from "@/context/auth-context";
 import { useTheme } from "@/context/theme-context";
-import { ChevronLeft } from "@/lib/icons";
+import { Check, ChevronDown, ChevronLeft, Globe, Moon, Sun } from "@/lib/icons";
 import { setUserInfo } from "@/utils/auth";
-import Feather from "@expo/vector-icons/Feather";
 import { Stack, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -41,17 +40,11 @@ function ThemeSelector({
   return (
     <View className="flex-row items-center py-4 gap-3">
       <View className="w-11 h-11 rounded-xl items-center justify-center mr-1 bg-violet-500/10">
-        <Feather
-          name={
-            selected === "DARK"
-              ? "moon"
-              : selected === "LIGHT"
-                ? "sun"
-                : "smartphone"
-          }
-          size={22}
-          color="#8b5cf6"
-        />
+        {selected === "DARK" ? (
+          <Moon size={22} color="#8b5cf6" />
+        ) : (
+          <Sun size={22} color="#8b5cf6" />
+        )}
       </View>
       <Text className="flex-1 text-base font-semibold text-foreground">
         {t("settings.theme")}
@@ -68,11 +61,11 @@ function ThemeSelector({
               activeOpacity={0.7}
               className={`px-3 py-2 ${isActive ? "bg-primary/15" : ""}`}
             >
-              <Feather
-                name={opt.icon as any}
-                size={16}
-                color={isActive ? "#8b5cf6" : "#9ca3af"}
-              />
+              {opt.value === "DARK" ? (
+                <Moon size={16} color={isActive ? "#8b5cf6" : "#9ca3af"} />
+              ) : (
+                <Sun size={16} color={isActive ? "#8b5cf6" : "#9ca3af"} />
+              )}
             </TouchableOpacity>
           );
         })}
@@ -98,7 +91,7 @@ function LanguageSelector({
   return (
     <View className="flex-row items-center py-4 gap-3">
       <View className="w-11 h-11 rounded-xl items-center justify-center mr-1 bg-blue-500/10">
-        <Feather name="globe" size={22} color="#3b82f6" />
+        <Globe size={22} color="#3b82f6" />
       </View>
       <Text className="flex-1 text-base font-semibold text-foreground">
         {t("settings.language")}
@@ -117,8 +110,7 @@ function LanguageSelector({
             <Text className="text-sm font-medium text-foreground flex-1 text-center">
               {selectedLanguage?.code.toUpperCase()}
             </Text>
-            <Feather
-              name="chevron-down"
+            <ChevronDown
               size={16}
               color="#9ca3af"
               style={{
@@ -167,7 +159,7 @@ function LanguageSelector({
                     {lang.nativeLabel}
                   </Text>
                 </View>
-                {isActive && <Feather name="check" size={16} color="#8b5cf6" />}
+                {isActive && <Check size={16} color="#8b5cf6" />}
               </TouchableOpacity>
             );
           })}

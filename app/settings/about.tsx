@@ -11,7 +11,8 @@ import {
   Users,
 } from "@/lib/icons";
 import { clearUserInfo, removeAccessToken } from "@/utils/auth";
-import { Stack, useFocusEffect, useRouter } from "expo-router";
+import { CommonActions } from "@react-navigation/native";
+import { Stack, useFocusEffect, useNavigation, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -74,6 +75,7 @@ function Divider() {
 // ─── Main screen ─────────────────────────────────────────────────────────
 export default function AboutScreen() {
   const router = useRouter();
+  const navigation = useNavigation();
   const { t } = useTranslation();
   const { setAuthState } = useAuth();
   const deleteAccountMutation = useDeleteUser();
@@ -106,7 +108,9 @@ export default function AboutScreen() {
       await removeAccessToken();
       await clearUserInfo();
       setAuthState({ isAuthenticated: false, user: null });
-      router.replace("/auth");
+      navigation.dispatch(
+        CommonActions.reset({ index: 0, routes: [{ name: "auth" }] }),
+      );
     } else {
       Toast.show({
         type: "error",

@@ -20,7 +20,6 @@ import {
   BackHandler,
   Image,
   KeyboardAvoidingView,
-  Platform,
   ScrollView,
   Text,
   TextInput,
@@ -160,7 +159,7 @@ export default function ProfileScreen() {
       />
       <ScreenContainer edges={["bottom"]} className="bg-background">
         <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          behavior="height"
           keyboardVerticalOffset={keyboardOffset}
           style={{ flex: 1 }}
         >

@@ -312,7 +312,6 @@ export default function BookDetailScreen() {
         await Sharing.shareAsync(downloadRes.uri, {
           mimeType: "application/pdf",
           dialogTitle: "Download Report",
-          UTI: "com.adobe.pdf",
         });
         setReportModalVisible(false);
       } else {

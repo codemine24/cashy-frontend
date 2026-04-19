@@ -5,105 +5,51 @@ import {
 } from "@/constants/auth";
 import { User } from "@/interface/user";
 import * as SecureStore from "expo-secure-store";
-import { Platform } from "react-native";
 
 export async function getAccessToken(): Promise<string | null> {
   try {
-    // Web platform uses cookie-based auth, no manual token management needed
-    if (Platform.OS === "web") {
-      return null;
-    }
-
-    // Use SecureStore for native
-    const token = await SecureStore.getItemAsync(ACCESS_TOKEN_KEY);
-    return token;
-  } catch (error) {
+    return await SecureStore.getItemAsync(ACCESS_TOKEN_KEY);
+  } catch {
     return null;
   }
 }
 
 export async function getRefreshToken(): Promise<string | null> {
   try {
-    // Web platform uses cookie-based auth, no manual token management needed
-    if (Platform.OS === "web") {
-      return null;
-    }
-
-    // Use SecureStore for native
-    const token = await SecureStore.getItemAsync(REFRESH_TOKEN_KEY);
-    return token;
-  } catch (error) {
+    return await SecureStore.getItemAsync(REFRESH_TOKEN_KEY);
+  } catch {
     return null;
   }
 }
 
 export async function setAccessToken(token: string): Promise<void> {
-  try {
-    // Web platform uses cookie-based auth, no manual token management needed
-    if (Platform.OS === "web") {
-      return;
-    }
-    await SecureStore.setItemAsync(ACCESS_TOKEN_KEY, token);
-  } catch (error) {
-    throw error;
-  }
+  await SecureStore.setItemAsync(ACCESS_TOKEN_KEY, token);
 }
 
 export async function removeAccessToken(): Promise<void> {
   try {
-    // Web platform uses cookie-based auth, logout is handled by server clearing cookie
-    if (Platform.OS === "web") {
-      return;
-    }
-
-    // Use SecureStore for native
     await SecureStore.deleteItemAsync(ACCESS_TOKEN_KEY);
-  } catch (error) {}
+  } catch {}
 }
 
 export async function getUserInfo(): Promise<User | null> {
   try {
-    let info: string | null = null;
-    if (Platform.OS === "web") {
-      // Use localStorage for web
-      info = window.localStorage.getItem(USER_INFO_KEY);
-    } else {
-      // Use SecureStore for native
-      info = await SecureStore.getItemAsync(USER_INFO_KEY);
-    }
-
-    if (!info) {
-      return null;
-    }
-    const user = JSON.parse(info);
-    return user;
-  } catch (error) {
+    const info = await SecureStore.getItemAsync(USER_INFO_KEY);
+    if (!info) return null;
+    return JSON.parse(info);
+  } catch {
     return null;
   }
 }
 
 export async function setUserInfo(user: User): Promise<void> {
   try {
-    if (Platform.OS === "web") {
-      // Use localStorage for web
-      window.localStorage.setItem(USER_INFO_KEY, JSON.stringify(user));
-      return;
-    }
-
-    // Use SecureStore for native
     await SecureStore.setItemAsync(USER_INFO_KEY, JSON.stringify(user));
-  } catch (error) {}
+  } catch {}
 }
 
 export async function clearUserInfo(): Promise<void> {
   try {
-    if (Platform.OS === "web") {
-      // Use localStorage for web
-      window.localStorage.removeItem(USER_INFO_KEY);
-      return;
-    }
-
-    // Use SecureStore for native
     await SecureStore.deleteItemAsync(USER_INFO_KEY);
-  } catch (error) {}
+  } catch {}
 }
