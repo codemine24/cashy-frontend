@@ -1,7 +1,7 @@
 import { useGetCategories } from "@/api/category";
 import { CategoryModal } from "@/components/category/category-modal";
 import { Button } from "@/components/ui/button";
-import { Check, Plus, Settings } from "@/lib/icons";
+import { Check, ChevronLeft, Plus, Settings } from "@/lib/icons";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -83,6 +83,14 @@ export default function SelectCategoryScreen() {
               }
             >
               <Settings size={22} className="text-foreground" />
+            </TouchableOpacity>
+          ),
+          headerLeft: () => (
+            <TouchableOpacity
+              onPress={() => router.navigate("/wallet/add-transaction")}
+              style={{ marginRight: 4 }}
+            >
+              <ChevronLeft size={26} className="text-foreground" />
             </TouchableOpacity>
           ),
         }}
