@@ -9,11 +9,12 @@ import { PasteIcon } from "@/icons/paste-icon";
 import { ChevronLeft } from "@/lib/icons";
 import { getAccessToken } from "@/utils/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "expo-router";
-import { useEffect, useRef, useState } from "react";
+import { useFocusEffect, useRouter } from "expo-router";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
   Animated,
+  BackHandler,
   Clipboard,
   Text,
   TextInput,
@@ -76,6 +77,22 @@ export default function AuthScreen() {
     };
     checkAuth();
   }, [authReady, authState.isAuthenticated, router]);
+
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        router.navigate(`/`);
+        return true;
+      };
+
+      const subscription = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress,
+      );
+
+      return () => subscription.remove();
+    }, [router]),
+  );
 
   if (!authReady) {
     return null;
@@ -202,8 +219,8 @@ export default function AuthScreen() {
         >
           <View className="mt-8">
             <H2 className="text-center">Welcome!</H2>
-            <Muted className="text-center mt-2 mb-6">
-              Login/ Signup to store your data securely.
+            <Muted className="text-center mt-2 mb-6 w-4/5 mx-auto">
+              Login / Signup to start using Cashy
             </Muted>
           </View>
 
