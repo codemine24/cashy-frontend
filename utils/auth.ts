@@ -1,11 +1,25 @@
 import {
   ACCESS_TOKEN_KEY,
-  REFRESH_TOKEN_KEY,
   USER_INFO_KEY,
 } from "@/constants/auth";
 import { User } from "@/interface/user";
 import * as SecureStore from "expo-secure-store";
 import { Platform } from "react-native";
+ 
+type AuthListener = () => void;
+let listeners: AuthListener[] = [];
+ 
+export function subscribeToAuthChanges(listener: AuthListener) {
+  listeners.push(listener);
+  return () => {
+    listeners = listeners.filter((l) => l !== listener);
+  };
+}
+ 
+function notifyAuthChanges() {
+  listeners.forEach((listener) => listener());
+}
+
 
 export async function getAccessToken(): Promise<string | null> {
   try {
@@ -17,25 +31,11 @@ export async function getAccessToken(): Promise<string | null> {
     // Use SecureStore for native
     const token = await SecureStore.getItemAsync(ACCESS_TOKEN_KEY);
     return token;
-  } catch (error) {
+  } catch {
     return null;
   }
 }
 
-export async function getRefreshToken(): Promise<string | null> {
-  try {
-    // Web platform uses cookie-based auth, no manual token management needed
-    if (Platform.OS === "web") {
-      return null;
-    }
-
-    // Use SecureStore for native
-    const token = await SecureStore.getItemAsync(REFRESH_TOKEN_KEY);
-    return token;
-  } catch (error) {
-    return null;
-  }
-}
 
 export async function setAccessToken(token: string): Promise<void> {
   try {
@@ -58,7 +58,10 @@ export async function removeAccessToken(): Promise<void> {
 
     // Use SecureStore for native
     await SecureStore.deleteItemAsync(ACCESS_TOKEN_KEY);
-  } catch (error) {}
+    notifyAuthChanges();
+  } catch {
+    notifyAuthChanges();
+  }
 }
 
 export async function getUserInfo(): Promise<User | null> {
@@ -77,7 +80,7 @@ export async function getUserInfo(): Promise<User | null> {
     }
     const user = JSON.parse(info);
     return user;
-  } catch (error) {
+  } catch {
     return null;
   }
 }
@@ -92,7 +95,7 @@ export async function setUserInfo(user: User): Promise<void> {
 
     // Use SecureStore for native
     await SecureStore.setItemAsync(USER_INFO_KEY, JSON.stringify(user));
-  } catch (error) {}
+  } catch {}
 }
 
 export async function clearUserInfo(): Promise<void> {
@@ -105,5 +108,5 @@ export async function clearUserInfo(): Promise<void> {
 
     // Use SecureStore for native
     await SecureStore.deleteItemAsync(USER_INFO_KEY);
-  } catch (error) {}
+  } catch {}
 }

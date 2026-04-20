@@ -4,9 +4,10 @@ import { InputError } from "@/components/ui/input-error";
 import { InputField } from "@/components/ui/input-field";
 import { H2, Muted } from "@/components/ui/typography";
 import { useAuth } from "@/context/auth-context";
-import { ChevronLeft } from "@/lib/icons";
 import { useTheme } from "@/context/theme-context";
 import { PasteIcon } from "@/icons/paste-icon";
+import { ChevronLeft } from "@/lib/icons";
+import { getAccessToken } from "@/utils/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
@@ -66,9 +67,14 @@ export default function AuthScreen() {
   const fadeAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
-    if (authReady && authState.isAuthenticated) {
-      router.replace("/(tabs)");
-    }
+    const checkAuth = async () => {
+      // Double check token in storage to avoid stale state redirect loop
+      const token = await getAccessToken();
+      if (authReady && authState.isAuthenticated && token) {
+        router.replace("/(tabs)");
+      }
+    };
+    checkAuth();
   }, [authReady, authState.isAuthenticated, router]);
 
   if (!authReady) {
@@ -175,7 +181,11 @@ export default function AuthScreen() {
     <SafeAreaView className="flex-1 bg-background">
       <View className="px-6 mt-4">
         <TouchableOpacity
-          onPress={step === "otp" ? () => animateToStep("email") : () => router.back()}
+          onPress={
+            step === "otp"
+              ? () => animateToStep("email")
+              : () => router.navigate("/")
+          }
           className="h-10 w-10 items-center justify-center rounded-full bg-muted"
         >
           <ChevronLeft size={26} className="text-foreground" />

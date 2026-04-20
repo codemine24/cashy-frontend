@@ -1,6 +1,6 @@
 import "@/i18n"; // ensure i18n is initialized
 import { User } from "@/interface/user";
-import { getAccessToken, getUserInfo } from "@/utils/auth";
+import { getAccessToken, getUserInfo, subscribeToAuthChanges } from "@/utils/auth";
 import i18n, { changeLanguage } from "i18next";
 import { createContext, useContext, useEffect, useState } from "react";
 
@@ -52,6 +52,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setAuthReady(true);
     }
     getAuthUser();
+  }, []);
+
+  // Listen for external logout events (e.g. from api-client on 401)
+  useEffect(() => {
+    const unsubscribe = subscribeToAuthChanges(() => {
+      setAuthState({
+        isAuthenticated: false,
+        user: null,
+      });
+    });
+    return () => unsubscribe();
   }, []);
 
   // Whenever authState changes (login, settings update), keep i18n in sync
