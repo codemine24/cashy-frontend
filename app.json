@@ -16,13 +16,12 @@
 
     "newArchEnabled": true,
 
-    "backgroundColor": "#ffffff",
-
     "android": {
       "package": "com.codemine.cashy",
-      "versionCode": 16,
-      "version": "1.0.16",
+      "versionCode": 20,
+      "version": "1.0.20",
       "softwareKeyboardLayoutMode": "pan",
+      "backgroundColor": "#0f172a",
 
       "adaptiveIcon": {
         "backgroundColor": "#02929a",
@@ -72,9 +71,8 @@
       [
         "@react-native-google-signin/google-signin",
         {
-          "iosUrl": "ios://bundle",
-          "iosUrlScheme": "com.googleusercontent.apps.68140526274-cbimppqqje5k18q1aqf4cqlng98ibi5b",
-          "androidUrl": "com.codemine.cashy"
+          "androidUrl": "com.codemine.cashy",
+          "iosUrlScheme": "com.googleusercontent.apps.unused-android-only"
         }
       ]
     ],
@@ -91,10 +89,6 @@
       "eas": {
         "projectId": "428b74db-754f-4501-835c-69c5372d0bd3"
       }
-    },
-
-    "ios": {
-      "bundleIdentifier": "com.codemine.cashy"
     }
   }
 }

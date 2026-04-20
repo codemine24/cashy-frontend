@@ -137,7 +137,6 @@ export default function StatisticsPage() {
         await Sharing.shareAsync(downloadRes.uri, {
           mimeType: "application/pdf",
           dialogTitle: "Download Report",
-          UTI: "com.adobe.pdf",
         });
       } else {
         Toast.show({

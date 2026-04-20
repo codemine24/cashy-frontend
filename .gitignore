@@ -53,3 +53,6 @@ android/app/build/
 /build/
 /dist/
 /claude/
+
+# Bun (using npm as primary package manager)
+bun.lock

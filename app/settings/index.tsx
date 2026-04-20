@@ -1,6 +1,7 @@
 import { ScreenContainer } from "@/components/screen-container";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
-import { Stack, useFocusEffect, useRouter } from "expo-router";
+import { CommonActions } from "@react-navigation/native";
+import { Stack, useFocusEffect, useNavigation, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -24,9 +25,9 @@ import {
   Settings,
   User,
 } from "@/lib/icons";
-import { clearUserInfo, removeAccessToken } from "@/utils/auth";
 import { makeImageUrl } from "@/utils/helper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { clearUserInfo, removeAccessToken } from "@/utils/auth";
 
 // ─── Reusable row component ───────────────────────────────────────────────
 function SettingsRow({
@@ -88,6 +89,7 @@ function Divider() {
 export default function SettingsScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const navigation = useNavigation();
   const { authState, setAuthState } = useAuth();
   const { t } = useTranslation();
   const { isPremium } = useIsPremium();
@@ -98,6 +100,9 @@ export default function SettingsScreen() {
     await removeAccessToken();
     await clearUserInfo();
     setAuthState({ isAuthenticated: false, user: null });
+    navigation.dispatch(
+      CommonActions.reset({ index: 0, routes: [{ name: "auth" }] }),
+    );
   };
 
   const handleLogoutConfirm = async () => {
@@ -147,7 +152,10 @@ export default function SettingsScreen() {
             paddingBottom: 40,
           }}
         >
-          <View className="flex-row items-center gap-3 bg-card rounded-2xl border border-border px-4 py-4">
+          <TouchableOpacity
+            className="flex-row items-center gap-3 bg-card rounded-2xl border border-border px-4 py-4"
+            onPress={() => router.navigate("/settings/profile")}
+          >
             <Image
               source={{
                 uri:
@@ -167,7 +175,7 @@ export default function SettingsScreen() {
                 {authState?.user?.email || "N/A"}
               </Text>
             </View>
-          </View>
+          </TouchableOpacity>
 
           {!isPremium && <PremiumUpSellCard />}
 

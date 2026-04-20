@@ -17,7 +17,7 @@ import {
   BackHandler,
   InteractionManager,
   KeyboardAvoidingView,
-  Platform,
+
   ScrollView,
   Text,
   TextInput,
@@ -204,7 +204,7 @@ export default function CreateBorrowedScreen() {
         }}
       />
       <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        behavior="height"
         keyboardVerticalOffset={keyboardOffset}
         style={{ flex: 1 }}
       >
@@ -261,9 +261,6 @@ export default function CreateBorrowedScreen() {
                     <View
                       className={`flex-row items-center rounded-xl px-4 py-3.5 border-2 border-destructive/30 bg-destructive/10 ${form.formState.errors.amount ? "border-destructive" : ""}`}
                     >
-                      <Text className={`text-2xl font-bold text-destructive`}>
-                        $
-                      </Text>
                       <TextInput
                         value={value}
                         onChangeText={(text) => {

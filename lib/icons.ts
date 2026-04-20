@@ -25,6 +25,7 @@ import {
     Mail,
     Menu,
     MessageSquare,
+    Moon,
     MoreVertical,
     Paperclip,
     Plus,
@@ -33,6 +34,7 @@ import {
     Share,
     Share2,
     ShieldCheck,
+    Sun,
     Tag,
     Target,
     Trash2,
@@ -44,10 +46,6 @@ import {
 } from "lucide-react-native";
 import { cssInterop } from "nativewind";
 
-/**
- * Apply NativeWind's cssInterop to Lucide icons so that they respect
- * className for color, width, and height.
- */
 function interopIcon(icon: any) {
   cssInterop(icon, {
     className: {
@@ -61,7 +59,6 @@ function interopIcon(icon: any) {
   });
 }
 
-// Register every icon used in the app
 interopIcon(ArrowLeft);
 interopIcon(ArrowRight);
 interopIcon(Check);
@@ -70,7 +67,9 @@ interopIcon(ChevronDown);
 interopIcon(ChevronRight);
 interopIcon(ChevronLeft);
 interopIcon(Mail);
+interopIcon(Moon);
 interopIcon(ShieldCheck);
+interopIcon(Sun);
 interopIcon(X);
 interopIcon(Plus);
 interopIcon(ArrowUpDown);
@@ -105,7 +104,6 @@ interopIcon(Wallet);
 interopIcon(Menu);
 interopIcon(Crown);
 
-// Re-export so the rest of the app imports from here
 export {
     ArrowLeft,
     ArrowRight,
@@ -133,6 +131,7 @@ export {
     Mail,
     Menu,
     MessageSquare,
+    Moon,
     MoreVertical,
     Paperclip,
     Plus,
@@ -141,6 +140,7 @@ export {
     Share,
     Share2,
     ShieldCheck,
+    Sun,
     Tag,
     Target,
     Trash2,
@@ -148,6 +148,5 @@ export {
     UserPlus,
     Users,
     Wallet,
-    X
+    X,
 };
-

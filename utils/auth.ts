@@ -1,25 +1,21 @@
-import {
-  ACCESS_TOKEN_KEY,
-  USER_INFO_KEY,
-} from "@/constants/auth";
+import { ACCESS_TOKEN_KEY, USER_INFO_KEY } from "@/constants/auth";
 import { User } from "@/interface/user";
 import * as SecureStore from "expo-secure-store";
 import { Platform } from "react-native";
- 
+
 type AuthListener = () => void;
 let listeners: AuthListener[] = [];
- 
+
 export function subscribeToAuthChanges(listener: AuthListener) {
   listeners.push(listener);
   return () => {
     listeners = listeners.filter((l) => l !== listener);
   };
 }
- 
+
 function notifyAuthChanges() {
   listeners.forEach((listener) => listener());
 }
-
 
 export async function getAccessToken(): Promise<string | null> {
   try {
@@ -35,7 +31,6 @@ export async function getAccessToken(): Promise<string | null> {
     return null;
   }
 }
-
 
 export async function setAccessToken(token: string): Promise<void> {
   try {

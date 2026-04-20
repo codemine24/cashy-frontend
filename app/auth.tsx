@@ -94,6 +94,13 @@ export default function AuthScreen() {
     }, [router]),
   );
 
+  useFocusEffect(
+    useCallback(() => {
+      const sub = BackHandler.addEventListener("hardwareBackPress", () => true);
+      return () => sub.remove();
+    }, []),
+  );
+
   if (!authReady) {
     return null;
   }

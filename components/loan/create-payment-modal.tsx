@@ -1,9 +1,9 @@
 import { useAddPayment, useUpdatePayment } from "@/api/loan";
+import { LoanPayment } from "@/interface/loan";
 import React, { useRef, useState } from "react";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
 import { BottomSheetModal } from "../bottom-sheet-modal";
-import { LoanPayment } from "@/interface/loan";
 
 interface CreatePaymentModalProps {
   visible: boolean;
@@ -45,7 +45,11 @@ export function CreatePaymentModal({
   }, [visible]);
 
   const handleAction = async () => {
-    if (!amount.trim() || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
+    if (
+      !amount.trim() ||
+      isNaN(parseFloat(amount)) ||
+      parseFloat(amount) <= 0
+    ) {
       Toast.show({
         type: "error",
         text1: "Please enter a valid amount",
@@ -56,7 +60,7 @@ export function CreatePaymentModal({
     const isEdit = !!editPayment;
     try {
       let response: any;
-      
+
       if (isEdit) {
         response = await updatePaymentMutation.mutateAsync({
           payment_id: editPayment.id,
@@ -75,7 +79,8 @@ export function CreatePaymentModal({
         Toast.show({
           type: "success",
           text1: "Success",
-          text2: response?.message || (isEdit ? "Payment updated" : "Payment added"),
+          text2:
+            response?.message || (isEdit ? "Payment updated" : "Payment added"),
         });
         handleClose();
       } else {
@@ -124,7 +129,6 @@ export function CreatePaymentModal({
           Enter Amount
         </Text>
         <View className="flex-row items-center bg-surface rounded-lg px-4 py-3 border border-border text-foreground mb-3">
-          <Text className="text-xl font-bold text-primary mr-2">$</Text>
           <TextInput
             ref={amountInputRef}
             value={amount}
@@ -140,7 +144,7 @@ export function CreatePaymentModal({
 
         {/* Remark input */}
         <Text className="text-sm font-normal text-foreground mb-2">
-          Add a note (Optional)
+          Add a Note (Optional)
         </Text>
         <TextInput
           value={remark}
