@@ -9,7 +9,7 @@ import { PasteIcon } from "@/icons/paste-icon";
 import { ChevronLeft } from "@/lib/icons";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
   Animated,
@@ -65,6 +65,17 @@ export default function AuthScreen() {
 
   const slideAnim = useRef(new Animated.Value(0)).current;
   const fadeAnim = useRef(new Animated.Value(1)).current;
+  const otpInputRef = useRef<TextInput>(null);
+
+  useEffect(() => {
+    if (step === "otp") {
+      // Small delay to ensure the view is visible before focusing
+      const timer = setTimeout(() => {
+        otpInputRef.current?.focus();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [step]);
 
 
   useFocusEffect(
@@ -270,6 +281,7 @@ export default function AuthScreen() {
                   className={`flex-row items-center border rounded-xl ${otpForm.formState.errors.otp ? "border-destructive" : "border-border"}`}
                 >
                   <TextInput
+                    ref={otpInputRef}
                     value={value}
                     onChangeText={onChange}
                     onBlur={onBlur}
