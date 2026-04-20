@@ -7,10 +7,9 @@ import { useAuth } from "@/context/auth-context";
 import { useTheme } from "@/context/theme-context";
 import { PasteIcon } from "@/icons/paste-icon";
 import { ChevronLeft } from "@/lib/icons";
-import { getAccessToken } from "@/utils/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
   Animated,
@@ -61,22 +60,12 @@ export default function AuthScreen() {
 
   const sentOtpMutation = useSendOtp();
   const verifyOtpMutation = useVerifyOtp();
-  const { setAuthState, authState, authReady } = useAuth();
+  const { setAuthState, authReady } = useAuth();
   const { applyUserTheme } = useTheme();
 
   const slideAnim = useRef(new Animated.Value(0)).current;
   const fadeAnim = useRef(new Animated.Value(1)).current;
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      // Double check token in storage to avoid stale state redirect loop
-      const token = await getAccessToken();
-      if (authReady && authState.isAuthenticated && token) {
-        router.replace("/(tabs)");
-      }
-    };
-    checkAuth();
-  }, [authReady, authState.isAuthenticated, router]);
 
   useFocusEffect(
     useCallback(() => {
