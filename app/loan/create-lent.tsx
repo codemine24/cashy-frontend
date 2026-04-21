@@ -189,7 +189,7 @@ export default function CreateLentScreen() {
   );
 
   return (
-    <>
+    <View style={{ flex: 1 }}>
       <Stack.Screen
         options={{
           headerShown: true,
@@ -334,6 +334,6 @@ export default function CreateLentScreen() {
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
-    </>
+    </View>
   );
 }

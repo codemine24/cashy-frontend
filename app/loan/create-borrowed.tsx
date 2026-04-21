@@ -188,7 +188,7 @@ export default function CreateBorrowedScreen() {
   );
 
   return (
-    <>
+    <View style={{ flex: 1 }}>
       <Stack.Screen
         options={{
           headerShown: true,
@@ -333,6 +333,6 @@ export default function CreateBorrowedScreen() {
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
-    </>
+    </View>
   );
 }
