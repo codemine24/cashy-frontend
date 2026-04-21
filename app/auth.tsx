@@ -4,9 +4,9 @@ import { InputError } from "@/components/ui/input-error";
 import { InputField } from "@/components/ui/input-field";
 import { H2, Muted } from "@/components/ui/typography";
 import { useAuth } from "@/context/auth-context";
-import { ChevronLeft } from "@/lib/icons";
 import { useTheme } from "@/context/theme-context";
 import { PasteIcon } from "@/icons/paste-icon";
+import { ChevronLeft } from "@/lib/icons";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -60,17 +60,39 @@ export default function AuthScreen() {
 
   const sentOtpMutation = useSendOtp();
   const verifyOtpMutation = useVerifyOtp();
-  const { setAuthState, authState, authReady } = useAuth();
+  const { setAuthState, authReady } = useAuth();
   const { applyUserTheme } = useTheme();
 
   const slideAnim = useRef(new Animated.Value(0)).current;
   const fadeAnim = useRef(new Animated.Value(1)).current;
+  const otpInputRef = useRef<TextInput>(null);
 
   useEffect(() => {
-    if (authReady && authState.isAuthenticated) {
-      router.replace("/(tabs)");
+    if (step === "otp") {
+      // Small delay to ensure the view is visible before focusing
+      const timer = setTimeout(() => {
+        otpInputRef.current?.focus();
+      }, 100);
+      return () => clearTimeout(timer);
     }
-  }, [authReady, authState.isAuthenticated, router]);
+  }, [step]);
+
+
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        router.navigate(`/`);
+        return true;
+      };
+
+      const subscription = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress,
+      );
+
+      return () => subscription.remove();
+    }, [router]),
+  );
 
   useFocusEffect(
     useCallback(() => {
@@ -183,7 +205,11 @@ export default function AuthScreen() {
     <SafeAreaView className="flex-1 bg-background">
       <View className="px-6 mt-4">
         <TouchableOpacity
-          onPress={step === "otp" ? () => animateToStep("email") : () => router.back()}
+          onPress={
+            step === "otp"
+              ? () => animateToStep("email")
+              : () => router.navigate("/")
+          }
           className="h-10 w-10 items-center justify-center rounded-full bg-muted"
         >
           <ChevronLeft size={26} className="text-foreground" />
@@ -200,8 +226,8 @@ export default function AuthScreen() {
         >
           <View className="mt-8">
             <H2 className="text-center">Welcome!</H2>
-            <Muted className="text-center mt-2 mb-6">
-              Login/ Signup to store your data securely.
+            <Muted className="text-center mt-2 mb-6 w-4/5 mx-auto">
+              Login / Signup to start using Cashy
             </Muted>
           </View>
 
@@ -262,6 +288,7 @@ export default function AuthScreen() {
                   className={`flex-row items-center border rounded-xl ${otpForm.formState.errors.otp ? "border-destructive" : "border-border"}`}
                 >
                   <TextInput
+                    ref={otpInputRef}
                     value={value}
                     onChangeText={onChange}
                     onBlur={onBlur}

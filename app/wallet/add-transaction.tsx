@@ -449,6 +449,7 @@ export default function AddTransactionScreen() {
                       pathname: "/wallet/select-category",
                       params: {
                         bookId: bookId,
+                        type: type,
                         currentSelectedId: selectedCategory,
                         currentAmount: amount,
                         currentRemark: remark,

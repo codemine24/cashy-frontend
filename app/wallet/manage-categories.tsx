@@ -2,14 +2,22 @@ import { useDeleteCategory, useGetCategories } from "@/api/category";
 import { CategoryModal } from "@/components/category/category-modal";
 import { ManageCategoriesSkeleton } from "@/components/skeletons/manage-categories-skeleton";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
-import { Edit3, MoreVertical, Trash2 } from "@/lib/icons";
-import { Stack } from "expo-router";
-import React, { useState } from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { ChevronLeft, Edit3, MoreVertical, Trash2 } from "@/lib/icons";
+import { Stack, useFocusEffect, useRouter } from "expo-router";
+import React, { useCallback, useState } from "react";
+import {
+  BackHandler,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import Popover from "react-native-popover-view";
 import Toast from "react-native-toast-message";
 
 export default function ManageCategoriesScreen() {
+  const router = useRouter();
+
   // Modals & Forms State
   const [modalVisible, setModalVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -70,6 +78,22 @@ export default function ManageCategoriesScreen() {
     setModalVisible(false);
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        router.navigate("/wallet/select-category");
+        return true;
+      };
+
+      const subscription = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress,
+      );
+
+      return () => subscription.remove();
+    }, [router]),
+  );
+
   return (
     <>
       <Stack.Screen
@@ -77,6 +101,14 @@ export default function ManageCategoriesScreen() {
           headerShown: true,
           title: "Manage Categories",
           headerBackTitle: "Back",
+          headerLeft: () => (
+            <TouchableOpacity
+              onPress={() => router.navigate("/wallet/select-category")}
+              style={{ marginRight: 4 }}
+            >
+              <ChevronLeft size={26} className="text-foreground" />
+            </TouchableOpacity>
+          ),
         }}
       />
       <View className="flex-1 bg-background">

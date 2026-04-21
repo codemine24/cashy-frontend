@@ -36,7 +36,7 @@ export default function WelcomeScreen() {
           onPress={() => {
             try {
               console.log("Navigating to login-type");
-              router.push("/auth");
+              router.replace("/auth");
             } catch (error) {
               console.error("Navigation error:", error);
             }

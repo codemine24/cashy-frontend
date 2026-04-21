@@ -25,9 +25,9 @@ import {
   Settings,
   User,
 } from "@/lib/icons";
-import { clearUserInfo, removeAccessToken } from "@/utils/auth";
 import { makeImageUrl } from "@/utils/helper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { clearUserInfo, removeAccessToken } from "@/utils/auth";
 
 // ─── Reusable row component ───────────────────────────────────────────────
 function SettingsRow({
@@ -96,6 +96,7 @@ export default function SettingsScreen() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const handleLogout = async () => {
+    router.navigate("/auth");
     await removeAccessToken();
     await clearUserInfo();
     setAuthState({ isAuthenticated: false, user: null });
