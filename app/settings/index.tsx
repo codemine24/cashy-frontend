@@ -100,7 +100,7 @@ export default function SettingsScreen() {
     await clearUserInfo();
     setAuthState({ isAuthenticated: false, user: null });
     navigation.dispatch(
-      CommonActions.reset({ index: 0, routes: [{ name: "auth" }] }),
+      CommonActions.reset({ index: 0, routes: [{ name: "login-type" }] }),
     );
   };
 
