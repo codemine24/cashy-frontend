@@ -61,7 +61,8 @@
     "privacyPolicy": "প্রাইভেসি",
     "termsAndConditions": "ব্যবহার বিধি",
     "aboutUs": "আমাদের সম্পর্কে",
-    "profileInfo": "নাম, ছবি, ইমেইল"
+    "profileInfo": "নাম, ছবি, ইমেইল",
+    "deleteAccount": "অ্যাকাউন্ট ডিলিট"
   },
   "auth": {
     "welcome": "স্বাগতম!",
