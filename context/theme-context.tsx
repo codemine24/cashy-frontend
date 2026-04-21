@@ -1,8 +1,15 @@
 import { themes, type ThemeName } from "@/constants/themes";
 import { getUserInfo } from "@/utils/auth";
 import { useColorScheme } from "nativewind";
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { Appearance, StyleProp, View, ViewStyle } from "react-native";
+import React, {
+    createContext,
+    useCallback,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
+} from "react";
+import { StyleProp, View, ViewStyle } from "react-native";
 
 // ─── Context type ────────────────────────────────────────────────────
 interface ThemeContextValue {
@@ -79,21 +86,29 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
       themeVars,
       applyUserTheme,
     }),
-    [themeName, resolvedScheme, toggleColorScheme, setColorScheme, themeVars, applyUserTheme],
+    [
+      themeName,
+      resolvedScheme,
+      toggleColorScheme,
+      setColorScheme,
+      themeVars,
+      applyUserTheme,
+    ],
   );
 
   return (
-    <ThemeContext.Provider value={value}>
-      {children}
-    </ThemeContext.Provider>
+    <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
   );
-}
+};
 
 // ─── Wrapper that applies CSS vars (place INSIDE navigation tree) ───
 export function ThemeVarsProvider({ children }: { children: React.ReactNode }) {
-  const { themeVars } = useTheme();
+  const { themeVars, isDark } = useTheme();
   return (
-    <View style={themeVars} className="flex-1">
+    <View
+      style={[themeVars, { backgroundColor: isDark ? "#0f172a" : "#f8fafc" }]}
+      className="flex-1"
+    >
       {children}
     </View>
   );

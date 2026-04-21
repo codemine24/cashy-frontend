@@ -5,11 +5,10 @@ import { StatisticsIcon } from "@/icons/statistics-icon";
 import { WalletIcon } from "@/icons/wallet-icon";
 import { usePathname } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Platform, Pressable, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import PagerView from "react-native-pager-view";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-// Import each screen directly — PagerView needs to render them side-by-side
 import WalletsScreen from "./index";
 import LoansScreen from "./loans";
 import StatisticsScreen from "./statistics";
@@ -35,7 +34,6 @@ const TABS = [
   },
 ] as const;
 
-// ─── Custom bottom tab bar ────────────────────────────────────────────────
 function BottomTabBar({
   activeIndex,
   onPress,
@@ -45,7 +43,7 @@ function BottomTabBar({
 }) {
   const { isDark } = useTheme();
   const insets = useSafeAreaInsets();
-  const pb = Platform.OS === "web" ? 12 : Math.max(insets.bottom, 8);
+  const pb = Math.max(insets.bottom, 8);
   const bg = isDark ? "rgb(15, 23, 42)" : "rgb(248, 250, 252)";
   const border = isDark ? "rgb(51, 65, 85)" : "rgb(226, 232, 240)";
 
@@ -100,7 +98,6 @@ function BottomTabBar({
   );
 }
 
-// ─── Layout ───────────────────────────────────────────────────────────────
 export default function TabLayout() {
   const [activeIndex, setActiveIndex] = useState(0);
   const pagerRef = useRef<PagerView>(null);
@@ -109,8 +106,6 @@ export default function TabLayout() {
 
   const handleTabPress = useCallback((i: number) => {
     pagerRef.current?.setPage(i);
-    // setActiveIndex is updated by onPageSelected, not here,
-    // so rapid taps don't cause a visual jump.
   }, []);
 
   const handlePageSelected = useCallback((e: any) => {
@@ -135,7 +130,6 @@ export default function TabLayout() {
 
   return (
     <View style={{ flex: 1 }}>
-      {/* Shared header across all tabs */}
       {!isSettings && <TabHeader />}
 
       <PagerView

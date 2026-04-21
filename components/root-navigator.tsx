@@ -15,7 +15,10 @@ export const RootNavigator = () => {
 
   return (
     <NavThemeProvider value={isDark ? DarkTheme : DefaultTheme}>
-      <View className="flex-1 bg-background">
+      <View
+        className={`flex-1 bg-background${isDark ? " dark" : ""}`}
+        style={{ backgroundColor: isDark ? "#0f172a" : "#f8fafc" }}
+      >
         <StatusBar
           style={isDark ? "light" : "dark"}
           translucent={false}
@@ -30,13 +33,17 @@ export const RootNavigator = () => {
                   headerBackTitle: "Back",
                   headerShadowVisible: false,
                   headerStyle: {
-                    backgroundColor: "transparent",
+                    backgroundColor: isDark ? "#0f172a" : "#f8fafc",
                   },
                   headerTintColor: isDark ? "#f8fafc" : "#111827",
                   headerTitleStyle: { fontSize: 17, fontWeight: "600" },
                   contentStyle: {
-                    backgroundColor: "transparent",
+                    backgroundColor: isDark ? "#0f172a" : "#f8fafc",
                   },
+                  animationTypeForReplace: "push",
+                  gestureEnabled: true,
+                  gestureDirection: "horizontal",
+                  presentation: "card",
                 }}
               >
                 <Stack.Screen
@@ -59,7 +66,7 @@ export const RootNavigator = () => {
                   name="auth"
                   options={{
                     contentStyle: {
-                      backgroundColor: "transparent",
+                      backgroundColor: isDark ? "#0f172a" : "#f8fafc",
                     },
                   }}
                 />
@@ -75,6 +82,9 @@ export const RootNavigator = () => {
                   name="wallet/[id]"
                   options={{
                     headerShown: true,
+                    headerStyle: {
+                      backgroundColor: isDark ? "#0f172a" : "#f8fafc",
+                    },
                     contentStyle: {
                       backgroundColor: isDark ? "#0f172a" : "#f8fafc",
                     },
@@ -84,6 +94,9 @@ export const RootNavigator = () => {
                   name="wallet/members"
                   options={{
                     headerShown: true,
+                    headerStyle: {
+                      backgroundColor: isDark ? "#0f172a" : "#f8fafc",
+                    },
                     contentStyle: {
                       backgroundColor: isDark ? "#0f172a" : "#f8fafc",
                     },
@@ -93,6 +106,9 @@ export const RootNavigator = () => {
                   name="wallet/select-category"
                   options={{
                     headerShown: true,
+                    headerStyle: {
+                      backgroundColor: isDark ? "#0f172a" : "#f8fafc",
+                    },
                     contentStyle: {
                       backgroundColor: isDark ? "#0f172a" : "#f8fafc",
                     },
@@ -102,6 +118,9 @@ export const RootNavigator = () => {
                   name="wallet/manage-categories"
                   options={{
                     headerShown: true,
+                    headerStyle: {
+                      backgroundColor: isDark ? "#0f172a" : "#f8fafc",
+                    },
                     contentStyle: {
                       backgroundColor: isDark ? "#0f172a" : "#f8fafc",
                     },
@@ -111,6 +130,9 @@ export const RootNavigator = () => {
                   name="wallet/transaction-detail"
                   options={{
                     headerShown: true,
+                    headerStyle: {
+                      backgroundColor: isDark ? "#0f172a" : "#f8fafc",
+                    },
                     contentStyle: {
                       backgroundColor: isDark ? "#0f172a" : "#f8fafc",
                     },
@@ -120,6 +142,9 @@ export const RootNavigator = () => {
                   name="wallet/add-transaction"
                   options={{
                     headerShown: true,
+                    headerStyle: {
+                      backgroundColor: isDark ? "#0f172a" : "#f8fafc",
+                    },
                     contentStyle: {
                       backgroundColor: isDark ? "#0f172a" : "#f8fafc",
                     },
@@ -137,6 +162,9 @@ export const RootNavigator = () => {
                   name="wallet/search-transactions"
                   options={{
                     headerShown: true,
+                    headerStyle: {
+                      backgroundColor: isDark ? "#0f172a" : "#f8fafc",
+                    },
                     contentStyle: {
                       backgroundColor: isDark ? "#0f172a" : "#f8fafc",
                     },
@@ -146,6 +174,9 @@ export const RootNavigator = () => {
                   name="loan/[id]"
                   options={{
                     headerShown: true,
+                    headerStyle: {
+                      backgroundColor: isDark ? "#0f172a" : "#f8fafc",
+                    },
                     contentStyle: {
                       backgroundColor: isDark ? "#0f172a" : "#f8fafc",
                     },

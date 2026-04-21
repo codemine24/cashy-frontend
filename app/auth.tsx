@@ -8,11 +8,12 @@ import { ChevronLeft } from "@/lib/icons";
 import { useTheme } from "@/context/theme-context";
 import { PasteIcon } from "@/icons/paste-icon";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "expo-router";
-import { useEffect, useRef, useState } from "react";
+import { useFocusEffect, useRouter } from "expo-router";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
   Animated,
+  BackHandler,
   Clipboard,
   Text,
   TextInput,
@@ -70,6 +71,13 @@ export default function AuthScreen() {
       router.replace("/(tabs)");
     }
   }, [authReady, authState.isAuthenticated, router]);
+
+  useFocusEffect(
+    useCallback(() => {
+      const sub = BackHandler.addEventListener("hardwareBackPress", () => true);
+      return () => sub.remove();
+    }, []),
+  );
 
   if (!authReady) {
     return null;

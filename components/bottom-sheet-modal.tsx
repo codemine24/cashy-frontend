@@ -5,7 +5,6 @@ import {
   KeyboardAvoidingView,
   ModalProps,
   Modal as RNModal,
-  Platform,
   TouchableOpacity,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -88,9 +87,9 @@ export function BottomSheetModal({
       </Animated.View>
 
       <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        behavior="height"
         style={{ flex: 1, justifyContent: "flex-end" }}
-        keyboardVerticalOffset={Platform.OS === "ios" ? insets.top : 0}
+        keyboardVerticalOffset={0}
       >
         <Animated.View
           className="bg-background rounded-t-3xl"

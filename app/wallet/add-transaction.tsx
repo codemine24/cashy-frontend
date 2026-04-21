@@ -22,7 +22,7 @@ import {
     Image,
     InteractionManager,
     KeyboardAvoidingView,
-    Platform,
+
     ScrollView,
     Text,
     TextInput,
@@ -384,7 +384,7 @@ export default function AddTransactionScreen() {
         }}
       />
       <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        behavior="height"
         keyboardVerticalOffset={keyboardOffset}
         style={{ flex: 1 }}
       >

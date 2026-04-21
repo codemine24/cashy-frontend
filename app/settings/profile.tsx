@@ -1,23 +1,25 @@
 import { useUpdateProfile } from "@/api/user";
 import { ScreenContainer } from "@/components/screen-container";
+import { InputError } from "@/components/ui/input-error";
 import { useAuth } from "@/context/auth-context";
 import { useKeyboardVisible } from "@/hooks/use-keyboard-visible";
 import { useKeyboardOffset } from "@/hooks/useKeyboardOffset";
 import { ChevronLeft } from "@/lib/icons";
 import { setUserInfo } from "@/utils/auth";
 import { makeImageUrl } from "@/utils/helper";
+import { zodResolver } from "@hookform/resolvers/zod";
 import type { ImagePickerAsset } from "expo-image-picker";
 import * as ImagePicker from "expo-image-picker";
 import { Stack, useFocusEffect, useRouter } from "expo-router";
 import { Camera, User } from "lucide-react-native";
 import { useCallback, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import {
   Alert,
   BackHandler,
   Image,
   KeyboardAvoidingView,
-  Platform,
   ScrollView,
   Text,
   TextInput,
@@ -25,6 +27,16 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import * as z from "zod";
+
+const profileSchema = z.object({
+  name: z
+    .string()
+    .min(1, "Name is required")
+    .max(50, "Name must be at most 50 characters"),
+});
+
+type ProfileFormValues = z.infer<typeof profileSchema>;
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -32,11 +44,6 @@ export default function ProfileScreen() {
   const { t } = useTranslation();
   const user = authState.user;
 
-  const [name, setName] = useState(user?.name ?? "");
-  const [contactNumber, setContactNumber] = useState(
-    user?.contact_number ?? "",
-  );
-  const email = user?.email ?? "";
   const [avatarUri, setAvatarUri] = useState<string>(
     makeImageUrl(user?.avatar, "user"),
   );
@@ -45,6 +52,14 @@ export default function ProfileScreen() {
   const keyboardOffset = useKeyboardOffset();
   const isKeyboardVisible = useKeyboardVisible();
   const { mutate: updateProfile, isPending: isSaving } = useUpdateProfile();
+
+  const form = useForm<ProfileFormValues>({
+    resolver: zodResolver(profileSchema),
+    defaultValues: {
+      name: user?.name ?? "",
+    },
+    mode: "onBlur",
+  });
 
   const handlePickAvatar = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -69,15 +84,9 @@ export default function ProfileScreen() {
     }
   };
 
-  const handleSave = () => {
-    if (!name.trim()) {
-      Alert.alert("Error", "Name cannot be empty");
-      return;
-    }
-
+  const handleSave = (data: ProfileFormValues) => {
     const payload: Parameters<typeof updateProfile>[0] = {
-      name,
-      contact_number: contactNumber,
+      name: data.name,
     };
 
     if (pickedAsset) {
@@ -93,7 +102,6 @@ export default function ProfileScreen() {
     updateProfile(payload, {
       onSuccess: (data) => {
         if (!authState.user) return;
-
         setAuthState({
           ...authState,
           user: {
@@ -110,8 +118,9 @@ export default function ProfileScreen() {
           avatar: data.data.avatar,
         });
         Alert.alert("Saved", "Your profile has been updated.");
+        router.push("/settings");
       },
-      onError: (error) => {
+      onError: () => {
         Alert.alert("Error", "Failed to update profile. Please try again.");
       },
     });
@@ -150,7 +159,7 @@ export default function ProfileScreen() {
       />
       <ScreenContainer edges={["bottom"]} className="bg-background">
         <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          behavior="height"
           keyboardVerticalOffset={keyboardOffset}
           style={{ flex: 1 }}
         >
@@ -178,7 +187,7 @@ export default function ProfileScreen() {
                         resizeMode="cover"
                       />
                     ) : (
-                      <User size={44} /> // TODO: color={colors.muted}
+                      <User size={44} />
                     )}
                   </View>
                   <TouchableOpacity
@@ -193,40 +202,34 @@ export default function ProfileScreen() {
                 </Text>
               </View>
 
-              {/* ── Name (editable) ── */}
+              {/* ── Fields ── */}
               <Text className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-3 px-1">
                 {t("profile.accountInfo")}
               </Text>
               <View className="bg-card rounded-2xl border border-border px-4 mb-6">
+                {/* Name */}
                 <View className="pt-4 border-b border-border">
                   <Text className="text-xs text-muted-foreground mb-1">
                     {t("profile.fullName")}
                   </Text>
-                  <TextInput
-                    value={name}
-                    onChangeText={setName}
-                    placeholder="Enter your name"
-                    placeholderTextColor="#9CA3AF"
-                    className="text-base text-foreground"
+                  <Controller
+                    control={form.control}
+                    name="name"
+                    render={({ field: { onChange, onBlur, value } }) => (
+                      <TextInput
+                        value={value}
+                        onChangeText={onChange}
+                        onBlur={onBlur}
+                        placeholder="Enter your name"
+                        placeholderTextColor="#9CA3AF"
+                        className="text-base text-foreground pb-3"
+                      />
+                    )}
                   />
+                  <InputError error={form.formState.errors.name?.message} />
                 </View>
 
-                {/* ── Contact Number (editable) ── */}
-                <View className="pt-4 border-b border-border">
-                  <Text className="text-xs text-muted-foreground mb-1">
-                    {t("profile.contactNumber")}
-                  </Text>
-                  <TextInput
-                    value={contactNumber}
-                    onChangeText={setContactNumber}
-                    placeholder="Enter your contact number"
-                    placeholderTextColor="#9CA3AF"
-                    className="text-base text-foreground"
-                    keyboardType="phone-pad"
-                  />
-                </View>
-
-                {/* ── Email (locked) ── */}
+                {/* Email (locked) */}
                 <View className="py-4 border-b border-border">
                   <View className="flex-row items-center gap-2 mb-1">
                     <Text className="text-xs text-muted-foreground">
@@ -238,7 +241,9 @@ export default function ProfileScreen() {
                       </Text>
                     </View>
                   </View>
-                  <Text className="text-base text-foreground">{email}</Text>
+                  <Text className="text-base text-foreground">
+                    {user?.email ?? ""}
+                  </Text>
                 </View>
               </View>
 
@@ -256,7 +261,7 @@ export default function ProfileScreen() {
             }}
           >
             <TouchableOpacity
-              onPress={handleSave}
+              onPress={form.handleSubmit(handleSave)}
               disabled={isSaving}
               className={`rounded-2xl py-4 items-center justify-center ${
                 isSaving ? "bg-primary/50" : "bg-primary"

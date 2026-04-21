@@ -165,9 +165,9 @@ export default function HomeScreen() {
           refreshControl={<RefreshControl {...refreshControlProps} />}
           contentContainerStyle={{ flexGrow: 1 }}
         >
-          {/* Search Input */}
+          {/* Search Input and filter icon */}
           <View className="relative flex-row items-center gap-2">
-            <View className="flex-row items-center bg-white rounded-xl px-3 border border-border flex-1">
+            <View className="flex-row items-center bg-muted rounded-xl px-3 border border-border flex-1">
               <SearchIcon className="text-muted-foreground size-4" />
               <TextInput
                 value={searchQuery}
@@ -188,7 +188,7 @@ export default function HomeScreen() {
             </View>
             <TouchableOpacity
               onPress={openSortModal}
-              className="size-12 bg-card rounded-xl border border-border items-center justify-center"
+              className="size-12 bg-muted rounded-xl border border-border items-center justify-center"
             >
               <FilterIcon className="text-primary size-5" />
             </TouchableOpacity>
