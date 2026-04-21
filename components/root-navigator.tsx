@@ -44,6 +44,7 @@ export const RootNavigator = () => {
                   gestureEnabled: true,
                   gestureDirection: "horizontal",
                   presentation: "card",
+                  animation: "none",
                 }}
               >
                 <Stack.Screen
