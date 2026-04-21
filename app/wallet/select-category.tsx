@@ -2,10 +2,11 @@ import { useGetCategories } from "@/api/category";
 import { CategoryModal } from "@/components/category/category-modal";
 import { Button } from "@/components/ui/button";
 import { Check, ChevronLeft, Plus, Settings } from "@/lib/icons";
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import React, { useState } from "react";
+import { Stack, useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
+import React, { useCallback, useState } from "react";
 import {
   ActivityIndicator,
+  BackHandler,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -18,6 +19,7 @@ export default function SelectCategoryScreen() {
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{
     bookId: string;
+    type?: string;
     currentSelectedId?: string;
     currentAmount?: string;
     editId?: string;
@@ -46,6 +48,7 @@ export default function SelectCategoryScreen() {
       pathname: "/wallet/add-transaction",
       params: {
         bookId: params.bookId,
+        type: params.type || params.editType,
         currentSelectedId: params.currentSelectedId,
         currentAmount: params.currentAmount,
         currentRemark: params.currentRemark,
@@ -87,7 +90,26 @@ export default function SelectCategoryScreen() {
           ),
           headerLeft: () => (
             <TouchableOpacity
-              onPress={() => router.navigate("/wallet/add-transaction")}
+              onPress={() =>
+                router.navigate({
+                  pathname: "/wallet/add-transaction",
+                  params: {
+                    bookId: params.bookId,
+                    type: params.type || params.editType,
+                    currentAmount: params.currentAmount,
+                    currentRemark: params.currentRemark,
+                    currentDate: params.currentDate,
+                    editId: params.editId,
+                    editAmount: params.editAmount,
+                    editRemark: params.editRemark,
+                    editType: params.editType,
+                    editDate: params.editDate,
+                    editTime: params.editTime,
+                    attachments: params.attachments,
+                    currentAttachments: params.currentAttachments,
+                  },
+                })
+              }
               style={{ marginRight: 4 }}
             >
               <ChevronLeft size={26} className="text-foreground" />
@@ -95,6 +117,38 @@ export default function SelectCategoryScreen() {
           ),
         }}
       />
+      {useFocusEffect(
+        useCallback(() => {
+          const onBackPress = () => {
+            router.navigate({
+              pathname: "/wallet/add-transaction",
+              params: {
+                bookId: params.bookId,
+                type: params.type || params.editType,
+                currentAmount: params.currentAmount,
+                currentRemark: params.currentRemark,
+                currentDate: params.currentDate,
+                editId: params.editId,
+                editAmount: params.editAmount,
+                editRemark: params.editRemark,
+                editType: params.editType,
+                editDate: params.editDate,
+                editTime: params.editTime,
+                attachments: params.attachments,
+                currentAttachments: params.currentAttachments,
+              },
+            });
+            return true;
+          };
+
+          const subscription = BackHandler.addEventListener(
+            "hardwareBackPress",
+            onBackPress,
+          );
+
+          return () => subscription.remove();
+        }, [params, router]),
+      )}
       <View className="flex-1 bg-background">
         {isLoading ? (
           <View className="flex-1 items-center justify-center">
