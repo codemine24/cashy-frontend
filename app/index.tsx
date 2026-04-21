@@ -9,7 +9,6 @@ import { View } from "react-native";
 
 export default function WelcomeScreen() {
   const router = useRouter();
-
   const { authState, authReady } = useAuth();
 
   useEffect(() => {
@@ -18,9 +17,29 @@ export default function WelcomeScreen() {
     }
   }, [authReady, authState.isAuthenticated, router]);
 
+
+  const handleSkip = () => {
+    // Modal will be hidden by the hook logic
+  };
+
+  // Don't render anything if update is forced and modal is shown
+  // if (showModal && isForceUpdate) {
+  //   return (
+  //     <UpdateModal
+  //       visible={showModal}
+  //       versionInfo={versionInfo}
+  //       onUpdateNow={handleUpdateNow}
+  //       onSkip={handleSkip}
+  //       isForceUpdate={isForceUpdate}
+  //       isApplyingUpdate={isApplyingUpdate}
+  //     />
+  //   );
+  // }
+
   if (!authReady) {
     return null;
   }
+
   return (
     <ScreenWrapper className="bg-background px-6 ">
       {/* <View className="flex-1 px-6"> */}
@@ -45,6 +64,14 @@ export default function WelcomeScreen() {
         </Button>
       </View>
       {/* </View> */}
+      {/* <UpdateModal
+        visible={showModal}
+        versionInfo={versionInfo}
+        onUpdateNow={handleUpdateNow}
+        onSkip={handleSkip}
+        isForceUpdate={isForceUpdate}
+        isApplyingUpdate={isApplyingUpdate}
+      /> */}
     </ScreenWrapper>
   );
 }

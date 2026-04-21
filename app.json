@@ -4,7 +4,7 @@
 
     "slug": "cashy",
 
-    "version": "1.0.0",
+    "version": "1.1.0",
 
     "orientation": "portrait",
 
@@ -16,10 +16,18 @@
 
     "newArchEnabled": true,
 
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
+
+    "updates": {
+      "url": "https://u.expo.dev/428b74db-754f-4501-835c-69c5372d0bd3",
+      "enabled": true
+    },
+
     "android": {
       "package": "com.codemine.cashy",
       "versionCode": 2026042201,
-      "version": "1.1.0",
       "softwareKeyboardLayoutMode": "pan",
       "backgroundColor": "#0f172a",
 
@@ -70,6 +78,13 @@
           "androidUrl": "com.codemine.cashy",
           "iosUrlScheme": "com.googleusercontent.apps.unused-android-only"
         }
+      ],
+
+      [
+        "expo-updates",
+        {
+          "username": "fazlyalahi"
+        }
       ]
     ],
 
@@ -84,7 +99,10 @@
 
       "eas": {
         "projectId": "428b74db-754f-4501-835c-69c5372d0bd3"
-      }
+      },
+
+      "versionCode": 2026042201,
+      "releaseNotes": "Google login integration and performance improvements"
     }
   }
 }
