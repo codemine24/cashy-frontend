@@ -130,6 +130,7 @@ export default function SettingsScreen() {
         options={{
           headerShown: true,
           title: t("settings.more"),
+          animation: "none",
           headerBackTitle: t("common.back"),
           headerShadowVisible: true,
           headerLeft: () => (

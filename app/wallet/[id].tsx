@@ -338,6 +338,7 @@ export default function BookDetailScreen() {
         <Stack.Screen
           options={{
             title: "",
+            animation: "none",
             headerLeft: () => (
               <TouchableOpacity
                 onPress={() => router.navigate("/")}
@@ -453,6 +454,7 @@ export default function BookDetailScreen() {
         <Stack.Screen
           options={{
             title: selectedTransaction ? "1 Selected" : book.data.name,
+            animation: "none",
             headerLeft: () => {
               if (selectedTransaction) {
                 return (

@@ -102,6 +102,7 @@ export default function NotificationsScreen() {
         options={{
           headerShown: true,
           title: "Notifications",
+          animation: "none",
           headerLeft: () => (
             <TouchableOpacity
               onPress={() => router.navigate(from === "loans" ? "/loans" : "/")}

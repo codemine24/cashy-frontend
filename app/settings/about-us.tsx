@@ -37,6 +37,7 @@ export default function AboutUsScreen() {
         options={{
           headerShown: true,
           title: "About Us",
+          animation: "none",
           headerBackTitle: "Back",
           headerShadowVisible: true,
           headerLeft: () => (

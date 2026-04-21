@@ -188,11 +188,12 @@ export default function CreateBorrowedScreen() {
   );
 
   return (
-    <>
+    <View style={{ flex: 1 }}>
       <Stack.Screen
         options={{
           headerShown: true,
           title: screenTitle,
+          animation: "none",
           headerLeft: () => (
             <TouchableOpacity
               onPress={() => router.navigate("/loans?tab=TAKEN")}
@@ -332,6 +333,6 @@ export default function CreateBorrowedScreen() {
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
-    </>
+    </View>
   );
 }

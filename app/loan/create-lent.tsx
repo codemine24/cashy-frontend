@@ -189,11 +189,12 @@ export default function CreateLentScreen() {
   );
 
   return (
-    <>
+    <View style={{ flex: 1 }}>
       <Stack.Screen
         options={{
           headerShown: true,
           title: screenTitle,
+          animation: "none",
           headerLeft: () => (
             <TouchableOpacity
               onPress={() => router.navigate("/loans?tab=GIVEN")}
@@ -333,6 +334,6 @@ export default function CreateLentScreen() {
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
-    </>
+    </View>
   );
 }
