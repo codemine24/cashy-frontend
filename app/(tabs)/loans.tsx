@@ -314,7 +314,7 @@ export default function LoansScreen() {
       {/* Floating Add Button */}
       <Button
         onPress={() =>
-          router.push(
+          router.navigate(
             activeTab === "GIVEN"
               ? "/loan/create-lent"
               : "/loan/create-borrowed",
