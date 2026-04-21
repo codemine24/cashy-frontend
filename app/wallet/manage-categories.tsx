@@ -145,53 +145,55 @@ export default function ManageCategoriesScreen() {
                 </View>
 
                 {/* Popover Menu inside Category Row */}
-                <Popover
-                  isVisible={activeMenuId === cat.id}
-                  onRequestClose={() => setActiveMenuId(null)}
-                  from={
-                    <TouchableOpacity
-                      onPress={() => setActiveMenuId(cat.id)}
-                      className="p-2 -mr-2 items-center justify-center"
-                    >
-                      <MoreVertical
-                        size={20}
-                        className="text-muted-foreground"
-                      />
-                    </TouchableOpacity>
-                  }
-                  backgroundStyle={{ backgroundColor: "rgba(0,0,0,0.1)" }}
-                  popoverStyle={{
-                    borderRadius: 14,
-                    width: 170,
-                    backgroundColor: "transparent",
-                    shadowColor: "#000",
-                    shadowOffset: { width: 0, height: 4 },
-                    shadowOpacity: 0.1,
-                    shadowRadius: 10,
-                    elevation: 5,
-                  }}
-                >
-                  <View className="w-full bg-card rounded-xl border border-border overflow-hidden">
-                    <TouchableOpacity
-                      onPress={() => openEditModal(cat.id, cat.title)}
-                      className="flex-row items-center px-4 py-3.5 border-b border-border"
-                    >
-                      <Edit3 size={18} className="text-foreground" />
-                      <Text className="text-foreground font-semibold text-sm ml-2">
-                        Rename
-                      </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() => handleDeleteCategory(cat.id)}
-                      className="flex-row items-center px-4 py-3.5"
-                    >
-                      <Trash2 size={18} className="text-destructive" />
-                      <Text className="text-destructive font-semibold text-sm ml-2">
-                        Delete
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                </Popover>
+                {cat.user_id && (
+                  <Popover
+                    isVisible={activeMenuId === cat.id}
+                    onRequestClose={() => setActiveMenuId(null)}
+                    from={
+                      <TouchableOpacity
+                        onPress={() => setActiveMenuId(cat.id)}
+                        className="p-2 -mr-2 items-center justify-center"
+                      >
+                        <MoreVertical
+                          size={20}
+                          className="text-muted-foreground"
+                        />
+                      </TouchableOpacity>
+                    }
+                    backgroundStyle={{ backgroundColor: "rgba(0,0,0,0.1)" }}
+                    popoverStyle={{
+                      borderRadius: 14,
+                      width: 170,
+                      backgroundColor: "transparent",
+                      shadowColor: "#000",
+                      shadowOffset: { width: 0, height: 4 },
+                      shadowOpacity: 0.1,
+                      shadowRadius: 10,
+                      elevation: 5,
+                    }}
+                  >
+                    <View className="w-full bg-card rounded-xl border border-border overflow-hidden">
+                      <TouchableOpacity
+                        onPress={() => openEditModal(cat.id, cat.title)}
+                        className="flex-row items-center px-4 py-3.5 border-b border-border"
+                      >
+                        <Edit3 size={18} className="text-foreground" />
+                        <Text className="text-foreground font-semibold text-sm ml-2">
+                          Rename
+                        </Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => handleDeleteCategory(cat.id)}
+                        className="flex-row items-center px-4 py-3.5"
+                      >
+                        <Trash2 size={18} className="text-destructive" />
+                        <Text className="text-destructive font-semibold text-sm ml-2">
+                          Delete
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  </Popover>
+                )}
               </View>
             ))}
           </ScrollView>
