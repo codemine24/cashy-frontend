@@ -125,7 +125,10 @@ export function CategoryModal({
             disabled={isPending}
             className={`flex-1 rounded-lg py-3 items-center justify-center ${isPending ? "bg-primary/50" : "bg-primary"}`}
           >
-            <Text className="text-primary-foreground font-semibold text-base">
+            <Text
+              className="text-primary-foreground font-semibold text-base"
+              numberOfLines={1}
+            >
               {isPending
                 ? isEditing
                   ? "Renaming..."

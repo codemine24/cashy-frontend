@@ -81,7 +81,7 @@ export default function ManageCategoriesScreen() {
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
-        router.navigate("/wallet/select-category");
+        router.back();
         return true;
       };
 
@@ -103,7 +103,7 @@ export default function ManageCategoriesScreen() {
           headerBackTitle: "Back",
           headerLeft: () => (
             <TouchableOpacity
-              onPress={() => router.navigate("/wallet/select-category")}
+              onPress={() => router.back()}
               style={{ marginRight: 4 }}
             >
               <ChevronLeft size={26} className="text-foreground" />
