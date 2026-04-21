@@ -184,6 +184,7 @@ export default function Subscription() {
         <Stack.Screen
           options={{
             title: "Success",
+            animation: "none",
             headerLeft: () => (
               <TouchableOpacity
                 onPress={() => router.navigate("/settings")}
@@ -258,6 +259,7 @@ export default function Subscription() {
         options={{
           title: "Cashy Subscription",
           headerTitleAlign: "left",
+          animation: "none",
           headerLeft: () => (
             <TouchableOpacity
               onPress={() => router.navigate("/settings")}

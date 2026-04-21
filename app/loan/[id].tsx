@@ -140,6 +140,7 @@ export default function LoanDetailScreen() {
           options={{
             headerShown: true,
             title: "Loan Details",
+            animation: "none",
             headerBackTitle: "Back",
             headerLeft: () => (
               <TouchableOpacity
@@ -201,6 +202,7 @@ export default function LoanDetailScreen() {
           options={{
             headerShown: true,
             title: "Loan Details",
+            animation: "none",
             headerBackTitle: "Back",
             headerLeft: () => (
               <TouchableOpacity
@@ -238,6 +240,7 @@ export default function LoanDetailScreen() {
             title: selectedPayment
               ? "1 Selected"
               : loanData?.data?.person_name || "Loan Details",
+            animation: "none",
             headerBackTitle: "Back",
             headerLeft: () => {
               if (selectedPayment) {

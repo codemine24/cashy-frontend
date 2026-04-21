@@ -80,6 +80,7 @@ export default function SelectCategoryScreen() {
         options={{
           headerShown: true,
           title: "Choose Category",
+          animation: "none",
           headerBackTitle: "Back",
           headerRight: () => (
             <TouchableOpacity

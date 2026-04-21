@@ -128,6 +128,7 @@ export default function PrivacyPolicyScreen() {
         options={{
           headerShown: true,
           title: "Privacy Policy",
+          animation: "none",
           headerBackTitle: "Back",
           headerShadowVisible: true,
           headerLeft: () => (

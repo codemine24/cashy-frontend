@@ -74,6 +74,7 @@ export const RootNavigator = () => {
                 <Stack.Screen
                   name="(tabs)"
                   options={{
+                    animation: "none",
                     contentStyle: {
                       backgroundColor: isDark ? "#0f172a" : "#f8fafc",
                     },
@@ -175,6 +176,33 @@ export const RootNavigator = () => {
                   name="loan/[id]"
                   options={{
                     headerShown: true,
+                    animation: "none",
+                    headerStyle: {
+                      backgroundColor: isDark ? "#0f172a" : "#f8fafc",
+                    },
+                    contentStyle: {
+                      backgroundColor: isDark ? "#0f172a" : "#f8fafc",
+                    },
+                  }}
+                />
+                <Stack.Screen
+                  name="loan/create-borrowed"
+                  options={{
+                    headerShown: true,
+                    animation: "none",
+                    headerStyle: {
+                      backgroundColor: isDark ? "#0f172a" : "#f8fafc",
+                    },
+                    contentStyle: {
+                      backgroundColor: isDark ? "#0f172a" : "#f8fafc",
+                    },
+                  }}
+                />
+                <Stack.Screen
+                  name="loan/create-lent"
+                  options={{
+                    headerShown: true,
+                    animation: "none",
                     headerStyle: {
                       backgroundColor: isDark ? "#0f172a" : "#f8fafc",
                     },

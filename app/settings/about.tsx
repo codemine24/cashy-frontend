@@ -142,6 +142,7 @@ export default function AboutScreen() {
         options={{
           headerShown: true,
           title: t("about.title"),
+          animation: "none",
           headerBackTitle: t("common.back"),
           headerShadowVisible: true,
           headerLeft: () => (

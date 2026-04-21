@@ -194,6 +194,7 @@ export default function CreateLentScreen() {
         options={{
           headerShown: true,
           title: screenTitle,
+          animation: "none",
           headerLeft: () => (
             <TouchableOpacity
               onPress={() => router.navigate("/loans?tab=GIVEN")}

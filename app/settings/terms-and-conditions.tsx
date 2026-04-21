@@ -78,6 +78,7 @@ export default function TermsAndConditionsScreen() {
         options={{
           headerShown: true,
           title: "Terms & Conditions",
+          animation: "none",
           headerBackTitle: "Back",
           headerShadowVisible: true,
           headerLeft: () => (
