@@ -49,12 +49,7 @@ import Toast from "react-native-toast-message";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
-type Period =
-  | "all_time"
-  | "today"
-  | "last_7_days"
-  | "last_30_days"
-  | "custom";
+type Period = "all_time" | "today" | "last_7_days" | "last_30_days" | "custom";
 type StatsTab = "WALLET" | "LOAN";
 
 function TabButton({
@@ -300,13 +295,7 @@ function WalletStatistics() {
         <View className="mb-4 border-b border-border/30">
           <View className="flex-row items-center justify-around">
             {(
-              [
-                "all_time",
-                "today",
-                "last_7_days",
-                "last_30_days",
-                "custom",
-              ] as Period[]
+              ["today", "last_7_days", "last_30_days", "custom"] as Period[]
             ).map((p) => (
               <Pressable
                 key={p}
@@ -328,17 +317,15 @@ function WalletStatistics() {
                   )}
                   numberOfLines={1}
                 >
-                  {p === "all_time"
-                    ? "All Time"
-                    : p === "today"
-                      ? "Today"
-                      : p === "last_7_days"
-                        ? "Last 7 Days"
-                        : p === "last_30_days"
-                          ? "Last 30 Days"
-                          : p === "custom" && startDate && endDate
-                            ? `${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`
-                            : "Custom"}
+                  {p === "today"
+                    ? "Today"
+                    : p === "last_7_days"
+                      ? "Last 7 Days"
+                      : p === "last_30_days"
+                        ? "Last 30 Days"
+                        : p === "custom" && startDate && endDate
+                          ? `${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`
+                          : "Custom"}
                 </P>
                 {period === p && (
                   <View className="h-[3px] bg-primary w-16 rounded-t-full" />
@@ -659,10 +646,7 @@ function LoanStatistics() {
             <ActivityIndicator size="large" color="rgb(2, 146, 154)" />
           </View>
         ) : (
-          <LoanStatisticsContent
-            loanSummary={loanSummary}
-            isDark={isDark}
-          />
+          <LoanStatisticsContent loanSummary={loanSummary} isDark={isDark} />
         )}
 
         <View className="h-20" />
@@ -697,10 +681,8 @@ function LoanStatisticsContent({
 }) {
   const { given, taken, balance, status_breakdown } = loanSummary;
 
-  const givenProgress =
-    given.total > 0 ? (given.paid / given.total) * 100 : 0;
-  const takenProgress =
-    taken.total > 0 ? (taken.paid / taken.total) * 100 : 0;
+  const givenProgress = given.total > 0 ? (given.paid / given.total) * 100 : 0;
+  const takenProgress = taken.total > 0 ? (taken.paid / taken.total) * 100 : 0;
 
   const ongoingCount = status_breakdown?.ongoing || 0;
   const paidCount = status_breakdown?.paid || 0;
@@ -716,13 +698,8 @@ function LoanStatisticsContent({
           <View
             className={`${isDark ? "bg-card" : "bg-white"} flex-1 border border-border rounded-2xl shadow-sm p-3`}
           >
-            <P className="text-[10px] text-muted-foreground mb-1">
-              Total Lent
-            </P>
-            <P
-              className="text-base font-bold text-green-600"
-              numberOfLines={1}
-            >
+            <P className="text-[10px] text-muted-foreground mb-1">Total Lent</P>
+            <P className="text-base font-bold text-green-600" numberOfLines={1}>
               {formatCurrency(given.total, { showSymbol: false })}
             </P>
           </View>
@@ -780,10 +757,7 @@ function LoanStatisticsContent({
             </View>
             <View className="flex-1 items-center">
               <P className="text-[10px] text-muted-foreground mb-1">Paid</P>
-              <P
-                className="text-sm font-bold text-green-600"
-                numberOfLines={1}
-              >
+              <P className="text-sm font-bold text-green-600" numberOfLines={1}>
                 {formatCurrency(given.paid, { showSymbol: false })}
               </P>
             </View>
@@ -791,10 +765,7 @@ function LoanStatisticsContent({
               <P className="text-[10px] text-muted-foreground mb-1">
                 Remaining
               </P>
-              <P
-                className="text-sm font-bold text-[#02929A]"
-                numberOfLines={1}
-              >
+              <P className="text-sm font-bold text-[#02929A]" numberOfLines={1}>
                 {formatCurrency(given.remaining, { showSymbol: false })}
               </P>
             </View>
@@ -838,10 +809,7 @@ function LoanStatisticsContent({
             </View>
             <View className="flex-1 items-center">
               <P className="text-[10px] text-muted-foreground mb-1">Paid</P>
-              <P
-                className="text-sm font-bold text-green-600"
-                numberOfLines={1}
-              >
+              <P className="text-sm font-bold text-green-600" numberOfLines={1}>
                 {formatCurrency(taken.paid, { showSymbol: false })}
               </P>
             </View>
@@ -893,9 +861,7 @@ function LoanStatisticsContent({
                     <Clock size={16} color="#F59E0B" />
                   </View>
                   <View className="flex-1">
-                    <P className="text-[10px] text-muted-foreground">
-                      Ongoing
-                    </P>
+                    <P className="text-[10px] text-muted-foreground">Ongoing</P>
                     <P className="text-base font-bold text-amber-500">
                       {ongoingCount}
                     </P>
