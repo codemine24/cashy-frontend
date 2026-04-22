@@ -108,7 +108,7 @@ export default function StatisticsPage() {
 function WalletStatistics() {
   const router = useRouter();
   const { book_id } = useLocalSearchParams<{ book_id?: string }>();
-  const [period, setPeriod] = useState<Period>("all_time");
+  const [period, setPeriod] = useState<Period>("last_30_days");
   const { isDark } = useTheme();
   const [refreshing, setRefreshing] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
