@@ -424,10 +424,10 @@ export function WalletStatistics() {
                       <BarChart3 size={16} color="#02929A" />
                     </View>
                     <H3 className="text-left font-bold text-sm leading-tight flex-1">
-                      Top Income Sources
+                      Sources (IN)
                     </H3>
                   </View>
-                  <TopSourcesChart data={walletStats.top_sources} />
+                  <TopSourcesChart data={walletStats.sources} />
                 </View>
               </View>
             </View>

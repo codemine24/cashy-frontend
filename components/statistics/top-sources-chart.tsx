@@ -33,6 +33,9 @@ export function TopSourcesChart({ data }: { data: any[] }) {
   const chartData = data.slice(0, 4);
   const maxAmount = Math.max(...data.map((item) => item.amount), 1);
 
+  // Calculate total for percentages in legend
+  const totalAmount = data.reduce((acc, item) => acc + item.amount, 0);
+
   return (
     <View className="flex-row items-center gap-x-6">
       <View className="items-center justify-center">
@@ -75,23 +78,32 @@ export function TopSourcesChart({ data }: { data: any[] }) {
         </Svg>
       </View>
 
-      <View className="flex-1 gap-y-2">
-        {chartData.map((item, i) => (
-          <View key={i} className="flex-row items-center gap-x-2">
-            <View
-              className="w-2.5 h-2.5 rounded-full"
-              style={{ backgroundColor: colors[i % colors.length] }}
-            />
-            <View className="flex-1">
-              <P className="text-[10px] text-muted-foreground font-semibold leading-tight">
-                {item.source}
-              </P>
-              <P className="text-[11px] font-bold text-foreground">
+      <View className="flex-1 gap-y-1.5">
+        {chartData.map((item, i) => {
+          const itemPercentage = (item.amount / totalAmount) * 100;
+          return (
+            <View key={i} className="flex-row items-center gap-x-1.5">
+              <View
+                className="w-2 h-2 rounded-full"
+                style={{ backgroundColor: colors[i % colors.length] }}
+              />
+              <View className="flex-1">
+                <P
+                  className="text-[10px] text-muted-foreground font-semibold leading-tight"
+                  numberOfLines={1}
+                >
+                  {item.source}
+                </P>
+              </View>
+              <P className="text-[10px] text-muted-foreground font-bold">
                 {formatCurrency(item.amount, { showSymbol: false })}
               </P>
+              <P className="text-[10px] text-muted-foreground font-bold opacity-70">
+                ({Math.round(itemPercentage)}%)
+              </P>
             </View>
-          </View>
-        ))}
+          );
+        })}
       </View>
     </View>
   );
