@@ -10,7 +10,6 @@ interface UpdateModalProps {
   onUpdateNow: () => void;
   onSkip: () => void;
   isForceUpdate?: boolean;
-  isApplyingUpdate?: boolean;
 }
 
 export function UpdateModal({
@@ -19,7 +18,6 @@ export function UpdateModal({
   onUpdateNow,
   onSkip,
   isForceUpdate = false,
-  isApplyingUpdate = false,
 }: UpdateModalProps) {
   const handleUpdateNow = () => {
     onUpdateNow();
@@ -52,16 +50,13 @@ export function UpdateModal({
             <Muted className="mb-3">
               {isForceUpdate
                 ? "This update is required to continue using the app. Please update to the latest version."
-                : versionInfo?.type === "OTA"
-                  ? "A new update is available with improvements and bug fixes."
-                  : "A new version of Cashy is available with improvements and new features."}
+                : "A new version of Cashy is available with improvements and new features."}
             </Muted>
 
             {versionInfo && (
               <View className="bg-muted/50 rounded-lg p-3">
                 <P className="text-sm font-medium text-foreground mb-1">
                   Version {versionInfo.version}
-                  {versionInfo.type === "OTA" && " (OTA Update)"}
                 </P>
                 {versionInfo.releaseNotes && (
                   <Muted className="text-sm leading-5">
@@ -80,7 +75,6 @@ export function UpdateModal({
                 className="flex-1"
                 variant="outline"
                 size="sm"
-                disabled={isApplyingUpdate}
               >
                 <View className="flex-row items-center justify-center">
                   <Muted className="text-foreground font-medium">Skip</Muted>
@@ -92,17 +86,10 @@ export function UpdateModal({
               onPress={handleUpdateNow}
               className={isForceUpdate ? "w-full" : "flex-1"}
               size="sm"
-              disabled={isApplyingUpdate}
             >
               <View className="flex-row items-center justify-center">
                 <Muted className="text-primary-foreground font-medium">
-                  {isApplyingUpdate
-                    ? versionInfo?.type === "OTA"
-                      ? "Applying Update..."
-                      : "Opening Store..."
-                    : versionInfo?.type === "OTA"
-                      ? "Apply Update"
-                      : "Update Now"}
+                  Update Now
                 </Muted>
               </View>
             </Button>

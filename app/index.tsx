@@ -1,8 +1,10 @@
 import { ScreenWrapper } from "@/components/screen-wrapper";
 import { Button } from "@/components/ui/button";
+import { UpdateModal } from "@/components/update-modal";
 import { OnboardingCarousel } from "@/components/welcome/onboarding-carousel";
 import { WelcomeHeader } from "@/components/welcome/welcome-header";
 import { useAuth } from "@/context/auth-context";
+import { useAppUpdate } from "@/hooks/use-app-update";
 import { useRouter } from "expo-router";
 import { useEffect } from "react";
 import { View } from "react-native";
@@ -10,31 +12,38 @@ import { View } from "react-native";
 export default function WelcomeScreen() {
   const router = useRouter();
   const { authState, authReady } = useAuth();
+  const {
+    isChecking,
+    showModal,
+    versionInfo,
+    isForceUpdate,
+    checkUpdates,
+    handleUpdateNow,
+    handleSkip,
+  } = useAppUpdate();
 
   useEffect(() => {
-    if (authReady && authState.isAuthenticated) {
+    if (authReady && authState.isAuthenticated && !isChecking) {
       router.replace("/(tabs)");
     }
-  }, [authReady, authState.isAuthenticated, router]);
+  }, [authReady, authState.isAuthenticated, router, isChecking]);
 
-
-  const handleSkip = () => {
-    // Modal will be hidden by the hook logic
-  };
+  useEffect(() => {
+    checkUpdates();
+  }, [checkUpdates]);
 
   // Don't render anything if update is forced and modal is shown
-  // if (showModal && isForceUpdate) {
-  //   return (
-  //     <UpdateModal
-  //       visible={showModal}
-  //       versionInfo={versionInfo}
-  //       onUpdateNow={handleUpdateNow}
-  //       onSkip={handleSkip}
-  //       isForceUpdate={isForceUpdate}
-  //       isApplyingUpdate={isApplyingUpdate}
-  //     />
-  //   );
-  // }
+  if (showModal && isForceUpdate) {
+    return (
+      <UpdateModal
+        visible={showModal}
+        versionInfo={versionInfo}
+        onUpdateNow={handleUpdateNow}
+        onSkip={handleSkip}
+        isForceUpdate={isForceUpdate}
+      />
+    );
+  }
 
   if (!authReady) {
     return null;
@@ -59,19 +68,19 @@ export default function WelcomeScreen() {
               console.error("Navigation error:", error);
             }
           }}
+          disabled={isChecking}
         >
-          Get Started
+          {isChecking ? "Checking..." : "Get Started"}
         </Button>
       </View>
       {/* </View> */}
-      {/* <UpdateModal
+      <UpdateModal
         visible={showModal}
         versionInfo={versionInfo}
         onUpdateNow={handleUpdateNow}
         onSkip={handleSkip}
         isForceUpdate={isForceUpdate}
-        isApplyingUpdate={isApplyingUpdate}
-      /> */}
+      />
     </ScreenWrapper>
   );
 }

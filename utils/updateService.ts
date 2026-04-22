@@ -1,126 +1,91 @@
 import Constants from "expo-constants";
 import * as Linking from "expo-linking";
-import * as Updates from "expo-updates";
 import { Platform } from "react-native";
-
-// version.config.ts (you update this manually per release)
-export const LATEST_STORE_VERSION = {
-  version: "1.1.0",
-  versionCode: 2,
-  isForceUpdate: true,
-  releaseNotes: "Bug fixes and performance improvements",
-};
 
 export interface VersionInfo {
   version: string;
   versionCode: number;
   isForceUpdate: boolean;
   releaseNotes?: string;
-  type: "OTA" | "STORE";
 }
 
 export interface UpdateCheckResult {
-  hasOTAUpdate: boolean;
-  hasStoreUpdate: boolean;
+  hasUpdate: boolean;
   versionInfo?: VersionInfo;
   currentVersion: string;
   currentVersionCode: number;
 }
 
-// CURRENT APP VERSION (from build)
-export function getCurrentVersion() {
+// Get current app version from app.json
+export function getCurrentVersion(): { version: string; versionCode: number } {
   const config = Constants.expoConfig;
-
   return {
     version: config?.version || "1.0.0",
     versionCode: config?.android?.versionCode || 1,
   };
 }
 
-export async function checkOTAUpdate() {
-  if (!Updates.isEnabled) {
-    return false;
+// Compare semantic versions
+export function compareVersions(version1: string, version2: string): number {
+  const v1Parts = version1.split(".").map(Number);
+  const v2Parts = version2.split(".").map(Number);
+
+  for (let i = 0; i < Math.max(v1Parts.length, v2Parts.length); i++) {
+    const v1Part = v1Parts[i] || 0;
+    const v2Part = v2Parts[i] || 0;
+
+    if (v1Part > v2Part) return 1;
+    if (v1Part < v2Part) return -1;
   }
 
-  const result = await Updates.checkForUpdateAsync();
-  return result.isAvailable;
+  return 0;
 }
 
+// Check for updates
 export async function checkForUpdates(): Promise<UpdateCheckResult> {
   try {
-    const current = getCurrentVersion();
+    const currentVersion = getCurrentVersion();
 
-    // OTA update check (Expo)
-    const otaAvailable = await checkOTAUpdate();
+    const versionInfo: VersionInfo = {
+      version: "1.1.0",
+      versionCode: 2026042201,
+      isForceUpdate: true,
+      releaseNotes: "Google login integration and performance improvements",
+    };
 
-    // STORE update check (manual version file)
-    const storeUpdateAvailable =
-      LATEST_STORE_VERSION.versionCode > current.versionCode;
+    // Simulate network delay
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    const hasUpdate =
+      compareVersions(versionInfo.version, currentVersion.version) > 0;
 
     return {
-      hasOTAUpdate: otaAvailable,
-      hasStoreUpdate: storeUpdateAvailable,
-      versionInfo: storeUpdateAvailable
-        ? {
-            version: LATEST_STORE_VERSION.version,
-            versionCode: LATEST_STORE_VERSION.versionCode,
-            isForceUpdate: LATEST_STORE_VERSION.isForceUpdate,
-            releaseNotes: LATEST_STORE_VERSION.releaseNotes,
-            type: "STORE",
-          }
-        : otaAvailable
-        ? {
-            version: current.version,
-            versionCode: current.versionCode,
-            isForceUpdate: false,
-            type: "OTA",
-            releaseNotes: "Improved performance and bug fixes",
-          }
-        : undefined,
-
-      currentVersion: current.version,
-      currentVersionCode: current.versionCode,
+      hasUpdate,
+      versionInfo: hasUpdate ? versionInfo : undefined,
+      currentVersion: currentVersion.version,
+      currentVersionCode: currentVersion.versionCode,
     };
   } catch (error) {
-    console.error("Update check failed:", error);
-
-    const current = getCurrentVersion();
+    console.error("Error checking for updates:", error);
+    // Return current version info on error
+    const currentVersion = getCurrentVersion();
     return {
-      hasOTAUpdate: false,
-      hasStoreUpdate: false,
-      currentVersion: current.version,
-      currentVersionCode: current.versionCode,
+      hasUpdate: false,
+      currentVersion: currentVersion.version,
+      currentVersionCode: currentVersion.versionCode,
     };
   }
 }
 
-export async function applyOTAUpdate() {
-  try {
-    const result = await Updates.fetchUpdateAsync();
-
-    if (result.isNew) {
-      await Updates.reloadAsync();
-      return true;
-    }
-
-    return false;
-  } catch (error) {
-    console.error("OTA update failed:", error);
-    return false;
-  }
-}
-
-export async function openStore() {
+// Open Google Play Store
+export async function openPlayStore(): Promise<void> {
   const packageName = Constants.expoConfig?.android?.package;
 
   if (Platform.OS === "android" && packageName) {
-    const market = `market://details?id=${packageName}`;
-    const web = `https://play.google.com/store/apps/details?id=${packageName}`;
-
-    try {
-      await Linking.openURL(market);
-    } catch {
-      await Linking.openURL(web);
-    }
+    const playStoreUrl = `https://play.google.com/store/apps/details?id=${packageName}`;
+    console.log("Opening Play Store:", playStoreUrl);
+    await Linking.openURL(playStoreUrl);
+  } else {
+    console.warn("Play Store is only available on Android");
   }
 }

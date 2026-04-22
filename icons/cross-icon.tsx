@@ -1,8 +1,21 @@
 import { cssInterop } from "nativewind";
 import { Path, Svg, SvgProps } from "react-native-svg";
 
-const CloseIconSvg = ({ color, width, height, style, ...props }: SvgProps & { style?: { color?: string; width?: number; height?: number } }) => (
-  <Svg width={width || style?.width || 24} height={height || style?.height || 24} viewBox="0 0 24 24" {...props}>
+const CloseIconSvg = ({
+  color,
+  width,
+  height,
+  style,
+  ...props
+}: SvgProps & {
+  style?: { color?: string; width?: number; height?: number };
+}) => (
+  <Svg
+    width={width || style?.width || 24}
+    height={height || style?.height || 24}
+    viewBox="0 0 24 24"
+    {...props}
+  >
     <Path
       fill="none"
       stroke={style?.color || color || "currentColor"}
@@ -24,3 +37,4 @@ cssInterop(CloseIconSvg, {
 });
 
 export { CloseIconSvg as CrossIcon };
+
