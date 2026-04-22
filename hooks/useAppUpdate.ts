@@ -1,8 +1,13 @@
-import { useState } from 'react';
-import { checkForUpdates, openPlayStore, UpdateCheckResult } from '@/utils/updateService';
+import {
+  checkForUpdates,
+  openPlayStore,
+  UpdateCheckResult,
+} from "@/utils/updateService";
+import { useState } from "react";
 
 export function useAppUpdate() {
-  const [updateCheckResult, setUpdateCheckResult] = useState<UpdateCheckResult | null>(null);
+  const [updateCheckResult, setUpdateCheckResult] =
+    useState<UpdateCheckResult | null>(null);
   const [isChecking, setIsChecking] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
@@ -11,12 +16,12 @@ export function useAppUpdate() {
     try {
       const result = await checkForUpdates();
       setUpdateCheckResult(result);
-      
+
       if (result.hasUpdate && result.versionInfo) {
         setShowModal(true);
       }
     } catch (error) {
-      console.error('Failed to check updates:', error);
+      console.error("Failed to check updates:", error);
     } finally {
       setIsChecking(false);
     }
@@ -26,7 +31,7 @@ export function useAppUpdate() {
     try {
       await openPlayStore();
     } catch (error) {
-      console.error('Failed to open Play Store:', error);
+      console.error("Failed to open Play Store:", error);
     }
   };
 

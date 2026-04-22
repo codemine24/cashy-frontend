@@ -8,7 +8,7 @@
 
     "orientation": "portrait",
 
-    "icon": "./assets/images/app-icon.png",
+    "icon": "./assets/images/E.png",
 
     "scheme": "cashy-expense-manager",
 
@@ -25,9 +25,9 @@
       "adaptiveIcon": {
         "backgroundColor": "#02929a",
 
-        "foregroundImage": "./assets/images/app-icon-foreground.png",
+        "foregroundImage": "./assets/images/E.png",
 
-        "monochromeImage": "./assets/images/app-icon-monochromic.png"
+        "monochromeImage": "./assets/images/E.png"
       },
 
       "permissions": ["INTERNET", "READ_MEDIA_IMAGES", "READ_EXTERNAL_STORAGE"],
@@ -43,8 +43,8 @@
         "expo-splash-screen",
 
         {
-          "image": "./assets/images/cashy-splash-screen.jpg",
-          "imageWidth": 300,
+          "image": "./assets/images/E.png",
+          "imageWidth": 250,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",
           "dark": {

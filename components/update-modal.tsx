@@ -23,12 +23,6 @@ export function UpdateModal({
     onUpdateNow();
   };
 
-  const handleSkip = () => {
-    if (!isForceUpdate) {
-      onSkip();
-    }
-  };
-
   return (
     <Modal
       visible={visible}
