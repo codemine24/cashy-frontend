@@ -98,7 +98,7 @@ export function LoanStatisticsContent({
               </P>
             </View>
             <View className="flex-1 items-center">
-              <P className="text-[10px] text-muted-foreground mb-1">Paid</P>
+              <P className="text-[10px] text-muted-foreground mb-1">Received</P>
               <P className="text-sm font-bold text-green-600" numberOfLines={1}>
                 {formatCurrency(given.paid, { showSymbol: false })}
               </P>
@@ -214,7 +214,9 @@ export function LoanStatisticsContent({
                     <CheckCircle2 size={16} color="#10B981" />
                   </View>
                   <View className="flex-1">
-                    <P className="text-[10px] text-muted-foreground">Paid</P>
+                    <P className="text-[10px] text-muted-foreground">
+                      Completed
+                    </P>
                     <P className="text-base font-bold text-green-600">
                       {paidCount}
                     </P>
@@ -241,7 +243,7 @@ export function LoanStatisticsContent({
                   {Math.round(ongoingPct)}% ongoing
                 </P>
                 <P className="text-[10px] text-muted-foreground">
-                  {Math.round(paidPct)}% paid
+                  {Math.round(paidPct)}% completed
                 </P>
               </View>
             </>
