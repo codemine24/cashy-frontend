@@ -102,13 +102,20 @@ export const useCategoryBreakdown = (
   });
 };
 
-export const useLoanSummary = () => {
+export const useLoanSummary = (
+  params: {
+    period?: "today" | "last_7_days" | "last_30_days" | "custom";
+    from_date?: string;
+    to_date?: string;
+  } = {},
+) => {
   return useQuery({
-    queryKey: keys.loanSummary(),
+    queryKey: [...keys.loanSummary(), params],
     queryFn: async () => {
       try {
         const response = await apiClient.get(
           `${STATISTICS_API_URL}/loan-summary`,
+          { params },
         );
         return response.data;
       } catch (error) {
