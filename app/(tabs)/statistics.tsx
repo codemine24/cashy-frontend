@@ -1,4 +1,8 @@
-import { useTransactionTrend, useWalletStats } from "@/api/statistics";
+import {
+  useLoanSummary,
+  useTransactionTrend,
+  useWalletStats,
+} from "@/api/statistics";
 import { useBooks } from "@/api/wallet";
 import { DateRangeModal } from "@/components/date-range-modal";
 import { ScreenContainer } from "@/components/screen-container";
@@ -10,7 +14,15 @@ import { cn } from "@/utils/cn";
 import { File as ExpoFile, Paths } from "expo-file-system";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import * as Sharing from "expo-sharing";
-import { BarChart3, Download, TrendingUp } from "lucide-react-native";
+import {
+  ArrowDownLeft,
+  ArrowUpRight,
+  BarChart3,
+  CheckCircle2,
+  Clock,
+  Download,
+  TrendingUp,
+} from "lucide-react-native";
 import { useCallback, useState } from "react";
 import {
   ActivityIndicator,
@@ -19,6 +31,8 @@ import {
   Pressable,
   RefreshControl,
   ScrollView,
+  Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 import Svg, {
@@ -36,8 +50,62 @@ import Toast from "react-native-toast-message";
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 type Period = "today" | "last_7_days" | "last_30_days" | "custom";
+type StatsTab = "WALLET" | "LOAN";
+
+function TabButton({
+  label,
+  active,
+  onPress,
+}: {
+  label: string;
+  active: boolean;
+  onPress: () => void;
+}) {
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      className={`flex-1 py-2.5 rounded-md items-center justify-center ${
+        active ? "bg-primary" : ""
+      }`}
+    >
+      <Text
+        className={`font-semibold text-sm ${
+          active ? "text-white" : "text-muted-foreground"
+        }`}
+      >
+        {label}
+      </Text>
+    </TouchableOpacity>
+  );
+}
 
 export default function StatisticsPage() {
+  const [activeStatsTab, setActiveStatsTab] = useState<StatsTab>("WALLET");
+
+  return (
+    <ScreenContainer
+      edges={["left", "right"]}
+      className="p-4 pb-0 bg-background"
+    >
+      <View className="mb-3 flex-row bg-muted rounded-lg p-1">
+        <TabButton
+          label="Wallet"
+          active={activeStatsTab === "WALLET"}
+          onPress={() => setActiveStatsTab("WALLET")}
+        />
+        <TabButton
+          label="Loan"
+          active={activeStatsTab === "LOAN"}
+          onPress={() => setActiveStatsTab("LOAN")}
+        />
+      </View>
+
+      {activeStatsTab === "WALLET" ? <WalletStatistics /> : <LoanStatistics />}
+    </ScreenContainer>
+  );
+}
+
+function WalletStatistics() {
   const router = useRouter();
   const { book_id } = useLocalSearchParams<{ book_id?: string }>();
   const [period, setPeriod] = useState<Period>("last_7_days");
@@ -157,10 +225,7 @@ export default function StatisticsPage() {
   };
 
   return (
-    <ScreenContainer
-      edges={["left", "right"]}
-      className="p-4 pb-0 bg-background"
-    >
+    <>
       <ScrollView
         showsVerticalScrollIndicator={false}
         className="flex-1"
@@ -481,7 +546,294 @@ export default function StatisticsPage() {
         initialStartDate={startDate}
         initialEndDate={endDate}
       />
-    </ScreenContainer>
+    </>
+  );
+}
+
+function LoanStatistics() {
+  const { isDark } = useTheme();
+  const [refreshing, setRefreshing] = useState(false);
+  const {
+    data: loanSummaryResponse,
+    isLoading,
+    refetch,
+  } = useLoanSummary();
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  }, [refetch]);
+
+  const loanSummary = loanSummaryResponse?.data || {
+    given: { total: 0, paid: 0, remaining: 0 },
+    taken: { total: 0, paid: 0, remaining: 0 },
+    balance: 0,
+    status_breakdown: { ongoing: 0, paid: 0 },
+  };
+
+  const { given, taken, balance, status_breakdown } = loanSummary;
+
+  const givenProgress =
+    given.total > 0 ? (given.paid / given.total) * 100 : 0;
+  const takenProgress =
+    taken.total > 0 ? (taken.paid / taken.total) * 100 : 0;
+
+  const ongoingCount = status_breakdown?.ongoing || 0;
+  const paidCount = status_breakdown?.paid || 0;
+  const totalStatus = ongoingCount + paidCount;
+  const ongoingPct = totalStatus > 0 ? (ongoingCount / totalStatus) * 100 : 0;
+  const paidPct = totalStatus > 0 ? (paidCount / totalStatus) * 100 : 0;
+
+  if (isLoading) {
+    return (
+      <View className="flex-1 items-center justify-center py-20">
+        <ActivityIndicator size="large" color="rgb(2, 146, 154)" />
+      </View>
+    );
+  }
+
+  return (
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      className="flex-1"
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+    >
+      {/* Summary Cards */}
+      <View className="mb-6 mt-1">
+        <View className="flex-row gap-2">
+          <View
+            className={`${isDark ? "bg-card" : "bg-white"} flex-1 border border-border rounded-2xl shadow-sm p-3`}
+          >
+            <P className="text-[10px] text-muted-foreground mb-1">
+              Total Lent
+            </P>
+            <P
+              className="text-base font-bold text-green-600"
+              numberOfLines={1}
+            >
+              {formatCurrency(given.total, { showSymbol: true })}
+            </P>
+          </View>
+          <View
+            className={`${isDark ? "bg-card" : "bg-white"} flex-1 border border-border rounded-2xl shadow-sm p-3`}
+          >
+            <P className="text-[10px] text-muted-foreground mb-1">
+              Total Borrowed
+            </P>
+            <P className="text-base font-bold text-red-600" numberOfLines={1}>
+              {formatCurrency(taken.total, { showSymbol: true })}
+            </P>
+          </View>
+          <View
+            className={`${isDark ? "bg-card" : "bg-white"} flex-1 border border-border rounded-2xl shadow-sm p-3`}
+          >
+            <P className="text-[10px] text-muted-foreground mb-1">
+              Net Balance
+            </P>
+            <P
+              className={`text-base font-bold ${
+                balance >= 0 ? "text-green-600" : "text-red-600"
+              }`}
+              numberOfLines={1}
+            >
+              {formatCurrency(balance, { showSymbol: true })}
+            </P>
+          </View>
+        </View>
+      </View>
+
+      {/* Money Lent Card */}
+      <View className="mb-4">
+        <View
+          className={`${isDark ? "bg-card" : "bg-white"} border border-border p-4 rounded-3xl shadow-sm`}
+        >
+          <View className="flex-row items-center gap-3 mb-4">
+            <View className="w-8 h-8 bg-primary/10 rounded-lg items-center justify-center">
+              <ArrowUpRight size={16} color="#02929A" />
+            </View>
+            <H3 className="text-left font-bold text-sm leading-tight flex-1">
+              Money Lent
+            </H3>
+          </View>
+
+          <View className="flex-row justify-between mb-3">
+            <View className="flex-1">
+              <P className="text-[10px] text-muted-foreground mb-1">Total</P>
+              <P
+                className="text-sm font-bold text-foreground"
+                numberOfLines={1}
+              >
+                {formatCurrency(given.total, { showSymbol: true })}
+              </P>
+            </View>
+            <View className="flex-1 items-center">
+              <P className="text-[10px] text-muted-foreground mb-1">Paid</P>
+              <P
+                className="text-sm font-bold text-green-600"
+                numberOfLines={1}
+              >
+                {formatCurrency(given.paid, { showSymbol: true })}
+              </P>
+            </View>
+            <View className="flex-1 items-end">
+              <P className="text-[10px] text-muted-foreground mb-1">
+                Remaining
+              </P>
+              <P
+                className="text-sm font-bold text-[#02929A]"
+                numberOfLines={1}
+              >
+                {formatCurrency(given.remaining, { showSymbol: true })}
+              </P>
+            </View>
+          </View>
+
+          <View className="h-2 bg-muted rounded-full overflow-hidden">
+            <View
+              className="h-full bg-green-600 rounded-full"
+              style={{ width: `${Math.min(givenProgress, 100)}%` }}
+            />
+          </View>
+          <P className="text-[10px] text-muted-foreground mt-2">
+            {Math.round(givenProgress)}% repaid
+          </P>
+        </View>
+      </View>
+
+      {/* Money Borrowed Card */}
+      <View className="mb-4">
+        <View
+          className={`${isDark ? "bg-card" : "bg-white"} border border-border p-4 rounded-3xl shadow-sm`}
+        >
+          <View className="flex-row items-center gap-3 mb-4">
+            <View className="w-8 h-8 bg-red-500/10 rounded-lg items-center justify-center">
+              <ArrowDownLeft size={16} color="#FF6B6B" />
+            </View>
+            <H3 className="text-left font-bold text-sm leading-tight flex-1">
+              Money Borrowed
+            </H3>
+          </View>
+
+          <View className="flex-row justify-between mb-3">
+            <View className="flex-1">
+              <P className="text-[10px] text-muted-foreground mb-1">Total</P>
+              <P
+                className="text-sm font-bold text-foreground"
+                numberOfLines={1}
+              >
+                {formatCurrency(taken.total, { showSymbol: true })}
+              </P>
+            </View>
+            <View className="flex-1 items-center">
+              <P className="text-[10px] text-muted-foreground mb-1">Paid</P>
+              <P
+                className="text-sm font-bold text-green-600"
+                numberOfLines={1}
+              >
+                {formatCurrency(taken.paid, { showSymbol: true })}
+              </P>
+            </View>
+            <View className="flex-1 items-end">
+              <P className="text-[10px] text-muted-foreground mb-1">
+                Remaining
+              </P>
+              <P className="text-sm font-bold text-red-600" numberOfLines={1}>
+                {formatCurrency(taken.remaining, { showSymbol: true })}
+              </P>
+            </View>
+          </View>
+
+          <View className="h-2 bg-muted rounded-full overflow-hidden">
+            <View
+              className="h-full bg-red-600 rounded-full"
+              style={{ width: `${Math.min(takenProgress, 100)}%` }}
+            />
+          </View>
+          <P className="text-[10px] text-muted-foreground mt-2">
+            {Math.round(takenProgress)}% repaid
+          </P>
+        </View>
+      </View>
+
+      {/* Status Breakdown */}
+      <View className="mb-8">
+        <View
+          className={`${isDark ? "bg-card" : "bg-white"} border border-border p-4 rounded-3xl shadow-sm`}
+        >
+          <View className="flex-row items-center gap-3 mb-4">
+            <View className="w-8 h-8 bg-primary/10 rounded-lg items-center justify-center">
+              <BarChart3 size={16} color="#02929A" />
+            </View>
+            <H3 className="text-left font-bold text-sm leading-tight flex-1">
+              Status Breakdown
+            </H3>
+          </View>
+
+          {totalStatus === 0 ? (
+            <View className="py-6 items-center">
+              <P className="text-muted-foreground text-sm">No loans yet</P>
+            </View>
+          ) : (
+            <>
+              <View className="flex-row gap-3 mb-3">
+                <View className="flex-1 flex-row items-center gap-2 bg-amber-500/10 rounded-xl p-3">
+                  <View className="w-9 h-9 rounded-full bg-amber-500/20 items-center justify-center">
+                    <Clock size={16} color="#F59E0B" />
+                  </View>
+                  <View className="flex-1">
+                    <P className="text-[10px] text-muted-foreground">
+                      Ongoing
+                    </P>
+                    <P className="text-base font-bold text-amber-500">
+                      {ongoingCount}
+                    </P>
+                  </View>
+                </View>
+                <View className="flex-1 flex-row items-center gap-2 bg-green-500/10 rounded-xl p-3">
+                  <View className="w-9 h-9 rounded-full bg-green-500/20 items-center justify-center">
+                    <CheckCircle2 size={16} color="#10B981" />
+                  </View>
+                  <View className="flex-1">
+                    <P className="text-[10px] text-muted-foreground">Paid</P>
+                    <P className="text-base font-bold text-green-600">
+                      {paidCount}
+                    </P>
+                  </View>
+                </View>
+              </View>
+
+              <View className="flex-row h-3 rounded-full overflow-hidden bg-muted">
+                {ongoingPct > 0 && (
+                  <View
+                    className="bg-amber-500 h-full"
+                    style={{ width: `${ongoingPct}%` }}
+                  />
+                )}
+                {paidPct > 0 && (
+                  <View
+                    className="bg-green-600 h-full"
+                    style={{ width: `${paidPct}%` }}
+                  />
+                )}
+              </View>
+              <View className="flex-row justify-between mt-2">
+                <P className="text-[10px] text-muted-foreground">
+                  {Math.round(ongoingPct)}% ongoing
+                </P>
+                <P className="text-[10px] text-muted-foreground">
+                  {Math.round(paidPct)}% paid
+                </P>
+              </View>
+            </>
+          )}
+        </View>
+      </View>
+
+      <View className="h-20" />
+    </ScrollView>
   );
 }
 
