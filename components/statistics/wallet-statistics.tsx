@@ -413,6 +413,63 @@ export function WalletStatistics() {
                     </View>
                   </View>
                 </View>
+
+                {/* Top Sources of Income */}
+                <View
+                  className={`${isDark ? "bg-card" : "bg-white"} border border-border p-4 pb-6 rounded-3xl shadow-sm`}
+                >
+                  <View className="flex-row items-center gap-3 mb-4">
+                    <View className="w-8 h-8 bg-primary/10 rounded-lg items-center justify-center">
+                      <BarChart3 size={16} color="#02929A" />
+                    </View>
+                    <H3 className="text-left font-bold text-sm leading-tight flex-1">
+                      Top Income Sources
+                    </H3>
+                  </View>
+                  <View className="flex-row gap-6">
+                    {/* Graph Section - 3 parts */}
+                    <ExpenseByCategoryChart
+                      data={walletStats.top_sources.map((source: any) => ({
+                        category: source.source,
+                        percentage:
+                          walletStats.in > 0
+                            ? (source.amount / walletStats.in) * 100
+                            : 0,
+                      }))}
+                    />
+
+                    {/* Labels Section - 1 part */}
+                    <View className="flex-1 gap-y-1">
+                      {walletStats.top_sources.map((source: any, i: number) => {
+                        const labelColor = colors[i % colors.length];
+
+                        return (
+                          <View key={i} className="flex-row items-center gap-x-1">
+                            <View
+                              className="w-2 h-2 rounded-full"
+                              style={{
+                                backgroundColor: labelColor,
+                              }}
+                            />
+                            <View className="flex-1">
+                              <P
+                                className="text-[10px] text-muted-foreground font-semibold leading-tight"
+                                numberOfLines={1}
+                              >
+                                {source.source}
+                              </P>
+                            </View>
+                            <P className="text-[10px] text-muted-foreground font-bold ml-1">
+                              {formatCurrency(source.amount, {
+                                showSymbol: false,
+                              })}
+                            </P>
+                          </View>
+                        );
+                      })}
+                    </View>
+                  </View>
+                </View>
               </View>
             </View>
 
