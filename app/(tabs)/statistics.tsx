@@ -414,72 +414,132 @@ function WalletStatistics() {
 
             {/* Grid of smaller charts */}
             <View className="mb-8">
-              <View className="flex-row gap-x-4">
-                <View className="flex-1">
-                  <View
-                    className={`${isDark ? "bg-card" : "bg-white"} border border-border p-4 rounded-3xl shadow-sm`}
-                  >
-                    <View className="flex-row items-center gap-3 mb-4">
-                      <View className="w-8 h-8 bg-primary/10 rounded-lg items-center justify-center">
-                        <BarChart3 size={16} color="#02929A" />
-                      </View>
-                      <H3 className="text-left font-bold text-sm leading-tight flex-1">
-                        Expense by Category
-                      </H3>
+              <View className="flex-col gap-y-6">
+                {/* Expense by Category Chart */}
+                <View
+                  className={`${isDark ? "bg-card" : "bg-white"} border border-border p-4 rounded-3xl shadow-sm`}
+                >
+                  <View className="flex-row items-center gap-3 mb-4">
+                    <View className="w-8 h-8 bg-primary/10 rounded-lg items-center justify-center">
+                      <BarChart3 size={16} color="#02929A" />
                     </View>
-                    <View className="flex-row gap-4">
-                      {/* Graph Section - 3 parts */}
-                      <View className="flex-[3] items-center justify-center">
-                        <CategorySpendingChart
-                          data={walletStats.category_spending}
-                        />
-                      </View>
+                    <H3 className="text-left font-bold text-sm leading-tight flex-1">
+                      Expense by Category
+                    </H3>
+                  </View>
+                  <View className="flex-row gap-4">
+                    {/* Graph Section - 3 parts */}
+                    <View className="flex-[3] items-center justify-center">
+                      <CategorySpendingChart
+                        data={walletStats.category_spending}
+                      />
+                    </View>
 
-                      {/* Labels Section - 1 part */}
-                      <View className="flex-1 gap-y-1">
-                        {walletStats.category_spending
-                          .slice(0, 5)
-                          .map((cat: any, i: number) => {
-                            // Enhanced color palette matching the chart
-                            const colors = [
-                              "#02929A", // Teal
-                              "#FF6B6B", // Red
-                              "#4ECDC4", // Turquoise
-                              "#45B7D1", // Blue
-                              "#FFA07A", // Light Salmon
-                              "#98D8C8", // Mint
-                              "#FFD93D", // Yellow
-                              "#6BCF7F", // Green
-                              "#C56CF0", // Purple
-                              "#FF8CC3", // Pink
-                            ];
-                            const labelColor = colors[i % colors.length];
+                    {/* Labels Section - 1 part */}
+                    <View className="flex-1 gap-y-1">
+                      {walletStats.category_spending
+                        .slice(0, 5)
+                        .map((cat: any, i: number) => {
+                          // Enhanced color palette matching the chart
+                          const colors = [
+                            "#02929A", // Teal
+                            "#FF6B6B", // Red
+                            "#4ECDC4", // Turquoise
+                            "#45B7D1", // Blue
+                            "#FFA07A", // Light Salmon
+                            "#98D8C8", // Mint
+                            "#FFD93D", // Yellow
+                            "#6BCF7F", // Green
+                            "#C56CF0", // Purple
+                            "#FF8CC3", // Pink
+                          ];
+                          const labelColor = colors[i % colors.length];
 
-                            return (
+                          return (
+                            <View
+                              key={i}
+                              className="flex-row items-center gap-x-1"
+                            >
                               <View
-                                key={i}
-                                className="flex-row items-center gap-x-1"
-                              >
-                                <View
-                                  className="w-2 h-2 rounded-full"
-                                  style={{
-                                    backgroundColor: labelColor,
-                                  }}
-                                />
-                                <View className="flex-1">
-                                  <P
-                                    className="text-[9px] text-muted-foreground font-semibold leading-tight"
-                                    numberOfLines={1}
-                                  >
-                                    {cat.category}
-                                  </P>
-                                </View>
-                                <P className="text-[9px] text-muted-foreground font-bold ml-1">
-                                  {Math.round(cat.percentage)}%
+                                className="w-2 h-2 rounded-full"
+                                style={{
+                                  backgroundColor: labelColor,
+                                }}
+                              />
+                              <View className="flex-1">
+                                <P
+                                  className="text-[9px] text-muted-foreground font-semibold leading-tight"
+                                  numberOfLines={1}
+                                >
+                                  {cat.category}
                                 </P>
                               </View>
-                            );
-                          })}
+                              <P className="text-[9px] text-muted-foreground font-bold ml-1">
+                                {Math.round(cat.percentage)}%
+                              </P>
+                            </View>
+                          );
+                        })}
+                    </View>
+                  </View>
+                </View>
+
+                {/* Income vs Expense Chart */}
+                <View
+                  className={`${isDark ? "bg-card" : "bg-white"} border border-border p-4 rounded-3xl shadow-sm`}
+                >
+                  <View className="flex-row items-center gap-3 mb-4">
+                    <View className="w-8 h-8 bg-primary/10 rounded-lg items-center justify-center">
+                      <TrendingUp size={16} color="#02929A" />
+                    </View>
+                    <H3 className="text-left font-bold text-sm leading-tight flex-1">
+                      In vs Out
+                    </H3>
+                  </View>
+                  <View className="flex-row gap-4">
+                    {/* Graph Section - 3 parts */}
+                    <View className="flex-[3] items-center justify-center">
+                      <IncomeVsExpenseChart
+                        income={walletStats.income_vs_expense?.income || 0}
+                        expense={walletStats.income_vs_expense?.expense || 0}
+                      />
+                    </View>
+
+                    {/* Labels Section - 1 part */}
+                    <View className="flex-1 gap-y-3 justify-center">
+                      <View className="flex-row items-center gap-x-2">
+                        <View className="w-2.5 h-2.5 rounded-full bg-[#02929A]" />
+                        <View className="flex-1">
+                          <P className="text-[10px] text-muted-foreground font-semibold leading-tight">
+                            Income
+                          </P>
+                          <P
+                            className="text-[11px] font-bold text-foreground"
+                            numberOfLines={1}
+                          >
+                            {formatCurrency(
+                              walletStats.income_vs_expense?.income || 0,
+                              { showSymbol: false },
+                            )}
+                          </P>
+                        </View>
+                      </View>
+                      <View className="flex-row items-center gap-x-2">
+                        <View className="w-2.5 h-2.5 rounded-full bg-[#FF6B6B]" />
+                        <View className="flex-1">
+                          <P className="text-[10px] text-muted-foreground font-semibold leading-tight">
+                            Out
+                          </P>
+                          <P
+                            className="text-[11px] font-bold text-foreground"
+                            numberOfLines={1}
+                          >
+                            {formatCurrency(
+                              walletStats.income_vs_expense?.expense || 0,
+                              { showSymbol: false },
+                            )}
+                          </P>
+                        </View>
                       </View>
                     </View>
                   </View>
@@ -1093,6 +1153,58 @@ function TransactionTrendChart({ data }: { data: any[] }) {
           </P>
         </View>
       </View>
+    </View>
+  );
+}
+
+function IncomeVsExpenseChart({
+  income,
+  expense,
+}: {
+  income: number;
+  expense: number;
+}) {
+  const chartHeight = 90;
+  const barWidth = 24;
+  const gap = 20;
+  const maxVal = Math.max(income, expense, 1);
+  const incomeHeight = (income / maxVal) * chartHeight;
+  const expenseHeight = (expense / maxVal) * chartHeight;
+
+  return (
+    <View className="items-center justify-center py-2">
+      <Svg height={chartHeight + 10} width={barWidth * 2 + gap}>
+        <Defs>
+          <LinearGradient id="incomeGrad" x1="0" y1="0" x2="0" y2="1">
+            <Stop offset="0" stopColor="#02929A" stopOpacity="0.8" />
+            <Stop offset="1" stopColor="#02929A" stopOpacity="0.3" />
+          </LinearGradient>
+          <LinearGradient id="expenseGrad" x1="0" y1="0" x2="0" y2="1">
+            <Stop offset="0" stopColor="#FF6B6B" stopOpacity="0.8" />
+            <Stop offset="1" stopColor="#FF6B6B" stopOpacity="0.3" />
+          </LinearGradient>
+        </Defs>
+
+        {/* Income Bar */}
+        <Rect
+          x={0}
+          y={chartHeight - incomeHeight}
+          width={barWidth}
+          height={incomeHeight}
+          fill="url(#incomeGrad)"
+          rx="4"
+        />
+
+        {/* Expense Bar */}
+        <Rect
+          x={barWidth + gap}
+          y={chartHeight - expenseHeight}
+          width={barWidth}
+          height={expenseHeight}
+          fill="url(#expenseGrad)"
+          rx="4"
+        />
+      </Svg>
     </View>
   );
 }
