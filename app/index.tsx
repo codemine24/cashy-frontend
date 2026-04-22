@@ -1,10 +1,10 @@
 import { ScreenWrapper } from "@/components/screen-wrapper";
 import { Button } from "@/components/ui/button";
-import { UpdateModal } from "@/components/update-modal";
 import { OnboardingCarousel } from "@/components/welcome/onboarding-carousel";
+import { UpdateModal } from "@/components/update-modal";
 import { WelcomeHeader } from "@/components/welcome/welcome-header";
 import { useAuth } from "@/context/auth-context";
-import { useAppUpdate } from "@/hooks/use-app-update";
+import { useAppUpdate } from "@/hooks/useAppUpdate";
 import { useRouter } from "expo-router";
 import { useEffect } from "react";
 import { View } from "react-native";
@@ -23,10 +23,10 @@ export default function WelcomeScreen() {
   } = useAppUpdate();
 
   useEffect(() => {
-    if (authReady && authState.isAuthenticated && !isChecking) {
+    if (authReady && authState.isAuthenticated) {
       router.replace("/(tabs)");
     }
-  }, [authReady, authState.isAuthenticated, router, isChecking]);
+  }, [authReady, authState.isAuthenticated, router]);
 
   useEffect(() => {
     checkUpdates();
@@ -50,17 +50,13 @@ export default function WelcomeScreen() {
   }
 
   return (
-    <ScreenWrapper className="bg-background px-6 ">
-      {/* <View className="flex-1 px-6"> */}
-      {/* ── Header: Logo ── */}
+    <ScreenWrapper className="bg-background px-6">
       <WelcomeHeader />
-
-      {/* ── Onboarding Carousel ── */}
       <OnboardingCarousel />
-
-      {/* ── Bottom CTA ── */}
+      
       <View className="mb-16">
         <Button
+          disabled={isChecking}
           onPress={() => {
             try {
               router.push("/login-type");
@@ -68,12 +64,11 @@ export default function WelcomeScreen() {
               console.error("Navigation error:", error);
             }
           }}
-          disabled={isChecking}
         >
-          {isChecking ? "Checking..." : "Get Started"}
+          Get Started
         </Button>
       </View>
-      {/* </View> */}
+
       <UpdateModal
         visible={showModal}
         versionInfo={versionInfo}

@@ -37,16 +37,13 @@ export default function LoginTypeScreen() {
   }, [authReady, router, authState.isAuthenticated]);
 
   const signInWithGoogle = async () => {
-    if(loading) return;
+    if (loading) return;
 
     try {
       setLoading(true);
 
       // Check if device supports Google Play Services
       await GoogleSignin.hasPlayServices();
-
-      // Force sign-out to show account picker every time
-    //   await GoogleSignin.signOut();
 
       // Open Google Sign-In modal
       const userInfo = await GoogleSignin.signIn();

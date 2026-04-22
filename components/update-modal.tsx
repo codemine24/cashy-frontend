@@ -1,8 +1,8 @@
-import { Button } from "@/components/ui/button";
-import { H3, Muted, P } from "@/components/ui/typography";
-import { CrossIcon } from "@/icons/cross-icon";
-import { VersionInfo } from "@/utils/updateService";
-import { Modal, TouchableOpacity, View } from "react-native";
+import { Button } from '@/components/ui/button';
+import { H3, Muted, P } from '@/components/ui/typography';
+import { CrossIcon } from '@/icons/cross-icon';
+import { Modal, TouchableOpacity, View } from 'react-native';
+import { VersionInfo } from '@/utils/updateService';
 
 interface UpdateModalProps {
   visible: boolean;
@@ -23,6 +23,12 @@ export function UpdateModal({
     onUpdateNow();
   };
 
+  const handleSkip = () => {
+    if (!isForceUpdate) {
+      onSkip();
+    }
+  };
+
   return (
     <Modal
       visible={visible}
@@ -36,10 +42,13 @@ export function UpdateModal({
           {/* Header */}
           <View className="flex-row items-center justify-between mb-4">
             <H3 className="flex-1">
-              {isForceUpdate ? "Update Required" : "Update Available"}
+              {isForceUpdate ? 'Update Required' : 'Update Available'}
             </H3>
             {!isForceUpdate && (
-              <TouchableOpacity onPress={onSkip} className="p-1">
+              <TouchableOpacity
+                onPress={onSkip}
+                className="p-1"
+              >
                 <CrossIcon className="size-4 text-foreground" />
               </TouchableOpacity>
             )}
@@ -48,11 +57,12 @@ export function UpdateModal({
           {/* Message */}
           <View className="mb-6">
             <Muted className="mb-3">
-              {isForceUpdate
-                ? "This update is required to continue using the app. Please update to the latest version."
-                : "A new version of Cashy is available with improvements and new features."}
+              {isForceUpdate 
+                ? 'This update is required to continue using the app. Please update to the latest version.'
+                : 'A new version of Cashy is available with improvements and new features.'
+              }
             </Muted>
-
+            
             {versionInfo && (
               <View className="bg-muted/50 rounded-lg p-3">
                 <P className="text-sm font-medium text-foreground mb-1">
@@ -68,7 +78,7 @@ export function UpdateModal({
           </View>
 
           {/* Action Buttons */}
-          <View className={isForceUpdate ? "" : "flex-row gap-3"}>
+          <View className={isForceUpdate ? '' : 'flex-row gap-3'}>
             {!isForceUpdate && (
               <Button
                 onPress={onSkip}
@@ -84,7 +94,7 @@ export function UpdateModal({
 
             <Button
               onPress={handleUpdateNow}
-              className={isForceUpdate ? "w-full" : "flex-1"}
+              className={isForceUpdate ? 'w-full' : 'flex-1'}
               size="sm"
             >
               <View className="flex-row items-center justify-center">
