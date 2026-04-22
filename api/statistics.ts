@@ -19,7 +19,7 @@ const keys = {
 
 export const useWalletStats = (
   params: {
-    period?: "today" | "last_7_days" | "last_30_days" | "custom";
+    period?: "all_time" | "today" | "last_7_days" | "last_30_days" | "custom";
     book_id?: string;
     from_date?: string;
     to_date?: string;
@@ -104,7 +104,7 @@ export const useCategoryBreakdown = (
 
 export const useLoanSummary = (
   params: {
-    period?: "today" | "last_7_days" | "last_30_days" | "custom";
+    period?: "all_time" | "today" | "last_7_days" | "last_30_days" | "custom";
     from_date?: string;
     to_date?: string;
   } = {},

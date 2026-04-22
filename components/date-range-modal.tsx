@@ -44,7 +44,9 @@ export function DateRangeModal({
       <View className="px-6 pt-3 pb-4">
         {/* Header */}
         <View className="flex-row justify-between items-center mb-6 border-b border-border pb-3">
-          <P className="text-xl font-bold text-foreground">Custom Date Range</P>
+          <P className="text-xl font-bold text-foreground" numberOfLines={1}>
+            Custom Date Range
+          </P>
           <TouchableOpacity
             onPress={handleClose}
             className="w-8 h-8 items-center justify-center"
@@ -99,6 +101,7 @@ export function DateRangeModal({
                   ? "text-primary-foreground"
                   : "text-muted-foreground"
               }`}
+              numberOfLines={1}
             >
               Apply Date Range
             </P>

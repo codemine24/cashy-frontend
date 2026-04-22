@@ -49,7 +49,12 @@ import Toast from "react-native-toast-message";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
-type Period = "today" | "last_7_days" | "last_30_days" | "custom";
+type Period =
+  | "all_time"
+  | "today"
+  | "last_7_days"
+  | "last_30_days"
+  | "custom";
 type StatsTab = "WALLET" | "LOAN";
 
 function TabButton({
@@ -108,7 +113,7 @@ export default function StatisticsPage() {
 function WalletStatistics() {
   const router = useRouter();
   const { book_id } = useLocalSearchParams<{ book_id?: string }>();
-  const [period, setPeriod] = useState<Period>("last_7_days");
+  const [period, setPeriod] = useState<Period>("all_time");
   const { isDark } = useTheme();
   const [refreshing, setRefreshing] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -124,7 +129,7 @@ function WalletStatistics() {
     isLoading: isStatsLoading,
     refetch,
   } = useWalletStats({
-    period,
+    ...(period !== "all_time" && { period }),
     book_id: activeBookId === "all" ? undefined : activeBookId,
     ...(period === "custom" && {
       from_date: startDate?.toISOString().split("T")[0],
@@ -134,7 +139,7 @@ function WalletStatistics() {
 
   const { data: transactionTrendResponse, isLoading: isTrendLoading } =
     useTransactionTrend({
-      period,
+      ...(period !== "all_time" && { period }),
       book_id: activeBookId === "all" ? undefined : activeBookId,
       ...(period === "custom" && {
         from_date: startDate?.toISOString().split("T")[0],
@@ -163,7 +168,7 @@ function WalletStatistics() {
       const baseUrl = process.env.EXPO_PUBLIC_SERVER_URL;
       const queryParams = new URLSearchParams();
 
-      if (period) {
+      if (period && period !== "all_time") {
         queryParams.append("period", period);
       }
       if (activeBookId !== "all") {
@@ -295,7 +300,13 @@ function WalletStatistics() {
         <View className="mb-4 border-b border-border/30">
           <View className="flex-row items-center justify-around">
             {(
-              ["today", "last_7_days", "last_30_days", "custom"] as Period[]
+              [
+                "all_time",
+                "today",
+                "last_7_days",
+                "last_30_days",
+                "custom",
+              ] as Period[]
             ).map((p) => (
               <Pressable
                 key={p}
@@ -317,15 +328,17 @@ function WalletStatistics() {
                   )}
                   numberOfLines={1}
                 >
-                  {p === "today"
-                    ? "Today"
-                    : p === "last_7_days"
-                      ? "Last 7 Days"
-                      : p === "last_30_days"
-                        ? "Last 30 Days"
-                        : p === "custom" && startDate && endDate
-                          ? `${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`
-                          : "Custom"}
+                  {p === "all_time"
+                    ? "All Time"
+                    : p === "today"
+                      ? "Today"
+                      : p === "last_7_days"
+                        ? "Last 7 Days"
+                        : p === "last_30_days"
+                          ? "Last 30 Days"
+                          : p === "custom" && startDate && endDate
+                            ? `${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`
+                            : "Custom"}
                 </P>
                 {period === p && (
                   <View className="h-[3px] bg-primary w-16 rounded-t-full" />
@@ -553,7 +566,7 @@ function WalletStatistics() {
 function LoanStatistics() {
   const { isDark } = useTheme();
   const [refreshing, setRefreshing] = useState(false);
-  const [period, setPeriod] = useState<Period>("last_7_days");
+  const [period, setPeriod] = useState<Period>("all_time");
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
@@ -563,7 +576,7 @@ function LoanStatistics() {
     isLoading,
     refetch,
   } = useLoanSummary({
-    period,
+    ...(period !== "all_time" && { period }),
     ...(period === "custom" && {
       from_date: startDate?.toISOString().split("T")[0],
       to_date: endDate?.toISOString().split("T")[0],
@@ -596,7 +609,13 @@ function LoanStatistics() {
         <View className="mb-4 border-b border-border/30">
           <View className="flex-row items-center justify-around">
             {(
-              ["today", "last_7_days", "last_30_days", "custom"] as Period[]
+              [
+                "all_time",
+                "today",
+                "last_7_days",
+                "last_30_days",
+                "custom",
+              ] as Period[]
             ).map((p) => (
               <Pressable
                 key={p}
@@ -618,15 +637,17 @@ function LoanStatistics() {
                   )}
                   numberOfLines={1}
                 >
-                  {p === "today"
-                    ? "Today"
-                    : p === "last_7_days"
-                      ? "Last 7 Days"
-                      : p === "last_30_days"
-                        ? "Last 30 Days"
-                        : p === "custom" && startDate && endDate
-                          ? `${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`
-                          : "Custom"}
+                  {p === "all_time"
+                    ? "All Time"
+                    : p === "today"
+                      ? "Today"
+                      : p === "last_7_days"
+                        ? "Last 7 Days"
+                        : p === "last_30_days"
+                          ? "Last 30 Days"
+                          : p === "custom" && startDate && endDate
+                            ? `${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`
+                            : "Custom"}
                 </P>
                 {period === p && (
                   <View className="h-[3px] bg-primary w-16 rounded-t-full" />
