@@ -356,7 +356,6 @@ function WalletStatistics() {
             >
               <P className="text-[10px] text-muted-foreground mb-1">Total In</P>
               <P className="text-base font-bold text-green-600">
-                $
                 {walletStats.income_vs_expense?.income?.toLocaleString() || "0"}
               </P>
             </View>
@@ -367,7 +366,6 @@ function WalletStatistics() {
                 Total Out
               </P>
               <P className="text-base font-bold text-red-600">
-                $
                 {walletStats.income_vs_expense?.expense?.toLocaleString() ||
                   "0"}
               </P>
@@ -387,7 +385,6 @@ function WalletStatistics() {
                     : "text-red-600"
                 }`}
               >
-                $
                 {(
                   (walletStats.income_vs_expense?.income || 0) -
                   (walletStats.income_vs_expense?.expense || 0)
@@ -726,7 +723,7 @@ function LoanStatisticsContent({
               className="text-base font-bold text-green-600"
               numberOfLines={1}
             >
-              {formatCurrency(given.total, { showSymbol: true })}
+              {formatCurrency(given.total, { showSymbol: false })}
             </P>
           </View>
           <View
@@ -736,7 +733,7 @@ function LoanStatisticsContent({
               Total Borrowed
             </P>
             <P className="text-base font-bold text-red-600" numberOfLines={1}>
-              {formatCurrency(taken.total, { showSymbol: true })}
+              {formatCurrency(taken.total, { showSymbol: false })}
             </P>
           </View>
           <View
@@ -751,7 +748,7 @@ function LoanStatisticsContent({
               }`}
               numberOfLines={1}
             >
-              {formatCurrency(balance, { showSymbol: true })}
+              {formatCurrency(balance, { showSymbol: false })}
             </P>
           </View>
         </View>
@@ -778,7 +775,7 @@ function LoanStatisticsContent({
                 className="text-sm font-bold text-foreground"
                 numberOfLines={1}
               >
-                {formatCurrency(given.total, { showSymbol: true })}
+                {formatCurrency(given.total, { showSymbol: false })}
               </P>
             </View>
             <View className="flex-1 items-center">
@@ -787,7 +784,7 @@ function LoanStatisticsContent({
                 className="text-sm font-bold text-green-600"
                 numberOfLines={1}
               >
-                {formatCurrency(given.paid, { showSymbol: true })}
+                {formatCurrency(given.paid, { showSymbol: false })}
               </P>
             </View>
             <View className="flex-1 items-end">
@@ -798,7 +795,7 @@ function LoanStatisticsContent({
                 className="text-sm font-bold text-[#02929A]"
                 numberOfLines={1}
               >
-                {formatCurrency(given.remaining, { showSymbol: true })}
+                {formatCurrency(given.remaining, { showSymbol: false })}
               </P>
             </View>
           </View>
@@ -836,7 +833,7 @@ function LoanStatisticsContent({
                 className="text-sm font-bold text-foreground"
                 numberOfLines={1}
               >
-                {formatCurrency(taken.total, { showSymbol: true })}
+                {formatCurrency(taken.total, { showSymbol: false })}
               </P>
             </View>
             <View className="flex-1 items-center">
@@ -845,7 +842,7 @@ function LoanStatisticsContent({
                 className="text-sm font-bold text-green-600"
                 numberOfLines={1}
               >
-                {formatCurrency(taken.paid, { showSymbol: true })}
+                {formatCurrency(taken.paid, { showSymbol: false })}
               </P>
             </View>
             <View className="flex-1 items-end">
@@ -853,7 +850,7 @@ function LoanStatisticsContent({
                 Remaining
               </P>
               <P className="text-sm font-bold text-red-600" numberOfLines={1}>
-                {formatCurrency(taken.remaining, { showSymbol: true })}
+                {formatCurrency(taken.remaining, { showSymbol: false })}
               </P>
             </View>
           </View>
