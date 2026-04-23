@@ -96,12 +96,11 @@ export default function SettingsScreen() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const handleLogout = async () => {
-    router.navigate("/auth");
     await removeAccessToken();
     await clearUserInfo();
     setAuthState({ isAuthenticated: false, user: null });
     navigation.dispatch(
-      CommonActions.reset({ index: 0, routes: [{ name: "auth" }] }),
+      CommonActions.reset({ index: 0, routes: [{ name: "login-type" }] }),
     );
   };
 

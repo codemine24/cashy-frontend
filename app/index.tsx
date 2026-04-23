@@ -9,8 +9,16 @@ import { View } from "react-native";
 
 export default function WelcomeScreen() {
   const router = useRouter();
-
   const { authState, authReady } = useAuth();
+  // const {
+  //   isChecking,
+  //   showModal,
+  //   versionInfo,
+  //   isForceUpdate,
+  //   checkUpdates,
+  //   handleUpdateNow,
+  //   handleSkip,
+  // } = useAppUpdate();
 
   useEffect(() => {
     if (authReady && authState.isAuthenticated) {
@@ -18,25 +26,24 @@ export default function WelcomeScreen() {
     }
   }, [authReady, authState.isAuthenticated, router]);
 
+  // useEffect(() => {
+  //   checkUpdates();
+  // }, [checkUpdates]);
+
   if (!authReady) {
     return null;
   }
-  return (
-    <ScreenWrapper className="bg-background px-6 ">
-      {/* <View className="flex-1 px-6"> */}
-      {/* ── Header: Logo ── */}
-      <WelcomeHeader />
 
-      {/* ── Onboarding Carousel ── */}
+  return (
+    <ScreenWrapper className="bg-background px-6">
+      <WelcomeHeader />
       <OnboardingCarousel />
 
-      {/* ── Bottom CTA ── */}
       <View className="mb-16">
         <Button
           onPress={() => {
             try {
-              console.log("Navigating to login-type");
-              router.replace("/auth");
+              router.push("/auth");
             } catch (error) {
               console.error("Navigation error:", error);
             }
@@ -45,7 +52,14 @@ export default function WelcomeScreen() {
           Get Started
         </Button>
       </View>
-      {/* </View> */}
+
+      {/* <UpdateModal
+        visible={showModal}
+        versionInfo={versionInfo}
+        onUpdateNow={handleUpdateNow}
+        onSkip={handleSkip}
+        isForceUpdate={isForceUpdate}
+      /> */}
     </ScreenWrapper>
   );
 }

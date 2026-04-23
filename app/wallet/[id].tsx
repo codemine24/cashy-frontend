@@ -441,8 +441,9 @@ export default function BookDetailScreen() {
   };
 
   return (
-    <ScreenContainer edges={["left", "right"]} className="py-4 bg-background">
-      <View className="flex-1">
+    <ScreenContainer edges={["left", "right"]} className="bg-background">
+      <View className="flex-1 border-t border-border pt-4">
+        {/* header */}
         <Stack.Screen
           options={{
             title: selectedTransaction ? "1 Selected" : book.data.name,
@@ -614,7 +615,7 @@ export default function BookDetailScreen() {
                       <Text className="text-foreground font-bold text-[14px]">
                         {formatNumber(
                           (walletStatsResponse?.data?.in || 0) -
-                            (walletStatsResponse?.data?.out || 0),
+                          (walletStatsResponse?.data?.out || 0),
                         )}
                       </Text>
                     </View>
@@ -679,12 +680,11 @@ export default function BookDetailScreen() {
                           return (
                             <View
                               key={member.id || index}
-                              className={`px-3 py-2 flex-row items-center justify-between ${
-                                index !==
+                              className={`px-3 py-2 flex-row items-center justify-between ${index !==
                                 Math.min(book.data.others_member.length, 2) - 1
-                                  ? "border-b border-border"
-                                  : ""
-                              }`}
+                                ? "border-b border-border"
+                                : ""
+                                }`}
                             >
                               <View className="flex-row items-center flex-1">
                                 {/* Avatar */}
@@ -797,9 +797,8 @@ export default function BookDetailScreen() {
                       }
                     }}
                     onLongPress={() => setSelectedTransaction(item)}
-                    className={`px-4 py-4 flex-row justify-between ${
-                      selectedTransaction?.id === item.id ? "bg-primary/10" : ""
-                    } ${index !== data.length - 1 ? "border-b border-border" : ""}`}
+                    className={`px-4 py-4 flex-row justify-between ${selectedTransaction?.id === item.id ? "bg-primary/10" : ""
+                      } ${index !== data.length - 1 ? "border-b border-border" : ""}`}
                   >
                     <View className="flex-1 mr-3">
                       <View className="flex-row items-center justify-between mb-2">
@@ -830,7 +829,7 @@ export default function BookDetailScreen() {
                       <Text className="text-sm text-muted-foreground">
                         {Math.abs(
                           new Date(item.created_at).getTime() -
-                            new Date(item.updated_at).getTime(),
+                          new Date(item.updated_at).getTime(),
                         ) < 30000
                           ? "Created: "
                           : "Updated: "}{" "}
@@ -847,11 +846,10 @@ export default function BookDetailScreen() {
                     </View>
                     <View className="items-end justify-center">
                       <Text
-                        className={`text-base font-bold mb-2 ${
-                          item.type === "IN"
-                            ? "text-success"
-                            : "text-destructive"
-                        }`}
+                        className={`text-base font-bold mb-2 ${item.type === "IN"
+                          ? "text-success"
+                          : "text-destructive"
+                          }`}
                       >
                         {formatNumber(item.amount)}
                       </Text>

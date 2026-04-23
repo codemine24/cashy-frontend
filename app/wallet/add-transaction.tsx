@@ -1,4 +1,5 @@
 import { useCreateTransaction, useUpdateTransaction } from "@/api/transaction";
+import { ScreenContainer } from "@/components/screen-container";
 import { InputError } from "@/components/ui/input-error";
 import { useKeyboardVisible } from "@/hooks/use-keyboard-visible";
 import { useKeyboardOffset } from "@/hooks/useKeyboardOffset";
@@ -253,32 +254,32 @@ export default function AddTransactionScreen() {
   const buildFormData = (isUpdate = false) => {
     const dataPayload = isUpdate
       ? {
-          amount: parseFloat(amount),
-          category_id: !isDeposit
-            ? selectedCategory === "other" || !selectedCategory
-              ? undefined
-              : selectedCategory
-            : undefined,
-          remark,
-          date: formatDateToUTC(date),
-          time: formatTimeToUTC(date),
-          attachment: attachments
-            .filter((a) => a.isExisting)
-            .map((a) => a.name),
-        }
+        amount: parseFloat(amount),
+        category_id: !isDeposit
+          ? selectedCategory === "other" || !selectedCategory
+            ? undefined
+            : selectedCategory
+          : undefined,
+        remark,
+        date: formatDateToUTC(date),
+        time: formatTimeToUTC(date),
+        attachment: attachments
+          .filter((a) => a.isExisting)
+          .map((a) => a.name),
+      }
       : {
-          book_id: bookId,
-          type,
-          amount: parseFloat(amount),
-          category_id: !isDeposit
-            ? selectedCategory === "other" || !selectedCategory
-              ? undefined
-              : selectedCategory
-            : undefined,
-          remark,
-          date: formatDateToUTC(date),
-          time: formatTimeToUTC(date),
-        };
+        book_id: bookId,
+        type,
+        amount: parseFloat(amount),
+        category_id: !isDeposit
+          ? selectedCategory === "other" || !selectedCategory
+            ? undefined
+            : selectedCategory
+          : undefined,
+        remark,
+        date: formatDateToUTC(date),
+        time: formatTimeToUTC(date),
+      };
 
     const formData = new FormData();
     formData.append("data", JSON.stringify(dataPayload));
@@ -345,299 +346,301 @@ export default function AddTransactionScreen() {
     createTransactionMutation.isPending || updateTransactionMutation.isPending;
 
   return (
-    <>
-      <Stack.Screen
-        options={{
-          headerShown: true,
-          title: screenTitle,
-          animation: "none",
-          headerLeft: () => (
-            <TouchableOpacity
-              onPress={() => router.back()}
-              style={{ marginRight: 4 }}
-            >
-              <ChevronLeft size={26} className="text-foreground" />
-            </TouchableOpacity>
-          ),
-        }}
-      />
-      <KeyboardAvoidingView
-        behavior="height"
-        keyboardVerticalOffset={keyboardOffset}
-        style={{ flex: 1 }}
-      >
-        <View
+    <ScreenContainer edges={["left", "right"]} className="bg-background">
+      <View className="flex-1 border-t border-border">
+        <Stack.Screen
+          options={{
+            headerShown: true,
+            title: screenTitle,
+            animation: "none",
+            headerLeft: () => (
+              <TouchableOpacity
+                onPress={() => router.back()}
+                style={{ marginRight: 4 }}
+              >
+                <ChevronLeft size={26} className="text-foreground" />
+              </TouchableOpacity>
+            ),
+          }}
+        />
+        <KeyboardAvoidingView
+          behavior="height"
+          keyboardVerticalOffset={keyboardOffset}
           style={{ flex: 1 }}
-          className={`bg-background ${isKeyboardVisible ? "pb-0" : "pb-8"}`}
         >
-          <ScrollView
-            contentContainerStyle={{
-              paddingHorizontal: 20,
-              paddingTop: 16,
-              paddingBottom: 24,
-            }}
-            showsVerticalScrollIndicator={false}
-            keyboardShouldPersistTaps="handled"
+          <View
+            style={{ flex: 1 }}
+            className={`bg-background ${isKeyboardVisible ? "pb-0" : "pb-8"}`}
           >
-            {/* Amount Input */}
-            <View className="mb-5 mt-4">
-              <Text className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
-                Amount
-              </Text>
-              <Controller
-                control={form.control}
-                name="amount"
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <View>
-                    <View
-                      className={`flex-row items-center rounded-xl px-4 py-3.5 border-2 ${accentBorderClassMap} ${accentBgClassMap} ${form.formState.errors.amount ? "border-destructive" : ""}`}
-                    >
-                      <Text className={`text-2xl font-bold ${accentTextClass}`}>
-                        $
-                      </Text>
-                      <TextInput
-                        value={value}
-                        onChangeText={(text) => {
-                          onChange(text);
-                          setAmount(text);
-                        }}
-                        onBlur={onBlur}
-                        placeholder="0.00"
-                        placeholderTextColor="#A1A1AA"
-                        keyboardType="decimal-pad"
-                        className={`flex-1 ml-2 text-2xl font-bold ${accentTextClass}`}
-                        ref={amountInputRef}
-                      />
+            <ScrollView
+              contentContainerStyle={{
+                paddingHorizontal: 20,
+                paddingTop: 16,
+                paddingBottom: 24,
+              }}
+              showsVerticalScrollIndicator={false}
+              keyboardShouldPersistTaps="handled"
+            >
+              {/* Amount Input */}
+              <View className="mb-5 mt-4">
+                <Text className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
+                  Amount
+                </Text>
+                <Controller
+                  control={form.control}
+                  name="amount"
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <View>
+                      <View
+                        className={`flex-row items-center rounded-xl px-4 py-3.5 border-2 ${accentBorderClassMap} ${accentBgClassMap} ${form.formState.errors.amount ? "border-destructive" : ""}`}
+                      >
+                        <Text className={`text-2xl font-bold ${accentTextClass}`}>
+                          $
+                        </Text>
+                        <TextInput
+                          value={value}
+                          onChangeText={(text) => {
+                            onChange(text);
+                            setAmount(text);
+                          }}
+                          onBlur={onBlur}
+                          placeholder="0.00"
+                          placeholderTextColor="#A1A1AA"
+                          keyboardType="decimal-pad"
+                          className={`flex-1 ml-2 text-2xl font-bold ${accentTextClass}`}
+                          ref={amountInputRef}
+                        />
+                      </View>
+                      <InputError error={form.formState.errors.amount?.message} />
                     </View>
-                    <InputError error={form.formState.errors.amount?.message} />
-                  </View>
-                )}
-              />
-            </View>
+                  )}
+                />
+              </View>
 
-            {/* Category (only for Cash Out) */}
-            {!isDeposit && (
+              {/* Category (only for Cash Out) */}
+              {!isDeposit && (
+                <View className="mb-5">
+                  <Text className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
+                    Category
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => {
+                      router.push({
+                        pathname: "/wallet/select-category",
+                        params: {
+                          bookId: bookId,
+                          type: type,
+                          currentSelectedId: selectedCategory,
+                          currentAmount: amount,
+                          currentRemark: remark,
+                          currentDate: date.toISOString(),
+                          // Pass edit parameters if in edit mode
+                          editId: params.editId,
+                          editAmount: params.editAmount,
+                          editRemark: params.editRemark,
+                          editType: params.editType,
+                          editCategoryId: params.editCategoryId,
+                          editCategoryName: params.editCategoryName,
+                          editDate: params.editDate,
+                          editTime: params.editTime,
+                          attachments: params.attachments,
+                          currentAttachments: JSON.stringify(attachments),
+                        },
+                      });
+                    }}
+                    className="flex-row items-center bg-card border border-border rounded-xl px-4 py-3.5"
+                  >
+                    <Text
+                      className={`flex-1 text-base ${selectedCategoryName ? "text-foreground" : "text-muted-foreground"}`}
+                    >
+                      {selectedCategoryName || "Select a category"}
+                    </Text>
+                    <ChevronRight size={20} className="text-muted-foreground" />
+                  </TouchableOpacity>
+                </View>
+              )}
+
+              {/* Remark */}
               <View className="mb-5">
                 <Text className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
-                  Category
+                  Remark
                 </Text>
-                <TouchableOpacity
-                  onPress={() => {
-                    router.push({
-                      pathname: "/wallet/select-category",
-                      params: {
-                        bookId: bookId,
-                        type: type,
-                        currentSelectedId: selectedCategory,
-                        currentAmount: amount,
-                        currentRemark: remark,
-                        currentDate: date.toISOString(),
-                        // Pass edit parameters if in edit mode
-                        editId: params.editId,
-                        editAmount: params.editAmount,
-                        editRemark: params.editRemark,
-                        editType: params.editType,
-                        editCategoryId: params.editCategoryId,
-                        editCategoryName: params.editCategoryName,
-                        editDate: params.editDate,
-                        editTime: params.editTime,
-                        attachments: params.attachments,
-                        currentAttachments: JSON.stringify(attachments),
-                      },
-                    });
-                  }}
-                  className="flex-row items-center bg-card border border-border rounded-xl px-4 py-3.5"
-                >
-                  <Text
-                    className={`flex-1 text-base ${selectedCategoryName ? "text-foreground" : "text-muted-foreground"}`}
+                <TextInput
+                  value={remark}
+                  onChangeText={setRemark}
+                  placeholder={
+                    isDeposit
+                      ? "e.g., Salary, Business income..."
+                      : "e.g., Lunch, Uber ride..."
+                  }
+                  placeholderTextColor="#A1A1AA"
+                  className="bg-card rounded-xl px-4 py-3.5 border border-border text-foreground text-base"
+                  style={{ textAlignVertical: "top", minHeight: 80 }}
+                  multiline
+                  numberOfLines={3}
+                />
+              </View>
+
+              {/* Date & Time */}
+              <View className="mb-5">
+                <Text className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
+                  Date & Time
+                </Text>
+                <View className="flex-row gap-3">
+                  <Controller
+                    control={form.control}
+                    name="date"
+                    render={({ field: { onChange, value } }) => (
+                      <View className="flex-1">
+                        <TouchableOpacity
+                          onPress={() => setShowDatePicker(true)}
+                          className={`flex-1 bg-card rounded-xl px-4 py-3.5 border flex-row items-center justify-between ${form.formState.errors.date ? "border-destructive" : "border-border"}`}
+                        >
+                          <Text className="text-foreground text-base font-medium">
+                            {date.toLocaleDateString()}
+                          </Text>
+                        </TouchableOpacity>
+                        <InputError error={form.formState.errors.date?.message} />
+                      </View>
+                    )}
+                  />
+                  <Controller
+                    control={form.control}
+                    name="time"
+                    render={({ field: { onChange, value } }) => (
+                      <View className="flex-1">
+                        <TouchableOpacity
+                          onPress={() => setShowTimePicker(true)}
+                          className={`flex-1 bg-card rounded-xl px-4 py-3.5 border flex-row items-center justify-between ${form.formState.errors.time ? "border-destructive" : "border-border"}`}
+                        >
+                          <Text className="text-foreground text-base font-medium">
+                            {date.toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </Text>
+                        </TouchableOpacity>
+                        <InputError error={form.formState.errors.time?.message} />
+                      </View>
+                    )}
+                  />
+                </View>
+
+                {showDatePicker && (
+                  <DateTimePicker
+                    value={date}
+                    mode="date"
+                    display="default"
+                    onChange={(event, selectedDate) => {
+                      setShowDatePicker(false);
+                      if (selectedDate) {
+                        setDate(selectedDate);
+                        form.setValue("date", selectedDate.toISOString());
+                        form.setValue("time", selectedDate.toTimeString());
+                      }
+                    }}
+                  />
+                )}
+
+                {showTimePicker && (
+                  <DateTimePicker
+                    value={date}
+                    mode="time"
+                    display="default"
+                    onChange={(event, selectedTime) => {
+                      setShowTimePicker(false);
+                      if (selectedTime) {
+                        setDate(selectedTime);
+                        form.setValue("date", selectedTime.toISOString());
+                        form.setValue("time", selectedTime.toTimeString());
+                      }
+                    }}
+                  />
+                )}
+              </View>
+
+              {/* ── Attachments ── */}
+              <View className="mb-5 pb-24">
+                <Text className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
+                  Attachments
+                </Text>
+
+                {/* Thumbnail strip */}
+                {attachments.length > 0 && (
+                  <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    style={{ marginBottom: 10 }}
                   >
-                    {selectedCategoryName || "Select a category"}
+                    <View style={{ flexDirection: "row", gap: 8 }}>
+                      {attachments.map((file, index) => (
+                        <View
+                          key={index}
+                          style={{ position: "relative", marginRight: 4 }}
+                        >
+                          <Image
+                            source={{ uri: file.uri }}
+                            className="w-[72px] h-[72px] rounded-xl bg-muted"
+                          />
+                          {/* Remove button */}
+                          <TouchableOpacity
+                            onPress={() => removeAttachment(index)}
+                            className="absolute -top-1.5 -right-1.5 bg-card rounded-xl p-0.5 shadow-sm border border-border"
+                            hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+                          >
+                            <X size={14} className="text-muted-foreground" />
+                          </TouchableOpacity>
+                        </View>
+                      ))}
+                    </View>
+                  </ScrollView>
+                )}
+
+                {/* Pick button */}
+                <TouchableOpacity
+                  onPress={pickAttachments}
+                  className="flex-row items-center gap-2 bg-card border border-border rounded-xl px-4 py-3.5"
+                >
+                  <Paperclip size={18} className="text-muted-foreground" />
+                  <Text className="text-muted-foreground text-base font-medium">
+                    {attachments.length > 0
+                      ? `${attachments.length} file${attachments.length > 1 ? "s" : ""} selected — tap to add`
+                      : "Tap to add attachments"}
                   </Text>
-                  <ChevronRight size={20} className="text-muted-foreground" />
                 </TouchableOpacity>
               </View>
-            )}
+            </ScrollView>
+          </View>
 
-            {/* Remark */}
-            <View className="mb-5">
-              <Text className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
-                Remark
-              </Text>
-              <TextInput
-                value={remark}
-                onChangeText={setRemark}
-                placeholder={
-                  isDeposit
-                    ? "e.g., Salary, Business income..."
-                    : "e.g., Lunch, Uber ride..."
-                }
-                placeholderTextColor="#A1A1AA"
-                className="bg-card rounded-xl px-4 py-3.5 border border-border text-foreground text-base"
-                style={{ textAlignVertical: "top", minHeight: 80 }}
-                multiline
-                numberOfLines={3}
-              />
-            </View>
-
-            {/* Date & Time */}
-            <View className="mb-5">
-              <Text className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
-                Date & Time
-              </Text>
-              <View className="flex-row gap-3">
-                <Controller
-                  control={form.control}
-                  name="date"
-                  render={({ field: { onChange, value } }) => (
-                    <View className="flex-1">
-                      <TouchableOpacity
-                        onPress={() => setShowDatePicker(true)}
-                        className={`flex-1 bg-card rounded-xl px-4 py-3.5 border flex-row items-center justify-between ${form.formState.errors.date ? "border-destructive" : "border-border"}`}
-                      >
-                        <Text className="text-foreground text-base font-medium">
-                          {date.toLocaleDateString()}
-                        </Text>
-                      </TouchableOpacity>
-                      <InputError error={form.formState.errors.date?.message} />
-                    </View>
-                  )}
-                />
-                <Controller
-                  control={form.control}
-                  name="time"
-                  render={({ field: { onChange, value } }) => (
-                    <View className="flex-1">
-                      <TouchableOpacity
-                        onPress={() => setShowTimePicker(true)}
-                        className={`flex-1 bg-card rounded-xl px-4 py-3.5 border flex-row items-center justify-between ${form.formState.errors.time ? "border-destructive" : "border-border"}`}
-                      >
-                        <Text className="text-foreground text-base font-medium">
-                          {date.toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </Text>
-                      </TouchableOpacity>
-                      <InputError error={form.formState.errors.time?.message} />
-                    </View>
-                  )}
-                />
-              </View>
-
-              {showDatePicker && (
-                <DateTimePicker
-                  value={date}
-                  mode="date"
-                  display="default"
-                  onChange={(event, selectedDate) => {
-                    setShowDatePicker(false);
-                    if (selectedDate) {
-                      setDate(selectedDate);
-                      form.setValue("date", selectedDate.toISOString());
-                      form.setValue("time", selectedDate.toTimeString());
-                    }
-                  }}
-                />
-              )}
-
-              {showTimePicker && (
-                <DateTimePicker
-                  value={date}
-                  mode="time"
-                  display="default"
-                  onChange={(event, selectedTime) => {
-                    setShowTimePicker(false);
-                    if (selectedTime) {
-                      setDate(selectedTime);
-                      form.setValue("date", selectedTime.toISOString());
-                      form.setValue("time", selectedTime.toTimeString());
-                    }
-                  }}
-                />
-              )}
-            </View>
-
-            {/* ── Attachments ── */}
-            <View className="mb-5 pb-24">
-              <Text className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
-                Attachments
-              </Text>
-
-              {/* Thumbnail strip */}
-              {attachments.length > 0 && (
-                <ScrollView
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  style={{ marginBottom: 10 }}
-                >
-                  <View style={{ flexDirection: "row", gap: 8 }}>
-                    {attachments.map((file, index) => (
-                      <View
-                        key={index}
-                        style={{ position: "relative", marginRight: 4 }}
-                      >
-                        <Image
-                          source={{ uri: file.uri }}
-                          className="w-[72px] h-[72px] rounded-xl bg-muted"
-                        />
-                        {/* Remove button */}
-                        <TouchableOpacity
-                          onPress={() => removeAttachment(index)}
-                          className="absolute -top-1.5 -right-1.5 bg-card rounded-xl p-0.5 shadow-sm border border-border"
-                          hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
-                        >
-                          <X size={14} className="text-muted-foreground" />
-                        </TouchableOpacity>
-                      </View>
-                    ))}
-                  </View>
-                </ScrollView>
-              )}
-
-              {/* Pick button */}
-              <TouchableOpacity
-                onPress={pickAttachments}
-                className="flex-row items-center gap-2 bg-card border border-border rounded-xl px-4 py-3.5"
-              >
-                <Paperclip size={18} className="text-muted-foreground" />
-                <Text className="text-muted-foreground text-base font-medium">
-                  {attachments.length > 0
-                    ? `${attachments.length} file${attachments.length > 1 ? "s" : ""} selected — tap to add`
-                    : "Tap to add attachments"}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </ScrollView>
-        </View>
-
-        {/* Submit Button - Sticks above keyboard */}
-        <View
-          className="px-5 pt-3 pb-2 bg-background border-t border-border"
-          style={{
-            marginBottom: isKeyboardVisible ? 0 : Math.min(insets.bottom, 20),
-          }}
-        >
-          <TouchableOpacity
-            onPress={form.handleSubmit(handleSubmit)}
-            disabled={isPending}
-            className={`rounded-xl py-4 items-center justify-center w-full ${btnClassMap} ${isPending ? "opacity-50" : "opacity-100"}`}
-            activeOpacity={0.8}
+          {/* Submit Button - Sticks above keyboard */}
+          <View
+            className="px-5 pt-3 pb-2 bg-background border-t border-border"
+            style={{
+              marginBottom: isKeyboardVisible ? 0 : Math.min(insets.bottom, 20),
+            }}
           >
-            <Text
-              className="text-white font-bold text-base tracking-wider text-center w-full"
-              numberOfLines={1}
+            <TouchableOpacity
+              onPress={form.handleSubmit(handleSubmit)}
+              disabled={isPending}
+              className={`rounded-xl py-4 items-center justify-center w-full ${btnClassMap} ${isPending ? "opacity-50" : "opacity-100"}`}
+              activeOpacity={0.8}
             >
-              {isPending
-                ? "SAVING..."
-                : isEditing
-                  ? "SAVE CHANGES"
-                  : isDeposit
-                    ? "CASH IN"
-                    : "CASH OUT"}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </KeyboardAvoidingView>
-    </>
+              <Text
+                className="text-white font-bold text-base tracking-wider text-center w-full"
+                numberOfLines={1}
+              >
+                {isPending
+                  ? "SAVING..."
+                  : isEditing
+                    ? "SAVE CHANGES"
+                    : isDeposit
+                      ? "CASH IN"
+                      : "CASH OUT"}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </KeyboardAvoidingView>
+      </View>
+    </ScreenContainer>
   );
 }
