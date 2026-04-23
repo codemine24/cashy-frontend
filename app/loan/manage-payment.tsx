@@ -199,8 +199,10 @@ export default function ManagePaymentScreen() {
 
         {/* Action button */}
         <View
-          style={{ marginBottom: Math.max(insets.bottom, 20) }}
-          className="px-5 pt-2"
+          style={{
+            marginBottom: isKeyboardVisible ? 0 : Math.min(insets.bottom, 20),
+          }}
+          className="px-5 pt-3 pb-2 bg-background border-t border-border"
         >
           <TouchableOpacity
             onPress={handleAction}
