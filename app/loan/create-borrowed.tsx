@@ -214,33 +214,6 @@ export default function CreateBorrowedScreen() {
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
           >
-            {/* Person Name */}
-            <View className="mb-4">
-              <Text className="text-sm font-semibold text-foreground mb-2">
-                Person name
-              </Text>
-              <Controller
-                control={form.control}
-                name="person_name"
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <View>
-                    <TextInput
-                      value={value}
-                      onChangeText={onChange}
-                      onBlur={onBlur}
-                      placeholder="Who did you borrow from?"
-                      placeholderTextColor="#A1A1AA"
-                      className={`bg-card rounded-xl px-4 py-3.5 border ${form.formState.errors.person_name ? "border-destructive" : "border-border"} text-foreground text-base`}
-                      autoCapitalize="words"
-                    />
-                    <InputError
-                      error={form.formState.errors.person_name?.message}
-                    />
-                  </View>
-                )}
-              />
-            </View>
-
             {/* Amount */}
             <View className="mb-4">
               <Text className="text-sm font-semibold text-foreground mb-2">
@@ -269,6 +242,33 @@ export default function CreateBorrowedScreen() {
                       />
                     </View>
                     <InputError error={form.formState.errors.amount?.message} />
+                  </View>
+                )}
+              />
+            </View>
+
+            {/* Person Name */}
+            <View className="mb-4">
+              <Text className="text-sm font-semibold text-foreground mb-2">
+                Person name
+              </Text>
+              <Controller
+                control={form.control}
+                name="person_name"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <View>
+                    <TextInput
+                      value={value}
+                      onChangeText={onChange}
+                      onBlur={onBlur}
+                      placeholder="Who did you borrow from?"
+                      placeholderTextColor="#A1A1AA"
+                      className={`bg-card rounded-xl px-4 py-3.5 border ${form.formState.errors.person_name ? "border-destructive" : "border-border"} text-foreground text-base`}
+                      autoCapitalize="words"
+                    />
+                    <InputError
+                      error={form.formState.errors.person_name?.message}
+                    />
                   </View>
                 )}
               />
