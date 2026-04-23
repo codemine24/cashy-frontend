@@ -28,7 +28,8 @@ export function ConfirmationModal({
 }: DeleteConfirmationModalProps) {
   const handleConfirm = () => {
     onConfirm();
-    onClose();
+    console.log("Confirming delete");
+    // onClose();
   };
 
   return (

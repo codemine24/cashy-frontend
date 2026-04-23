@@ -211,7 +211,7 @@ export default function SettingsScreen() {
               subtitle={
                 t("settings.privacyPolicy") +
                 ", " +
-                t("settings.termsAndConditions") +
+                t("settings.deleteAccount") +
                 ", " +
                 t("settings.aboutUs")
               }
