@@ -70,9 +70,11 @@ export const LoanCard = ({ loan, index, onEdit, onDelete }: LoanCardProps) => {
             >
               {loan.person_name}
             </Text>
-            <Text className="text-sm text-muted-foreground mt-0.5">
-              {`Due: ${new Date(loan.due_date!).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`}
-            </Text>
+            {loan.contact_number && (
+              <Text className="text-sm text-muted-foreground mt-0.5">
+                {loan.contact_number}
+              </Text>
+            )}
           </View>
         </View>
 

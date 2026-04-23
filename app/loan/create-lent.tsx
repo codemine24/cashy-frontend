@@ -4,7 +4,6 @@ import { useKeyboardVisible } from "@/hooks/use-keyboard-visible";
 import { useKeyboardOffset } from "@/hooks/useKeyboardOffset";
 import { ChevronLeft } from "@/lib/icons";
 import { zodResolver } from "@hookform/resolvers/zod";
-import DateTimePicker from "@react-native-community/datetimepicker";
 import {
   Stack,
   useFocusEffect,
@@ -37,7 +36,7 @@ const createLoanSchema = z.object({
       message: "Amount must be greater than 0",
     }),
   type: z.literal("GIVEN"),
-  due_date: z.string().optional(),
+  contact_number: z.string().optional(),
 });
 
 type CreateLoanFormValues = z.infer<typeof createLoanSchema>;
@@ -45,8 +44,6 @@ type CreateLoanFormValues = z.infer<typeof createLoanSchema>;
 // ─── Main Screen ─────────────────────────────────────────────────────────────
 export default function CreateLentScreen() {
   const [amount, setAmount] = useState("");
-  const [date, setDate] = useState(new Date());
-  const [showDatePicker, setShowDatePicker] = useState(false);
   const amountInputRef = useRef<TextInput>(null);
 
   const router = useRouter();
@@ -60,7 +57,7 @@ export default function CreateLentScreen() {
     editId?: string;
     editPersonName?: string;
     editAmount?: string;
-    editDueDate?: string;
+    editContactNumber?: string;
   }>();
 
   const isEditing = !!params.editId;
@@ -75,7 +72,7 @@ export default function CreateLentScreen() {
       person_name: "",
       amount: "",
       type: "GIVEN",
-      due_date: "",
+      contact_number: "",
     },
     mode: "onBlur",
   });
@@ -94,7 +91,7 @@ export default function CreateLentScreen() {
         person_name: form.getValues("person_name"),
         amount: parseFloat(amount),
         type: "GIVEN" as const,
-        due_date: date.toISOString().split("T")[0],
+        contact_number: form.getValues("contact_number"),
       };
 
       let response: any;
@@ -142,14 +139,10 @@ export default function CreateLentScreen() {
           shouldValidate: false,
         });
       }
-      if (params.editDueDate) {
-        const parsedDate = new Date(params.editDueDate);
-        if (!isNaN(parsedDate.getTime())) {
-          setDate(parsedDate);
-          formMethods.setValue("due_date", params.editDueDate, {
-            shouldValidate: false,
-          });
-        }
+      if (params.editContactNumber) {
+        formMethods.setValue("contact_number", params.editContactNumber, {
+          shouldValidate: false,
+        });
       }
     }
   }, [
@@ -157,7 +150,7 @@ export default function CreateLentScreen() {
     params.editId,
     params.editPersonName,
     params.editAmount,
-    params.editDueDate,
+    params.editContactNumber,
   ]);
 
   useEffect(() => {
@@ -282,31 +275,31 @@ export default function CreateLentScreen() {
               />
             </View>
 
-            {/* Due Date */}
+            {/* Contact Number */}
             <View className="mb-4">
               <Text className="text-sm font-semibold text-foreground mb-2">
-                Due date
+                Contact number (Optional)
               </Text>
-              <TouchableOpacity
-                onPress={() => setShowDatePicker(true)}
-                className={`rounded-xl px-4 py-3.5 border flex-row items-center justify-between border-green-600/30 bg-green-600/10`}
-              >
-                <Text className={`text-base font-medium text-green-600`}>
-                  {date.toLocaleDateString()}
-                </Text>
-              </TouchableOpacity>
-              {showDatePicker && (
-                <DateTimePicker
-                  value={date}
-                  mode="date"
-                  display="default"
-                  minimumDate={new Date()}
-                  onChange={(event, selectedDate) => {
-                    setShowDatePicker(false);
-                    if (selectedDate) setDate(selectedDate);
-                  }}
-                />
-              )}
+              <Controller
+                control={form.control}
+                name="contact_number"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <View>
+                    <TextInput
+                      value={value}
+                      onChangeText={onChange}
+                      onBlur={onBlur}
+                      placeholder="Enter contact number"
+                      placeholderTextColor="#A1A1AA"
+                      keyboardType="phone-pad"
+                      className={`bg-card rounded-xl px-4 py-3.5 border ${form.formState.errors.contact_number ? "border-destructive" : "border-border"} text-foreground text-base`}
+                    />
+                    <InputError
+                      error={form.formState.errors.contact_number?.message}
+                    />
+                  </View>
+                )}
+              />
             </View>
           </ScrollView>
         </View>

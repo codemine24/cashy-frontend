@@ -14,7 +14,7 @@ export interface CreateLoanPayload {
     amount: number;
     type: "GIVEN" | "TAKEN";
     remark?: string;
-    due_date?: string;
+    contact_number?: string;
 }
 
 export interface UpdateLoanPayload {
@@ -22,7 +22,7 @@ export interface UpdateLoanPayload {
     amount?: number;
     type?: "GIVEN" | "TAKEN";
     remark?: string;
-    due_date?: string;
+    contact_number?: string;
     status?: "ONGOING" | "PAID" | "OVERDUE";
 }
 
@@ -54,9 +54,9 @@ export interface Loan {
   paid_amount: number
   type: LoanType
   status: LoanStatus
-  remark?: string
-  due_date?: string
-  created_at: string
+  remark?: string;
+  contact_number?: string;
+  created_at: string;
   updated_at: string
   payments?: LoanPayment[]
 }
