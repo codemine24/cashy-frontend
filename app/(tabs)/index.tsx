@@ -21,7 +21,6 @@ import {
   BackHandler,
   FlatList,
   RefreshControl,
-  ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
@@ -56,7 +55,7 @@ export default function HomeScreen() {
   } | null>(null);
   const [showSortModal, setShowSortModal] = useState(false);
   const [sortBy, setSortBy] = useState<SortOption>("updated_at");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(searchQuery, 400);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -64,7 +63,7 @@ export default function HomeScreen() {
   const [showExitModal, setShowExitModal] = useState(false);
 
   const [tempSortBy, setTempSortBy] = useState<SortOption>("updated_at");
-  const [tempSortOrder, setTempSortOrder] = useState<"asc" | "desc">("asc");
+  const [tempSortOrder, setTempSortOrder] = useState<"asc" | "desc">("desc");
 
   const openSortModal = () => {
     setTempSortBy(sortBy);
@@ -160,83 +159,76 @@ export default function HomeScreen() {
         edges={["left", "right"]}
         className="p-4 pb-0 bg-background"
       >
-        <ScrollView
+        <FlatList
+          data={finalShowSkeleton ? [] : booksData?.data}
+          keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
           refreshControl={<RefreshControl {...refreshControlProps} />}
-          contentContainerStyle={{ flexGrow: 1 }}
-        >
-          {/* Search Input and filter icon */}
-          <View className="relative flex-row items-center gap-2">
-            <View className="flex-row items-center bg-muted rounded-xl px-3 border border-border flex-1">
-              <SearchIcon className="text-muted-foreground size-4" />
-              <TextInput
-                value={searchQuery}
-                onChangeText={setSearchQuery}
-                placeholder={t("wallets.searchWallets")}
-                placeholderClassName="text-muted-foreground"
-                className="flex-1 text-base text-foreground"
-                placeholderTextColor="#94a3b8"
-              />
-              {searchQuery.length > 0 && (
+          contentContainerStyle={{ paddingBottom: 100 }}
+          ListHeaderComponent={
+            <View className="mb-4">
+              <View className="relative flex-row items-center gap-2">
+                <View className="flex-row items-center bg-muted rounded-xl px-3 border border-border flex-1">
+                  <SearchIcon className="text-muted-foreground size-4" />
+                  <TextInput
+                    value={searchQuery}
+                    onChangeText={setSearchQuery}
+                    placeholder={t("wallets.searchWallets")}
+                    placeholderClassName="text-muted-foreground"
+                    className="flex-1 text-base text-foreground"
+                    placeholderTextColor="#94a3b8"
+                  />
+                  {searchQuery.length > 0 && (
+                    <TouchableOpacity
+                      onPress={() => setSearchQuery("")}
+                      className="ml-2 p-1"
+                    >
+                      <CrossIcon className="text-muted-foreground size-4" />
+                    </TouchableOpacity>
+                  )}
+                </View>
                 <TouchableOpacity
-                  onPress={() => setSearchQuery("")}
-                  className="ml-2 p-1"
+                  onPress={openSortModal}
+                  className="size-12 bg-muted rounded-xl border border-border items-center justify-center"
                 >
-                  <CrossIcon className="text-muted-foreground size-4" />
+                  <FilterIcon className="text-primary size-5" />
                 </TouchableOpacity>
-              )}
+              </View>
             </View>
-            <TouchableOpacity
-              onPress={openSortModal}
-              className="size-12 bg-muted rounded-xl border border-border items-center justify-center"
-            >
-              <FilterIcon className="text-primary size-5" />
-            </TouchableOpacity>
-          </View>
-
-          {/* Books List */}
-          {finalShowSkeleton ? (
-            <WalletsSkeleton />
-          ) : booksData?.data?.length === 0 ? (
-            <View className="flex-1 justify-center items-center -mt-16 py-8">
-              <SearchIcon className="text-muted-foreground size-12" />
-              <Text
-                numberOfLines={1}
-                className="text-muted-foreground mt-2 text-base"
-              >
-                {searchQuery.trim()
-                  ? `No wallet found for "${searchQuery}"`
-                  : t("wallets.noWallets")}
-              </Text>
-              <Text
-                numberOfLines={1}
-                className="text-sm text-muted-foreground text-center mb-4"
-              >
-                {t("wallets.createFirstWallet")}
-              </Text>
-            </View>
-          ) : (
-            <FlatList
-              scrollEnabled={false}
-              data={booksData?.data?.sort(
-                (a, b) =>
-                  new Date(b.updated_at).getTime() -
-                  new Date(a.updated_at).getTime(),
-              )}
-              keyExtractor={(item) => item.id}
-              contentContainerStyle={{ paddingBottom: 80 }}
-              renderItem={({ item: book, index }) => (
-                <WalletCard
-                  book={book}
-                  index={index}
-                  onRename={handleRename}
-                  onAddMember={handleAddMember}
-                  onDelete={handleDeleteBook}
-                />
-              )}
+          }
+          ListEmptyComponent={
+            finalShowSkeleton ? (
+              <WalletsSkeleton />
+            ) : booksData?.data?.length === 0 ? (
+              <View className="flex-1 justify-center items-center py-8 mt-12">
+                <SearchIcon className="text-muted-foreground size-12" />
+                <Text
+                  numberOfLines={1}
+                  className="text-muted-foreground mt-2 text-base"
+                >
+                  {searchQuery.trim()
+                    ? `No wallet found for "${searchQuery}"`
+                    : t("wallets.noWallets")}
+                </Text>
+                <Text
+                  numberOfLines={1}
+                  className="text-sm text-muted-foreground text-center mb-4"
+                >
+                  {t("wallets.createFirstWallet")}
+                </Text>
+              </View>
+            ) : null
+          }
+          renderItem={({ item: book, index }) => (
+            <WalletCard
+              book={book}
+              index={index}
+              onRename={handleRename}
+              onAddMember={handleAddMember}
+              onDelete={handleDeleteBook}
             />
           )}
-        </ScrollView>
+        />
       </ScreenContainer>
 
       {/* Floating Action Button */}
@@ -246,7 +238,10 @@ export default function HomeScreen() {
         className="rounded-full py-4 absolute bottom-4 right-4"
       >
         <PlusIcon className="text-primary-foreground size-6" />
-        <Text className="text-primary-foreground text-lg text-center ml-2">
+        <Text
+          className="text-primary-foreground text-lg text-center ml-2"
+          numberOfLines={1}
+        >
           {t("wallets.addWallet")}
         </Text>
       </Button>
