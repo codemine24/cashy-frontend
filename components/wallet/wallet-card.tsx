@@ -56,7 +56,7 @@ export const WalletCard = ({
       {/* Left: Icon and Name/Date */}
       <View className="flex-row items-center flex-1">
         <View
-          className="size-13 items-center justify-center rounded-2xl mr-4"
+          className="w-12 h-12 items-center justify-center rounded-2xl mr-4"
           style={{ backgroundColor: colors.bg }}
         >
           <Text
