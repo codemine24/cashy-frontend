@@ -25,9 +25,9 @@ import {
   Settings,
   User,
 } from "@/lib/icons";
+import { clearUserInfo, removeAccessToken } from "@/utils/auth";
 import { makeImageUrl } from "@/utils/helper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { clearUserInfo, removeAccessToken } from "@/utils/auth";
 
 // ─── Reusable row component ───────────────────────────────────────────────
 function SettingsRow({
@@ -125,25 +125,24 @@ export default function SettingsScreen() {
   );
 
   return (
-    <>
-      <Stack.Screen
-        options={{
-          headerShown: true,
-          title: t("settings.more"),
-          animation: "none",
-          headerBackTitle: t("common.back"),
-          headerShadowVisible: true,
-          headerLeft: () => (
-            <TouchableOpacity
-              onPress={() => router.navigate("/(tabs)")}
-              style={{ marginRight: 4 }}
-            >
-              <ChevronLeft size={26} className="text-foreground" />
-            </TouchableOpacity>
-          ),
-        }}
-      />
-      <ScreenContainer edges={["left", "right"]} className="bg-background">
+    <ScreenContainer edges={["left", "right"]} className="bg-background">
+      <View className="flex-1 border-t border-border pt-2">
+        <Stack.Screen
+          options={{
+            headerShown: true,
+            title: t("settings.more"),
+            animation: "none",
+            headerBackTitle: t("common.back"),
+            headerLeft: () => (
+              <TouchableOpacity
+                onPress={() => router.navigate("/(tabs)")}
+                style={{ marginRight: 4 }}
+              >
+                <ChevronLeft size={26} className="text-foreground" />
+              </TouchableOpacity>
+            ),
+          }}
+        />
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
@@ -158,9 +157,11 @@ export default function SettingsScreen() {
           >
             <Image
               source={{
-                uri:
-                  makeImageUrl(authState?.user?.avatar, "user") ||
-                  "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+                uri: authState?.user?.avatar
+                  ? authState.user.avatar.startsWith("http")
+                    ? authState.user.avatar
+                    : makeImageUrl(authState.user.avatar, "user")
+                  : "https://cdn-icons-png.flaticon.com/512/149/149071.png",
               }}
               className="size-11 rounded-full"
             />
@@ -214,7 +215,7 @@ export default function SettingsScreen() {
                 ", " +
                 t("settings.aboutUs")
               }
-              onPress={() => router.push("/settings/about" as any)}
+              onPress={() => router.push("/settings/about-cashy" as any)}
             />
           </View>
 
@@ -237,7 +238,7 @@ export default function SettingsScreen() {
             </TouchableOpacity>
           </View>
         </ScrollView>
-      </ScreenContainer>
+      </View>
 
       <ConfirmationModal
         visible={showLogoutModal}
@@ -248,6 +249,6 @@ export default function SettingsScreen() {
         confirmText={t("settings.logOut")}
         cancelText={t("common.cancel")}
       />
-    </>
+    </ScreenContainer>
   );
 }

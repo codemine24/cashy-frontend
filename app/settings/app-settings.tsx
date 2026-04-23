@@ -24,9 +24,9 @@ const THEME_OPTIONS: {
   label: string;
   icon: string;
 }[] = [
-  { value: "LIGHT", label: "Light", icon: "sun" },
-  { value: "DARK", label: "Dark", icon: "moon" },
-];
+    { value: "LIGHT", label: "Light", icon: "sun" },
+    { value: "DARK", label: "Dark", icon: "moon" },
+  ];
 
 function ThemeSelector({
   selected,
@@ -143,15 +143,13 @@ function LanguageSelector({
                   setShowDropdown(false);
                 }}
                 activeOpacity={0.7}
-                className={`flex-row items-center justify-between px-3 py-2.5 ${
-                  isActive ? "bg-primary/10" : ""
-                }`}
+                className={`flex-row items-center justify-between px-3 py-2.5 ${isActive ? "bg-primary/10" : ""
+                  }`}
               >
                 <View>
                   <Text
-                    className={`text-sm font-medium ${
-                      isActive ? "text-primary" : "text-foreground"
-                    }`}
+                    className={`text-sm font-medium ${isActive ? "text-primary" : "text-foreground"
+                      }`}
                   >
                     {lang.label}
                   </Text>
@@ -244,23 +242,24 @@ export default function AppSettingsScreen() {
   );
 
   return (
-    <>
-      <Stack.Screen
-        options={{
-          title: t("settings.appSettings"),
-          animation: "none",
-          headerLeft: () => (
-            <TouchableOpacity
-              onPress={() => router.navigate("/settings")}
-              style={{ marginRight: 4 }}
-            >
-              <ChevronLeft size={26} className="text-foreground" />
-            </TouchableOpacity>
-          ),
-        }}
-      />
-      {/* edges={["bottom"]} — top is handled by the native header */}
-      <ScreenContainer edges={["bottom"]} className="bg-background">
+    <ScreenContainer edges={["bottom"]} className="bg-background">
+      <View className="flex-1 border-t border-border">
+        <Stack.Screen
+          options={{
+            title: t("settings.appSettings"),
+            animation: "none",
+            headerLeft: () => (
+              <TouchableOpacity
+                onPress={() => router.navigate("/settings")}
+                style={{ marginRight: 4 }}
+              >
+                <ChevronLeft size={26} className="text-foreground" />
+              </TouchableOpacity>
+            ),
+          }}
+        />
+        {/* edges={["bottom"]} — top is handled by the native header */}
+
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerClassName="px-5 pt-6 pb-10"
@@ -284,7 +283,7 @@ export default function AppSettingsScreen() {
             {t("settings.restartNote")}
           </Text>
         </ScrollView>
-      </ScreenContainer>
-    </>
+      </View>
+    </ScreenContainer>
   );
 }

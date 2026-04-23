@@ -1,9 +1,9 @@
 import { P } from "@/components/ui/typography";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { RotateCcw } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import { TouchableOpacity, View } from "react-native";
 import { BottomSheetModal } from "./bottom-sheet-modal";
-import { RotateCcw } from "lucide-react-native";
 
 interface DateRangeModalProps {
   visible: boolean;
@@ -63,7 +63,7 @@ export function DateRangeModal({
           </TouchableOpacity>
         </View>
 
-        {(startDate && endDate) && (
+        {startDate && endDate && (
           <TouchableOpacity
             onPress={() => {
               setStartDate(null);
@@ -118,14 +118,18 @@ export function DateRangeModal({
           <TouchableOpacity
             onPress={handleApply}
             disabled={!startDate || !endDate || endDate < startDate}
-            className={`flex-1 rounded-lg py-3 items-center justify-center ${startDate && endDate && endDate >= startDate ? "bg-primary" : "bg-primary/20"
-              }`}
+            className={`flex-1 rounded-lg py-3 items-center justify-center ${
+              startDate && endDate && endDate >= startDate
+                ? "bg-primary"
+                : "bg-primary/20"
+            }`}
           >
             <P
-              className={`font-semibold text-base ${startDate && endDate && endDate >= startDate
-                ? "text-primary-foreground"
-                : "text-muted-foreground"
-                }`}
+              className={`font-semibold text-base ${
+                startDate && endDate && endDate >= startDate
+                  ? "text-primary-foreground"
+                  : "text-muted-foreground"
+              }`}
               numberOfLines={1}
             >
               Apply Date Range
@@ -140,6 +144,7 @@ export function DateRangeModal({
           value={startDate || new Date()}
           mode="date"
           display="default"
+          maximumDate={endDate || new Date()}
           onChange={(event, selectedDate) => {
             setShowStartPicker(false);
             if (selectedDate) {
@@ -158,6 +163,7 @@ export function DateRangeModal({
           mode="date"
           display="default"
           minimumDate={startDate || undefined}
+          maximumDate={new Date()}
           onChange={(event, selectedDate) => {
             setShowEndPicker(false);
             if (selectedDate) {
