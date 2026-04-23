@@ -126,9 +126,9 @@ export default function BookDetailScreen() {
     refetch: refetchWalletStats,
   } = useWalletStats({
     book_id: id!,
+    ..._filterParams,
+    ...(debouncedQuery.trim() && { search_term: debouncedQuery.trim() }),
   });
-
-  // console.log("wallet stats: ", walletStatsResponse.data?.in);
 
   // Flatten all pages into a single transaction list
   const allTransactions = useMemo(

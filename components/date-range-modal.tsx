@@ -115,6 +115,7 @@ export function DateRangeModal({
           value={startDate || new Date()}
           mode="date"
           display="default"
+          maximumDate={endDate || new Date()}
           onChange={(event, selectedDate) => {
             setShowStartPicker(false);
             if (selectedDate) {
@@ -129,6 +130,8 @@ export function DateRangeModal({
           value={endDate || new Date()}
           mode="date"
           display="default"
+          minimumDate={startDate || undefined}
+          maximumDate={new Date()}
           onChange={(event, selectedDate) => {
             setShowEndPicker(false);
             if (selectedDate) {
