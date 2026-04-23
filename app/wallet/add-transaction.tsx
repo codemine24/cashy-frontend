@@ -254,32 +254,32 @@ export default function AddTransactionScreen() {
   const buildFormData = (isUpdate = false) => {
     const dataPayload = isUpdate
       ? {
-        amount: parseFloat(amount),
-        category_id: !isDeposit
-          ? selectedCategory === "other" || !selectedCategory
-            ? undefined
-            : selectedCategory
-          : undefined,
-        remark,
-        date: formatDateToUTC(date),
-        time: formatTimeToUTC(date),
-        attachment: attachments
-          .filter((a) => a.isExisting)
-          .map((a) => a.name),
-      }
+          amount: parseFloat(amount),
+          category_id: !isDeposit
+            ? selectedCategory === "other" || !selectedCategory
+              ? undefined
+              : selectedCategory
+            : undefined,
+          remark,
+          date: formatDateToUTC(date),
+          time: formatTimeToUTC(date),
+          attachment: attachments
+            .filter((a) => a.isExisting)
+            .map((a) => a.name),
+        }
       : {
-        book_id: bookId,
-        type,
-        amount: parseFloat(amount),
-        category_id: !isDeposit
-          ? selectedCategory === "other" || !selectedCategory
-            ? undefined
-            : selectedCategory
-          : undefined,
-        remark,
-        date: formatDateToUTC(date),
-        time: formatTimeToUTC(date),
-      };
+          book_id: bookId,
+          type,
+          amount: parseFloat(amount),
+          category_id: !isDeposit
+            ? selectedCategory === "other" || !selectedCategory
+              ? undefined
+              : selectedCategory
+            : undefined,
+          remark,
+          date: formatDateToUTC(date),
+          time: formatTimeToUTC(date),
+        };
 
     const formData = new FormData();
     formData.append("data", JSON.stringify(dataPayload));
@@ -394,9 +394,6 @@ export default function AddTransactionScreen() {
                       <View
                         className={`flex-row items-center rounded-xl px-4 py-3.5 border-2 ${accentBorderClassMap} ${accentBgClassMap} ${form.formState.errors.amount ? "border-destructive" : ""}`}
                       >
-                        <Text className={`text-2xl font-bold ${accentTextClass}`}>
-                          $
-                        </Text>
                         <TextInput
                           value={value}
                           onChangeText={(text) => {
@@ -407,11 +404,13 @@ export default function AddTransactionScreen() {
                           placeholder="0.00"
                           placeholderTextColor="#A1A1AA"
                           keyboardType="decimal-pad"
-                          className={`flex-1 ml-2 text-2xl font-bold ${accentTextClass}`}
+                          className={`flex-1 text-2xl font-bold ${accentTextClass}`}
                           ref={amountInputRef}
                         />
                       </View>
-                      <InputError error={form.formState.errors.amount?.message} />
+                      <InputError
+                        error={form.formState.errors.amount?.message}
+                      />
                     </View>
                   )}
                 />
@@ -500,7 +499,9 @@ export default function AddTransactionScreen() {
                             {date.toLocaleDateString()}
                           </Text>
                         </TouchableOpacity>
-                        <InputError error={form.formState.errors.date?.message} />
+                        <InputError
+                          error={form.formState.errors.date?.message}
+                        />
                       </View>
                     )}
                   />
@@ -520,7 +521,9 @@ export default function AddTransactionScreen() {
                             })}
                           </Text>
                         </TouchableOpacity>
-                        <InputError error={form.formState.errors.time?.message} />
+                        <InputError
+                          error={form.formState.errors.time?.message}
+                        />
                       </View>
                     )}
                   />
