@@ -8,7 +8,7 @@
 
     "orientation": "portrait",
 
-    "icon": "./assets/images/E.png",
+    "icon": "./assets/images/playstore-icon.png",
 
     "scheme": "cashy-expense-manager",
 
@@ -25,9 +25,9 @@
       "adaptiveIcon": {
         "backgroundColor": "#02929a",
 
-        "foregroundImage": "./assets/images/E.png",
+        "foregroundImage": "./assets/images/playstore-icon.png",
 
-        "monochromeImage": "./assets/images/E.png"
+        "monochromeImage": "./assets/images/playstore-icon.png"
       },
 
       "permissions": ["INTERNET", "READ_MEDIA_IMAGES", "READ_EXTERNAL_STORAGE"],
@@ -43,7 +43,7 @@
         "expo-splash-screen",
 
         {
-          "image": "./assets/images/E.png",
+          "image": "./assets/images/ic_launcher-web.png",
           "imageWidth": 250,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",
