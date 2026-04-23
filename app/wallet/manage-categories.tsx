@@ -25,6 +25,7 @@ export default function ManageCategoriesScreen() {
     null,
   );
   const [editingCategoryName, setEditingCategoryName] = useState("");
+  const [editingCategoryIcon, setEditingCategoryIcon] = useState("");
 
   // Context Menu State
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
@@ -39,11 +40,12 @@ export default function ManageCategoriesScreen() {
   const deleteCategoryMutation = useDeleteCategory();
 
   // Open the modal for Editing
-  const openEditModal = (id: string, currentName: string) => {
+  const openEditModal = (id: string, currentName: string, currentIcon?: string) => {
     setActiveMenuId(null);
     setIsEditing(true);
     setEditingCategoryId(id);
     setEditingCategoryName(currentName);
+    setEditingCategoryIcon(currentIcon || "📝");
     setModalVisible(true);
   };
 
@@ -73,6 +75,7 @@ export default function ManageCategoriesScreen() {
 
   const handleClose = () => {
     setEditingCategoryName("");
+    setEditingCategoryIcon("");
     setIsEditing(false);
     setEditingCategoryId(null);
     setModalVisible(false);
@@ -175,7 +178,7 @@ export default function ManageCategoriesScreen() {
                   >
                     <View className="w-full bg-card rounded-xl border border-border overflow-hidden">
                       <TouchableOpacity
-                        onPress={() => openEditModal(cat.id, cat.title)}
+                        onPress={() => openEditModal(cat.id, cat.title, cat.icon)}
                         className="flex-row items-center px-4 py-3.5 border-b border-border"
                       >
                         <Edit3 size={18} className="text-foreground" />
@@ -207,6 +210,7 @@ export default function ManageCategoriesScreen() {
         onClose={handleClose}
         isEditing={isEditing}
         initialName={editingCategoryName}
+        initialIcon={editingCategoryIcon}
         categoryId={editingCategoryId || undefined}
       />
 
