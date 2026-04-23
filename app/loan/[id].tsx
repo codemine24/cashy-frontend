@@ -1,7 +1,6 @@
 import { useDeletePayment, useGetLoanDetail } from "@/api/loan";
 import { CreatePaymentModal } from "@/components/loan/create-payment-modal";
 import { ScreenContainer } from "@/components/screen-container";
-import { Button } from "@/components/ui/button";
 import { usePullToRefreshSkeleton } from "@/hooks/use-pull-to-refresh-skeleton";
 import { LoanPayment } from "@/interface/loan";
 import { ChevronLeft, Edit3, Trash2, X } from "@/lib/icons";
@@ -433,11 +432,18 @@ export default function LoanDetailScreen() {
             }}
             className="px-4 pt-3 pb-2 bg-background border-t border-border"
           >
-            <Button onPress={openAddPayment} className="bg-primary">
-              <Text className="text-success-foreground font-bold text-[14px]">
-                + ADD PAYMENT
+            <TouchableOpacity
+              onPress={openAddPayment}
+              className="rounded-xl py-4 items-center justify-center w-full bg-primary"
+              activeOpacity={0.8}
+            >
+              <Text
+                className="text-white font-bold text-base tracking-wider text-center w-full"
+                numberOfLines={1}
+              >
+                ADD PAYMENT
               </Text>
-            </Button>
+            </TouchableOpacity>
           </View>
         </View>
 
