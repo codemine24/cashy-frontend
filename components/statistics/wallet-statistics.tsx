@@ -281,11 +281,10 @@ export function WalletStatistics() {
                 Net Balance
               </P>
               <P
-                className={`text-base font-bold ${
-                  (walletStats.in || 0) - (walletStats.out || 0) >= 0
-                    ? "text-green-600"
-                    : "text-red-600"
-                }`}
+                className={`text-base font-bold ${(walletStats.in || 0) - (walletStats.out || 0) >= 0
+                  ? "text-green-600"
+                  : "text-red-600"
+                  }`}
               >
                 {(
                   (walletStats.in || 0) - (walletStats.out || 0)
@@ -480,10 +479,16 @@ export function WalletStatistics() {
       <DateRangeModal
         visible={showDatePicker}
         onClose={() => setShowDatePicker(false)}
-        onApply={(start, end) => {
-          setStartDate(start);
-          setEndDate(end);
-          setPeriod("custom");
+        onApply={(start: Date | null, end: Date | null) => {
+          if (!start || !end) {
+            setPeriod("all_time");
+            setStartDate(null);
+            setEndDate(null);
+          } else {
+            setStartDate(start);
+            setEndDate(end);
+            setPeriod("custom");
+          }
         }}
         initialStartDate={startDate}
         initialEndDate={endDate}
