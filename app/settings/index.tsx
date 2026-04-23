@@ -25,9 +25,9 @@ import {
   Settings,
   User,
 } from "@/lib/icons";
+import { clearUserInfo, removeAccessToken } from "@/utils/auth";
 import { makeImageUrl } from "@/utils/helper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { clearUserInfo, removeAccessToken } from "@/utils/auth";
 
 // ─── Reusable row component ───────────────────────────────────────────────
 function SettingsRow({
@@ -159,9 +159,11 @@ export default function SettingsScreen() {
           >
             <Image
               source={{
-                uri:
-                  makeImageUrl(authState?.user?.avatar, "user") ||
-                  "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+                uri: authState?.user?.avatar
+                  ? authState.user.avatar.startsWith("http")
+                    ? authState.user.avatar
+                    : makeImageUrl(authState.user.avatar, "user")
+                  : "https://cdn-icons-png.flaticon.com/512/149/149071.png",
               }}
               className="size-11 rounded-full"
             />
