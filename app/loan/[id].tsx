@@ -1,5 +1,4 @@
 import { useDeletePayment, useGetLoanDetail } from "@/api/loan";
-import { CreatePaymentModal } from "@/components/loan/create-payment-modal";
 import { ScreenContainer } from "@/components/screen-container";
 import { usePullToRefreshSkeleton } from "@/hooks/use-pull-to-refresh-skeleton";
 import { LoanPayment } from "@/interface/loan";
@@ -36,10 +35,7 @@ export default function LoanDetailScreen() {
       await refetch();
     },
   );
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [editingPayment, setEditingPayment] = useState<LoanPayment | null>(
-    null,
-  );
+
   const [selectedPayment, setSelectedPayment] = useState<LoanPayment | null>(
     null,
   );
@@ -61,20 +57,23 @@ export default function LoanDetailScreen() {
   }, [loanData?.data?.payments]);
 
   const openAddPayment = () => {
-    setEditingPayment(null);
-    setShowPaymentModal(true);
-  };
-
-  const handleClosePaymentModal = () => {
-    setShowPaymentModal(false);
-    setEditingPayment(null);
-    refetch();
+    router.push({
+      pathname: "/loan/manage-payment",
+      params: { loanId: id! },
+    });
   };
 
   const handleEditPayment = () => {
     if (!selectedPayment) return;
-    setEditingPayment(selectedPayment);
-    setShowPaymentModal(true);
+    router.push({
+      pathname: "/loan/manage-payment",
+      params: {
+        loanId: id!,
+        paymentId: selectedPayment.id,
+        amount: selectedPayment.amount.toString(),
+        remark: selectedPayment.remark || "",
+      },
+    });
     setSelectedPayment(null);
   };
 
@@ -424,36 +423,26 @@ export default function LoanDetailScreen() {
               </View>
             }
           />
-
-          {/* Floating Action Button */}
-          <View
-            style={{
-              marginBottom: Math.min(insets.bottom, 28),
-            }}
-            className="px-4 pt-3 pb-2 bg-background border-t border-border"
-          >
-            <TouchableOpacity
-              onPress={openAddPayment}
-              className="rounded-xl py-4 items-center justify-center w-full bg-primary"
-              activeOpacity={0.8}
-            >
-              <Text
-                className="text-white font-bold text-base tracking-wider text-center w-full"
-                numberOfLines={1}
-              >
-                ADD PAYMENT
-              </Text>
-            </TouchableOpacity>
-          </View>
         </View>
-
-        {/* Create/Edit Payment Modal */}
-        <CreatePaymentModal
-          visible={showPaymentModal}
-          onClose={handleClosePaymentModal}
-          loanId={id!}
-          editPayment={editingPayment}
-        />
+        <View
+          style={{
+            marginBottom: Math.min(insets.bottom, 28),
+          }}
+          className="px-4 pt-3 pb-2 bg-background border-t border-border"
+        >
+          <TouchableOpacity
+            onPress={openAddPayment}
+            className="rounded-xl py-4 items-center justify-center w-full bg-primary"
+            activeOpacity={0.8}
+          >
+            <Text
+              className="text-white font-bold text-base tracking-wider text-center w-full"
+              numberOfLines={1}
+            >
+              ADD PAYMENT
+            </Text>
+          </TouchableOpacity>
+        </View>
       </ScreenContainer>
     </View>
   );

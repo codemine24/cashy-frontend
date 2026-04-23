@@ -20,12 +20,8 @@ export type EntryTypeFilter = "ALL" | "IN" | "OUT";
 export type DatePreset =
   | "all_time"
   | "today"
-  | "yesterday"
-  | "this_month"
-  | "last_month"
-  | "last_day"
-  | "last_week"
-  | "last_year"
+  | "last_7_days"
+  | "last_30_days"
   | "date"
   | "date_range";
 
@@ -80,54 +76,17 @@ export function buildFilterParams(filters: TransactionFilterValues) {
       // params.start_date = fmt(today);
       // params.end_date = fmt(today);
       break;
+    case "last_7_days": {
+      params.period = "last_7_days";
+      break;
+    }
+    case "last_30_days": {
+      params.period = "last_30_days";
+      break;
+    }
     case "date":
       params.date = fmt(filters.singleDate!);
       break;
-    case "yesterday": {
-      params.period = "yesterday";
-      // const y = new Date(today);
-      // y.setDate(y.getDate() - 1);
-      // params.start_date = fmt(y);
-      // params.end_date = fmt(y);
-      break;
-    }
-    case "this_month":
-      params.period = "this_month";
-      // params.start_date = fmt(new Date(today.getFullYear(), today.getMonth(), 1));
-      // params.end_date = fmt(today);
-      break;
-    case "last_month": {
-      params.period = "last_month";
-      // const start = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-      // const end = new Date(today.getFullYear(), today.getMonth(), 0);
-      // params.start_date = fmt(start);
-      // params.end_date = fmt(end);
-      break;
-    }
-    case "last_day": {
-      params.period = "last_day";
-      // const y = new Date(today);
-      // y.setDate(y.getDate() - 1);
-      // params.start_date = fmt(y);
-      // params.end_date = fmt(y);
-      break;
-    }
-    case "last_week": {
-      params.period = "last_week";
-      // const start = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
-      // const end = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-      // params.start_date = fmt(start);
-      // params.end_date = fmt(end);
-      break;
-    }
-    case "last_year": {
-      params.period = "last_year";
-      // const start = new Date(today.getFullYear() - 1, today.getMonth(), 1);
-      // const end = new Date(today.getFullYear() - 1, today.getMonth(), 0);
-      // params.start_date = fmt(start);
-      // params.end_date = fmt(end);
-      break;
-    }
     case "date_range":
       if (filters.dateRangeStart)
         params.from_date = fmt(filters.dateRangeStart);
@@ -189,18 +148,10 @@ export function TransactionFilters({
     switch (filters.datePreset) {
       case "today":
         return "Today";
-      case "yesterday":
-        return "Yesterday";
-      case "this_month":
-        return "This Month";
-      case "last_month":
-        return "Last Month";
-      case "last_day":
-        return "Last Day";
-      case "last_week":
-        return "Last Week";
-      case "last_year":
-        return "Last Year";
+      case "last_7_days":
+        return "Last 7 Days";
+      case "last_30_days":
+        return "Last 30 Days";
       case "date":
         return filters.singleDate
           ? filters.singleDate.toLocaleDateString("en-GB", {
@@ -570,12 +521,8 @@ function EntryTypeModal({
 const DATE_PRESETS: { key: DatePreset; label: string }[] = [
   { key: "all_time", label: "All Time" },
   { key: "today", label: "Today" },
-  { key: "yesterday", label: "Yesterday" },
-  { key: "last_day", label: "Last Day" },
-  { key: "last_week", label: "Last Week" },
-  { key: "this_month", label: "This Month" },
-  { key: "last_month", label: "Last Month" },
-  { key: "last_year", label: "Last Year" },
+  { key: "last_7_days", label: "Last 7 Days" },
+  { key: "last_30_days", label: "Last 30 Days" },
   { key: "date", label: "Specific Date" },
   { key: "date_range", label: "Date Range" },
 ];
@@ -633,6 +580,18 @@ function DateFilterModal({
     currentRangeEnd,
   ]);
 
+  const isInvalid = useMemo(() => {
+    if (draftPreset === "date") return !draftSingleDate;
+    if (draftPreset === "date_range") {
+      return (
+        !draftRangeStart ||
+        !draftRangeEnd ||
+        draftRangeStart.getTime() > draftRangeEnd.getTime()
+      );
+    }
+    return false;
+  }, [draftPreset, draftSingleDate, draftRangeStart, draftRangeEnd]);
+
   const hasChanged =
     draftPreset !== currentPreset ||
     draftSingleDate?.getTime() !== currentSingleDate?.getTime() ||
@@ -663,7 +622,7 @@ function DateFilterModal({
               draftRangeEnd,
             )
           }
-          applyDisabled={!hasChanged}
+          applyDisabled={!hasChanged || isInvalid}
         />
       }
     >
@@ -699,6 +658,7 @@ function DateFilterModal({
                 value={draftSingleDate || new Date()}
                 mode="date"
                 display={Platform.OS === "ios" ? "spinner" : "default"}
+                maximumDate={new Date()}
                 onChange={(_, d) => {
                   setShowSinglePicker(Platform.OS === "ios");
                   if (d) setDraftSingleDate(d);
@@ -725,9 +685,16 @@ function DateFilterModal({
                 value={draftRangeStart || new Date()}
                 mode="date"
                 display={Platform.OS === "ios" ? "spinner" : "default"}
+                maximumDate={draftRangeEnd || new Date()}
                 onChange={(_, d) => {
                   setShowRangeStartPicker(Platform.OS === "ios");
-                  if (d) setDraftRangeStart(d);
+                  if (d) {
+                    setDraftRangeStart(d);
+                    // If start date is after end date, reset end date
+                    if (draftRangeEnd && d.getTime() > draftRangeEnd.getTime()) {
+                      setDraftRangeEnd(null);
+                    }
+                  }
                 }}
               />
             )}
@@ -746,9 +713,20 @@ function DateFilterModal({
                 value={draftRangeEnd || new Date()}
                 mode="date"
                 display={Platform.OS === "ios" ? "spinner" : "default"}
+                maximumDate={new Date()}
+                minimumDate={draftRangeStart || undefined}
                 onChange={(_, d) => {
                   setShowRangeEndPicker(Platform.OS === "ios");
-                  if (d) setDraftRangeEnd(d);
+                  if (d) {
+                    setDraftRangeEnd(d);
+                    // If end date is before start date, reset start date
+                    if (
+                      draftRangeStart &&
+                      d.getTime() < draftRangeStart.getTime()
+                    ) {
+                      setDraftRangeStart(null);
+                    }
+                  }
                 }}
               />
             )}
