@@ -17,7 +17,6 @@ import {
   BackHandler,
   InteractionManager,
   KeyboardAvoidingView,
-
   ScrollView,
   Text,
   TextInput,
