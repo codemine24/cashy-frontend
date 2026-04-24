@@ -86,10 +86,10 @@ export function CreateWalletModal({
 
   return (
     <BottomSheetModal visible={visible} onClose={onClose}>
-      <View className="px-6 pt-3 pb-4">
+      <View className="px-6 pt-3">
         {/* Header */}
         <View className="flex-row justify-between items-center mb-6 border-b border-border pb-3">
-          <Text className="text-xl font-bold text-foreground">
+          <Text className="text-xl font-bold text-foreground" numberOfLines={1}>
             {editBook ? "Rename Wallet" : "Add New Wallet"}
           </Text>
           <TouchableOpacity
@@ -115,14 +115,16 @@ export function CreateWalletModal({
           onSubmitEditing={handleAction}
         />
 
-        {/* Action buttons */}
         <View className="flex-row gap-3">
           <TouchableOpacity
             onPress={handleAction}
             disabled={isPending}
             className={`flex-1 rounded-lg py-3 items-center justify-center ${isPending ? "bg-primary/50" : "bg-primary"}`}
           >
-            <Text className="text-primary-foreground font-semibold text-base">
+            <Text
+              className="text-primary-foreground font-semibold text-base"
+              numberOfLines={1}
+            >
               {isPending
                 ? "PENDING..."
                 : editBook

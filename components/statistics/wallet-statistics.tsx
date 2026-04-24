@@ -21,6 +21,7 @@ import {
   View,
 } from "react-native";
 import Toast from "react-native-toast-message";
+import { StatisticsSkeleton } from "../skeletons/statistics-skeleton";
 import { colors, ExpenseByCategoryChart } from "./expense-by-category-chart";
 import { IncomeVsExpenseChart } from "./income-vs-expense-chart";
 import { TopSourcesChart } from "./top-sources-chart";
@@ -253,226 +254,229 @@ export function WalletStatistics() {
           </View>
         </View>
 
-        {/* Summary Cards */}
-        <View className="mb-6">
-          <View className="flex-row gap-2">
-            <View
-              className={`${isDark ? "bg-card" : "bg-white"} flex-1 border border-border rounded-2xl shadow-sm p-3`}
-            >
-              <P className="text-[10px] text-muted-foreground mb-1">Total In</P>
-              <P className="text-base font-bold text-green-600">
-                {walletStats.in?.toLocaleString() || "0"}
-              </P>
-            </View>
-            <View
-              className={`${isDark ? "bg-card" : "bg-white"} flex-1 border border-border rounded-2xl shadow-sm p-3`}
-            >
-              <P className="text-[10px] text-muted-foreground mb-1">
-                Total Out
-              </P>
-              <P className="text-base font-bold text-red-600">
-                {walletStats.out?.toLocaleString() || "0"}
-              </P>
-            </View>
-            <View
-              className={`${isDark ? "bg-card" : "bg-white"} flex-1 border border-border rounded-2xl shadow-sm p-3`}
-            >
-              <P className="text-[10px] text-muted-foreground mb-1">
-                Net Balance
-              </P>
-              <P
-                className={`text-base font-bold ${(walletStats.in || 0) - (walletStats.out || 0) >= 0
-                  ? "text-green-600"
-                  : "text-red-600"
-                  }`}
-              >
-                {(
-                  (walletStats.in || 0) - (walletStats.out || 0)
-                ).toLocaleString()}
-              </P>
-            </View>
-          </View>
-        </View>
-
-        {isStatsLoading ? (
-          <View className="flex-1 items-center justify-center py-20">
-            <ActivityIndicator size="large" color="rgb(2, 146, 154)" />
+        {isStatsLoading || refreshing ? (
+          <View className="flex-1">
+            <StatisticsSkeleton />
           </View>
         ) : (
-          <View className="pb-12">
-            {/* Grid of smaller charts */}
-            <View className="mb-8">
-              <View className="flex-col gap-y-6">
-                {/* Expense by Category Chart */}
+          <>
+            {/* Summary Cards */}
+            <View className="mb-6">
+              <View className="flex-row gap-2">
                 <View
-                  className={`${isDark ? "bg-card" : "bg-white"} border border-border p-4 pb-6 rounded-3xl shadow-sm`}
+                  className={`${isDark ? "bg-card" : "bg-white"} flex-1 border border-border rounded-2xl shadow-sm p-3`}
                 >
-                  <View className="flex-row items-center gap-3 mb-4">
-                    <View className="w-8 h-8 bg-primary/10 rounded-lg items-center justify-center">
-                      <BarChart3 size={16} color="#02929A" />
+                  <P className="text-[10px] text-muted-foreground mb-1">
+                    Total In
+                  </P>
+                  <P className="text-base font-bold text-green-600">
+                    {walletStats.in?.toLocaleString() || "0"}
+                  </P>
+                </View>
+                <View
+                  className={`${isDark ? "bg-card" : "bg-white"} flex-1 border border-border rounded-2xl shadow-sm p-3`}
+                >
+                  <P className="text-[10px] text-muted-foreground mb-1">
+                    Total Out
+                  </P>
+                  <P className="text-base font-bold text-red-600">
+                    {walletStats.out?.toLocaleString() || "0"}
+                  </P>
+                </View>
+                <View
+                  className={`${isDark ? "bg-card" : "bg-white"} flex-1 border border-border rounded-2xl shadow-sm p-3`}
+                >
+                  <P className="text-[10px] text-muted-foreground mb-1">
+                    Net Balance
+                  </P>
+                  <P
+                    className={`text-base font-bold ${
+                      (walletStats.in || 0) - (walletStats.out || 0) >= 0
+                        ? "text-green-600"
+                        : "text-red-600"
+                    }`}
+                  >
+                    {(
+                      (walletStats.in || 0) - (walletStats.out || 0)
+                    ).toLocaleString()}
+                  </P>
+                </View>
+              </View>
+            </View>
+
+            <View>
+              {/* Grid of smaller charts */}
+              <View className="mb-8">
+                <View className="flex-col gap-y-6">
+                  {/* Expense by Category Chart */}
+                  <View
+                    className={`${isDark ? "bg-card" : "bg-white"} border border-border p-4 pb-6 rounded-3xl shadow-sm`}
+                  >
+                    <View className="flex-row items-center gap-3 mb-4">
+                      <View className="w-8 h-8 bg-primary/10 rounded-lg items-center justify-center">
+                        <BarChart3 size={16} color="#02929A" />
+                      </View>
+                      <H3 className="text-left font-bold text-sm leading-tight flex-1">
+                        Expense by Category
+                      </H3>
                     </View>
-                    <H3 className="text-left font-bold text-sm leading-tight flex-1">
-                      Expense by Category
-                    </H3>
-                  </View>
-                  <View className="flex-row gap-6">
-                    {/* Graph Section - 3 parts */}
-                    <ExpenseByCategoryChart
-                      data={walletStats.expense_by_category}
-                    />
+                    <View className="flex-row gap-6">
+                      {/* Graph Section - 3 parts */}
+                      <ExpenseByCategoryChart
+                        data={walletStats.expense_by_category}
+                      />
 
-                    {/* Labels Section - 1 part */}
-                    <View className="flex-1 gap-y-1">
-                      {walletStats.expense_by_category.map(
-                        (cat: any, i: number) => {
-                          const labelColor = colors[i % colors.length];
+                      {/* Labels Section - 1 part */}
+                      <View className="flex-1 gap-y-1">
+                        {walletStats.expense_by_category.map(
+                          (cat: any, i: number) => {
+                            const labelColor = colors[i % colors.length];
 
-                          return (
-                            <View
-                              key={i}
-                              className="flex-row items-center gap-x-1"
-                            >
+                            return (
                               <View
-                                className="w-2 h-2 rounded-full"
-                                style={{
-                                  backgroundColor: labelColor,
-                                }}
-                              />
-                              <View className="flex-1">
-                                <P
-                                  className="text-[10px] text-muted-foreground font-semibold leading-tight"
-                                  numberOfLines={1}
-                                >
-                                  {cat.category}
+                                key={i}
+                                className="flex-row items-center gap-x-1"
+                              >
+                                <View
+                                  className="w-2 h-2 rounded-full"
+                                  style={{
+                                    backgroundColor: labelColor,
+                                  }}
+                                />
+                                <View className="flex-1">
+                                  <P
+                                    className="text-[10px] text-muted-foreground font-semibold leading-tight"
+                                    numberOfLines={1}
+                                  >
+                                    {cat.category}
+                                  </P>
+                                </View>
+                                <P className="text-[10px] text-muted-foreground font-bold ml-1">
+                                  {Math.round(cat.percentage)}%
                                 </P>
                               </View>
-                              <P className="text-[10px] text-muted-foreground font-bold ml-1">
-                                {Math.round(cat.percentage)}%
-                              </P>
-                            </View>
-                          );
-                        },
-                      )}
+                            );
+                          },
+                        )}
+                      </View>
                     </View>
                   </View>
-                </View>
 
-                {/* Income vs Expense Chart */}
+                  {/* Income vs Expense Chart */}
+                  <View
+                    className={`${isDark ? "bg-card" : "bg-white"} border border-border p-4 rounded-3xl shadow-sm`}
+                  >
+                    <View className="flex-row items-center gap-3 mb-4">
+                      <View className="w-8 h-8 bg-primary/10 rounded-lg items-center justify-center">
+                        <TrendingUp size={16} color="#02929A" />
+                      </View>
+                      <H3 className="text-left font-bold text-sm leading-tight flex-1">
+                        In vs Out
+                      </H3>
+                    </View>
+                    <View className="flex-row gap-10">
+                      {/* Graph Section - 3 parts */}
+                      <IncomeVsExpenseChart
+                        income={walletStats.in || 0}
+                        expense={walletStats.out || 0}
+                      />
+
+                      {/* Labels Section - 1 part */}
+                      <View className="flex-1 gap-y-3 justify-center">
+                        <View className="flex-row items-center gap-x-1">
+                          <View className="w-2 h-2 rounded-full bg-[#02929A]" />
+                          <View className="flex-1">
+                            <P
+                              className="text-[10px] text-muted-foreground font-semibold leading-tight"
+                              numberOfLines={1}
+                            >
+                              In
+                            </P>
+                          </View>
+                          <P className="text-[10px] text-muted-foreground font-bold ml-1">
+                            {formatCurrency(walletStats.in || 0, {
+                              showSymbol: false,
+                            })}
+                          </P>
+                        </View>
+                        <View className="flex-row items-center gap-x-1">
+                          <View className="w-2 h-2 rounded-full bg-[#FF6B6B]" />
+                          <View className="flex-1">
+                            <P
+                              className="text-[10px] text-muted-foreground font-semibold leading-tight"
+                              numberOfLines={1}
+                            >
+                              Out
+                            </P>
+                          </View>
+                          <P className="text-[10px] text-muted-foreground font-bold ml-1">
+                            {formatCurrency(walletStats.out || 0, {
+                              showSymbol: false,
+                            })}
+                          </P>
+                        </View>
+                      </View>
+                    </View>
+                  </View>
+
+                  {/* Top Sources of Income */}
+                  <View
+                    className={`${isDark ? "bg-card" : "bg-white"} border border-border p-5 rounded-3xl shadow-sm`}
+                  >
+                    <View className="flex-row items-center gap-3 mb-6">
+                      <View className="w-8 h-8 bg-primary/10 rounded-lg items-center justify-center">
+                        <BarChart3 size={16} color="#02929A" />
+                      </View>
+                      <H3 className="text-left font-bold text-sm leading-tight flex-1">
+                        Sources (IN)
+                      </H3>
+                    </View>
+                    <TopSourcesChart data={walletStats.sources} />
+                  </View>
+                </View>
+              </View>
+
+              {/* Export Expense Report Section */}
+              <View className="mb-8">
                 <View
                   className={`${isDark ? "bg-card" : "bg-white"} border border-border p-4 rounded-3xl shadow-sm`}
                 >
-                  <View className="flex-row items-center gap-3 mb-4">
-                    <View className="w-8 h-8 bg-primary/10 rounded-lg items-center justify-center">
-                      <TrendingUp size={16} color="#02929A" />
-                    </View>
-                    <H3 className="text-left font-bold text-sm leading-tight flex-1">
-                      In vs Out
-                    </H3>
-                  </View>
-                  <View className="flex-row gap-10">
-                    {/* Graph Section - 3 parts */}
-                    <IncomeVsExpenseChart
-                      income={walletStats.in || 0}
-                      expense={walletStats.out || 0}
-                    />
-
-                    {/* Labels Section - 1 part */}
-                    <View className="flex-1 gap-y-3 justify-center">
-                      <View className="flex-row items-center gap-x-1">
-                        <View className="w-2 h-2 rounded-full bg-[#02929A]" />
-                        <View className="flex-1">
-                          <P
-                            className="text-[10px] text-muted-foreground font-semibold leading-tight"
-                            numberOfLines={1}
-                          >
-                            In
-                          </P>
-                        </View>
-                        <P className="text-[10px] text-muted-foreground font-bold ml-1">
-                          {formatCurrency(walletStats.in || 0, {
-                            showSymbol: false,
-                          })}
-                        </P>
+                  <View className="flex-row items-center justify-between mb-4">
+                    <View className="flex-row items-center gap-3 flex-1">
+                      <View className="w-8 h-8 bg-primary/10 rounded-lg items-center justify-center">
+                        <Download size={16} color="#02929A" />
                       </View>
-                      <View className="flex-row items-center gap-x-1">
-                        <View className="w-2 h-2 rounded-full bg-[#FF6B6B]" />
-                        <View className="flex-1">
-                          <P
-                            className="text-[10px] text-muted-foreground font-semibold leading-tight"
-                            numberOfLines={1}
-                          >
-                            Out
-                          </P>
-                        </View>
-                        <P className="text-[10px] text-muted-foreground font-bold ml-1">
-                          {formatCurrency(walletStats.out || 0, {
-                            showSymbol: false,
-                          })}
-                        </P>
-                      </View>
+                      <H3 className="text-left font-bold text-sm leading-tight flex-1">
+                        Export Report
+                      </H3>
                     </View>
+                    <View className="w-2.5 h-2.5 rounded-full bg-[#FF6B6B]" />
                   </View>
-                </View>
-
-                {/* Top Sources of Income */}
-                <View
-                  className={`${isDark ? "bg-card" : "bg-white"} border border-border p-5 rounded-3xl shadow-sm`}
-                >
-                  <View className="flex-row items-center gap-3 mb-6">
-                    <View className="w-8 h-8 bg-primary/10 rounded-lg items-center justify-center">
-                      <BarChart3 size={16} color="#02929A" />
-                    </View>
-                    <H3 className="text-left font-bold text-sm leading-tight flex-1">
-                      Sources (IN)
-                    </H3>
-                  </View>
-                  <TopSourcesChart data={walletStats.sources} />
-                </View>
-              </View>
-            </View>
-
-            {/* Export Expense Report Section */}
-            <View className="mb-8">
-              <View
-                className={`${isDark ? "bg-card" : "bg-white"} border border-border p-4 rounded-3xl shadow-sm`}
-              >
-                <View className="flex-row items-center justify-between mb-4">
-                  <View className="flex-row items-center gap-3 flex-1">
-                    <View className="w-8 h-8 bg-primary/10 rounded-lg items-center justify-center">
-                      <Download size={16} color="#02929A" />
-                    </View>
-                    <H3 className="text-left font-bold text-sm leading-tight flex-1">
-                      Export Report
-                    </H3>
-                  </View>
-                  <View className="w-2.5 h-2.5 rounded-full bg-[#FF6B6B]" />
-                </View>
-                <P className="text-[10px] text-muted-foreground mb-4">
-                  Generate a detailed PDF report of your transactions
-                </P>
-                <Pressable
-                  className={cn(
-                    "bg-primary rounded-lg py-3 px-4",
-                    isGenerating && "opacity-70",
-                  )}
-                  onPress={handleGeneratePdf}
-                  disabled={isGenerating}
-                >
-                  <View className="flex-row items-center justify-center gap-2">
-                    {isGenerating && (
-                      <ActivityIndicator size="small" color="#FFF" />
+                  <P className="text-[10px] text-muted-foreground mb-4">
+                    Generate a detailed PDF report of your transactions
+                  </P>
+                  <Pressable
+                    className={cn(
+                      "bg-primary rounded-lg py-3 px-4",
+                      isGenerating && "opacity-70",
                     )}
-                    <P className="text-center text-primary-foreground font-semibold">
-                      {isGenerating ? "Generating..." : "Generate"}
-                    </P>
-                  </View>
-                </Pressable>
+                    onPress={handleGeneratePdf}
+                    disabled={isGenerating}
+                  >
+                    <View className="flex-row items-center justify-center gap-2">
+                      {isGenerating && (
+                        <ActivityIndicator size="small" color="#FFF" />
+                      )}
+                      <P className="text-center text-primary-foreground font-semibold">
+                        {isGenerating ? "Generating..." : "Generate"}
+                      </P>
+                    </View>
+                  </Pressable>
+                </View>
               </View>
             </View>
-          </View>
+          </>
         )}
-
-        <View className="h-20" />
       </ScrollView>
 
       {/* Custom Date Range Modal */}

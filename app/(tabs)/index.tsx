@@ -1,11 +1,10 @@
 import { useBooks, useDeleteBook } from "@/api/wallet";
-import { BottomSheetModal } from "@/components/bottom-sheet-modal";
 import { ScreenContainer } from "@/components/screen-container";
 import { WalletsSkeleton } from "@/components/skeletons/wallets-skeleton";
 import { Button } from "@/components/ui/button";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
-import { H3, Muted } from "@/components/ui/typography";
 import { CreateWalletModal } from "@/components/wallet/create-wallet-modal";
+import SortWalletModal from "@/components/wallet/sort-wallet-modal";
 import { WalletCard } from "@/components/wallet/wallet-card";
 import { useDebounce } from "@/hooks/use-debounce";
 import { usePullToRefreshSkeletonWithSearch } from "@/hooks/use-pull-to-refresh-skeleton";
@@ -26,27 +25,13 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 
 type SortOption = "name" | "created_at" | "updated_at";
 
-const SORT_OPTIONS = (
-  t: (key: string) => string,
-): {
-  key: SortOption;
-  label: string;
-  order: "asc" | "desc";
-}[] => [
-  { key: "updated_at", label: t("wallets.lastUpdated"), order: "desc" },
-  { key: "name", label: t("wallets.nameAZ"), order: "asc" },
-  { key: "created_at", label: t("wallets.lastCreated"), order: "desc" },
-];
-
 export default function HomeScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const insets = useSafeAreaInsets();
 
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingBook, setEditingBook] = useState<{
@@ -256,67 +241,17 @@ export default function HomeScreen() {
         editBook={editingBook}
       />
 
-      {/* Sort Modal */}
-      <BottomSheetModal
-        visible={showSortModal}
-        onClose={() => setShowSortModal(false)}
-      >
-        <View className="px-6 pt-3" style={{ paddingBottom: 30 }}>
-          {/* Handle */}
-          <View className="items-center mb-5">
-            <View className="w-10 h-1 rounded-full bg-foreground" />
-          </View>
-
-          {/* Title */}
-          <View className="flex-row items-center justify-between mb-2  border-b border-border pb-4">
-            <H3>{t("wallets.sortWalletBy")}</H3>
-            <TouchableOpacity
-              onPress={() => setShowSortModal(false)}
-              className="p-1"
-            >
-              <CrossIcon className="size-4 text-foreground" />
-            </TouchableOpacity>
-          </View>
-
-          {/* Options */}
-          <View className="mb-5">
-            {SORT_OPTIONS(t).map((option, index) => {
-              const isActive = tempSortBy === option.key;
-              return (
-                <TouchableOpacity
-                  key={option.key}
-                  onPress={() => {
-                    setTempSortBy(option.key);
-                    setTempSortOrder(option.order);
-                  }}
-                  className={`flex-row items-center py-3`}
-                >
-                  {/* Radio Circle */}
-                  <View
-                    className={`size-4 items-center justify-center border border-foreground rounded-full mr-3 ${isActive ? "border-primary" : "border-border"}`}
-                  >
-                    {isActive && (
-                      <View className="size-2 rounded-full bg-primary" />
-                    )}
-                  </View>
-                  <Muted>{option.label}</Muted>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-
-          <Button
-            onPress={() => {
-              setSortBy(tempSortBy);
-              setSortOrder(tempSortOrder);
-              setShowSortModal(false);
-            }}
-            style={{ marginBottom: Math.min(insets.bottom, 20) }}
-          >
-            Apply
-          </Button>
-        </View>
-      </BottomSheetModal>
+      {/* Sort Modal // */}
+      <SortWalletModal
+        showSortModal={showSortModal}
+        setShowSortModal={setShowSortModal}
+        tempSortBy={tempSortBy}
+        tempSortOrder={tempSortOrder}
+        setTempSortBy={setTempSortBy}
+        setTempSortOrder={setTempSortOrder}
+        setSortBy={setSortBy}
+        setSortOrder={setSortOrder}
+      />
 
       {/* Delete Confirmation Modal */}
       <ConfirmationModal

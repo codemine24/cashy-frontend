@@ -133,7 +133,10 @@ export default function LoginTypeScreen() {
           className="w-full flex-row items-center justify-center gap-3 rounded-xl py-4 border border-border disabled:opacity-50"
         >
           <GoogleIcon width={24} height={24} />
-          <Text className="text-base font-semibold tracking-widest text-primary">
+          <Text
+            className="text-base font-semibold tracking-widest text-primary"
+            numberOfLines={1}
+          >
             {loading ? "Logging in..." : "Continue with Google"}
           </Text>
         </TouchableOpacity>

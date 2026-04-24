@@ -8,16 +8,20 @@ export function ComparisonTable() {
         Whats included in Pro
       </Text>
 
-      <View className="flex-row items-center justify-between pb-3 border-b border-border">
+      <View className="flex-row items-center justify-between py-4 border-b border-border">
         <Text className="flex-1 text-sm text-muted-foreground font-medium">
           Features
         </Text>
-        <Text className="w-16 text-center text-sm text-foreground font-medium">
-          Free
-        </Text>
-        <Text className="w-16 text-center text-sm text-amber-500 font-bold">
-          Pro
-        </Text>
+
+        <View className="w-20 items-center justify-center">
+          <Text className="text-sm text-foreground text-center font-medium">
+            Free
+          </Text>
+        </View>
+
+        <View className="w-20 items-center justify-center">
+          <Text className="text-sm text-amber-500 font-bold">Pro</Text>
+        </View>
       </View>
 
       {/* 5 Comparisons */}
@@ -40,16 +44,11 @@ export function ComparisonTable() {
         pro={"Unlimited"}
       />
       <ComparisonRow
-        feature="Advance analytics"
-        type="boolean"
-        free={false}
-        pro={true}
-      />
-      <ComparisonRow
         feature="Attach image with transaction"
         type="boolean"
         free={false}
         pro={true}
+        isLast
       />
     </View>
   );
@@ -59,11 +58,15 @@ type ComparisonProps =
   | { type: "boolean"; free: boolean; pro: boolean }
   | { type: "text"; free: string; pro: string };
 
-export function ComparisonRow(props: { feature: string } & ComparisonProps) {
-  const { feature, type, free, pro } = props;
+export function ComparisonRow(
+  props: { feature: string; isLast?: boolean } & ComparisonProps,
+) {
+  const { feature, type, free, pro, isLast = false } = props;
 
   return (
-    <View className="flex-row items-center justify-between py-4 border-b border-border">
+    <View
+      className={`flex-row items-center justify-between py-4 ${isLast ? "" : "border-b border-border"}`}
+    >
       <Text className="flex-1 text-base text-foreground font-medium pr-2">
         {feature}
       </Text>
