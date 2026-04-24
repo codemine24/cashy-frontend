@@ -19,7 +19,7 @@ export default function BottomSheetModalWrapper({
     <BottomSheetModal visible={visible} onClose={onClose}>
       <View className="px-6">
         {/* Header */}
-        <View className="flex-row justify-between items-center border-b border-border py-3">
+        <View className="flex-row justify-between items-center border-b border-border py-3 mb-4">
           <Text className="text-xl font-bold text-foreground" numberOfLines={1}>
             {title}
           </Text>
