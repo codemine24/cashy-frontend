@@ -46,10 +46,10 @@
           "image": "./assets/images/ic_launcher-web.png",
           "imageWidth": 250,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff",
-          "dark": {
-            "backgroundColor": "#0f172a"
-          }
+          "backgroundColor": "#ffffff"
+          // "dark": {
+          //   "backgroundColor": "#0f172a"
+          // }
         }
       ],
 

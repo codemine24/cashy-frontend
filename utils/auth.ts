@@ -98,10 +98,14 @@ export async function clearUserInfo(): Promise<void> {
     if (Platform.OS === "web") {
       // Use localStorage for web
       window.localStorage.removeItem(USER_INFO_KEY);
+      notifyAuthChanges();
       return;
     }
 
     // Use SecureStore for native
     await SecureStore.deleteItemAsync(USER_INFO_KEY);
-  } catch {}
+    notifyAuthChanges();
+  } catch {
+    notifyAuthChanges();
+  }
 }

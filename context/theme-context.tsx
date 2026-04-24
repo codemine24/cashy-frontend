@@ -1,13 +1,13 @@
 import { themes, type ThemeName } from "@/constants/themes";
-import { getUserInfo } from "@/utils/auth";
+import { getUserInfo, subscribeToAuthChanges } from "@/utils/auth";
 import { useColorScheme } from "nativewind";
 import React, {
-    createContext,
-    useCallback,
-    useContext,
-    useEffect,
-    useMemo,
-    useState,
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
 } from "react";
 import { StyleProp, View, ViewStyle } from "react-native";
 
@@ -34,9 +34,10 @@ interface ThemeContextValue {
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
 // ─── Resolve user preference to actual scheme ────────────────────────
-function resolveUserTheme(pref: "LIGHT" | "DARK"): any {
+function resolveUserTheme(pref?: "LIGHT" | "DARK"): "light" | "dark" {
   if (pref === "LIGHT") return "light";
   if (pref === "DARK") return "dark";
+  return "light";
 }
 
 // ─── Provider (context only – no View wrapper) ──────────────────────
@@ -46,16 +47,23 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
 
   const resolvedScheme = colorScheme ?? "light";
 
-  // On mount, read the stored user preference and apply it
+  // On mount and on auth change (login/logout), read the stored user preference and apply it
   useEffect(() => {
     const loadStoredTheme = async () => {
       const user = await getUserInfo();
-      if (user?.theme) {
-        const scheme = resolveUserTheme(user.theme);
-        setColorScheme(scheme);
-      }
+      // If user has a theme preference, use it; otherwise default to "light"
+      const scheme = resolveUserTheme(user?.theme);
+      setColorScheme(scheme);
     };
+
     loadStoredTheme();
+
+    // Subscribe to auth changes (e.g., logout) to reset/update theme
+    const unsubscribe = subscribeToAuthChanges(() => {
+      loadStoredTheme();
+    });
+
+    return () => unsubscribe();
   }, [setColorScheme]);
 
   const toggleColorScheme = useCallback(() => {
