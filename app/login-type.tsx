@@ -26,6 +26,7 @@ export default function LoginTypeScreen() {
       offlineAccess: true,
       hostedDomain: "",
       forceCodeForRefreshToken: true,
+      accountName: "",
     });
   }, []);
 
