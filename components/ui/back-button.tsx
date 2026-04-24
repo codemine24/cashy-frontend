@@ -1,4 +1,4 @@
-import { ArrowLeft } from "@/lib/icons";
+import { ChevronLeft } from "@/lib/icons";
 import { cn } from "@/utils/cn";
 import { Href, useRouter } from "expo-router";
 import { TouchableOpacity, TouchableOpacityProps, View } from "react-native";
@@ -13,7 +13,7 @@ export interface BackButtonProps extends TouchableOpacityProps {
 export function BackButton({
   className,
   containerClassName,
-  iconSize = 20,
+  iconSize = 26,
   iconClassName,
   path,
   onPress,
@@ -36,7 +36,7 @@ export function BackButton({
         className={cn("h-10 w-10 items-center justify-center rounded-full bg-muted", className)}
         {...props}
       >
-        <ArrowLeft size={iconSize} className={cn("text-foreground", iconClassName)} />
+        <ChevronLeft size={iconSize} className={cn("text-foreground", iconClassName)} />
       </TouchableOpacity>
     </View>
   );

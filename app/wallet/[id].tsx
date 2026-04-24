@@ -615,7 +615,7 @@ export default function BookDetailScreen() {
                       <Text className="text-foreground font-bold text-[14px]">
                         {formatNumber(
                           (walletStatsResponse?.data?.in || 0) -
-                          (walletStatsResponse?.data?.out || 0),
+                            (walletStatsResponse?.data?.out || 0),
                         )}
                       </Text>
                     </View>
@@ -680,11 +680,12 @@ export default function BookDetailScreen() {
                           return (
                             <View
                               key={member.id || index}
-                              className={`px-3 py-2 flex-row items-center justify-between ${index !==
+                              className={`px-3 py-2 flex-row items-center justify-between ${
+                                index !==
                                 Math.min(book.data.others_member.length, 2) - 1
-                                ? "border-b border-border"
-                                : ""
-                                }`}
+                                  ? "border-b border-border"
+                                  : ""
+                              }`}
                             >
                               <View className="flex-row items-center flex-1">
                                 {/* Avatar */}
@@ -797,13 +798,14 @@ export default function BookDetailScreen() {
                       }
                     }}
                     onLongPress={() => setSelectedTransaction(item)}
-                    className={`px-4 py-4 flex-row justify-between ${selectedTransaction?.id === item.id ? "bg-primary/10" : ""
-                      } ${index !== data.length - 1 ? "border-b border-border" : ""}`}
+                    className={`px-4 py-4 flex-row justify-between ${
+                      selectedTransaction?.id === item.id ? "bg-primary/10" : ""
+                    } ${index !== data.length - 1 ? "border-b border-border" : ""}`}
                   >
                     <View className="flex-1 mr-3">
                       <View className="flex-row items-center justify-between mb-2">
                         <View
-                          className={`px-2 py-[2px] rounded-xl ${item.type === "IN" ? "bg-green-600/20" : "bg-red-600/20"}`}
+                          className={`px-2 py-[2px] border rounded-xl ${item.type === "IN" ? "border-green-600" : "border-red-500"}`}
                         >
                           {item.type === "IN" ? (
                             <Text
@@ -815,6 +817,7 @@ export default function BookDetailScreen() {
                             <Text
                               className={`text-[10px] font-semibold  tracking-wider text-red-500`}
                             >
+                              {item.category?.icon}{" "}
                               {item.category?.title || t("wallets.cashOut")}
                             </Text>
                           )}
@@ -829,7 +832,7 @@ export default function BookDetailScreen() {
                       <Text className="text-sm text-muted-foreground">
                         {Math.abs(
                           new Date(item.created_at).getTime() -
-                          new Date(item.updated_at).getTime(),
+                            new Date(item.updated_at).getTime(),
                         ) < 30000
                           ? "Created: "
                           : "Updated: "}{" "}
@@ -846,10 +849,11 @@ export default function BookDetailScreen() {
                     </View>
                     <View className="items-end justify-center">
                       <Text
-                        className={`text-base font-bold mb-2 ${item.type === "IN"
-                          ? "text-success"
-                          : "text-destructive"
-                          }`}
+                        className={`text-base font-bold mb-2 ${
+                          item.type === "IN"
+                            ? "text-success"
+                            : "text-destructive"
+                        }`}
                       >
                         {formatNumber(item.amount)}
                       </Text>

@@ -1,6 +1,8 @@
 import { useDeletePayment, useGetLoanDetail } from "@/api/loan";
 import { ScreenContainer } from "@/components/screen-container";
 import { usePullToRefreshSkeleton } from "@/hooks/use-pull-to-refresh-skeleton";
+import { CallIcon } from "@/icons/call-icon";
+import { WhatsappIcon } from "@/icons/whatsapp-icon";
 import { LoanPayment } from "@/interface/loan";
 import { ChevronLeft, Edit3, Trash2, X } from "@/lib/icons";
 import { formatCurrency } from "@/utils";
@@ -15,6 +17,7 @@ import {
   Alert,
   BackHandler,
   FlatList,
+  Linking,
   RefreshControl,
   Text,
   TouchableOpacity,
@@ -230,7 +233,7 @@ export default function LoanDetailScreen() {
   const isComplete = progress >= 100;
 
   return (
-    <View style={{ flex: 1 }}>
+    <View className="flex-1 border-t border-border">
       <Stack.Screen
         options={{
           headerShown: true,
@@ -373,7 +376,7 @@ export default function LoanDetailScreen() {
                         style={{ width: `${progress}%` }}
                       />
                     </View>
-                    <View className="flex-row justify-between mt-1">
+                    <View className="flex-row justify-between mt-2 mb-1">
                       <Text
                         className={`text-xs ${isComplete ? "text-muted-foreground" : "text-primary"}`}
                       >
@@ -391,13 +394,33 @@ export default function LoanDetailScreen() {
                     </View>
                   </View>
 
-                  <View className="flex-row justify-between items-center border-t border-border">
-                    <View className="flex-1 items-center py-2.5 flex-row justify-center">
-                      <Text className="text-primary font-semibold text-sm">
-                        {loan.payments?.length || 0} Payments
+                  {loan.contact_number && (
+                    <View className="px-3 py-3 border-t border-border flex-row items-center justify-between">
+                      <Text className="text-foreground font-bold text-[12px]">
+                        {loan.contact_number}
                       </Text>
+                      <View className="flex-row items-center gap-2">
+                        <TouchableOpacity
+                          onPress={() =>
+                            Linking.openURL(`tel:${loan.contact_number}`)
+                          }
+                          className="bg-primary/10 p-2 rounded-lg"
+                        >
+                          <CallIcon className="text-primary" size={16} />
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          onPress={() =>
+                            Linking.openURL(
+                              `whatsapp://send?phone=${loan.contact_number}`,
+                            )
+                          }
+                          className="bg-green-600/10 p-2 rounded-lg"
+                        >
+                          <WhatsappIcon className="text-green-600" size={16} />
+                        </TouchableOpacity>
+                      </View>
                     </View>
-                  </View>
+                  )}
                 </View>
 
                 {/* Showing X entries */}

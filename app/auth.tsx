@@ -178,7 +178,7 @@ export default function AuthScreen() {
           onPress={
             step === "otp"
               ? () => animateToStep("email")
-              : () => router.navigate("/")
+              : () => router.navigate("/login-type")
           }
           className="h-10 w-10 items-center justify-center rounded-full bg-muted"
         >
