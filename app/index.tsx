@@ -39,7 +39,7 @@ export default function WelcomeScreen() {
   if (showModal && isForceUpdate) {
     return (
       <UpdateModal
-        visible={showModal && !isModalSkipped}
+        visible={showModal}
         versionInfo={versionInfo}
         onUpdateNow={handleUpdateNow}
         onSkip={handleSkip}
