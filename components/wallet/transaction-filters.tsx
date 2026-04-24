@@ -343,10 +343,12 @@ function BottomSheetModalWrapper({
 }) {
   return (
     <BottomSheetModal visible={visible} onClose={onClose}>
-      <View className="px-6 pt-3 pb-2">
+      <View className="px-6">
         {/* Header */}
-        <View className="flex-row justify-between items-center border-b border-border pb-3">
-          <Text className="text-xl font-bold text-foreground">{title}</Text>
+        <View className="flex-row justify-between items-center border-b border-border py-3">
+          <Text className="text-xl font-bold text-foreground" numberOfLines={1}>
+            {title}
+          </Text>
           <TouchableOpacity
             onPress={onClose}
             className="w-8 h-8 items-center justify-center"
@@ -380,7 +382,7 @@ function RadioRow({
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.7}
-      className="flex-row items-center py-2.5 gap-3"
+      className="flex-row items-center space-y-20 gap-3"
     >
       <View
         className={`w-5 h-5 rounded-full border-2 items-center justify-center ${
@@ -409,7 +411,7 @@ function CheckboxRow({
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.7}
-      className="flex-row items-center py-3.5 gap-3"
+      className="flex-row items-center gap-3"
     >
       <View
         className={`w-5 h-5 rounded-full border-2 items-center justify-center ${
@@ -434,10 +436,7 @@ function ModalFooter({
 }) {
   const insets = useSafeAreaInsets();
   return (
-    <View
-      className="px-0 pt-2"
-      style={{ marginBottom: Math.min(insets.bottom, 20) }}
-    >
+    <View style={{ marginBottom: Math.min(insets.bottom, 20) }}>
       <TouchableOpacity
         onPress={onApply}
         disabled={applyDisabled}
@@ -493,7 +492,7 @@ function EntryTypeModal({
         />
       }
     >
-      <View className="py-2">
+      <View className="flex-col gap-3">
         <RadioRow
           label="All"
           selected={draft === "ALL"}
@@ -626,112 +625,117 @@ function DateFilterModal({
         />
       }
     >
-      <ScrollView className="py-2" style={{ maxHeight: 400 }}>
-        {DATE_PRESETS.map((p) => (
-          <RadioRow
-            key={p.key}
-            label={p.label}
-            selected={draftPreset === p.key}
-            onPress={() => {
-              setDraftPreset(p.key);
-              if (p.key === "date") {
-                setShowSinglePicker(true);
-              }
-            }}
-          />
-        ))}
+      <ScrollView style={{ maxHeight: 400 }}>
+        <View className="flex-col gap-3">
+          {DATE_PRESETS.map((p) => (
+            <RadioRow
+              key={p.key}
+              label={p.label}
+              selected={draftPreset === p.key}
+              onPress={() => {
+                setDraftPreset(p.key);
+                if (p.key === "date") {
+                  setShowSinglePicker(true);
+                }
+              }}
+            />
+          ))}
 
-        {/* Single Day picker */}
-        {draftPreset === "date" && (
-          <View className="px-5 pb-3 pt-1">
-            <TouchableOpacity
-              onPress={() => setShowSinglePicker(true)}
-              className="flex-row items-center gap-2 bg-muted rounded-xl px-4 py-3"
-            >
-              <Calendar size={16} className="text-muted-foreground" />
-              <Text className="text-foreground text-[14px] font-medium">
-                {formatBtn(draftSingleDate, "Pick a date")}
-              </Text>
-            </TouchableOpacity>
-            {showSinglePicker && (
-              <DateTimePicker
-                value={draftSingleDate || new Date()}
-                mode="date"
-                display={Platform.OS === "ios" ? "spinner" : "default"}
-                maximumDate={new Date()}
-                onChange={(_, d) => {
-                  setShowSinglePicker(Platform.OS === "ios");
-                  if (d) setDraftSingleDate(d);
-                }}
-              />
-            )}
-          </View>
-        )}
+          {/* Single Day picker */}
+          {draftPreset === "date" && (
+            <View className="">
+              <TouchableOpacity
+                onPress={() => setShowSinglePicker(true)}
+                className="flex-row items-center gap-2 bg-muted rounded-xl px-4 py-3"
+              >
+                <Calendar size={16} className="text-muted-foreground" />
+                <Text className="text-foreground text-[14px] font-medium">
+                  {formatBtn(draftSingleDate, "Pick a date")}
+                </Text>
+              </TouchableOpacity>
+              {showSinglePicker && (
+                <DateTimePicker
+                  value={draftSingleDate || new Date()}
+                  mode="date"
+                  display={Platform.OS === "ios" ? "spinner" : "default"}
+                  maximumDate={new Date()}
+                  onChange={(_, d) => {
+                    setShowSinglePicker(Platform.OS === "ios");
+                    if (d) setDraftSingleDate(d);
+                  }}
+                />
+              )}
+            </View>
+          )}
 
-        {/* Date Range pickers */}
-        {draftPreset === "date_range" && (
-          <View className="px-5 pb-3 pt-1 gap-2">
-            <TouchableOpacity
-              onPress={() => setShowRangeStartPicker(true)}
-              className="flex-row items-center gap-2 bg-muted rounded-xl px-4 py-3"
-            >
-              <Calendar size={16} className="text-muted-foreground" />
-              <Text className="text-foreground text-[14px] font-medium">
-                {formatBtn(draftRangeStart, "Start date")}
-              </Text>
-            </TouchableOpacity>
-            {showRangeStartPicker && (
-              <DateTimePicker
-                value={draftRangeStart || new Date()}
-                mode="date"
-                display={Platform.OS === "ios" ? "spinner" : "default"}
-                maximumDate={draftRangeEnd || new Date()}
-                onChange={(_, d) => {
-                  setShowRangeStartPicker(Platform.OS === "ios");
-                  if (d) {
-                    setDraftRangeStart(d);
-                    // If start date is after end date, reset end date
-                    if (draftRangeEnd && d.getTime() > draftRangeEnd.getTime()) {
-                      setDraftRangeEnd(null);
+          {/* Date Range pickers */}
+          {draftPreset === "date_range" && (
+            <View className="gap-2">
+              <TouchableOpacity
+                onPress={() => setShowRangeStartPicker(true)}
+                className="flex-row items-center gap-2 bg-muted rounded-xl px-4 py-3"
+              >
+                <Calendar size={16} className="text-muted-foreground" />
+                <Text className="text-foreground text-[14px] font-medium">
+                  {formatBtn(draftRangeStart, "Start date")}
+                </Text>
+              </TouchableOpacity>
+              {showRangeStartPicker && (
+                <DateTimePicker
+                  value={draftRangeStart || new Date()}
+                  mode="date"
+                  display={Platform.OS === "ios" ? "spinner" : "default"}
+                  maximumDate={draftRangeEnd || new Date()}
+                  onChange={(_, d) => {
+                    setShowRangeStartPicker(Platform.OS === "ios");
+                    if (d) {
+                      setDraftRangeStart(d);
+                      // If start date is after end date, reset end date
+                      if (
+                        draftRangeEnd &&
+                        d.getTime() > draftRangeEnd.getTime()
+                      ) {
+                        setDraftRangeEnd(null);
+                      }
                     }
-                  }
-                }}
-              />
-            )}
+                  }}
+                />
+              )}
 
-            <TouchableOpacity
-              onPress={() => setShowRangeEndPicker(true)}
-              className="flex-row items-center gap-2 bg-muted rounded-xl px-4 py-3"
-            >
-              <Calendar size={16} className="text-muted-foreground" />
-              <Text className="text-foreground text-[14px] font-medium">
-                {formatBtn(draftRangeEnd, "End date")}
-              </Text>
-            </TouchableOpacity>
-            {showRangeEndPicker && (
-              <DateTimePicker
-                value={draftRangeEnd || new Date()}
-                mode="date"
-                display={Platform.OS === "ios" ? "spinner" : "default"}
-                maximumDate={new Date()}
-                minimumDate={draftRangeStart || undefined}
-                onChange={(_, d) => {
-                  setShowRangeEndPicker(Platform.OS === "ios");
-                  if (d) {
-                    setDraftRangeEnd(d);
-                    // If end date is before start date, reset start date
-                    if (
-                      draftRangeStart &&
-                      d.getTime() < draftRangeStart.getTime()
-                    ) {
-                      setDraftRangeStart(null);
+              <TouchableOpacity
+                onPress={() => setShowRangeEndPicker(true)}
+                className="flex-row items-center gap-2 bg-muted rounded-xl px-4 py-3"
+              >
+                <Calendar size={16} className="text-muted-foreground" />
+                <Text className="text-foreground text-[14px] font-medium">
+                  {formatBtn(draftRangeEnd, "End date")}
+                </Text>
+              </TouchableOpacity>
+              {showRangeEndPicker && (
+                <DateTimePicker
+                  value={draftRangeEnd || new Date()}
+                  mode="date"
+                  display={Platform.OS === "ios" ? "spinner" : "default"}
+                  maximumDate={new Date()}
+                  minimumDate={draftRangeStart || undefined}
+                  onChange={(_, d) => {
+                    setShowRangeEndPicker(Platform.OS === "ios");
+                    if (d) {
+                      setDraftRangeEnd(d);
+                      // If end date is before start date, reset start date
+                      if (
+                        draftRangeStart &&
+                        d.getTime() < draftRangeStart.getTime()
+                      ) {
+                        setDraftRangeStart(null);
+                      }
                     }
-                  }
-                }}
-              />
-            )}
-          </View>
-        )}
+                  }}
+                />
+              )}
+            </View>
+          )}
+        </View>
       </ScrollView>
     </BottomSheetModalWrapper>
   );
@@ -787,24 +791,22 @@ function MembersFilterModal({
         />
       }
     >
-      <View>
+      <View className="flex-col gap-3">
         {/* Search */}
-        <View className="pb-1">
-          <View className="flex-row items-center bg-muted border border-border rounded-xl px-3 gap-2">
-            <Search size={16} className="text-muted-foreground" />
-            <TextInput
-              value={search}
-              onChangeText={setSearch}
-              placeholder="Search members..."
-              placeholderTextColor="#9CA3AF"
-              className="flex-1 text-[14px] text-foreground"
-            />
-            {search.length > 0 && (
-              <TouchableOpacity onPress={() => setSearch("")}>
-                <X size={14} className="text-muted-foreground" />
-              </TouchableOpacity>
-            )}
-          </View>
+        <View className="flex-row items-center bg-muted border border-border rounded-xl px-3 gap-2">
+          <Search size={16} className="text-muted-foreground" />
+          <TextInput
+            value={search}
+            onChangeText={setSearch}
+            placeholder="Search members..."
+            placeholderTextColor="#9CA3AF"
+            className="flex-1 text-[14px] text-foreground"
+          />
+          {search.length > 0 && (
+            <TouchableOpacity onPress={() => setSearch("")}>
+              <X size={14} className="text-muted-foreground" />
+            </TouchableOpacity>
+          )}
         </View>
 
         {/* List */}
@@ -894,22 +896,20 @@ function CategoryFilterModal({
     >
       <View>
         {/* Search */}
-        <View className="pb-1">
-          <View className="flex-row items-center bg-muted border border-border rounded-xl px-3 gap-2">
-            <Search size={16} className="text-muted-foreground" />
-            <TextInput
-              value={search}
-              onChangeText={setSearch}
-              placeholder="Search categories..."
-              placeholderTextColor="#9CA3AF"
-              className="flex-1 text-[14px] text-foreground"
-            />
-            {search.length > 0 && (
-              <TouchableOpacity onPress={() => setSearch("")}>
-                <X size={14} className="text-muted-foreground" />
-              </TouchableOpacity>
-            )}
-          </View>
+        <View className="flex-row items-center bg-muted border border-border rounded-xl px-3 gap-2">
+          <Search size={16} className="text-muted-foreground" />
+          <TextInput
+            value={search}
+            onChangeText={setSearch}
+            placeholder="Search categories..."
+            placeholderTextColor="#9CA3AF"
+            className="flex-1 text-[14px] text-foreground"
+          />
+          {search.length > 0 && (
+            <TouchableOpacity onPress={() => setSearch("")}>
+              <X size={14} className="text-muted-foreground" />
+            </TouchableOpacity>
+          )}
         </View>
 
         {/* List */}
@@ -917,7 +917,6 @@ function CategoryFilterModal({
           data={filtered}
           keyExtractor={(item) => item.id}
           style={{ maxHeight: 300 }}
-          contentContainerStyle={{ paddingVertical: 4 }}
           renderItem={({ item }) => (
             <CheckboxRow
               label={item.title}
