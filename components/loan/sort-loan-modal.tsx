@@ -4,7 +4,7 @@ import ApplyButton from "../ui/modal/apply-button";
 import BottomSheetModalWrapper from "../ui/modal/bottom-sheet-modal-wrapper";
 import RadioButton from "../ui/radio-button";
 
-export type SortOption = "name" | "created_at" | "updated_at";
+export type SortOption = "person_name" | "updated_at" | "created_at";
 
 const SORT_OPTIONS = (
   t: (key: string) => string,
@@ -14,7 +14,7 @@ const SORT_OPTIONS = (
   order: "asc" | "desc";
 }[] => [
   { key: "updated_at", label: t("wallets.lastUpdated"), order: "desc" },
-  { key: "name", label: t("wallets.nameAZ"), order: "asc" },
+  { key: "person_name", label: t("wallets.nameAZ"), order: "asc" },
   { key: "created_at", label: t("wallets.lastCreated"), order: "desc" },
 ];
 
@@ -29,7 +29,7 @@ type Props = {
   setSortOrder: (sortOrder: "asc" | "desc") => void;
 };
 
-export default function SortWalletModal({
+export default function SortLoanModal({
   showSortModal,
   setShowSortModal,
   tempSortBy,
@@ -44,7 +44,7 @@ export default function SortWalletModal({
   return (
     <BottomSheetModalWrapper
       visible={showSortModal}
-      title="Sort Wallet By"
+      title="Sort Loans By"
       onClose={() => setShowSortModal(false)}
       footer={
         <ApplyButton
