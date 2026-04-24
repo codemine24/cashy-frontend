@@ -2,8 +2,11 @@ import { useCreateSubscription } from "@/api/subscription";
 import { ScreenContainer } from "@/components/screen-container";
 import { ComparisonTable } from "@/components/subscription/comparison-table";
 import { FAQSection } from "@/components/subscription/faq-section";
+import LearnMoreModal from "@/components/subscription/learn-more-modal";
+import SuccessScreen from "@/components/subscription/success-screen";
+import TransferModal from "@/components/subscription/transfer-modal";
 import { useAuth } from "@/context/auth-context";
-import { Check, ChevronLeft } from "@/lib/icons";
+import { ChevronLeft } from "@/lib/icons";
 import * as Crypto from "expo-crypto";
 import { useIAP } from "expo-iap";
 import { router, Stack, useFocusEffect } from "expo-router";
@@ -27,10 +30,67 @@ export default function Subscription() {
   );
   const [isProcessing, setIsProcessing] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [transferInfo, setTransferInfo] = useState<{
+    email: string;
+    token: string;
+    productId: string;
+    price: string;
+  } | null>(null);
+  const [showLearnMore, setShowLearnMore] = useState(false);
+
   const insets = useSafeAreaInsets();
   const { mutateAsync: createSubscription } = useCreateSubscription();
   const { authState } = useAuth();
   const userEmail = authState.user?.email;
+
+  const handleCreateSubscription = async (
+    params: {
+      productId: string;
+      purchaseToken: string;
+      price: string;
+      transfer?: boolean;
+    },
+    purchase?: any,
+  ) => {
+    try {
+      await createSubscription({
+        plan: "LIFETIME",
+        price: params.price,
+        product_id: params.productId,
+        package_name: "com.codemine.cashy",
+        purchase_token: params.purchaseToken,
+        transfer: params.transfer,
+      });
+
+      if (purchase) {
+        await finishTransaction({
+          purchase,
+          isConsumable: false,
+        });
+      }
+
+      setTransferInfo(null);
+      setIsProcessing(false);
+      setShowSuccess(true);
+    } catch (error: any) {
+      if (error?.message?.startsWith("ALREADY_LINKED|")) {
+        const linkedEmail = error.message.split("|")[1];
+        setTransferInfo({
+          email: linkedEmail,
+          token: params.purchaseToken,
+          productId: params.productId,
+          price: params.price,
+        });
+        setIsProcessing(false);
+      } else {
+        setIsProcessing(false);
+        Alert.alert(
+          "Verification failed",
+          error?.message || "Please contact support",
+        );
+      }
+    }
+  };
 
   const {
     connected,
@@ -56,28 +116,24 @@ export default function Subscription() {
 
         let originalPrice = product.displayPrice;
         let discountPrice = discountOffer?.displayPrice;
+        const finalPrice = discountPrice || originalPrice;
 
-        await createSubscription({
-          plan: "LIFETIME",
-          price: discountPrice || originalPrice,
-          product_id: purchase.productId,
-          package_name: "com.codemine.cashy",
-          purchase_token: purchase.purchaseToken,
-        });
+        if (!purchase.purchaseToken) {
+          Alert.alert("Error", "Invalid purchase token");
+          return;
+        }
 
-        await finishTransaction({
+        await handleCreateSubscription(
+          {
+            productId: purchase.productId,
+            purchaseToken: purchase.purchaseToken,
+            price: finalPrice,
+          },
           purchase,
-          isConsumable: false,
-        });
-
-        setIsProcessing(false);
-        setShowSuccess(true);
+        );
       } catch (error: any) {
         setIsProcessing(false);
-        Alert.alert(
-          "Verification failed",
-          error?.message || "Please contact support",
-        );
+        Alert.alert("Error", error?.message || "Something went wrong");
       }
     },
     onPurchaseError: (error) => {
@@ -113,22 +169,21 @@ export default function Subscription() {
       if (owned) {
         const originalPrice = product?.displayPrice ?? "";
         const discountPrice = discountOffer?.displayPrice;
+        const finalPrice = discountPrice || originalPrice;
 
-        await createSubscription({
-          plan: "LIFETIME",
-          price: discountPrice || originalPrice,
-          product_id: owned.productId,
-          package_name: "com.codemine.cashy",
-          purchase_token: owned.purchaseToken,
-        });
+        if (!owned.purchaseToken) {
+          Alert.alert("Error", "Invalid purchase token");
+          return;
+        }
 
-        await finishTransaction({
-          purchase: owned,
-          isConsumable: false,
-        });
-
-        setIsProcessing(false);
-        setShowSuccess(true);
+        await handleCreateSubscription(
+          {
+            productId: owned.productId,
+            purchaseToken: owned.purchaseToken,
+            price: finalPrice,
+          },
+          owned,
+        );
         return;
       }
 
@@ -179,78 +234,7 @@ export default function Subscription() {
   );
 
   if (showSuccess) {
-    return (
-      <>
-        <Stack.Screen
-          options={{
-            title: "Success",
-            animation: "none",
-            headerLeft: () => (
-              <TouchableOpacity
-                onPress={() => router.navigate("/settings")}
-                style={{ marginRight: 4 }}
-              >
-                <ChevronLeft size={26} className="text-foreground" />
-              </TouchableOpacity>
-            ),
-          }}
-        />
-        <ScreenContainer edges={["bottom"]} className="bg-background">
-          <View className="flex-1 items-center justify-center px-6">
-            <View className="items-center mb-8">
-              <View className="w-24 h-24 bg-amber-500 rounded-full items-center justify-center mb-6 shadow-xl shadow-amber-500/20">
-                <Check size={48} className="text-white" />
-              </View>
-              <Text
-                className="text-3xl font-bold text-foreground text-center mb-2"
-                numberOfLines={1}
-              >
-                You&apos;re all set!
-              </Text>
-              <Text className="text-lg text-muted-foreground text-center">
-                Welcome to Cashy Premium.
-              </Text>
-            </View>
-
-            <View className="bg-card border border-border rounded-3xl p-6 w-full mb-6">
-              <Text className="text-lg font-bold text-foreground mb-4">
-                Unlimited access unlocked:
-              </Text>
-              <View className="gap-y-4">
-                {[
-                  "Unlimited multi-currency wallets",
-                  "Advanced shared wallet members",
-                  "Attach images to transactions",
-                  "Detailed financial analytics",
-                ].map((feature, i) => (
-                  <View key={i} className="flex-row items-center">
-                    <View className="w-6 h-6 bg-amber-500/10 rounded-full items-center justify-center mr-3">
-                      <Check size={14} className="text-amber-500" />
-                    </View>
-                    <Text className="text-base text-foreground font-medium">
-                      {feature}
-                    </Text>
-                  </View>
-                ))}
-              </View>
-            </View>
-
-            <TouchableOpacity
-              activeOpacity={0.8}
-              onPress={() => router.replace("/settings" as any)}
-              className="rounded-xl py-4 w-full bg-amber-500 items-center justify-center shadow-lg"
-            >
-              <Text
-                className="text-lg font-bold text-background"
-                numberOfLines={1}
-              >
-                Start Using Pro
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </ScreenContainer>
-      </>
-    );
+    return <SuccessScreen />;
   }
 
   return (
@@ -286,25 +270,8 @@ export default function Subscription() {
               feature and updates with no additional cost.
             </Text>
           </View>
-
-          {/* Comparison Table */}
           <ComparisonTable />
-
-          {/* FAQ Section */}
           <FAQSection />
-
-          {/* Sync Logic Button */}
-          {/* <View className="mb-8">
-            <TouchableOpacity
-              activeOpacity={0.7}
-              onPress={handleSaveProducts}
-              className="bg-card w-full py-4 rounded-3xl border border-border items-center justify-center"
-            >
-              <Text className="text-sm font-bold text-muted-foreground">
-                Sync Product Catalog
-              </Text>
-            </TouchableOpacity>
-          </View> */}
         </ScrollView>
 
         {/* Sticky Bottom Area */}
@@ -317,10 +284,11 @@ export default function Subscription() {
             <TouchableOpacity
               activeOpacity={0.8}
               onPress={() => setSelectedPlan("free")}
-              className={`flex-1 rounded-2xl border-2 p-4 pt-5 ${selectedPlan === "free"
-                ? "border-foreground bg-card"
-                : "border-border bg-card/50"
-                }`}
+              className={`flex-1 rounded-2xl border-2 p-4 pt-5 ${
+                selectedPlan === "free"
+                  ? "border-foreground bg-card"
+                  : "border-border bg-card/50"
+              }`}
             >
               <Text className="text-lg font-semibold text-center text-foreground mb-2">
                 Free
@@ -358,10 +326,11 @@ export default function Subscription() {
                 <TouchableOpacity
                   activeOpacity={0.8}
                   onPress={() => setSelectedPlan("lifetime")}
-                  className={`flex-1 rounded-2xl border-2 p-4 pt-5 relative ${selectedPlan === "lifetime"
-                    ? "border-amber-500 bg-amber-500/10"
-                    : "border-border bg-card/50"
-                    }`}
+                  className={`flex-1 rounded-2xl border-2 p-4 pt-5 relative ${
+                    selectedPlan === "lifetime"
+                      ? "border-amber-500 bg-amber-500/10"
+                      : "border-border bg-card/50"
+                  }`}
                 >
                   <View className="absolute -top-3.5 self-center bg-amber-500 px-3 py-1 rounded-full">
                     <Text className="text-[10px] font-bold text-white tracking-wider">
@@ -397,9 +366,10 @@ export default function Subscription() {
               activeOpacity={0.8}
               onPress={handleBuy}
               disabled={isProcessing}
-              className={`rounded-full py-4 items-center justify-center relative overflow-hidden ${isProcessing ? "bg-amber-500/70" : "bg-amber-500"
-                }`}
-              style={{ marginBottom: Math.min(insets.bottom, 20) }}
+              className={`rounded-full py-4 items-center justify-center relative overflow-hidden ${
+                isProcessing ? "bg-amber-500/70" : "bg-amber-500"
+              }`}
+              style={{ marginBottom: 12 }}
             >
               {isProcessing ? (
                 <ActivityIndicator color="#fff" />
@@ -413,50 +383,32 @@ export default function Subscription() {
               )}
             </TouchableOpacity>
           )}
+
+          <TouchableOpacity
+            onPress={() => setShowLearnMore(true)}
+            className="items-center justify-center py-2"
+            style={{ marginBottom: Math.max(insets.bottom, 20) }}
+          >
+            <Text className="text-sm font-medium text-muted-foreground border-b border-muted-foreground/30">
+              Learn more about purchases
+            </Text>
+          </TouchableOpacity>
         </View>
+
+        {/* Transfer Modal */}
+        <TransferModal
+          transferInfo={transferInfo}
+          setTransferInfo={setTransferInfo}
+          handleCreateSubscription={handleCreateSubscription}
+          setIsProcessing={setIsProcessing}
+        />
+
+        {/* Learn More Modal */}
+        <LearnMoreModal
+          showLearnMore={showLearnMore}
+          setShowLearnMore={setShowLearnMore}
+        />
       </ScreenContainer>
     </View>
   );
 }
-
-// const handleSaveProducts = async () => {
-//   if (!products || products.length === 0) {
-//     Alert.alert("No products", "No products data available to save");
-//     return;
-//   }
-
-//   try {
-//     setIsProcessing(true);
-//     await apiClient.post("/temporary", { products });
-//     Alert.alert("Success", "Products data saved successfully");
-//   } catch (error: any) {
-//     Alert.alert(
-//       "Error",
-//       error?.response?.data?.message ||
-//         error?.message ||
-//         "Failed to save products data",
-//     );
-//   } finally {
-//     setIsProcessing(false);
-//   }
-// };
-
-// const handleRestore = async () => {
-//   try {
-//     const purchases = await getAvailablePurchases();
-//     const owned = (purchases || []).find(
-//       (p) => p.productId === "cashy_lifetime",
-//     );
-
-//     if (owned) {
-//       Alert.alert("Restored", "You already own lifetime premium");
-//     } else {
-//       Alert.alert("Not found", "No lifetime purchase found for this account");
-//     }
-//   } catch (error: any) {
-//     Alert.alert(
-//       "Restore failed",
-//       error?.message || "Could not restore purchases",
-//     );
-//   }
-// };
