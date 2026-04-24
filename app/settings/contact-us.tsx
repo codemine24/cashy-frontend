@@ -29,7 +29,7 @@ export default function ContactUsScreen() {
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
-        router.navigate("/settings/about");
+        router.navigate("/settings/about-cashy");
         return true;
       };
 
@@ -43,24 +43,25 @@ export default function ContactUsScreen() {
   );
 
   return (
-    <>
-      <Stack.Screen
-        options={{
-          headerShown: true,
-          title: "Contact Us",
-          headerBackTitle: "Back",
-          headerShadowVisible: true,
-          headerLeft: () => (
-            <TouchableOpacity
-              onPress={() => router.navigate("/settings/about")}
-              style={{ marginRight: 4 }}
-            >
-              <ChevronLeft size={26} className="text-foreground" />
-            </TouchableOpacity>
-          ),
-        }}
-      />
-      <ScreenContainer edges={["left", "right"]} className="bg-background">
+    <ScreenContainer edges={["left", "right"]} className="bg-background">
+      <View className="flex-1 border-t border-border">
+        <Stack.Screen
+          options={{
+            headerShown: true,
+            title: "Contact Us",
+            animation: "none",
+            headerBackTitle: "Back",
+            headerLeft: () => (
+              <TouchableOpacity
+                onPress={() => router.navigate("/settings/about-cashy")}
+                style={{ marginRight: 4 }}
+              >
+                <ChevronLeft size={26} className="text-foreground" />
+              </TouchableOpacity>
+            ),
+          }}
+        />
+
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
@@ -195,7 +196,7 @@ export default function ContactUsScreen() {
             </Text>
           </View>
         </ScrollView>
-      </ScreenContainer>
-    </>
+      </View>
+    </ScreenContainer>
   );
 }

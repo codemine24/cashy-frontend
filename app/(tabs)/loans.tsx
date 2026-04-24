@@ -158,7 +158,7 @@ export default function LoansScreen() {
         editId: loan.id,
         editPersonName: loan.person_name,
         editAmount: loan.amount.toString(),
-        editDueDate: loan.due_date || "",
+        editContactNumber: loan.contact_number || "",
       },
     } as any);
   };

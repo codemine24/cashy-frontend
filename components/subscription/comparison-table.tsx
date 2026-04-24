@@ -28,6 +28,12 @@ export function ComparisonTable() {
         pro={"Unlimited"}
       />
       <ComparisonRow
+        feature="Number of loan"
+        type="text"
+        free={"5"}
+        pro={"Unlimited"}
+      />
+      <ComparisonRow
         feature="Each wallet can be shared with"
         type="text"
         free={"1 member"}

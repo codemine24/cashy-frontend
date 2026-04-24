@@ -1,7 +1,13 @@
 import { useCreateCategory, useUpdateCategory } from "@/api/category";
 import { BottomSheetModal } from "@/components/bottom-sheet-modal";
 import React, { useEffect, useRef, useState } from "react";
-import { Text, TextInput, TouchableOpacity, View } from "react-native";
+import {
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import Toast from "react-native-toast-message";
 
 interface CategoryModalProps {
@@ -9,17 +15,37 @@ interface CategoryModalProps {
   onClose: () => void;
   isEditing?: boolean;
   initialName?: string;
+  initialIcon?: string;
   categoryId?: string;
 }
+
+const COMMON_ICONS = [
+  // Food & Snacks
+  "🍔", "🍕", "🍜", "🍲", "🍿", "🍪", "🍩", "🍫", "☕", "🍺",
+  // Travel & Transport
+  "✈️", "🏨", "🌍", "🗺️", "🚗", "🚘", "🚕", "🚌", "🚲", "⛽",
+  // Fashion & Shopping
+  "👗", "👠", "👜", "👔", "🛍️", "🛒", "🍎", "🥦", "💄", "💎",
+  // Home & Rent
+  "🏠", "🏢", "🔑", "🛌", "💡", "💧",
+  // Bills & Payments
+  "🧾", "📄", "📃", "💵", "💸", "💰", "💳", "🏧", "🏦", "🏦",
+  // Work, Tech & Others
+  "💼", "📈", "📉", "💹", "📱", "💻", "📷", "🔋", "⚙️", "🧱",
+  // Health, Entertainment & Edu
+  "💊", "🏥", "🏃", "🧘", "🎬", "🎮", "🎤", "📚", "🎓", "🎨", "🎹", "🎸"
+];
 
 export function CategoryModal({
   visible,
   onClose,
   isEditing = false,
   initialName = "",
+  initialIcon = "📝",
   categoryId,
 }: CategoryModalProps) {
   const [categoryName, setCategoryName] = useState(initialName);
+  const [selectedIcon, setSelectedIcon] = useState(initialIcon);
   const inputRef = useRef<TextInput>(null);
 
   const createCategoryMutation = useCreateCategory();
@@ -29,12 +55,13 @@ export function CategoryModal({
   useEffect(() => {
     if (visible) {
       setCategoryName(initialName);
+      setSelectedIcon(initialIcon || "📝");
       // Auto-focus input when modal opens
       setTimeout(() => {
         inputRef.current?.focus();
       }, 400); // Delay to match modal animation
     }
-  }, [visible, initialName]);
+  }, [visible, initialName, initialIcon]);
 
   const handleSave = async () => {
     if (!categoryName.trim()) {
@@ -50,13 +77,16 @@ export function CategoryModal({
       if (isEditing && categoryId) {
         await updateCategoryMutation.mutateAsync({
           id: categoryId,
-          category: { title: categoryName.trim() },
+          category: {
+            title: categoryName.trim(),
+            icon: selectedIcon,
+          },
         });
       } else {
         await createCategoryMutation.mutateAsync({
           title: categoryName.trim(),
           color: "#00929A",
-          icon: "",
+          icon: selectedIcon,
         });
       }
 
@@ -107,16 +137,46 @@ export function CategoryModal({
         <Text className="text-sm font-normal text-foreground mb-2">
           Category Name
         </Text>
-        <TextInput
-          ref={inputRef}
-          value={categoryName}
-          onChangeText={setCategoryName}
-          placeholder="e.g. Travel, Utilities, Groceries"
-          placeholderTextColor="#9ca3af"
-          className="bg-surface rounded-lg px-4 py-3 border border-border text-foreground mb-3"
-          editable={!isPending}
-          onSubmitEditing={handleSave}
-        />
+        <View className="flex-row items-center gap-3 mb-4">
+          <View className="w-12 h-12 bg-surface rounded-lg items-center justify-center border border-border">
+            <Text className="text-2xl">{selectedIcon}</Text>
+          </View>
+          <TextInput
+            ref={inputRef}
+            value={categoryName}
+            onChangeText={setCategoryName}
+            placeholder="e.g. Travel, Utilities, Groceries"
+            placeholderTextColor="#9ca3af"
+            className="flex-1 bg-surface rounded-lg px-4 py-3 border border-border text-foreground"
+            editable={!isPending}
+            onSubmitEditing={handleSave}
+          />
+        </View>
+
+        {/* Icon Selection */}
+        <Text className="text-sm font-normal text-foreground mb-2">
+          Icon (Emoji)
+        </Text>
+        <View className="bg-surface rounded-lg border border-border mb-6">
+          <ScrollView
+            horizontal
+            keyboardShouldPersistTaps="handled"
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ padding: 8 }}
+          >
+            <View className="flex-row gap-2">
+              {COMMON_ICONS.map((icon, index) => (
+                <TouchableOpacity
+                  key={index}
+                  onPress={() => setSelectedIcon(icon)}
+                  className={`w-12 h-12 items-center justify-center rounded-lg ${selectedIcon === icon ? "bg-primary/20 border border-primary" : "bg-background border border-border"}`}
+                >
+                  <Text className="text-2xl">{icon}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </ScrollView>
+        </View>
 
         {/* Action buttons */}
         <View className="flex-row gap-3">
@@ -125,7 +185,10 @@ export function CategoryModal({
             disabled={isPending}
             className={`flex-1 rounded-lg py-3 items-center justify-center ${isPending ? "bg-primary/50" : "bg-primary"}`}
           >
-            <Text className="text-primary-foreground font-semibold text-base">
+            <Text
+              className="text-primary-foreground font-semibold text-base"
+              numberOfLines={1}
+            >
               {isPending
                 ? isEditing
                   ? "Renaming..."

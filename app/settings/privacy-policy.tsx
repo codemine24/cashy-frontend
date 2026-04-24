@@ -3,12 +3,12 @@ import { ChevronLeft } from "@/lib/icons";
 import { Stack, useFocusEffect, useRouter } from "expo-router";
 import { useCallback } from "react";
 import {
-    BackHandler,
-    Linking,
-    ScrollView,
-    Text,
-    TouchableOpacity,
-    View,
+  BackHandler,
+  Linking,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -109,7 +109,7 @@ export default function PrivacyPolicyScreen() {
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
-        router.navigate("/settings/about");
+        router.navigate("/settings/about-cashy");
         return true;
       };
 
@@ -123,24 +123,25 @@ export default function PrivacyPolicyScreen() {
   );
 
   return (
-    <>
-      <Stack.Screen
-        options={{
-          headerShown: true,
-          title: "Privacy Policy",
-          headerBackTitle: "Back",
-          headerShadowVisible: true,
-          headerLeft: () => (
-            <TouchableOpacity
-              onPress={() => router.navigate("/settings/about")}
-              style={{ marginRight: 4 }}
-            >
-              <ChevronLeft size={26} className="text-foreground" />
-            </TouchableOpacity>
-          ),
-        }}
-      />
-      <ScreenContainer edges={["left", "right"]} className="bg-background">
+    <ScreenContainer edges={["left", "right"]} className="bg-background">
+      <View className="flex-1 border-t border-border">
+        <Stack.Screen
+          options={{
+            headerShown: true,
+            title: "Privacy Policy",
+            animation: "none",
+            headerBackTitle: "Back",
+            headerLeft: () => (
+              <TouchableOpacity
+                onPress={() => router.navigate("/settings/about-cashy")}
+                style={{ marginRight: 4 }}
+              >
+                <ChevronLeft size={26} className="text-foreground" />
+              </TouchableOpacity>
+            ),
+          }}
+        />
+
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
@@ -165,7 +166,7 @@ export default function PrivacyPolicyScreen() {
             </Text>
           </TouchableOpacity>
         </View>
-      </ScreenContainer>
-    </>
+      </View>
+    </ScreenContainer>
   );
 }

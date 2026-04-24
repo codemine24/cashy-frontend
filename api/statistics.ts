@@ -1,4 +1,5 @@
 import apiClient from "@/lib/api-client";
+import { formatDateToUTC } from "@/utils";
 import { throwApiError } from "@/utils/throw-api-error";
 import { useQuery } from "@tanstack/react-query";
 
@@ -6,74 +7,48 @@ const STATISTICS_API_URL = "/statistics";
 
 const keys = {
   all: ["statistics"],
-  overview: (params: any) => [...keys.all, "overview", params],
-  trend: (params: any) => [...keys.all, "trend", params],
-  categoryBreakdown: (params: any) => [
-    ...keys.all,
-    "categoryBreakdown",
-    params,
-  ],
-  loanSummary: () => [...keys.all, "loanSummary"],
+  loanStats: (params: any) => [...keys.all, "loanStats", params],
   walletStats: (params: any) => [...keys.all, "walletStats", params],
 };
 
 export const useWalletStats = (
   params: {
-    period?: "today" | "last_7_days" | "last_30_days" | "custom";
+    period?: "all_time" | "today" | "last_7_days" | "last_30_days" | "custom";
     book_id?: string;
     from_date?: string;
     to_date?: string;
+    search_term?: string;
+    category_id?: string;
+    category_ids?: string[];
+    member_id?: string;
+    type?: string;
   } = {},
 ) => {
   return useQuery({
     queryKey: keys.walletStats(params),
     queryFn: async () => {
       try {
-        const response = await apiClient.get(
-          `${STATISTICS_API_URL}/wallet-stats`,
-          { params },
-        );
-        return response.data;
-      } catch (error) {
-        throwApiError(error);
-      }
-    },
-  });
-};
+        const queryParams: Record<string, any> = { ...params };
 
-export const useBookOverview = (
-  params: {
-    period?: "all" | "day" | "week" | "month" | "year";
-    from_date?: string;
-    to_date?: string;
-    book_id?: string;
-  } = {},
-) => {
-  return useQuery({
-    queryKey: keys.overview(params),
-    queryFn: async () => {
-      try {
-        const response = await apiClient.get(
-          `${STATISTICS_API_URL}/book-overview`,
-          { params },
-        );
-        return response.data;
-      } catch (error) {
-        throwApiError(error);
-      }
-    },
-  });
-};
+        // Handle date formatting if present (matching transaction API logic)
+        if (params.from_date) {
+          const fromDate = new Date(params.from_date);
+          fromDate.setHours(0, 0, 0, 0);
+          queryParams.from_date = formatDateToUTC(fromDate);
+        }
+        if (params.to_date) {
+          const toDate = new Date(params.to_date);
+          toDate.setHours(23, 59, 59, 999);
+          queryParams.to_date = formatDateToUTC(toDate);
+        }
 
-export const useTransactionTrend = (
-  params: { period?: string; book_id?: string, from_date?: string, to_date?: string } = {},
-) => {
-  return useQuery({
-    queryKey: keys.trend(params),
-    queryFn: async () => {
-      try {
-        const response = await apiClient.get(`${STATISTICS_API_URL}/transaction-stats-by-date`, {
-          params,
+        // Handle category plural/singular and array join
+        if (Array.isArray(params.category_ids)) {
+          queryParams.category_ids = params.category_ids.join(",");
+        }
+
+        const response = await apiClient.get(`${STATISTICS_API_URL}/wallet`, {
+          params: queryParams,
         });
         return response.data;
       } catch (error) {
@@ -83,33 +58,33 @@ export const useTransactionTrend = (
   });
 };
 
-export const useCategoryBreakdown = (
-  params: { period?: string; type?: "IN" | "OUT"; book_id?: string } = {},
+export const useLoanStats = (
+  params: {
+    period?: "all_time" | "today" | "last_7_days" | "last_30_days" | "custom";
+    from_date?: string;
+    to_date?: string;
+  } = {},
 ) => {
   return useQuery({
-    queryKey: keys.categoryBreakdown(params),
+    queryKey: keys.loanStats(params),
     queryFn: async () => {
       try {
-        const response = await apiClient.get(
-          `${STATISTICS_API_URL}/category-breakdown`,
-          { params },
-        );
-        return response.data;
-      } catch (error) {
-        throwApiError(error);
-      }
-    },
-  });
-};
+        const queryParams: Record<string, any> = { ...params };
 
-export const useLoanSummary = () => {
-  return useQuery({
-    queryKey: keys.loanSummary(),
-    queryFn: async () => {
-      try {
-        const response = await apiClient.get(
-          `${STATISTICS_API_URL}/loan-summary`,
-        );
+        if (params.from_date) {
+          const fromDate = new Date(params.from_date);
+          fromDate.setHours(0, 0, 0, 0);
+          queryParams.from_date = formatDateToUTC(fromDate);
+        }
+        if (params.to_date) {
+          const toDate = new Date(params.to_date);
+          toDate.setHours(23, 59, 59, 999);
+          queryParams.to_date = formatDateToUTC(toDate);
+        }
+
+        const response = await apiClient.get(`${STATISTICS_API_URL}/loan`, {
+          params: queryParams,
+        });
         return response.data;
       } catch (error) {
         throwApiError(error);

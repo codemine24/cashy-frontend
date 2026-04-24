@@ -207,6 +207,7 @@ export default function MembersScreen() {
       <Stack.Screen
         options={{
           title: t("members.title"),
+          animation: "none",
           headerBackTitle: "Back",
           headerLeft: () => (
             <TouchableOpacity
@@ -280,7 +281,10 @@ export default function MembersScreen() {
           style={{ bottom: insets.bottom + 32 }}
         >
           <PlusIcon className="text-primary-foreground size-6" />
-          <Text className="text-primary-foreground text-lg text-center ml-2">
+          <Text
+            className="text-primary-foreground text-lg text-center ml-2"
+            numberOfLines={1}
+          >
             {t("members.addMember")}
           </Text>
         </Button>

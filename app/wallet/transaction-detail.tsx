@@ -63,15 +63,13 @@ function formatDateTime(utcString?: string): { date: string; time: string } {
 // ── helper: avatar (real image or initials fallback) ─────────────────────────
 function Avatar({
   name,
-  avatarFile,
+  src,
   size = 36,
 }: {
   name?: string;
-  avatarFile?: string;
+  src?: string;
   size?: number;
 }) {
-  const uri = avatarFile ? makeImageUrl(avatarFile, "user") : undefined;
-
   const initials = (name || "?")
     .split(" ")
     .map((w) => w[0])
@@ -84,8 +82,8 @@ function Avatar({
       style={{ width: size, height: size, borderRadius: size / 2 }}
       className="bg-muted items-center justify-center overflow-hidden"
     >
-      {uri ? (
-        <Image source={{ uri }} style={{ width: size, height: size }} />
+      {src ? (
+        <Image source={{ uri: src }} style={{ width: size, height: size }} />
       ) : (
         <Text
           style={{ fontSize: size * 0.36 }}
@@ -336,6 +334,7 @@ export default function TransactionDetailScreen() {
         options={{
           headerShown: true,
           title: "Transaction Details",
+          animation: "none",
           headerStyle: {
             backgroundColor: isLoading
               ? isDark
@@ -479,7 +478,13 @@ export default function TransactionDetailScreen() {
               <View className="flex-row items-center px-5 py-3.5 gap-3.5">
                 <Avatar
                   name={transaction?.entry_by?.name}
-                  avatarFile={transaction?.entry_by?.avatar}
+                  src={
+                    transaction?.entry_by?.avatar
+                      ? transaction.entry_by.avatar.startsWith("http")
+                        ? transaction.entry_by.avatar
+                        : makeImageUrl(transaction.entry_by.avatar, "user")
+                      : "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                  }
                 />
                 <View className="flex-1">
                   <Text className="text-[13px] font-semibold text-foreground">
@@ -509,7 +514,16 @@ export default function TransactionDetailScreen() {
                   <View className="flex-row items-center px-5 py-3.5 gap-3.5">
                     <Avatar
                       name={transaction.updated_by.name}
-                      avatarFile={transaction.updated_by.avatar}
+                      src={
+                        transaction.updated_by.avatar
+                          ? transaction.updated_by.avatar.startsWith("http")
+                            ? transaction.updated_by.avatar
+                            : makeImageUrl(
+                                transaction.updated_by.avatar,
+                                "user",
+                              )
+                          : "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                      }
                     />
                     <View className="flex-1">
                       <Text className="text-[13px] font-semibold text-foreground">

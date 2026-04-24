@@ -69,7 +69,7 @@ function AboutRow({
 
 // ─── Divider ─────────────────────────────────────────────────────────────
 function Divider() {
-  return <View className="h-px bg-border ml-16" />;
+  return <View className="h-px bg-border" />;
 }
 
 // ─── Main screen ─────────────────────────────────────────────────────────
@@ -137,24 +137,24 @@ export default function AboutScreen() {
   );
 
   return (
-    <>
-      <Stack.Screen
-        options={{
-          headerShown: true,
-          title: t("about.title"),
-          headerBackTitle: t("common.back"),
-          headerShadowVisible: true,
-          headerLeft: () => (
-            <TouchableOpacity
-              onPress={() => router.navigate("/settings")}
-              style={{ marginRight: 4 }}
-            >
-              <ChevronLeft size={26} className="text-foreground" />
-            </TouchableOpacity>
-          ),
-        }}
-      />
-      <ScreenContainer edges={["left", "right"]} className="bg-background">
+    <ScreenContainer edges={["left", "right"]} className="bg-background">
+      <View className="flex-1 border-t border-border pt-2">
+        <Stack.Screen
+          options={{
+            headerShown: true,
+            title: t("about.title"),
+            animation: "none",
+            headerBackTitle: t("common.back"),
+            headerLeft: () => (
+              <TouchableOpacity
+                onPress={() => router.navigate("/settings")}
+                style={{ marginRight: 4 }}
+              >
+                <ChevronLeft size={26} className="text-foreground" />
+              </TouchableOpacity>
+            ),
+          }}
+        />
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
@@ -225,18 +225,19 @@ export default function AboutScreen() {
             </TouchableOpacity>
           </View>
         </ScrollView>
-      </ScreenContainer>
 
-      <ConfirmationModal
-        visible={showDeleteModal}
-        onClose={() => setShowDeleteModal(false)}
-        onConfirm={handleDeleteAccountConfirm}
-        title="Delete Account"
-        message="Are you sure you want to permanently delete your account? This action cannot be undone and all your data will be lost."
-        confirmText="Delete"
-        cancelText="Cancel"
-        isLoading={deleteAccountMutation.isPending}
-      />
-    </>
+
+        <ConfirmationModal
+          visible={showDeleteModal}
+          onClose={() => setShowDeleteModal(false)}
+          onConfirm={handleDeleteAccountConfirm}
+          title="Delete Account"
+          message="Are you sure you want to permanently delete your account? This action cannot be undone and all your data will be lost."
+          confirmText="Delete"
+          cancelText="Cancel"
+          isLoading={deleteAccountMutation.isPending}
+        />
+      </View>
+    </ScreenContainer>
   );
 }

@@ -2,7 +2,12 @@ import { useGetCategories } from "@/api/category";
 import { CategoryModal } from "@/components/category/category-modal";
 import { Button } from "@/components/ui/button";
 import { Check, ChevronLeft, Plus, Settings } from "@/lib/icons";
-import { Stack, useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
+import {
+  Stack,
+  useFocusEffect,
+  useLocalSearchParams,
+  useRouter,
+} from "expo-router";
 import React, { useCallback, useState } from "react";
 import {
   ActivityIndicator,
@@ -75,6 +80,7 @@ export default function SelectCategoryScreen() {
         options={{
           headerShown: true,
           title: "Choose Category",
+          animation: "none",
           headerBackTitle: "Back",
           headerRight: () => (
             <TouchableOpacity
@@ -90,26 +96,7 @@ export default function SelectCategoryScreen() {
           ),
           headerLeft: () => (
             <TouchableOpacity
-              onPress={() =>
-                router.navigate({
-                  pathname: "/wallet/add-transaction",
-                  params: {
-                    bookId: params.bookId,
-                    type: params.type || params.editType,
-                    currentAmount: params.currentAmount,
-                    currentRemark: params.currentRemark,
-                    currentDate: params.currentDate,
-                    editId: params.editId,
-                    editAmount: params.editAmount,
-                    editRemark: params.editRemark,
-                    editType: params.editType,
-                    editDate: params.editDate,
-                    editTime: params.editTime,
-                    attachments: params.attachments,
-                    currentAttachments: params.currentAttachments,
-                  },
-                })
-              }
+              onPress={() => router.back()}
               style={{ marginRight: 4 }}
             >
               <ChevronLeft size={26} className="text-foreground" />
@@ -120,24 +107,7 @@ export default function SelectCategoryScreen() {
       {useFocusEffect(
         useCallback(() => {
           const onBackPress = () => {
-            router.navigate({
-              pathname: "/wallet/add-transaction",
-              params: {
-                bookId: params.bookId,
-                type: params.type || params.editType,
-                currentAmount: params.currentAmount,
-                currentRemark: params.currentRemark,
-                currentDate: params.currentDate,
-                editId: params.editId,
-                editAmount: params.editAmount,
-                editRemark: params.editRemark,
-                editType: params.editType,
-                editDate: params.editDate,
-                editTime: params.editTime,
-                attachments: params.attachments,
-                currentAttachments: params.currentAttachments,
-              },
-            });
+            router.back();
             return true;
           };
 
@@ -147,7 +117,7 @@ export default function SelectCategoryScreen() {
           );
 
           return () => subscription.remove();
-        }, [params, router]),
+        }, [router]),
       )}
       <View className="flex-1 bg-background">
         {isLoading ? (

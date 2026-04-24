@@ -4,11 +4,11 @@
 
     "slug": "cashy",
 
-    "version": "1.0.0",
+    "version": "1.1.2",
 
     "orientation": "portrait",
 
-    "icon": "./assets/images/app-icon.png",
+    "icon": "./assets/images/playstore-icon.png",
 
     "scheme": "cashy-expense-manager",
 
@@ -18,17 +18,16 @@
 
     "android": {
       "package": "com.codemine.cashy",
-      "versionCode": 20,
-      "version": "1.0.20",
+      "versionCode": 2026042501,
       "softwareKeyboardLayoutMode": "pan",
       "backgroundColor": "#0f172a",
 
       "adaptiveIcon": {
         "backgroundColor": "#02929a",
 
-        "foregroundImage": "./assets/images/app-icon-foreground.png",
+        "foregroundImage": "./assets/images/playstore-icon.png",
 
-        "monochromeImage": "./assets/images/app-icon-monochromic.png"
+        "monochromeImage": "./assets/images/playstore-icon.png"
       },
 
       "permissions": ["INTERNET", "READ_MEDIA_IMAGES", "READ_EXTERNAL_STORAGE"],
@@ -44,8 +43,8 @@
         "expo-splash-screen",
 
         {
-          "image": "./assets/images/cashy-splash-screen.jpg",
-          "imageWidth": 300,
+          "image": "./assets/images/ic_launcher-web.png",
+          "imageWidth": 250,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",
           "dark": {

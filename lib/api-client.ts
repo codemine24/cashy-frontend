@@ -33,7 +33,7 @@ apiClient.interceptors.response.use(
     if (error.response?.status === 401 && !isRedirecting) {
       isRedirecting = true;
       await removeAccessToken();
-      router.replace("/auth");
+      router.replace("/login-type");
       // Reset redirecting flag after a short delay
       setTimeout(() => {
         isRedirecting = false;

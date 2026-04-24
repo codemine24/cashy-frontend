@@ -115,7 +115,8 @@ export default function TabLayout() {
   const getIndexFromPathname = (path: string) => {
     if (path === "/loans") return 1;
     if (path === "/statistics") return 2;
-    return 0;
+    if (path === "/" || path === "/index") return 0;
+    return -1; // Not a tab route
   };
 
   const prevPathname = useRef(pathname);
@@ -124,7 +125,9 @@ export default function TabLayout() {
     if (prevPathname.current !== pathname) {
       prevPathname.current = pathname;
       const index = getIndexFromPathname(pathname);
-      pagerRef.current?.setPage(index);
+      if (index !== -1) {
+        pagerRef.current?.setPage(index);
+      }
     }
   }, [pathname]);
 

@@ -59,7 +59,7 @@ export default function TermsAndConditionsScreen() {
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
-        router.navigate("/settings/about");
+        router.navigate("/settings/about-cashy");
         return true;
       };
 
@@ -73,16 +73,16 @@ export default function TermsAndConditionsScreen() {
   );
 
   return (
-    <>
+    <View className="flex-1 border-t border-border">
       <Stack.Screen
         options={{
           headerShown: true,
           title: "Terms & Conditions",
+          animation: "none",
           headerBackTitle: "Back",
-          headerShadowVisible: true,
           headerLeft: () => (
             <TouchableOpacity
-              onPress={() => router.navigate("/settings/about")}
+              onPress={() => router.navigate("/settings/about-cashy")}
               style={{ marginRight: 4 }}
             >
               <ChevronLeft size={26} className="text-foreground" />
@@ -116,6 +116,6 @@ export default function TermsAndConditionsScreen() {
           </TouchableOpacity>
         </View>
       </ScreenContainer>
-    </>
+    </View>
   );
 }

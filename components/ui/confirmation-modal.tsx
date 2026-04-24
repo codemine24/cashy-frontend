@@ -6,7 +6,7 @@ import { Modal, TouchableOpacity, View } from "react-native";
 interface DeleteConfirmationModalProps {
   visible: boolean;
   onClose: () => void;
-  onConfirm: () => void;
+  onConfirm: () => void | Promise<any>;
   title?: string;
   message?: string;
   itemName?: string;
@@ -26,10 +26,9 @@ export function ConfirmationModal({
   cancelText = "Cancel",
   isLoading = false,
 }: DeleteConfirmationModalProps) {
-  const handleConfirm = () => {
-    onConfirm();
-    console.log("Confirming delete");
-    // onClose();
+  const handleConfirm = async () => {
+    await onConfirm();
+    onClose();
   };
 
   return (

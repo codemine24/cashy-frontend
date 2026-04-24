@@ -43,6 +43,9 @@ import {
     Users,
     Wallet,
     X,
+    Power,
+    RotateCcw,
+    Phone
 } from "lucide-react-native";
 import { cssInterop } from "nativewind";
 
@@ -103,6 +106,9 @@ interopIcon(Tag);
 interopIcon(Wallet);
 interopIcon(Menu);
 interopIcon(Crown);
+interopIcon(Power);
+interopIcon(RotateCcw);
+interopIcon(Phone);
 
 export {
     ArrowLeft,
@@ -149,4 +155,7 @@ export {
     Users,
     Wallet,
     X,
+    Power,
+    RotateCcw,
+    Phone
 };

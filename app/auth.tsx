@@ -12,7 +12,6 @@ import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
-  Animated,
   BackHandler,
   Clipboard,
   Text,
@@ -63,8 +62,6 @@ export default function AuthScreen() {
   const { setAuthState, authReady } = useAuth();
   const { applyUserTheme } = useTheme();
 
-  const slideAnim = useRef(new Animated.Value(0)).current;
-  const fadeAnim = useRef(new Animated.Value(1)).current;
   const otpInputRef = useRef<TextInput>(null);
 
   useEffect(() => {
@@ -76,7 +73,6 @@ export default function AuthScreen() {
       return () => clearTimeout(timer);
     }
   }, [step]);
-
 
   useFocusEffect(
     useCallback(() => {
@@ -106,33 +102,7 @@ export default function AuthScreen() {
   }
 
   const animateToStep = (nextStep: Step) => {
-    Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 0,
-        duration: 200,
-        useNativeDriver: true,
-      }),
-      Animated.timing(slideAnim, {
-        toValue: -30,
-        duration: 200,
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
-      setStep(nextStep);
-      slideAnim.setValue(30);
-      Animated.parallel([
-        Animated.timing(fadeAnim, {
-          toValue: 1,
-          duration: 250,
-          useNativeDriver: true,
-        }),
-        Animated.timing(slideAnim, {
-          toValue: 0,
-          duration: 250,
-          useNativeDriver: true,
-        }),
-      ]).start();
-    });
+    setStep(nextStep);
   };
 
   const handleSendOtp = async (data: EmailFormValues) => {
@@ -208,7 +178,7 @@ export default function AuthScreen() {
           onPress={
             step === "otp"
               ? () => animateToStep("email")
-              : () => router.navigate("/")
+              : () => router.navigate("/login-type")
           }
           className="h-10 w-10 items-center justify-center rounded-full bg-muted"
         >
@@ -217,10 +187,8 @@ export default function AuthScreen() {
       </View>
       <View style={{ flex: 1, paddingHorizontal: 24 }}>
         {/* EMAIL STEP */}
-        <Animated.View
+        <View
           style={{
-            opacity: step === "email" ? fadeAnim : 0,
-            transform: [{ translateY: slideAnim }],
             display: step === "email" ? "flex" : "none",
           }}
         >
@@ -262,13 +230,11 @@ export default function AuthScreen() {
               {sentOtpMutation.isPending ? "Sending OTP..." : "Send OTP"}
             </Text>
           </Button>
-        </Animated.View>
+        </View>
 
         {/* OTP STEP */}
-        <Animated.View
+        <View
           style={{
-            opacity: step === "otp" ? fadeAnim : 0,
-            transform: [{ translateY: slideAnim }],
             display: step === "otp" ? "flex" : "none",
           }}
         >
@@ -334,7 +300,7 @@ export default function AuthScreen() {
               {verifyOtpMutation.isPending ? "Verifying OTP..." : "Verify OTP"}
             </Text>
           </Button>
-        </Animated.View>
+        </View>
       </View>
     </SafeAreaView>
   );

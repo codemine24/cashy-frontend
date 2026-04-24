@@ -143,21 +143,23 @@ export default function ProfileScreen() {
   );
 
   return (
-    <>
-      <Stack.Screen
-        options={{
-          title: t("profile.title"),
-          headerLeft: () => (
-            <TouchableOpacity
-              onPress={() => router.navigate("/settings")}
-              style={{ marginRight: 4 }}
-            >
-              <ChevronLeft size={26} className="text-foreground" />
-            </TouchableOpacity>
-          ),
-        }}
-      />
-      <ScreenContainer edges={["bottom"]} className="bg-background">
+    <ScreenContainer edges={["bottom"]} className="bg-background">
+      <View className="flex-1 border-t border-border">
+        <Stack.Screen
+          options={{
+            title: t("profile.title"),
+            animation: "none",
+            headerLeft: () => (
+              <TouchableOpacity
+                onPress={() => router.navigate("/settings")}
+                style={{ marginRight: 4 }}
+              >
+                <ChevronLeft size={26} className="text-foreground" />
+              </TouchableOpacity>
+            ),
+          }}
+        />
+
         <KeyboardAvoidingView
           behavior="height"
           keyboardVerticalOffset={keyboardOffset}
@@ -263,9 +265,8 @@ export default function ProfileScreen() {
             <TouchableOpacity
               onPress={form.handleSubmit(handleSave)}
               disabled={isSaving}
-              className={`rounded-2xl py-4 items-center justify-center ${
-                isSaving ? "bg-primary/50" : "bg-primary"
-              }`}
+              className={`rounded-2xl py-4 items-center justify-center ${isSaving ? "bg-primary/50" : "bg-primary"
+                }`}
             >
               <Text
                 className="text-white font-bold text-base"
@@ -276,7 +277,7 @@ export default function ProfileScreen() {
             </TouchableOpacity>
           </View>
         </KeyboardAvoidingView>
-      </ScreenContainer>
-    </>
+      </View>
+    </ScreenContainer>
   );
 }
