@@ -50,12 +50,7 @@ export async function checkForUpdates(): Promise<UpdateCheckResult> {
     const data = await apiClient.get("/app-version/latest");
    
     const latestVersion: VersionInfo = data?.data?.data;
-
-    // Simulate network delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    const hasUpdate =
-      compareVersions(latestVersion.version, currentVersion.version) > 0;
+    const hasUpdate = compareVersions(latestVersion.version, currentVersion.version) > 0;
 
     return {
       hasUpdate,

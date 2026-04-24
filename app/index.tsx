@@ -25,10 +25,10 @@ export default function WelcomeScreen() {
   const { isModalSkipped } = useAppUpdateContext();
 
   useEffect(() => {
-    if (authReady && authState.isAuthenticated) {
+    if (authReady && authState.isAuthenticated && !isForceUpdate && isModalSkipped) {
       router.replace("/(tabs)");
     }
-  }, [authReady, authState.isAuthenticated, router]);
+  }, [authReady, authState.isAuthenticated, isForceUpdate, isModalSkipped, router]);
 
   useEffect(() => {
     if (!isModalSkipped) {

@@ -4,7 +4,7 @@
 
     "slug": "cashy",
 
-    "version": "1.2.0",
+    "version": "1.1.2",
 
     "orientation": "portrait",
 
@@ -18,7 +18,7 @@
 
     "android": {
       "package": "com.codemine.cashy",
-      "versionCode": 2026042202,
+      "versionCode": 2026042501,
       "softwareKeyboardLayoutMode": "pan",
       "backgroundColor": "#0f172a",
 
