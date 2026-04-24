@@ -1,4 +1,3 @@
-import { BottomSheetModal } from "@/components/bottom-sheet-modal";
 import { Calendar, Check, ChevronDown, Search, X } from "@/lib/icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -11,7 +10,9 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import ApplyButton from "../ui/modal/apply-button";
+import BottomSheetModalWrapper from "../ui/modal/bottom-sheet-modal-wrapper";
+import RadioButton from "../ui/radio-button";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -326,76 +327,6 @@ function FilterChip({
   );
 }
 
-// ─── Shared Modal Shell ───────────────────────────────────────────────────────
-
-function BottomSheetModalWrapper({
-  visible,
-  title,
-  onClose,
-  children,
-  footer,
-}: {
-  visible: boolean;
-  title: string;
-  onClose: () => void;
-  children: React.ReactNode;
-  footer: React.ReactNode;
-}) {
-  return (
-    <BottomSheetModal visible={visible} onClose={onClose}>
-      <View className="px-6">
-        {/* Header */}
-        <View className="flex-row justify-between items-center border-b border-border py-3">
-          <Text className="text-xl font-bold text-foreground" numberOfLines={1}>
-            {title}
-          </Text>
-          <TouchableOpacity
-            onPress={onClose}
-            className="w-8 h-8 items-center justify-center"
-          >
-            <Text className="text-xl text-foreground">✕</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Content */}
-        {children}
-
-        {/* Footer */}
-        {footer}
-      </View>
-    </BottomSheetModal>
-  );
-}
-
-// ─── Radio Row ────────────────────────────────────────────────────────────────
-
-function RadioRow({
-  label,
-  selected,
-  onPress,
-}: {
-  label: string;
-  selected: boolean;
-  onPress: () => void;
-}) {
-  return (
-    <TouchableOpacity
-      onPress={onPress}
-      activeOpacity={0.7}
-      className="flex-row items-center space-y-20 gap-3"
-    >
-      <View
-        className={`w-5 h-5 rounded-full border-2 items-center justify-center ${
-          selected ? "border-primary bg-primary" : "border-muted-foreground"
-        }`}
-      >
-        {selected && <Check size={12} color="#ffffff" />}
-      </View>
-      <Text className="text-[15px] text-foreground flex-1">{label}</Text>
-    </TouchableOpacity>
-  );
-}
-
 // ─── Checkbox Row ─────────────────────────────────────────────────────────────
 
 function CheckboxRow({
@@ -422,38 +353,6 @@ function CheckboxRow({
       </View>
       <Text className="text-[15px] text-foreground flex-1">{label}</Text>
     </TouchableOpacity>
-  );
-}
-
-// ─── Footer Buttons ───────────────────────────────────────────────────────────
-
-function ModalFooter({
-  onApply,
-  applyDisabled,
-}: {
-  onApply: () => void;
-  applyDisabled: boolean;
-}) {
-  const insets = useSafeAreaInsets();
-  return (
-    <View style={{ marginBottom: Math.min(insets.bottom, 20) }}>
-      <TouchableOpacity
-        onPress={onApply}
-        disabled={applyDisabled}
-        activeOpacity={0.7}
-        className={`w-full py-4 rounded-xl items-center ${
-          applyDisabled ? "bg-primary/30" : "bg-primary"
-        }`}
-      >
-        <Text
-          className={`font-bold text-[15px] ${
-            applyDisabled ? "text-white/50" : "text-white"
-          }`}
-        >
-          Apply
-        </Text>
-      </TouchableOpacity>
-    </View>
   );
 }
 
@@ -486,24 +385,24 @@ function EntryTypeModal({
       title="Entry Type"
       onClose={onClose}
       footer={
-        <ModalFooter
+        <ApplyButton
           onApply={() => onApply(draft)}
           applyDisabled={!hasChanged}
         />
       }
     >
       <View className="flex-col gap-3">
-        <RadioRow
+        <RadioButton
           label="All"
           selected={draft === "ALL"}
           onPress={() => setDraft("ALL")}
         />
-        <RadioRow
+        <RadioButton
           label="Cash In"
           selected={draft === "IN"}
           onPress={() => setDraft("IN")}
         />
-        <RadioRow
+        <RadioButton
           label="Cash Out"
           selected={draft === "OUT"}
           onPress={() => setDraft("OUT")}
@@ -612,7 +511,7 @@ function DateFilterModal({
       title="Select Date"
       onClose={onClose}
       footer={
-        <ModalFooter
+        <ApplyButton
           onApply={() =>
             onApply(
               draftPreset,
@@ -628,7 +527,7 @@ function DateFilterModal({
       <ScrollView style={{ maxHeight: 400 }}>
         <View className="flex-col gap-3">
           {DATE_PRESETS.map((p) => (
-            <RadioRow
+            <RadioButton
               key={p.key}
               label={p.label}
               selected={draftPreset === p.key}
@@ -785,52 +684,50 @@ function MembersFilterModal({
       title="Members"
       onClose={onClose}
       footer={
-        <ModalFooter
+        <ApplyButton
           onApply={() => onApply(draft)}
           applyDisabled={!hasChanged}
         />
       }
     >
-      <View className="flex-col gap-3">
-        {/* Search */}
-        <View className="flex-row items-center bg-muted border border-border rounded-xl px-3 gap-2">
-          <Search size={16} className="text-muted-foreground" />
-          <TextInput
-            value={search}
-            onChangeText={setSearch}
-            placeholder="Search members..."
-            placeholderTextColor="#9CA3AF"
-            className="flex-1 text-[14px] text-foreground"
-          />
-          {search.length > 0 && (
-            <TouchableOpacity onPress={() => setSearch("")}>
-              <X size={14} className="text-muted-foreground" />
-            </TouchableOpacity>
-          )}
-        </View>
-
-        {/* List */}
-        <FlatList
-          data={filtered}
-          keyExtractor={(item) => item.id}
-          style={{ maxHeight: 300 }}
-          contentContainerStyle={{ paddingVertical: 4 }}
-          renderItem={({ item }) => (
-            <RadioRow
-              label={item.name || item.email}
-              selected={draft === item.id}
-              onPress={() => setDraft(draft === item.id ? null : item.id)}
-            />
-          )}
-          ListEmptyComponent={
-            <View className="py-8 items-center">
-              <Text className="text-muted-foreground text-sm">
-                No members found
-              </Text>
-            </View>
-          }
+      {/* Search */}
+      <View className="flex-row items-center bg-muted border border-border rounded-xl px-3 gap-2 mb-4">
+        <Search size={16} className="text-muted-foreground" />
+        <TextInput
+          value={search}
+          onChangeText={setSearch}
+          placeholder="Search members..."
+          placeholderTextColor="#9CA3AF"
+          className="flex-1 text-[14px] text-foreground"
         />
+        {search.length > 0 && (
+          <TouchableOpacity onPress={() => setSearch("")}>
+            <X size={14} className="text-muted-foreground" />
+          </TouchableOpacity>
+        )}
       </View>
+
+      {/* List */}
+      <FlatList
+        data={filtered}
+        keyExtractor={(item) => item.id}
+        style={{ maxHeight: 300 }}
+        ItemSeparatorComponent={() => <View className="h-3" />}
+        renderItem={({ item }) => (
+          <RadioButton
+            label={item.name || item.email}
+            selected={draft === item.id}
+            onPress={() => setDraft(draft === item.id ? null : item.id)}
+          />
+        )}
+        ListEmptyComponent={
+          <View className="py-8 items-center">
+            <Text className="text-muted-foreground text-sm">
+              No members found
+            </Text>
+          </View>
+        }
+      />
     </BottomSheetModalWrapper>
   );
 }
@@ -888,7 +785,7 @@ function CategoryFilterModal({
       title="Category"
       onClose={onClose}
       footer={
-        <ModalFooter
+        <ApplyButton
           onApply={() => onApply(draft)}
           applyDisabled={!hasChanged}
         />
@@ -896,7 +793,7 @@ function CategoryFilterModal({
     >
       <View>
         {/* Search */}
-        <View className="flex-row items-center bg-muted border border-border rounded-xl px-3 gap-2">
+        <View className="flex-row items-center bg-muted border border-border rounded-xl px-3 gap-2 mb-4">
           <Search size={16} className="text-muted-foreground" />
           <TextInput
             value={search}
@@ -917,6 +814,7 @@ function CategoryFilterModal({
           data={filtered}
           keyExtractor={(item) => item.id}
           style={{ maxHeight: 300 }}
+          ItemSeparatorComponent={() => <View className="h-3" />}
           renderItem={({ item }) => (
             <CheckboxRow
               label={item.title}
