@@ -5,13 +5,8 @@ import { P } from "@/components/ui/typography";
 import { useTheme } from "@/context/theme-context";
 import { cn } from "@/utils/cn";
 import { useCallback, useState } from "react";
-import {
-  ActivityIndicator,
-  Pressable,
-  RefreshControl,
-  ScrollView,
-  View,
-} from "react-native";
+import { Pressable, RefreshControl, ScrollView, View } from "react-native";
+import { StatisticsSkeleton } from "../skeletons/statistics-skeleton";
 import { LoanStatisticsContent } from "./loan-statistics-content";
 
 export function LoanStatistics() {
@@ -108,15 +103,13 @@ export function LoanStatistics() {
           </View>
         </View>
 
-        {isLoading ? (
-          <View className="flex-1 items-center justify-center py-20">
-            <ActivityIndicator size="large" color="rgb(2, 146, 154)" />
+        {isLoading || refreshing ? (
+          <View>
+            <StatisticsSkeleton />
           </View>
         ) : (
           <LoanStatisticsContent loanSummary={loanSummary} isDark={isDark} />
         )}
-
-        <View className="h-20" />
       </ScrollView>
 
       <DateRangeModal

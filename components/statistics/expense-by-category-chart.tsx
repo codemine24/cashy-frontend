@@ -26,8 +26,8 @@ export function ExpenseByCategoryChart({ data }: { data: any[] }) {
 
   if (!data?.length)
     return (
-      <View className="h-16 items-center justify-center">
-        <P className="text-[8px] text-muted-foreground">No data</P>
+      <View className="h-20 w-full items-center justify-center">
+        <P className="text-muted-foreground text-xs">No data available</P>
       </View>
     );
 
