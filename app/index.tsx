@@ -62,7 +62,7 @@ export default function WelcomeScreen() {
           disabled={isChecking}
           onPress={() => {
             try {
-              router.push("/login-type");
+              router.push("/auth");
             } catch (error) {
               console.error("Navigation error:", error);
             }

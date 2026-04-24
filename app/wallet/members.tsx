@@ -1,4 +1,3 @@
-import { useGetAllUsers } from "@/api/user";
 import {
   useBook,
   useLeaveBook,
@@ -12,7 +11,6 @@ import { MembersSkeleton } from "@/components/skeletons/members-skeleton";
 import { Button } from "@/components/ui/button";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { useAuth } from "@/context/auth-context";
-import { useDebounce } from "@/hooks/use-debounce";
 import { LeaveIcon } from "@/icons/leave-icon";
 import { PlusIcon } from "@/icons/plus-icon";
 import { Member } from "@/interface/wallet";
@@ -77,25 +75,14 @@ export default function MembersScreen() {
 
   // Form states
   const [searchValue, setSearchValue] = useState("");
-  const debouncedSearch = useDebounce(searchValue, 500);
-  const [selectedUser, setSelectedUser] = useState<any>(null);
   const [role, setRole] = useState<"EDITOR" | "VIEWER" | "ADMIN">("VIEWER");
 
   // Mock API Mutations (replace with real if defined)
   const addMemberMutation = useShareBook();
 
-  // Search results
-  const { data: usersResponse, isFetching: searchingUsers } = useGetAllUsers({
-    search: debouncedSearch,
-    limit: 3,
-  });
-
-  const usersList = usersResponse?.data?.data || [];
-
   const handleOpenAddModal = () => {
     setEditingMember(null);
     setSearchValue("");
-    setSelectedUser(null);
     setRole("VIEWER");
     setModalVisible(true);
   };
@@ -103,7 +90,6 @@ export default function MembersScreen() {
   const handleEditMember = (member: Member) => {
     setEditingMember(member);
     setSearchValue(member.email || member.user?.email || member.name || "");
-    setSelectedUser(member.user || null);
     setRole(member.role);
     setModalVisible(true);
   };
@@ -153,14 +139,24 @@ export default function MembersScreen() {
   };
 
   const handleSubmitModal = async () => {
-    if (!editingMember && !selectedUser) {
-      Alert.alert("Error", "Please select a user to add.");
+    const email = editingMember
+      ? editingMember.email || editingMember.user?.email
+      : searchValue;
+
+    if (!email) {
+      Alert.alert("Error", "Please enter an email address.");
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      Alert.alert("Error", "Please enter a valid email address.");
       return;
     }
 
     const payload = {
       book_id: bookId,
-      email: editingMember ? editingMember.email : selectedUser.email,
+      email: email.trim(),
       role,
     };
 
@@ -320,16 +316,15 @@ export default function MembersScreen() {
             {/* Email Field */}
             <View className="mb-3 relative" style={{ zIndex: 100 }}>
               <Text className="text-sm font-semibold text-foreground mb-2">
-                Email / User
+                Email
               </Text>
               <View className="relative flex-row items-center">
                 <TextInput
                   value={searchValue}
                   onChangeText={(text) => {
                     setSearchValue(text);
-                    setSelectedUser(null);
                   }}
-                  placeholder="Search user by email or name..."
+                  placeholder="Enter email address..."
                   placeholderTextColor="#A1A1AA"
                   editable={!editingMember}
                   className={`flex-1 border border-border rounded-xl px-4 py-3.5 bg-card text-foreground ${editingMember ? "bg-muted text-muted-foreground" : ""}`}
@@ -337,73 +332,7 @@ export default function MembersScreen() {
                   keyboardType="email-address"
                   autoCorrect={false}
                 />
-                {!editingMember && searchingUsers && searchValue.length > 0 && (
-                  <View
-                    className="absolute w-full left-0 right-0 bg-card border border-border rounded-xl shadow-lg p-4 items-center"
-                    style={{ top: 50, zIndex: 100 }}
-                  >
-                    <View className="w-full flex items-center justify-center">
-                      <ActivityIndicator size="small" color="#fca5a5" />
-                    </View>
-                  </View>
-                )}
               </View>
-
-              {/* Search Results Dropdown */}
-              {!editingMember &&
-                searchValue.length > 0 &&
-                !selectedUser &&
-                !searchingUsers &&
-                (usersList.length > 0 ? (
-                  <View
-                    className="absolute left-0 right-0 bg-card border border-border rounded-xl shadow-lg w-full max-h-[180px] overflow-hidden"
-                    style={{
-                      top: 70,
-                      zIndex: 100,
-                    }}
-                  >
-                    <ScrollView keyboardShouldPersistTaps="handled">
-                      {usersList.map((usr: any) => (
-                        <TouchableOpacity
-                          key={usr.id}
-                          onPress={() => {
-                            setSelectedUser(usr);
-                            setSearchValue(usr.email || usr.name || "");
-                          }}
-                          className="px-4 py-3 border-b border-border last:border-b-0 flex-row items-center"
-                        >
-                          <View className="w-8 h-8 rounded-full bg-primary/10 items-center justify-center mr-3">
-                            <Text className="text-primary font-bold text-sm">
-                              {(usr.name || usr.email || "U")
-                                .charAt(0)
-                                .toUpperCase()}
-                            </Text>
-                          </View>
-                          <View>
-                            <Text className="font-semibold text-foreground">
-                              {usr.name || "No name"}
-                            </Text>
-                            <Text className="text-sm text-muted-foreground">
-                              {usr.email}
-                            </Text>
-                          </View>
-                        </TouchableOpacity>
-                      ))}
-                    </ScrollView>
-                  </View>
-                ) : (
-                  debouncedSearch === searchValue &&
-                  searchValue.length > 1 && (
-                    <View
-                      className="absolute w-full left-0 right-0 bg-card border border-border rounded-xl shadow-lg p-4 items-center"
-                      style={{ top: 70, zIndex: 100 }}
-                    >
-                      <Text className="text-sm text-muted-foreground">
-                        No users found matching &quot;{searchValue}&quot;
-                      </Text>
-                    </View>
-                  )
-                ))}
             </View>
 
             {/* Role Selector */}

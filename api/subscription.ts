@@ -8,6 +8,7 @@ export type CreateSubscriptionPayload = {
   purchase_token?: string | null;
   product_id: string;
   package_name: string;
+  transfer?: boolean;
 };
 
 export interface Subscription {

@@ -1,13 +1,13 @@
-import { useKeyboardVisible } from "@/hooks/use-keyboard-visible";
 import React, { useEffect, useRef } from "react";
 import {
   Animated,
   KeyboardAvoidingView,
   ModalProps,
+  Platform,
   Modal as RNModal,
   TouchableOpacity,
+  View,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 
 interface BottomSheetModalProps extends ModalProps {
@@ -24,8 +24,6 @@ export function BottomSheetModal({
 }: BottomSheetModalProps) {
   const slideAnimation = useRef(new Animated.Value(100)).current;
   const backdropOpacity = useRef(new Animated.Value(0)).current;
-  const insets = useSafeAreaInsets();
-  const isKeyboardVisible = useKeyboardVisible();
 
   useEffect(() => {
     if (visible) {
@@ -74,7 +72,10 @@ export function BottomSheetModal({
       <Animated.View
         style={{
           position: "absolute",
-          top: 0, left: 0, right: 0, bottom: 0,
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
           backgroundColor: "rgba(0,0,0,0.4)",
           opacity: backdropOpacity,
         }}
@@ -87,18 +88,17 @@ export function BottomSheetModal({
       </Animated.View>
 
       <KeyboardAvoidingView
-        behavior="height"
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
         style={{ flex: 1, justifyContent: "flex-end" }}
-        keyboardVerticalOffset={0}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
       >
         <Animated.View
           className="bg-background rounded-t-3xl"
           style={{
             transform: [{ translateY: slideAnimation }],
-            paddingBottom: isKeyboardVisible ? insets.bottom : 0,
           }}
         >
-          {children}
+          <View>{children}</View>
         </Animated.View>
       </KeyboardAvoidingView>
 
