@@ -240,7 +240,7 @@ export const RootNavigator = () => {
                   "settings/app-settings",
                   "settings/subscription",
                   "settings/profile",
-                  "settings/about",
+                  "settings/about-cashy",
                   "settings/privacy-policy",
                   "settings/terms-and-conditions",
                   "settings/about-us",

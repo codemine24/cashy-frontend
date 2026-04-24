@@ -24,9 +24,9 @@ const THEME_OPTIONS: {
   label: string;
   icon: string;
 }[] = [
-  { value: "LIGHT", label: "Light", icon: "sun" },
-  { value: "DARK", label: "Dark", icon: "moon" },
-];
+    { value: "LIGHT", label: "Light", icon: "sun" },
+    { value: "DARK", label: "Dark", icon: "moon" },
+  ];
 
 function ThemeSelector({
   selected,
@@ -37,6 +37,9 @@ function ThemeSelector({
   onSelect: (theme: "LIGHT" | "DARK") => void;
   t: (key: string) => string;
 }) {
+  const [showDropdown, setShowDropdown] = useState(false);
+  const { isDark } = useTheme();
+
   return (
     <View className="flex-row items-center py-4 gap-3">
       <View className="w-11 h-11 rounded-xl items-center justify-center mr-1 bg-violet-500/10">
@@ -50,26 +53,73 @@ function ThemeSelector({
         {t("settings.theme")}
       </Text>
 
-      {/* Segmented control */}
-      <View className="flex-row bg-background rounded-xl overflow-hidden">
-        {THEME_OPTIONS.map((opt) => {
-          const isActive = opt.value === selected;
-          return (
-            <TouchableOpacity
-              key={opt.value}
-              onPress={() => onSelect(opt.value)}
-              activeOpacity={0.7}
-              className={`px-3 py-2 ${isActive ? "bg-primary/15" : ""}`}
-            >
-              {opt.value === "DARK" ? (
-                <Moon size={16} color={isActive ? "#8b5cf6" : "#9ca3af"} />
-              ) : (
-                <Sun size={16} color={isActive ? "#8b5cf6" : "#9ca3af"} />
-              )}
-            </TouchableOpacity>
-          );
-        })}
-      </View>
+      {/* Dropdown */}
+      <Popover
+        isVisible={showDropdown}
+        onRequestClose={() => setShowDropdown(false)}
+        from={
+          <TouchableOpacity
+            onPress={() => setShowDropdown(true)}
+            activeOpacity={0.7}
+            className="flex-row items-center bg-background rounded-xl px-3 py-2 w-20"
+          >
+            <Text className="text-sm font-medium text-foreground flex-1 text-center">
+              {selected === "DARK" ? "Dark" : "Light"}
+            </Text>
+            <ChevronDown
+              size={16}
+              color="#9ca3af"
+              style={{
+                transform: [{ rotate: showDropdown ? "180deg" : "0deg" }],
+              }}
+            />
+          </TouchableOpacity>
+        }
+        popoverStyle={{
+          borderRadius: 12,
+          backgroundColor: isDark ? "#1e293b" : "#ffffff",
+          width: 140,
+          elevation: 4,
+          shadowColor: "#000",
+          shadowOpacity: 0.1,
+          shadowRadius: 8,
+          borderWidth: 0,
+        }}
+        backgroundStyle={{ backgroundColor: "transparent" }}
+        arrowSize={{ width: 0, height: 0 }}
+      >
+        <View className="bg-card border border-border">
+          {THEME_OPTIONS.map((opt) => {
+            const isActive = opt.value === selected;
+            return (
+              <TouchableOpacity
+                key={opt.value}
+                onPress={() => {
+                  onSelect(opt.value);
+                  setShowDropdown(false);
+                }}
+                activeOpacity={0.7}
+                className={`flex-row items-center justify-between px-3 py-2.5 ${isActive ? "bg-primary/10" : ""
+                  }`}
+              >
+                <View className="flex-row items-center gap-2">
+                  {opt.value === "DARK" ? (
+                    <Moon size={16} color={isActive ? "#8b5cf6" : "#9ca3af"} />
+                  ) : (
+                    <Sun size={16} color={isActive ? "#8b5cf6" : "#9ca3af"} />
+                  )}
+                  <Text
+                    className={`text-sm font-medium text-foreground `}
+                  >
+                    {opt.label}
+                  </Text>
+                </View>
+                {isActive && <Check size={16} color="#8b5cf6" />}
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      </Popover>
     </View>
   );
 }
@@ -86,6 +136,7 @@ function LanguageSelector({
   t: (key: string) => string;
 }) {
   const [showDropdown, setShowDropdown] = useState(false);
+  const { isDark } = useTheme();
   const selectedLanguage = languages.find((lang) => lang.code === selected);
 
   return (
@@ -121,7 +172,7 @@ function LanguageSelector({
         }
         popoverStyle={{
           borderRadius: 12,
-          backgroundColor: "#ffffff",
+          backgroundColor: isDark ? "#1e293b" : "#ffffff",
           width: 140,
           elevation: 4,
           shadowColor: "#000",
@@ -143,15 +194,13 @@ function LanguageSelector({
                   setShowDropdown(false);
                 }}
                 activeOpacity={0.7}
-                className={`flex-row items-center justify-between px-3 py-2.5 ${
-                  isActive ? "bg-primary/10" : ""
-                }`}
+                className={`flex-row items-center justify-between px-3 py-2.5 ${isActive ? "bg-primary/10" : ""
+                  }`}
               >
                 <View>
                   <Text
-                    className={`text-sm font-medium ${
-                      isActive ? "text-primary" : "text-foreground"
-                    }`}
+                    className={`text-sm font-medium ${isActive ? "text-primary" : "text-foreground"
+                      }`}
                   >
                     {lang.label}
                   </Text>
@@ -244,23 +293,24 @@ export default function AppSettingsScreen() {
   );
 
   return (
-    <>
-      <Stack.Screen
-        options={{
-          title: t("settings.appSettings"),
-          animation: "none",
-          headerLeft: () => (
-            <TouchableOpacity
-              onPress={() => router.navigate("/settings")}
-              style={{ marginRight: 4 }}
-            >
-              <ChevronLeft size={26} className="text-foreground" />
-            </TouchableOpacity>
-          ),
-        }}
-      />
-      {/* edges={["bottom"]} — top is handled by the native header */}
-      <ScreenContainer edges={["bottom"]} className="bg-background">
+    <ScreenContainer edges={["bottom"]} className="bg-background">
+      <View className="flex-1 border-t border-border">
+        <Stack.Screen
+          options={{
+            title: t("settings.appSettings"),
+            animation: "none",
+            headerLeft: () => (
+              <TouchableOpacity
+                onPress={() => router.navigate("/settings")}
+                style={{ marginRight: 4 }}
+              >
+                <ChevronLeft size={26} className="text-foreground" />
+              </TouchableOpacity>
+            ),
+          }}
+        />
+        {/* edges={["bottom"]} — top is handled by the native header */}
+
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerClassName="px-5 pt-6 pb-10"
@@ -284,7 +334,7 @@ export default function AppSettingsScreen() {
             {t("settings.restartNote")}
           </Text>
         </ScrollView>
-      </ScreenContainer>
-    </>
+      </View>
+    </ScreenContainer>
   );
 }

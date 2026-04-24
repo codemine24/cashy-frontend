@@ -125,25 +125,24 @@ export default function SettingsScreen() {
   );
 
   return (
-    <>
-      <Stack.Screen
-        options={{
-          headerShown: true,
-          title: t("settings.more"),
-          animation: "none",
-          headerBackTitle: t("common.back"),
-          headerShadowVisible: true,
-          headerLeft: () => (
-            <TouchableOpacity
-              onPress={() => router.navigate("/(tabs)")}
-              style={{ marginRight: 4 }}
-            >
-              <ChevronLeft size={26} className="text-foreground" />
-            </TouchableOpacity>
-          ),
-        }}
-      />
-      <ScreenContainer edges={["left", "right"]} className="bg-background">
+    <ScreenContainer edges={["left", "right"]} className="bg-background">
+      <View className="flex-1 border-t border-border pt-2">
+        <Stack.Screen
+          options={{
+            headerShown: true,
+            title: t("settings.more"),
+            animation: "none",
+            headerBackTitle: t("common.back"),
+            headerLeft: () => (
+              <TouchableOpacity
+                onPress={() => router.navigate("/(tabs)")}
+                style={{ marginRight: 4 }}
+              >
+                <ChevronLeft size={26} className="text-foreground" />
+              </TouchableOpacity>
+            ),
+          }}
+        />
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
@@ -216,7 +215,7 @@ export default function SettingsScreen() {
                 ", " +
                 t("settings.aboutUs")
               }
-              onPress={() => router.push("/settings/about" as any)}
+              onPress={() => router.push("/settings/about-cashy" as any)}
             />
           </View>
 
@@ -239,7 +238,7 @@ export default function SettingsScreen() {
             </TouchableOpacity>
           </View>
         </ScrollView>
-      </ScreenContainer>
+      </View>
 
       <ConfirmationModal
         visible={showLogoutModal}
@@ -250,6 +249,6 @@ export default function SettingsScreen() {
         confirmText={t("settings.logOut")}
         cancelText={t("common.cancel")}
       />
-    </>
+    </ScreenContainer>
   );
 }
