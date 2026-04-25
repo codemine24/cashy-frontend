@@ -181,7 +181,7 @@ export default function CreateLentScreen() {
   );
 
   return (
-    <View style={{ flex: 1 }}>
+    <View className="flex-1 border-t border-border">
       <Stack.Screen
         options={{
           headerShown: true,

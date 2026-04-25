@@ -19,6 +19,7 @@ export function UpdateModal({
   onSkip,
   isForceUpdate = false,
 }: UpdateModalProps) {
+  
   const handleUpdateNow = () => {
     onUpdateNow();
   };
@@ -62,9 +63,9 @@ export function UpdateModal({
                 <P className="text-sm font-medium text-foreground mb-1">
                   Version {versionInfo.version}
                 </P>
-                {versionInfo.releaseNotes && (
+                {versionInfo.release_notes && (
                   <Muted className="text-sm leading-5">
-                    {versionInfo.releaseNotes}
+                    {versionInfo.release_notes}
                   </Muted>
                 )}
               </View>
