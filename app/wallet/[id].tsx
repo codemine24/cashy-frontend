@@ -236,7 +236,7 @@ export default function BookDetailScreen() {
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
-        router.navigate("/");
+        router.navigate("/(tabs)");
         return true;
       };
 
@@ -333,7 +333,7 @@ export default function BookDetailScreen() {
             animation: "none",
             headerLeft: () => (
               <TouchableOpacity
-                onPress={() => router.navigate("/")}
+                onPress={() => router.navigate("/(tabs)")}
                 style={{ marginRight: 4 }}
               >
                 <ChevronLeft size={26} className="text-foreground" />
