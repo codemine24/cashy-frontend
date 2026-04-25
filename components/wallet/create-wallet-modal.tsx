@@ -1,8 +1,9 @@
 import { useCreateBook, useUpdateBook } from "@/api/wallet";
 import React, { useRef, useState } from "react";
-import { Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Text, TextInput, View } from "react-native";
 import Toast from "react-native-toast-message";
-import { BottomSheetModal } from "../bottom-sheet-modal";
+import ApplyButton from "../ui/modal/apply-button";
+import BottomSheetModalWrapper from "../ui/modal/bottom-sheet-modal-wrapper";
 
 interface CreateBookModalProps {
   visible: boolean;
@@ -85,23 +86,27 @@ export function CreateWalletModal({
     createBookMutation.isPending || updateBookMutation.isPending;
 
   return (
-    <BottomSheetModal visible={visible} onClose={onClose}>
-      <View className="px-6 pt-3">
-        {/* Header */}
-        <View className="flex-row justify-between items-center mb-6 border-b border-border pb-3">
-          <Text className="text-xl font-bold text-foreground" numberOfLines={1}>
-            {editBook ? "Rename Wallet" : "Add New Wallet"}
-          </Text>
-          <TouchableOpacity
-            onPress={handleClose}
-            className="w-8 h-8 items-center justify-center"
-          >
-            <Text className="text-xl text-foreground">✕</Text>
-          </TouchableOpacity>
-        </View>
-
+    <BottomSheetModalWrapper
+      visible={visible}
+      title={editBook ? "Rename Wallet" : "Add New Wallet"}
+      onClose={handleClose}
+      footer={
+        <ApplyButton
+          onApply={handleAction}
+          applyDisabled={isPending}
+          title={
+            isPending
+              ? "PENDING..."
+              : editBook
+                ? "RENAME WALLET"
+                : "ADD NEW WALLET"
+          }
+        />
+      }
+    >
+      <View className="flex-col gap-2">
         {/* Book name input */}
-        <Text className="text-sm font-normal text-foreground mb-2">
+        <Text className="text-sm font-normal text-foreground">
           Enter Wallet Name
         </Text>
         <TextInput
@@ -110,30 +115,11 @@ export function CreateWalletModal({
           onChangeText={setBookName}
           placeholder="e.g., January Expenses"
           placeholderTextColor="#9ca3af"
-          className="bg-surface rounded-lg px-4 py-3 border border-border text-foreground mb-3"
+          className="bg-surface rounded-lg px-4 py-3 border border-border text-foreground   mb-1"
           editable={!isPending}
           onSubmitEditing={handleAction}
         />
-
-        <View className="flex-row gap-3">
-          <TouchableOpacity
-            onPress={handleAction}
-            disabled={isPending}
-            className={`flex-1 rounded-lg py-3 items-center justify-center ${isPending ? "bg-primary/50" : "bg-primary"}`}
-          >
-            <Text
-              className="text-primary-foreground font-semibold text-base"
-              numberOfLines={1}
-            >
-              {isPending
-                ? "PENDING..."
-                : editBook
-                  ? "RENAME WALLET"
-                  : "+ ADD NEW WALLET"}
-            </Text>
-          </TouchableOpacity>
-        </View>
       </View>
-    </BottomSheetModal>
+    </BottomSheetModalWrapper>
   );
 }
