@@ -93,7 +93,7 @@ export function LoanStatistics() {
                           ? "Last 30 Days"
                           : p === "custom" && startDate && endDate
                             ? `${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`
-                            : "Custom"}
+                            : "Date Range"}
                 </P>
                 {period === p && (
                   <View className="h-[3px] bg-primary w-16 rounded-t-full" />

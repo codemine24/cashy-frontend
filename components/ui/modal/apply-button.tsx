@@ -5,9 +5,11 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 export default function ApplyButton({
   onApply,
   applyDisabled,
+  title,
 }: {
   onApply: () => void;
   applyDisabled: boolean;
+  title?: string;
 }) {
   const insets = useSafeAreaInsets();
   return (

@@ -151,34 +151,32 @@ export default function HomeScreen() {
           refreshControl={<RefreshControl {...refreshControlProps} />}
           contentContainerStyle={{ paddingBottom: 100 }}
           ListHeaderComponent={
-            <View className="mb-4">
-              <View className="relative flex-row items-center gap-2">
-                <View className="flex-row items-center bg-muted rounded-xl px-3 border border-border flex-1">
-                  <SearchIcon className="text-muted-foreground size-4" />
-                  <TextInput
-                    value={searchQuery}
-                    onChangeText={setSearchQuery}
-                    placeholder={t("wallets.searchWallets")}
-                    placeholderClassName="text-muted-foreground"
-                    className="flex-1 text-base text-foreground"
-                    placeholderTextColor="#94a3b8"
-                  />
-                  {searchQuery.length > 0 && (
-                    <TouchableOpacity
-                      onPress={() => setSearchQuery("")}
-                      className="ml-2 p-1"
-                    >
-                      <CrossIcon className="text-muted-foreground size-4" />
-                    </TouchableOpacity>
-                  )}
-                </View>
-                <TouchableOpacity
-                  onPress={openSortModal}
-                  className="size-12 bg-muted rounded-xl border border-border items-center justify-center"
-                >
-                  <FilterIcon className="text-primary size-5" />
-                </TouchableOpacity>
+            <View className="relative flex-row items-center gap-2">
+              <View className="flex-row items-center bg-muted rounded-xl px-3 border border-border flex-1">
+                <SearchIcon className="text-muted-foreground size-4" />
+                <TextInput
+                  value={searchQuery}
+                  onChangeText={setSearchQuery}
+                  placeholder={t("wallets.searchWallets")}
+                  placeholderClassName="text-muted-foreground"
+                  className="flex-1 text-base text-foreground"
+                  placeholderTextColor="#94a3b8"
+                />
+                {searchQuery.length > 0 && (
+                  <TouchableOpacity
+                    onPress={() => setSearchQuery("")}
+                    className="ml-2 p-1"
+                  >
+                    <CrossIcon className="text-muted-foreground size-4" />
+                  </TouchableOpacity>
+                )}
               </View>
+              <TouchableOpacity
+                onPress={openSortModal}
+                className="size-12 bg-muted rounded-xl border border-border items-center justify-center"
+              >
+                <FilterIcon className="text-primary size-5" />
+              </TouchableOpacity>
             </View>
           }
           ListEmptyComponent={

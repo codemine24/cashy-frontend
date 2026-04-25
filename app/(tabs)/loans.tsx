@@ -1,11 +1,10 @@
 import { useDeleteLoan, useGetAllLoans } from "@/api/loan";
-import { BottomSheetModal } from "@/components/bottom-sheet-modal";
 import { LoanCard } from "@/components/loan/loan-card";
+import SortLoanModal, { SortOption } from "@/components/loan/sort-loan-modal";
 import { ScreenContainer } from "@/components/screen-container";
 import { LoansSkeleton } from "@/components/skeletons/loans-skeleton";
 import { Button } from "@/components/ui/button";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
-import { H3, Muted } from "@/components/ui/typography";
 import { useDebounce } from "@/hooks/use-debounce";
 import { usePullToRefreshSkeletonWithSearch } from "@/hooks/use-pull-to-refresh-skeleton";
 import { CrossIcon } from "@/icons/cross-icon";
@@ -26,18 +25,6 @@ import {
   View,
 } from "react-native";
 import Toast from "react-native-toast-message";
-
-type SortOption = "person_name" | "updated_at" | "created_at";
-
-const SORT_OPTIONS: {
-  key: SortOption;
-  label: string;
-  order: "asc" | "desc";
-}[] = [
-  { key: "updated_at", label: "Last Updated", order: "desc" },
-  { key: "person_name", label: "Name (A-Z)", order: "asc" },
-  { key: "created_at", label: "Last Created", order: "desc" },
-];
 
 type LoanTab = "GIVEN" | "TAKEN";
 
@@ -329,65 +316,16 @@ export default function LoansScreen() {
       </Button>
 
       {/* Sort Modal */}
-      <BottomSheetModal
-        visible={showSortModal}
-        onClose={() => setShowSortModal(false)}
-      >
-        <View className="px-6 pt-3" style={{ paddingBottom: 30 }}>
-          {/* Handle */}
-          <View className="items-center mb-5">
-            <View className="w-10 h-1 rounded-full bg-foreground" />
-          </View>
-
-          {/* Title */}
-          <View className="flex-row items-center justify-between mb-2 border-b border-border pb-4">
-            <H3>{t("loans.sortLoansBy")}</H3>
-            <TouchableOpacity
-              onPress={() => setShowSortModal(false)}
-              className="p-1"
-            >
-              <CrossIcon className="size-4" />
-            </TouchableOpacity>
-          </View>
-
-          {/* Options */}
-          <View className="mb-5">
-            {SORT_OPTIONS.map((option, index) => {
-              const isActive = tempSortBy === option.key;
-              return (
-                <TouchableOpacity
-                  key={option.key}
-                  onPress={() => {
-                    setTempSortBy(option.key);
-                    setTempSortOrder(option.order);
-                  }}
-                  className={`flex-row items-center py-3`}
-                >
-                  {/* Radio Circle */}
-                  <View
-                    className={`size-4 items-center justify-center border border-foreground rounded-full mr-3 ${isActive ? "border-primary" : "border-border"}`}
-                  >
-                    {isActive && (
-                      <View className="size-2 rounded-full bg-primary" />
-                    )}
-                  </View>
-                  <Muted>{option.label}</Muted>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-
-          <Button
-            onPress={() => {
-              setSortBy(tempSortBy);
-              setSortOrder(tempSortOrder);
-              setShowSortModal(false);
-            }}
-          >
-            Apply
-          </Button>
-        </View>
-      </BottomSheetModal>
+      <SortLoanModal
+        showSortModal={showSortModal}
+        setShowSortModal={setShowSortModal}
+        tempSortBy={tempSortBy}
+        tempSortOrder={tempSortOrder}
+        setTempSortBy={setTempSortBy}
+        setTempSortOrder={setTempSortOrder}
+        setSortBy={setSortBy}
+        setSortOrder={setSortOrder}
+      />
 
       {/* Delete Confirmation Modal */}
       <ConfirmationModal
