@@ -923,7 +923,7 @@ export default function BookDetailScreen() {
             disabled={isWalletViewer(authState.user?.id, book.data)}
           >
             <Text className="text-success-foreground font-bold text-[14px] tracking-widest">
-              + {t("wallets.cashIn").toUpperCase()}
+              {t("wallets.cashIn").toUpperCase()}
             </Text>
           </Button>
 
@@ -938,7 +938,7 @@ export default function BookDetailScreen() {
             disabled={isWalletViewer(authState.user?.id, book.data)}
           >
             <Text className="text-success-foreground font-bold text-[14px]">
-              - {t("wallets.cashOut").toUpperCase()}
+              {t("wallets.cashOut").toUpperCase()}
             </Text>
           </Button>
         </View>

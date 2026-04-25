@@ -4,12 +4,12 @@ import {
   useRemoveMember,
   useShareBook,
 } from "@/api/wallet";
-import { BottomSheetModal } from "@/components/bottom-sheet-modal";
 import { MemberCard } from "@/components/memeber/member-card";
 import { ScreenContainer } from "@/components/screen-container";
 import { MembersSkeleton } from "@/components/skeletons/members-skeleton";
 import { Button } from "@/components/ui/button";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
+import AddMemberModal from "@/components/wallet/add-member-modal";
 import { useAuth } from "@/context/auth-context";
 import { LeaveIcon } from "@/icons/leave-icon";
 import { PlusIcon } from "@/icons/plus-icon";
@@ -25,13 +25,10 @@ import {
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  ActivityIndicator,
   Alert,
   BackHandler,
   FlatList,
-  ScrollView,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -287,178 +284,17 @@ export default function MembersScreen() {
       )}
 
       {/* Add / Edit Member Modal */}
-      <BottomSheetModal
-        visible={modalVisible}
-        onClose={() => setModalVisible(false)}
-      >
-        <View className="px-6 pt-3 pb-4">
-          {/* Header */}
-          <View className="flex-row justify-between items-center mb-6 border-b border-border pb-3">
-            <Text
-              className="text-xl font-bold text-foreground"
-              numberOfLines={1}
-            >
-              {editingMember ? "Edit Member Role" : "Add Member"}
-            </Text>
-            <TouchableOpacity
-              onPress={() => setModalVisible(false)}
-              className="w-8 h-8 items-center justify-center"
-            >
-              <Text className="text-xl text-foreground">✕</Text>
-            </TouchableOpacity>
-          </View>
-
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            keyboardShouldPersistTaps="handled"
-            // contentContainerStyle={{ paddingBottom: 20 }}
-          >
-            {/* Email Field */}
-            <View className="mb-3 relative" style={{ zIndex: 100 }}>
-              <Text className="text-sm font-semibold text-foreground mb-2">
-                Email
-              </Text>
-              <View className="relative flex-row items-center">
-                <TextInput
-                  value={searchValue}
-                  onChangeText={(text) => {
-                    setSearchValue(text);
-                  }}
-                  placeholder="Enter email address..."
-                  placeholderTextColor="#A1A1AA"
-                  editable={!editingMember}
-                  className={`flex-1 border border-border rounded-xl px-4 py-3.5 bg-card text-foreground ${editingMember ? "bg-muted text-muted-foreground" : ""}`}
-                  autoCapitalize="none"
-                  keyboardType="email-address"
-                  autoCorrect={false}
-                />
-              </View>
-            </View>
-
-            {/* Role Selector */}
-            <View className="mb-3" style={{ zIndex: 1 }}>
-              <Text className="text-sm font-semibold text-foreground mb-2">
-                Role
-              </Text>
-              <View className="flex-row items-center gap-3">
-                <TouchableOpacity
-                  onPress={() => setRole("VIEWER")}
-                  className={`flex-1 py-3.5 items-center rounded-xl border ${
-                    role === "VIEWER"
-                      ? "bg-primary/10 border-primary"
-                      : "bg-surface border-border"
-                  }`}
-                >
-                  <Text
-                    className={`font-semibold text-base ${
-                      role === "VIEWER"
-                        ? "text-primary"
-                        : "text-muted-foreground"
-                    }`}
-                  >
-                    Viewer
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  onPress={() => setRole("EDITOR")}
-                  className={`flex-1 py-3.5 items-center rounded-xl border ${
-                    role === "EDITOR"
-                      ? "bg-primary/10 border-primary"
-                      : "bg-surface border-border"
-                  }`}
-                >
-                  <Text
-                    className={`font-semibold text-base ${
-                      role === "EDITOR"
-                        ? "text-primary"
-                        : "text-muted-foreground"
-                    }`}
-                  >
-                    Editor
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  onPress={() => setRole("ADMIN")}
-                  className={`flex-1 py-3.5 items-center rounded-xl border ${
-                    role === "ADMIN"
-                      ? "bg-primary/10 border-primary"
-                      : "bg-surface border-border"
-                  }`}
-                >
-                  <Text
-                    className={`font-semibold text-base ${
-                      role === "ADMIN"
-                        ? "text-primary"
-                        : "text-muted-foreground"
-                    }`}
-                  >
-                    Admin
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            {/* Role Permissions Info */}
-            <View className="mb-3 rounded-xl bg-muted border border-border p-4">
-              <Text className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3">
-                {role === "VIEWER"
-                  ? "Viewer can"
-                  : role === "EDITOR"
-                    ? "Editor can"
-                    : "Admin can"}
-              </Text>
-              {(role === "VIEWER"
-                ? [
-                    { icon: "✅", label: "View all transactions" },
-                    { icon: "✅", label: "View balance & summary" },
-                    { icon: "❌", label: "Add or edit transactions" },
-                    { icon: "❌", label: "Manage members" },
-                  ]
-                : role === "EDITOR"
-                  ? [
-                      { icon: "✅", label: "View all transactions" },
-                      { icon: "✅", label: "Add & edit transactions" },
-                      { icon: "✅", label: "Delete own transactions" },
-                      { icon: "❌", label: "Manage members" },
-                    ]
-                  : [
-                      { icon: "✅", label: "View all transactions" },
-                      { icon: "✅", label: "Add & edit transactions" },
-                      { icon: "✅", label: "Delete any transactions" },
-                      { icon: "✅", label: "Manage & invite members" },
-                    ]
-              ).map((item, i) => (
-                <View key={i} className="flex-row items-center mb-1.5">
-                  <Text className="text-sm mr-2">{item.icon}</Text>
-                  <Text className="text-sm text-foreground">{item.label}</Text>
-                </View>
-              ))}
-            </View>
-
-            <TouchableOpacity
-              style={{ marginBottom: Math.min(20, insets.bottom) }}
-              onPress={handleSubmitModal}
-              disabled={addMemberMutation.isPending}
-              className={`w-full rounded-lg py-3 items-center justify-center flex-row ${
-                addMemberMutation.isPending ? "bg-primary/50" : "bg-primary"
-              }`}
-            >
-              {addMemberMutation.isPending && (
-                <ActivityIndicator
-                  color="white"
-                  className="mr-2"
-                  size="small"
-                />
-              )}
-              <Text className="text-white font-semibold text-base">
-                {editingMember ? "Save" : "Add"}
-              </Text>
-            </TouchableOpacity>
-          </ScrollView>
-        </View>
-      </BottomSheetModal>
+      <AddMemberModal
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+        editingMember={editingMember}
+        handleSubmitModal={handleSubmitModal}
+        isPending={addMemberMutation.isPending}
+        searchValue={searchValue}
+        setSearchValue={setSearchValue}
+        role={role}
+        setRole={setRole}
+      />
 
       <ConfirmationModal
         visible={showDeleteModal}
