@@ -226,7 +226,10 @@ export default function AuthScreen() {
             disabled={sentOtpMutation.isPending}
             className="mt-6"
           >
-            <Text className="text-primary-foreground font-semibold text-base tracking-wide">
+            <Text
+              className="text-primary-foreground font-semibold text-base tracking-wide"
+              numberOfLines={1}
+            >
               {sentOtpMutation.isPending ? "Sending OTP..." : "Send OTP"}
             </Text>
           </Button>

@@ -3,7 +3,8 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { RotateCcw } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import { TouchableOpacity, View } from "react-native";
-import { BottomSheetModal } from "./bottom-sheet-modal";
+import ApplyButton from "./ui/modal/apply-button";
+import BottomSheetModalWrapper from "./ui/modal/bottom-sheet-modal-wrapper";
 
 interface DateRangeModalProps {
   visible: boolean;
@@ -48,91 +49,58 @@ export function DateRangeModal({
   };
 
   return (
-    <BottomSheetModal visible={visible} onClose={handleClose}>
-      <View className="px-6 pt-3 pb-4">
-        {/* Header */}
-        <View className="flex-row justify-between items-center mb-6 border-b border-border pb-3">
-          <P className="text-xl font-bold text-foreground" numberOfLines={1}>
-            Custom Date Range
+    <BottomSheetModalWrapper
+      visible={visible}
+      title="Select Range"
+      onClose={handleClose}
+      footer={
+        <ApplyButton
+          onApply={handleApply}
+          applyDisabled={!startDate || !endDate || endDate < startDate}
+        />
+      }
+    >
+      {startDate && endDate && (
+        <TouchableOpacity
+          onPress={() => {
+            setStartDate(null);
+            setEndDate(null);
+            onApply(null, null);
+          }}
+          className={`w-24 mb-4 ml-auto flex-row gap-2 rounded-lg items-center justify-center`}
+        >
+          <P
+            className={`font-semibold text-base text-destructive`}
+            numberOfLines={1}
+          >
+            Reset
           </P>
+          <RotateCcw size={16} color="red" />
+        </TouchableOpacity>
+      )}
+
+      {/* Date Selection */}
+      <View className="gap-4 mb-1">
+        <View>
+          <P className="text-sm font-normal text-foreground mb-2">Start Date</P>
           <TouchableOpacity
-            onPress={handleClose}
-            className="w-8 h-8 items-center justify-center"
+            className="bg-surface rounded-lg px-4 py-3 border border-border"
+            onPress={() => setShowStartPicker(true)}
           >
-            <P className="text-xl text-foreground">✕</P>
+            <P className="text-foreground">
+              {startDate ? startDate.toLocaleDateString() : "Select start date"}
+            </P>
           </TouchableOpacity>
         </View>
 
-        {startDate && endDate && (
+        <View>
+          <P className="text-sm font-normal text-foreground mb-2">End Date</P>
           <TouchableOpacity
-            onPress={() => {
-              setStartDate(null);
-              setEndDate(null);
-              onApply(null, null);
-            }}
-            className={`w-24 mb-4 ml-auto flex-row gap-2 rounded-lg items-center justify-center`}
+            className="bg-surface rounded-lg px-4 py-3 border border-border"
+            onPress={() => setShowEndPicker(true)}
           >
-            <P
-              className={`font-semibold text-base text-destructive`}
-              numberOfLines={1}
-            >
-              Reset
-            </P>
-            <RotateCcw size={16} color="red" />
-          </TouchableOpacity>
-        )}
-
-        {/* Date Selection */}
-        <View className="gap-4 mb-6">
-          <View>
-            <P className="text-sm font-normal text-foreground mb-2">
-              Start Date
-            </P>
-            <TouchableOpacity
-              className="bg-surface rounded-lg px-4 py-3 border border-border"
-              onPress={() => setShowStartPicker(true)}
-            >
-              <P className="text-foreground">
-                {startDate
-                  ? startDate.toLocaleDateString()
-                  : "Select start date"}
-              </P>
-            </TouchableOpacity>
-          </View>
-
-          <View>
-            <P className="text-sm font-normal text-foreground mb-2">End Date</P>
-            <TouchableOpacity
-              className="bg-surface rounded-lg px-4 py-3 border border-border"
-              onPress={() => setShowEndPicker(true)}
-            >
-              <P className="text-foreground">
-                {endDate ? endDate.toLocaleDateString() : "Select end date"}
-              </P>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Action buttons */}
-        <View className="flex-row gap-3 pb-6">
-          <TouchableOpacity
-            onPress={handleApply}
-            disabled={!startDate || !endDate || endDate < startDate}
-            className={`flex-1 rounded-lg py-3 items-center justify-center ${
-              startDate && endDate && endDate >= startDate
-                ? "bg-primary"
-                : "bg-primary/20"
-            }`}
-          >
-            <P
-              className={`font-semibold text-base ${
-                startDate && endDate && endDate >= startDate
-                  ? "text-primary-foreground"
-                  : "text-muted-foreground"
-              }`}
-              numberOfLines={1}
-            >
-              Apply Date Range
+            <P className="text-foreground">
+              {endDate ? endDate.toLocaleDateString() : "Select end date"}
             </P>
           </TouchableOpacity>
         </View>
@@ -172,6 +140,6 @@ export function DateRangeModal({
           }}
         />
       )}
-    </BottomSheetModal>
+    </BottomSheetModalWrapper>
   );
 }

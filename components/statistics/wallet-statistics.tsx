@@ -452,8 +452,27 @@ export function WalletStatistics() {
                     </View>
                     <View className="w-2.5 h-2.5 rounded-full bg-[#FF6B6B]" />
                   </View>
-                  <P className="text-[10px] text-muted-foreground mb-4">
-                    Generate a detailed PDF report of your transactions
+                  <P className="text-[11px] text-muted-foreground mb-4">
+                    {(() => {
+                      const bookName =
+                        activeBookId === "all"
+                          ? "all wallets"
+                          : books.find((b: any) => b.id === activeBookId)
+                              ?.name || "wallet";
+
+                      let periodText = "";
+                      if (period === "all_time") periodText = "all time";
+                      else if (period === "today") periodText = "today";
+                      else if (period === "last_7_days")
+                        periodText = "the last 7 days";
+                      else if (period === "last_30_days")
+                        periodText = "the last 30 days";
+                      else if (period === "custom" && startDate && endDate) {
+                        periodText = `${startDate.toLocaleDateString()} to ${endDate.toLocaleDateString()}`;
+                      }
+
+                      return `Generate a detailed PDF report of transactions from ${bookName} for ${periodText}`;
+                    })()}
                   </P>
                   <Pressable
                     className={cn(

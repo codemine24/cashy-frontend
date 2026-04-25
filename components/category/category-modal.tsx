@@ -1,5 +1,4 @@
 import { useCreateCategory, useUpdateCategory } from "@/api/category";
-import { BottomSheetModal } from "@/components/bottom-sheet-modal";
 import React, { useEffect, useRef, useState } from "react";
 import {
   ScrollView,
@@ -9,6 +8,8 @@ import {
   View,
 } from "react-native";
 import Toast from "react-native-toast-message";
+import ApplyButton from "../ui/modal/apply-button";
+import BottomSheetModalWrapper from "../ui/modal/bottom-sheet-modal-wrapper";
 
 interface CategoryModalProps {
   visible: boolean;
@@ -21,19 +22,80 @@ interface CategoryModalProps {
 
 const COMMON_ICONS = [
   // Food & Snacks
-  "🍔", "🍕", "🍜", "🍲", "🍿", "🍪", "🍩", "🍫", "☕", "🍺",
+  "🍔",
+  "🍕",
+  "🍜",
+  "🍲",
+  "🍿",
+  "🍪",
+  "🍩",
+  "🍫",
+  "☕",
+  "🍺",
   // Travel & Transport
-  "✈️", "🏨", "🌍", "🗺️", "🚗", "🚘", "🚕", "🚌", "🚲", "⛽",
+  "✈️",
+  "🏨",
+  "🌍",
+  "🗺️",
+  "🚗",
+  "🚘",
+  "🚕",
+  "🚌",
+  "🚲",
+  "⛽",
   // Fashion & Shopping
-  "👗", "👠", "👜", "👔", "🛍️", "🛒", "🍎", "🥦", "💄", "💎",
+  "👗",
+  "👠",
+  "👜",
+  "👔",
+  "🛍️",
+  "🛒",
+  "🍎",
+  "🥦",
+  "💄",
+  "💎",
   // Home & Rent
-  "🏠", "🏢", "🔑", "🛌", "💡", "💧",
+  "🏠",
+  "🏢",
+  "🔑",
+  "🛌",
+  "💡",
+  "💧",
   // Bills & Payments
-  "🧾", "📄", "📃", "💵", "💸", "💰", "💳", "🏧", "🏦", "🏦",
+  "🧾",
+  "📄",
+  "📃",
+  "💵",
+  "💸",
+  "💰",
+  "💳",
+  "🏧",
+  "🏦",
+  "🏦",
   // Work, Tech & Others
-  "💼", "📈", "📉", "💹", "📱", "💻", "📷", "🔋", "⚙️", "🧱",
+  "💼",
+  "📈",
+  "📉",
+  "💹",
+  "📱",
+  "💻",
+  "📷",
+  "🔋",
+  "⚙️",
+  "🧱",
   // Health, Entertainment & Edu
-  "💊", "🏥", "🏃", "🧘", "🎬", "🎮", "🎤", "📚", "🎓", "🎨", "🎹", "🎸"
+  "💊",
+  "🏥",
+  "🏃",
+  "🧘",
+  "🎬",
+  "🎮",
+  "🎤",
+  "📚",
+  "🎓",
+  "🎨",
+  "🎹",
+  "🎸",
 ];
 
 export function CategoryModal({
@@ -118,26 +180,32 @@ export function CategoryModal({
     createCategoryMutation.isPending || updateCategoryMutation.isPending;
 
   return (
-    <BottomSheetModal visible={visible} onClose={handleClose}>
-      <View className="px-6 pt-3 pb-4">
-        {/* Header */}
-        <View className="flex-row justify-between items-center mb-6 border-b border-border pb-3">
-          <Text className="text-xl font-bold text-foreground">
-            {isEditing ? "Rename Category" : "New Category"}
-          </Text>
-          <TouchableOpacity
-            onPress={handleClose}
-            className="w-8 h-8 items-center justify-center"
-          >
-            <Text className="text-xl text-foreground">✕</Text>
-          </TouchableOpacity>
-        </View>
-
+    <BottomSheetModalWrapper
+      visible={visible}
+      title={isEditing ? "Rename Category" : "New Category"}
+      onClose={handleClose}
+      footer={
+        <ApplyButton
+          onApply={handleSave}
+          applyDisabled={isPending}
+          title={
+            isPending
+              ? isEditing
+                ? "RENAMING..."
+                : "ADDING..."
+              : isEditing
+                ? "RENAME CATEGORY"
+                : "ADD NEW CATEGORY"
+          }
+        />
+      }
+    >
+      <View className="flex-col gap-2">
         {/* Category name input */}
-        <Text className="text-sm font-normal text-foreground mb-2">
+        <Text className="text-sm font-normal text-foreground">
           Category Name
         </Text>
-        <View className="flex-row items-center gap-3 mb-4">
+        <View className="flex-row items-center gap-3 mb-2">
           <View className="w-12 h-12 bg-surface rounded-lg items-center justify-center border border-border">
             <Text className="text-2xl">{selectedIcon}</Text>
           </View>
@@ -154,10 +222,10 @@ export function CategoryModal({
         </View>
 
         {/* Icon Selection */}
-        <Text className="text-sm font-normal text-foreground mb-2">
+        <Text className="text-sm font-normal text-foreground">
           Icon (Emoji)
         </Text>
-        <View className="bg-surface rounded-lg border border-border mb-6">
+        <View className="bg-surface rounded-lg border border-border mb-1">
           <ScrollView
             horizontal
             keyboardShouldPersistTaps="handled"
@@ -177,29 +245,7 @@ export function CategoryModal({
             </View>
           </ScrollView>
         </View>
-
-        {/* Action buttons */}
-        <View className="flex-row gap-3">
-          <TouchableOpacity
-            onPress={handleSave}
-            disabled={isPending}
-            className={`flex-1 rounded-lg py-3 items-center justify-center ${isPending ? "bg-primary/50" : "bg-primary"}`}
-          >
-            <Text
-              className="text-primary-foreground font-semibold text-base"
-              numberOfLines={1}
-            >
-              {isPending
-                ? isEditing
-                  ? "Renaming..."
-                  : "Adding..."
-                : isEditing
-                  ? "RENAME CATEGORY"
-                  : "+ ADD NEW CATEGORY"}
-            </Text>
-          </TouchableOpacity>
-        </View>
       </View>
-    </BottomSheetModal>
+    </BottomSheetModalWrapper>
   );
 }

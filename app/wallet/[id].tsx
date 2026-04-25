@@ -236,7 +236,7 @@ export default function BookDetailScreen() {
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
-        router.navigate("/");
+        router.navigate("/(tabs)");
         return true;
       };
 
@@ -333,7 +333,7 @@ export default function BookDetailScreen() {
             animation: "none",
             headerLeft: () => (
               <TouchableOpacity
-                onPress={() => router.navigate("/")}
+                onPress={() => router.navigate("/(tabs)")}
                 style={{ marginRight: 4 }}
               >
                 <ChevronLeft size={26} className="text-foreground" />
@@ -461,7 +461,7 @@ export default function BookDetailScreen() {
               }
               return (
                 <TouchableOpacity
-                  onPress={() => router.navigate("/")}
+                  onPress={() => router.navigate("/(tabs)")}
                   style={{ marginRight: 4 }}
                 >
                   <ChevronLeft size={26} className="text-foreground" />
@@ -923,7 +923,7 @@ export default function BookDetailScreen() {
             disabled={isWalletViewer(authState.user?.id, book.data)}
           >
             <Text className="text-success-foreground font-bold text-[14px] tracking-widest">
-              + {t("wallets.cashIn").toUpperCase()}
+              {t("wallets.cashIn").toUpperCase()}
             </Text>
           </Button>
 
@@ -938,7 +938,7 @@ export default function BookDetailScreen() {
             disabled={isWalletViewer(authState.user?.id, book.data)}
           >
             <Text className="text-success-foreground font-bold text-[14px]">
-              - {t("wallets.cashOut").toUpperCase()}
+              {t("wallets.cashOut").toUpperCase()}
             </Text>
           </Button>
         </View>
