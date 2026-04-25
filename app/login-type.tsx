@@ -43,6 +43,7 @@ export default function LoginTypeScreen() {
     try {
       setLoading(true);
 
+      await GoogleSignin.signOut();
       // Check if device supports Google Play Services
       await GoogleSignin.hasPlayServices();
 

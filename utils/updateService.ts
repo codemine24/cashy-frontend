@@ -48,8 +48,9 @@ export async function checkForUpdates(): Promise<UpdateCheckResult> {
   try {
     const currentVersion = getCurrentVersion();
     const data = await apiClient.get("/app-version/latest");
-   
+
     const latestVersion: VersionInfo = data?.data?.data;
+
     const hasUpdate = compareVersions(latestVersion.version, currentVersion.version) > 0;
 
     return {

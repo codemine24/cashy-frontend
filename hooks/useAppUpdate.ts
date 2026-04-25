@@ -16,15 +16,14 @@ export function useAppUpdate() {
   const checkUpdates = useCallback(async () => {
     // Check if user has already skipped the update modal
     if (isModalSkipped) {
-      console.log("Update modal already skipped, skipping update check");
       return;
     }
 
-    console.log("Checking for updates...");
     setIsChecking(true);
 
     try {
       const result = await checkForUpdates();
+      console.log("result", result);
       setUpdateCheckResult(result);
 
       if (result.hasUpdate && result.versionInfo) {
@@ -58,6 +57,7 @@ export function useAppUpdate() {
   return {
     isChecking,
     showModal,
+    hasUpdate: updateCheckResult?.hasUpdate,
     versionInfo: updateCheckResult?.versionInfo,
     isForceUpdate,
     checkUpdates,

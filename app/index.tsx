@@ -16,6 +16,7 @@ export default function WelcomeScreen() {
   const {
     isChecking,
     showModal,
+    hasUpdate,
     versionInfo,
     isForceUpdate,
     checkUpdates,
@@ -25,9 +26,18 @@ export default function WelcomeScreen() {
   const { isModalSkipped } = useAppUpdateContext();
 
   useEffect(() => {
-    if (authReady && authState.isAuthenticated && !isForceUpdate && isModalSkipped) {
+    // if (authReady && authState.isAuthenticated && !isForceUpdate && isModalSkipped) {
+    //   router.replace("/(tabs)");
+    // }
+
+    if (hasUpdate && isForceUpdate) return;
+
+    if (hasUpdate && !isModalSkipped) return;
+
+    if (authReady && authState.isAuthenticated) {
       router.replace("/(tabs)");
     }
+
   }, [authReady, authState.isAuthenticated, isForceUpdate, isModalSkipped, router]);
 
   useEffect(() => {
@@ -62,7 +72,7 @@ export default function WelcomeScreen() {
           disabled={isChecking}
           onPress={() => {
             try {
-              router.push("/auth");
+              router.push("/login-type");
             } catch (error) {
               console.error("Navigation error:", error);
             }
