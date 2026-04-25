@@ -1,4 +1,6 @@
+import { useKeyboardVisible } from "@/hooks/use-keyboard-visible";
 import { Member } from "@/interface/wallet";
+import { useEffect, useRef } from "react";
 import {
   ScrollView,
   Text,
@@ -32,6 +34,18 @@ export default function AddMemberModal({
   role,
   setRole,
 }: Props) {
+  const emailInputRef = useRef<TextInput>(null);
+  const isKeyboardVisible = useKeyboardVisible();
+
+  useEffect(() => {
+    if (modalVisible && !editingMember) {
+      const timer = setTimeout(() => {
+        emailInputRef.current?.focus();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [modalVisible, editingMember]);
+
   return (
     <BottomSheetModalWrapper
       visible={modalVisible}
@@ -56,12 +70,13 @@ export default function AddMemberModal({
       <ScrollView
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
-        className="h-[220px]"
+        className={isKeyboardVisible ? "h-[220px]" : "h-[308px]"}
       >
         <View className="flex-col gap-2">
           <Text className="text-sm font-semibold text-foreground">Email</Text>
           <View className="relative flex-row items-center mb-2">
             <TextInput
+              ref={emailInputRef}
               value={searchValue}
               onChangeText={(text) => {
                 setSearchValue(text);
