@@ -220,11 +220,13 @@ export function TransactionFilters({
               active={isDateActive}
               onPress={() => setActiveModal("date")}
             />
-            <FilterChip
-              label={memberLabel}
-              active={isMemberActive}
-              onPress={() => setActiveModal("members")}
-            />
+            {members.length > 1 && (
+              <FilterChip
+                label={memberLabel}
+                active={isMemberActive}
+                onPress={() => setActiveModal("members")}
+              />
+            )}
             <FilterChip
               label={categoryLabel}
               active={isCategoryActive}
