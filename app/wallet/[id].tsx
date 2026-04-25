@@ -461,7 +461,7 @@ export default function BookDetailScreen() {
               }
               return (
                 <TouchableOpacity
-                  onPress={() => router.navigate("/")}
+                  onPress={() => router.navigate("/(tabs)")}
                   style={{ marginRight: 4 }}
                 >
                   <ChevronLeft size={26} className="text-foreground" />
