@@ -908,7 +908,7 @@ export default function BookDetailScreen() {
         {/* Floating Action Buttons */}
         <View
           style={{
-            marginBottom: Math.max(insets.bottom, 32),
+            marginBottom: Math.max(insets.bottom + 6, 20),
           }}
           className="flex-row gap-3 px-4 pt-3 pb-2 bg-background border-t border-border"
         >
