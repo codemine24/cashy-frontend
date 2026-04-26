@@ -14,7 +14,7 @@ export default function ApplyButton({
   const insets = useSafeAreaInsets();
   return (
     <View
-      style={{ marginBottom: Math.max(insets.bottom + 10, 20) }}
+      style={{ marginBottom: Math.max(insets.bottom + 12, 20) }}
       className="mt-4"
     >
       <TouchableOpacity

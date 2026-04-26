@@ -200,50 +200,52 @@ export function CategoryModal({
         />
       }
     >
-      <View className="flex-col gap-2">
-        {/* Category name input */}
-        <Text className="text-sm font-normal text-foreground">
-          Category Name
-        </Text>
-        <View className="flex-row items-center gap-3 mb-2">
-          <View className="w-12 h-12 bg-surface rounded-lg items-center justify-center border border-border">
-            <Text className="text-2xl">{selectedIcon}</Text>
-          </View>
-          <TextInput
-            ref={inputRef}
-            value={categoryName}
-            onChangeText={setCategoryName}
-            placeholder="e.g. Travel, Utilities, Groceries"
-            placeholderTextColor="#9ca3af"
-            className="flex-1 bg-surface rounded-lg px-4 py-3 border border-border text-foreground"
-            editable={!isPending}
-            onSubmitEditing={handleSave}
-          />
-        </View>
-
-        {/* Icon Selection */}
-        <Text className="text-sm font-normal text-foreground">
-          Icon (Emoji)
-        </Text>
-        <View className="bg-surface rounded-lg border border-border mb-1">
-          <ScrollView
-            horizontal
-            keyboardShouldPersistTaps="handled"
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ padding: 8 }}
-          >
-            <View className="flex-row gap-2">
-              {COMMON_ICONS.map((icon, index) => (
-                <TouchableOpacity
-                  key={index}
-                  onPress={() => setSelectedIcon(icon)}
-                  className={`w-12 h-12 items-center justify-center rounded-lg ${selectedIcon === icon ? "bg-primary/20 border border-primary" : "bg-background border border-border"}`}
-                >
-                  <Text className="text-2xl">{icon}</Text>
-                </TouchableOpacity>
-              ))}
+      <View>
+        <View className="flex-col gap-2">
+          {/* Category name input */}
+          <Text className="text-sm font-normal text-foreground">
+            Category Name
+          </Text>
+          <View className="flex-row items-center gap-3 mb-2">
+            <View className="w-12 h-12 bg-surface rounded-lg items-center justify-center border border-border">
+              <Text className="text-2xl">{selectedIcon}</Text>
             </View>
-          </ScrollView>
+            <TextInput
+              ref={inputRef}
+              value={categoryName}
+              onChangeText={setCategoryName}
+              placeholder="e.g. Travel, Utilities, Groceries"
+              placeholderTextColor="#9ca3af"
+              className="flex-1 bg-surface rounded-lg px-4 py-3 border border-border text-foreground"
+              editable={!isPending}
+              onSubmitEditing={handleSave}
+            />
+          </View>
+
+          {/* Icon Selection */}
+          <Text className="text-sm font-normal text-foreground">
+            Icon (Emoji)
+          </Text>
+          <View className="bg-surface rounded-lg border border-border mb-1">
+            <ScrollView
+              horizontal
+              keyboardShouldPersistTaps="handled"
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ padding: 8 }}
+            >
+              <View className="flex-row gap-2">
+                {COMMON_ICONS.map((icon, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() => setSelectedIcon(icon)}
+                    className={`w-12 h-12 items-center justify-center rounded-lg ${selectedIcon === icon ? "bg-primary/20 border border-primary" : "bg-background border border-border"}`}
+                  >
+                    <Text className="text-2xl">{icon}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </ScrollView>
+          </View>
         </View>
       </View>
     </BottomSheetModalWrapper>
