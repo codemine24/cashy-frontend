@@ -150,8 +150,12 @@ export default function SelectCategoryScreen() {
                 >
                   <View className="flex-row items-center">
                     <View
-                      style={cat.color ? { backgroundColor: cat.color } : {}}
-                      className={`w-12 h-12 rounded-xl items-center justify-center mr-4 border border-border/10 ${!cat.color ? "bg-surface" : ""}`}
+                      style={
+                        cat.color && cat.color.length > 0
+                          ? { backgroundColor: cat.color }
+                          : {}
+                      }
+                      className="w-12 h-12 rounded-xl items-center justify-center mr-4 border border-border/10"
                     >
                       <Text className="text-2xl">{cat.icon || "📝"}</Text>
                     </View>

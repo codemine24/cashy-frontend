@@ -52,7 +52,7 @@ export default function ManageCategoriesScreen() {
     setEditingCategoryId(id);
     setEditingCategoryName(currentName);
     setEditingCategoryIcon(currentIcon || "📝");
-    setEditingCategoryColor(currentColor || "#00929A");
+    setEditingCategoryColor(currentColor || "");
     setModalVisible(true);
   };
 
@@ -149,7 +149,7 @@ export default function ManageCategoriesScreen() {
                 <View className="flex-row items-center flex-1">
                   <View
                     style={cat.color ? { backgroundColor: cat.color } : {}}
-                    className={`w-12 h-12 rounded-xl items-center justify-center mr-4 border border-border/10 ${!cat.color ? "bg-surface" : ""}`}
+                    className="w-12 h-12 rounded-xl items-center justify-center mr-4 border border-border/10"
                   >
                     <Text className="text-2xl">{cat.icon || "📝"}</Text>
                   </View>
