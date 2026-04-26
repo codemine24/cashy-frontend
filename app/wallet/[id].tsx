@@ -805,7 +805,14 @@ export default function BookDetailScreen() {
                     <View className="flex-1 mr-3">
                       <View className="flex-row items-center justify-between mb-2">
                         <View
-                          className={`px-2 py-[2px] border rounded-xl ${item.type === "IN" ? "border-green-600" : "border-red-500"}`}
+                          style={
+                            item.type === "OUT"
+                              ? item.category?.color
+                                ? { borderColor: item.category.color }
+                                : { borderColor: "#ef4444" }
+                              : { borderColor: "#16a34a" }
+                          }
+                          className={`px-2 py-[2px] border rounded-xl`}
                         >
                           {item.type === "IN" ? (
                             <Text
@@ -815,7 +822,12 @@ export default function BookDetailScreen() {
                             </Text>
                           ) : (
                             <Text
-                              className={`text-[10px] font-semibold  tracking-wider text-red-500`}
+                              style={
+                                item.category?.color
+                                  ? { color: item.category.color }
+                                  : { color: "#ef4444" }
+                              }
+                              className={`text-[10px] font-semibold  tracking-wider`}
                             >
                               {item.category?.icon}{" "}
                               {item.category?.title || t("wallets.cashOut")}
