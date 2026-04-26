@@ -26,6 +26,7 @@ export default function ManageCategoriesScreen() {
   );
   const [editingCategoryName, setEditingCategoryName] = useState("");
   const [editingCategoryIcon, setEditingCategoryIcon] = useState("");
+  const [editingCategoryColor, setEditingCategoryColor] = useState("");
 
   // Context Menu State
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
@@ -40,12 +41,18 @@ export default function ManageCategoriesScreen() {
   const deleteCategoryMutation = useDeleteCategory();
 
   // Open the modal for Editing
-  const openEditModal = (id: string, currentName: string, currentIcon?: string) => {
+  const openEditModal = (
+    id: string,
+    currentName: string,
+    currentIcon?: string,
+    currentColor?: string,
+  ) => {
     setActiveMenuId(null);
     setIsEditing(true);
     setEditingCategoryId(id);
     setEditingCategoryName(currentName);
     setEditingCategoryIcon(currentIcon || "📝");
+    setEditingCategoryColor(currentColor || "#00929A");
     setModalVisible(true);
   };
 
@@ -76,6 +83,7 @@ export default function ManageCategoriesScreen() {
   const handleClose = () => {
     setEditingCategoryName("");
     setEditingCategoryIcon("");
+    setEditingCategoryColor("");
     setIsEditing(false);
     setEditingCategoryId(null);
     setModalVisible(false);
@@ -139,7 +147,12 @@ export default function ManageCategoriesScreen() {
                 className="flex-row items-center justify-between p-4 mb-3 border border-border bg-card shadow-sm rounded-xl"
               >
                 <View className="flex-row items-center flex-1">
-                  <Text className="text-3xl mr-4">{cat.icon || "📝"}</Text>
+                  <View
+                    style={cat.color ? { backgroundColor: cat.color } : {}}
+                    className={`w-12 h-12 rounded-xl items-center justify-center mr-4 border border-border/10 ${!cat.color ? "bg-surface" : ""}`}
+                  >
+                    <Text className="text-2xl">{cat.icon || "📝"}</Text>
+                  </View>
                   <Text
                     className="text-base font-semibold text-foreground flex-1"
                     numberOfLines={1}
@@ -178,7 +191,14 @@ export default function ManageCategoriesScreen() {
                   >
                     <View className="w-full bg-card rounded-xl border border-border overflow-hidden">
                       <TouchableOpacity
-                        onPress={() => openEditModal(cat.id, cat.title, cat.icon)}
+                        onPress={() =>
+                          openEditModal(
+                            cat.id,
+                            cat.title,
+                            cat.icon,
+                            cat.color,
+                          )
+                        }
                         className="flex-row items-center px-4 py-3.5 border-b border-border"
                       >
                         <Edit3 size={18} className="text-foreground" />
@@ -211,6 +231,7 @@ export default function ManageCategoriesScreen() {
         isEditing={isEditing}
         initialName={editingCategoryName}
         initialIcon={editingCategoryIcon}
+        initialColor={editingCategoryColor}
         categoryId={editingCategoryId || undefined}
       />
 

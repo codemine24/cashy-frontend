@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { X } from "@/lib/icons";
 import Toast from "react-native-toast-message";
 import ApplyButton from "../ui/modal/apply-button";
 import BottomSheetModalWrapper from "../ui/modal/bottom-sheet-modal-wrapper";
@@ -17,8 +18,30 @@ interface CategoryModalProps {
   isEditing?: boolean;
   initialName?: string;
   initialIcon?: string;
+  initialColor?: string;
   categoryId?: string;
 }
+
+const COMMON_COLORS = [
+  "#00929A", // Default
+  "#F43F5E", // Rose
+  "#EC4899", // Pink
+  "#D946EF", // Fuchsia
+  "#A855F7", // Purple
+  "#8B5CF6", // Violet
+  "#6366F1", // Indigo
+  "#3B82F6", // Blue
+  "#0EA5E9", // Sky
+  "#06B6D4", // Cyan
+  "#14B8A6", // Teal
+  "#10B981", // Emerald
+  "#22C55E", // Green
+  "#84CC16", // Lime
+  "#EAB308", // Yellow
+  "#F59E0B", // Amber
+  "#F97316", // Orange
+  "#EF4444", // Red
+];
 
 const COMMON_ICONS = [
   // Food & Snacks
@@ -104,10 +127,12 @@ export function CategoryModal({
   isEditing = false,
   initialName = "",
   initialIcon = "📝",
+  initialColor = "",
   categoryId,
 }: CategoryModalProps) {
   const [categoryName, setCategoryName] = useState(initialName);
   const [selectedIcon, setSelectedIcon] = useState(initialIcon);
+  const [selectedColor, setSelectedColor] = useState(initialColor);
   const inputRef = useRef<TextInput>(null);
 
   const createCategoryMutation = useCreateCategory();
@@ -118,12 +143,13 @@ export function CategoryModal({
     if (visible) {
       setCategoryName(initialName);
       setSelectedIcon(initialIcon || "📝");
+      setSelectedColor(initialColor);
       // Auto-focus input when modal opens
       setTimeout(() => {
         inputRef.current?.focus();
       }, 400); // Delay to match modal animation
     }
-  }, [visible, initialName, initialIcon]);
+  }, [visible, initialName, initialIcon, initialColor]);
 
   const handleSave = async () => {
     if (!categoryName.trim()) {
@@ -142,12 +168,13 @@ export function CategoryModal({
           category: {
             title: categoryName.trim(),
             icon: selectedIcon,
+            color: selectedColor,
           },
         });
       } else {
         await createCategoryMutation.mutateAsync({
           title: categoryName.trim(),
-          color: "#00929A",
+          color: selectedColor,
           icon: selectedIcon,
         });
       }
@@ -207,7 +234,10 @@ export function CategoryModal({
             Category Name
           </Text>
           <View className="flex-row items-center gap-3 mb-2">
-            <View className="w-12 h-12 bg-surface rounded-lg items-center justify-center border border-border">
+            <View
+              className={`w-12 h-12 rounded-lg items-center justify-center border border-border ${!selectedColor ? "bg-surface" : ""}`}
+              style={selectedColor ? { backgroundColor: selectedColor } : {}}
+            >
               <Text className="text-2xl">{selectedIcon}</Text>
             </View>
             <TextInput
@@ -226,7 +256,7 @@ export function CategoryModal({
           <Text className="text-sm font-normal text-foreground">
             Icon (Emoji)
           </Text>
-          <View className="bg-surface rounded-lg border border-border mb-1">
+          <View className="bg-surface rounded-lg border border-border mb-2">
             <ScrollView
               horizontal
               keyboardShouldPersistTaps="handled"
@@ -241,6 +271,39 @@ export function CategoryModal({
                     className={`w-12 h-12 items-center justify-center rounded-lg ${selectedIcon === icon ? "bg-primary/20 border border-primary" : "bg-background border border-border"}`}
                   >
                     <Text className="text-2xl">{icon}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </ScrollView>
+          </View>
+          {/* Color Selection */}
+          <Text className="text-sm font-normal text-foreground">Color</Text>
+          <View className="bg-surface rounded-lg border border-border mb-1">
+            <ScrollView
+              horizontal
+              keyboardShouldPersistTaps="handled"
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ padding: 8 }}
+            >
+              <View className="flex-row gap-2 items-center">
+                {/* No Color Option */}
+                <TouchableOpacity
+                  onPress={() => setSelectedColor("")}
+                  className={`w-10 h-10 items-center justify-center rounded-full ${selectedColor === "" ? "border-2 border-primary" : "border border-border bg-background"}`}
+                >
+                  <X size={18} className="text-muted-foreground" />
+                </TouchableOpacity>
+
+                {COMMON_COLORS.map((color, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() => setSelectedColor(color)}
+                    className={`w-10 h-10 items-center justify-center rounded-full ${selectedColor === color ? "border-2 border-primary" : "border border-border"}`}
+                    style={{ backgroundColor: color }}
+                  >
+                    {selectedColor === color && (
+                      <View className="w-3 h-3 rounded-full bg-white opacity-60" />
+                    )}
                   </TouchableOpacity>
                 ))}
               </View>

@@ -149,7 +149,12 @@ export default function SelectCategoryScreen() {
                   className={`flex-row items-center justify-between p-4 mb-3 border rounded-xl ${isSelected ? "border-primary bg-primary/5" : "border-border bg-card"}`}
                 >
                   <View className="flex-row items-center">
-                    <Text className="text-3xl mr-4">{cat.icon || "📝"}</Text>
+                    <View
+                      style={cat.color ? { backgroundColor: cat.color } : {}}
+                      className={`w-12 h-12 rounded-xl items-center justify-center mr-4 border border-border/10 ${!cat.color ? "bg-surface" : ""}`}
+                    >
+                      <Text className="text-2xl">{cat.icon || "📝"}</Text>
+                    </View>
                     <Text
                       className={`text-base font-semibold ${isSelected ? "text-primary" : "text-foreground"}`}
                     >
