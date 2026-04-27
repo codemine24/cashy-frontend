@@ -65,7 +65,7 @@ export function BottomSheetModal({
       animationType="none"
       transparent={true}
       onRequestClose={onClose}
-      // statusBarTranslucent={true}
+      statusBarTranslucent={true}
       {...modalProps}
     >
       {/* Backdrop */}
@@ -88,7 +88,7 @@ export function BottomSheetModal({
       </Animated.View>
 
       <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1, justifyContent: "flex-end" }}
         keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
       >

@@ -1,7 +1,7 @@
 import { useGetCategories } from "@/api/category";
 import { CategoryModal } from "@/components/category/category-modal";
 import { Button } from "@/components/ui/button";
-import { Check, ChevronLeft, Plus, Settings } from "@/lib/icons";
+import { Check, ChevronLeft, Plus, Settings, X } from "@/lib/icons";
 import {
   Stack,
   useFocusEffect,
@@ -138,6 +138,30 @@ export default function SelectCategoryScreen() {
             className="flex-1 px-4 py-2"
             contentContainerStyle={{ paddingBottom: 100 }}
           >
+            {/* None / Unselect Option */}
+            <TouchableOpacity
+              onPress={() => handleSelect("", "")}
+              className={`flex-row items-center justify-between p-4 mb-3 border rounded-xl ${!params.currentSelectedId || params.currentSelectedId === "" ? "border-primary bg-primary/5" : "border-border bg-card"}`}
+            >
+              <View className="flex-row items-center">
+                <View className="w-12 h-12 rounded-xl items-center justify-center mr-4 border border-border/10 bg-surface">
+                  <X size={24} className="text-muted-foreground" />
+                </View>
+                <Text
+                  className={`text-base font-semibold ${!params.currentSelectedId || params.currentSelectedId === "" ? "text-primary" : "text-foreground"}`}
+                >
+                  None (Unselect)
+                </Text>
+              </View>
+              <View
+                className={`h-6 w-6 rounded-full border-2 items-center justify-center ${!params.currentSelectedId || params.currentSelectedId === "" ? "border-primary bg-primary" : "border-border"}`}
+              >
+                {(!params.currentSelectedId || params.currentSelectedId === "") && (
+                  <Check size={14} className="text-foreground" />
+                )}
+              </View>
+            </TouchableOpacity>
+
             {categories.map((cat: any) => {
               const isSelected =
                 params.currentSelectedId === cat.id?.toString();
@@ -149,7 +173,16 @@ export default function SelectCategoryScreen() {
                   className={`flex-row items-center justify-between p-4 mb-3 border rounded-xl ${isSelected ? "border-primary bg-primary/5" : "border-border bg-card"}`}
                 >
                   <View className="flex-row items-center">
-                    <Text className="text-3xl mr-4">{cat.icon || "📝"}</Text>
+                    <View
+                      style={
+                        cat.color && cat.color.length > 0
+                          ? { backgroundColor: cat.color }
+                          : {}
+                      }
+                      className="w-12 h-12 rounded-xl items-center justify-center mr-4 border border-border/10"
+                    >
+                      <Text className="text-2xl">{cat.icon || "📝"}</Text>
+                    </View>
                     <Text
                       className={`text-base font-semibold ${isSelected ? "text-primary" : "text-foreground"}`}
                     >
