@@ -1,6 +1,9 @@
 name: Build Android AAB
 on:
-  workflow_dispatch: # Allows you to run this manually
+  push:
+    branches:
+      - main
+  workflow_dispatch: # Still allows you to run it manually if needed
 
 jobs:
   build:
@@ -12,7 +15,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
       - name: Setup Java
         uses: actions/setup-java@v4
