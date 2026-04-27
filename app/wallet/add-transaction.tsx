@@ -164,11 +164,9 @@ export default function AddTransactionScreen() {
     }
 
     // Handle selectedCategoryId (for other use cases)
-    if (params.selectedCategoryId) {
+    if (params.selectedCategoryId !== undefined) {
       setSelectedCategory(params.selectedCategoryId);
-      setSelectedCategoryName(
-        params.selectedCategoryName || "Unknown Category",
-      );
+      setSelectedCategoryName(params.selectedCategoryName || "");
     }
 
     // Handle restoration of session attachments (when returning from category selection)
