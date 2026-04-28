@@ -16,6 +16,7 @@ import {
 import { PremiumBadge } from "@/components/premium-badge";
 import { PremiumUpSellCard } from "@/components/premium-upsell-card";
 import { useAuth } from "@/context/auth-context";
+import { useTheme } from "@/context/theme-context";
 import { useIsPremium } from "@/hooks/use-is-premium";
 import {
   ChevronLeft,
@@ -93,12 +94,16 @@ export default function SettingsScreen() {
   const { authState, setAuthState } = useAuth();
   const { t } = useTranslation();
   const { isPremium } = useIsPremium();
+  const { setColorScheme } = useTheme();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const handleLogout = async () => {
     await removeAccessToken();
     await clearUserInfo();
     setAuthState({ isAuthenticated: false, user: null });
+
+    // Reset theme to light theme after logout
+    setColorScheme("light");
     navigation.dispatch(
       CommonActions.reset({ index: 0, routes: [{ name: "login-type" }] }),
     );

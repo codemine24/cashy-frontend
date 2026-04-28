@@ -38,7 +38,7 @@ export default function WelcomeScreen() {
       router.replace("/(tabs)");
     }
 
-  }, [authReady, authState.isAuthenticated, isForceUpdate, isModalSkipped, router]);
+  }, [authReady, authState.isAuthenticated, hasUpdate, isForceUpdate, isModalSkipped, router]);
 
   useEffect(() => {
     if (!isModalSkipped) {
