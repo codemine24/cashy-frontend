@@ -224,7 +224,7 @@ export const RootNavigator = () => {
                 />
 
                 <Stack.Screen
-                  name="settings/index"
+                  name="settings"
                   options={{
                     headerShown: true,
                     animation: "none",
