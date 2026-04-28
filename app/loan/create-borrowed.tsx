@@ -1,8 +1,9 @@
 import { useCreateLoan, useUpdateLoan } from "@/api/loan";
+import * as Contacts from "expo-contacts";
 import { InputError } from "@/components/ui/input-error";
 import { useKeyboardVisible } from "@/hooks/use-keyboard-visible";
 import { useKeyboardOffset } from "@/hooks/useKeyboardOffset";
-import { ChevronLeft } from "@/lib/icons";
+import { ChevronLeft, Users } from "@/lib/icons";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Stack,
@@ -59,6 +60,7 @@ export default function CreateBorrowedScreen() {
     editContactNumber?: string;
   }>();
 
+
   const isEditing = !!params.editId;
 
   const screenTitle = isEditing ? "Edit Borrowed Loan" : "New Borrowed Loan";
@@ -83,6 +85,47 @@ export default function CreateBorrowedScreen() {
   const isPending = isEditing
     ? updateLoanMutation.isPending
     : createLoanMutation.isPending;
+
+
+  const handleContactPicker = async () => {
+    try {
+      const { status } = await Contacts.requestPermissionsAsync();
+      if (status !== "granted") {
+        Toast.show({
+          type: "error",
+          text1: "Permission Denied",
+          text2: "Please allow contact access to pick a contact.",
+        });
+        return;
+      }
+
+      const contact = await Contacts.presentContactPickerAsync();
+      if (contact) {
+        const name = contact.name;
+        const phone = contact.phoneNumbers?.[0]?.number;
+
+        if (name) {
+          const currentName = form.getValues("person_name");
+          if (!currentName || currentName.trim() === "") {
+            form.setValue("person_name", name, { shouldValidate: true });
+          }
+        }
+
+        if (phone) {
+          const cleanedPhone = phone.replace(/[^\d+]/g, "");
+          form.setValue("contact_number", cleanedPhone, {
+            shouldValidate: true,
+          });
+        }
+      }
+    } catch {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Failed to pick contact",
+      });
+    }
+  };
 
   const handleSubmit = async () => {
     try {
@@ -284,15 +327,24 @@ export default function CreateBorrowedScreen() {
                 name="contact_number"
                 render={({ field: { onChange, onBlur, value } }) => (
                   <View>
-                    <TextInput
-                      value={value}
-                      onChangeText={onChange}
-                      onBlur={onBlur}
-                      placeholder="Enter contact number"
-                      placeholderTextColor="#A1A1AA"
-                      keyboardType="phone-pad"
-                      className={`bg-card rounded-xl px-4 py-3.5 border ${form.formState.errors.contact_number ? "border-destructive" : "border-border"} text-foreground text-base`}
-                    />
+                    <View className="relative">
+                      <TextInput
+                        value={value}
+                        onChangeText={onChange}
+                        onBlur={onBlur}
+                        placeholder="Enter contact number"
+                        placeholderTextColor="#A1A1AA"
+                        keyboardType="phone-pad"
+                        className={`bg-card rounded-xl px-4 py-3.5 pr-12 border ${form.formState.errors.contact_number ? "border-destructive" : "border-border"} text-foreground text-base`}
+                      />
+                      <TouchableOpacity
+                        onPress={handleContactPicker}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 items-center justify-center bg-primary/10 rounded-full"
+                        activeOpacity={0.7}
+                      >
+                        <Users size={16} className="text-primary" />
+                      </TouchableOpacity>
+                    </View>
                     <InputError
                       error={form.formState.errors.contact_number?.message}
                     />
@@ -302,6 +354,7 @@ export default function CreateBorrowedScreen() {
             </View>
           </ScrollView>
         </View>
+
 
         {/* Submit Button - Sticks above keyboard */}
         <View

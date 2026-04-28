@@ -104,21 +104,23 @@ export function CreateWalletModal({
         />
       }
     >
-      <View className="flex-col gap-2">
-        {/* Book name input */}
-        <Text className="text-sm font-normal text-foreground">
-          Enter Wallet Name
-        </Text>
-        <TextInput
-          ref={inputRef}
-          value={bookName}
-          onChangeText={setBookName}
-          placeholder="e.g., January Expenses"
-          placeholderTextColor="#9ca3af"
-          className="bg-surface rounded-lg px-4 py-3 border border-border text-foreground   mb-1"
-          editable={!isPending}
-          onSubmitEditing={handleAction}
-        />
+      <View>
+        <View className="flex-col gap-2">
+          {/* Book name input */}
+          <Text className="text-sm font-normal text-foreground">
+            Enter Wallet Name
+          </Text>
+          <TextInput
+            ref={inputRef}
+            value={bookName}
+            onChangeText={setBookName}
+            placeholder="e.g., January Expenses"
+            placeholderTextColor="#9ca3af"
+            className="bg-surface rounded-lg px-4 py-3 border border-border text-foreground   mb-1"
+            editable={!isPending}
+            onSubmitEditing={handleAction}
+          />
+        </View>
       </View>
     </BottomSheetModalWrapper>
   );
