@@ -230,7 +230,7 @@ export default function AppSettingsScreen() {
 
   // Derive display values from user
   const currentTheme = user?.theme ?? "LIGHT";
-  const currentLanguage = (user?.language as LanguageCode) ?? "en";
+  const currentLanguage = (user?.language as LanguageCode) ?? "english";
 
   // Helper: update server + local user state
   const updateSetting = useCallback(

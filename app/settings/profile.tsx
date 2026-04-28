@@ -184,7 +184,13 @@ export default function ProfileScreen() {
                   <View className="w-24 h-24 rounded-full bg-surface border-2 border-border items-center justify-center overflow-hidden">
                     {avatarUri ? (
                       <Image
-                        source={{ uri: avatarUri }}
+                        source={{
+                          uri: authState?.user?.avatar
+                            ? authState.user.avatar.startsWith("http")
+                              ? authState.user.avatar
+                              : makeImageUrl(authState.user.avatar, "user")
+                            : "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+                        }}
                         className="w-24 h-24 rounded-full"
                         resizeMode="cover"
                       />
@@ -265,8 +271,9 @@ export default function ProfileScreen() {
             <TouchableOpacity
               onPress={form.handleSubmit(handleSave)}
               disabled={isSaving}
-              className={`rounded-2xl py-4 items-center justify-center ${isSaving ? "bg-primary/50" : "bg-primary"
-                }`}
+              className={`rounded-2xl py-4 items-center justify-center ${
+                isSaving ? "bg-primary/50" : "bg-primary"
+              }`}
             >
               <Text
                 className="text-white font-bold text-base"

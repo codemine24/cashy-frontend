@@ -2,7 +2,7 @@
   "expo": {
     "name": "Cashy",
     "slug": "cashy",
-    "version": "1.1.5",
+    "version": "1.1.7",
     "orientation": "portrait",
     "icon": "./assets/playstore-icon.png",
     "scheme": "cashy-expense-manager",
@@ -10,11 +10,11 @@
     "newArchEnabled": true,
     "android": {
       "package": "com.codemine.cashy",
-      "versionCode": 2026042701,
+      "versionCode": 2026042802,
       "softwareKeyboardLayoutMode": "pan",
-      "backgroundColor": "#0f172a",
+      "backgroundColor": "#ffffff",
       "adaptiveIcon": {
-        "backgroundColor": "#02929a",
+        "backgroundColor": "#ffffff",
         "foregroundImage": "./assets/images/playstore-icon.png",
         "monochromeImage": "./assets/images/playstore-icon.png"
       },
@@ -34,10 +34,7 @@
           "image": "./assets/images/ic_launcher-web.png",
           "imageWidth": 250,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff",
-          "dark": {
-            "backgroundColor": "#0f172a"
-          }
+          "backgroundColor": "#ffffff"
         }
       ],
       "@react-native-community/datetimepicker",

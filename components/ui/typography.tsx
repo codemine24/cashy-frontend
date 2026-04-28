@@ -61,4 +61,15 @@ const Muted = forwardRef<Text, TypographyProps>(({ className, ...props }, ref) =
 });
 Muted.displayName = "Muted";
 
+export const Span = forwardRef<Text, TypographyProps>(({ className, ...props }, ref) => {
+  return (
+    <Text
+      ref={ref}
+      className={cn("inline text-foreground leading-6", className)}
+      {...props}
+    />
+  );
+});
+Span.displayName = "Span";
+
 export { H1, H2, H3, Muted, P };
