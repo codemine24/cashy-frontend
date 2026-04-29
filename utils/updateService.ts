@@ -55,7 +55,7 @@ export async function checkForUpdates(): Promise<UpdateCheckResult> {
 
     return {
       hasUpdate,
-      versionInfo: hasUpdate ? latestVersion : undefined,
+      versionInfo: latestVersion,
       currentVersion: currentVersion.version,
       currentVersionCode: currentVersion.versionCode,
     };
