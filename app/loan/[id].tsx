@@ -4,6 +4,7 @@ import { usePullToRefreshSkeleton } from "@/hooks/use-pull-to-refresh-skeleton";
 import { CallIcon } from "@/icons/call-icon";
 import { WhatsappIcon } from "@/icons/whatsapp-icon";
 import { LoanPayment } from "@/interface/loan";
+import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { ChevronLeft, Edit3, Trash2, X } from "@/lib/icons";
 import { formatCurrency } from "@/utils";
 import {
@@ -14,7 +15,6 @@ import {
 } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import {
-  Alert,
   BackHandler,
   FlatList,
   Linking,
@@ -42,6 +42,7 @@ export default function LoanDetailScreen() {
   const [selectedPayment, setSelectedPayment] = useState<LoanPayment | null>(
     null,
   );
+  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
 
   const deletePayment = useDeletePayment();
 
@@ -82,40 +83,32 @@ export default function LoanDetailScreen() {
 
   const handleDeletePayment = () => {
     if (!selectedPayment) return;
-    Alert.alert(
-      "Delete Payment",
-      "Are you sure you want to delete this payment?",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              const res = await deletePayment.mutateAsync(selectedPayment.id);
-              if (res?.success) {
-                Toast.show({
-                  type: "success",
-                  text1: "Payment deleted successfully",
-                });
-                setSelectedPayment(null);
-                refetch();
-              } else {
-                Toast.show({
-                  type: "error",
-                  text1: res?.message || "Failed to delete payment",
-                });
-              }
-            } catch (error: any) {
-              Toast.show({
-                type: "error",
-                text1: error?.message || "Failed to delete payment",
-              });
-            }
-          },
-        },
-      ],
-    );
+    setIsDeleteModalVisible(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!selectedPayment) return;
+    try {
+      const res = await deletePayment.mutateAsync(selectedPayment.id);
+      if (res?.success) {
+        Toast.show({
+          type: "success",
+          text1: "Payment deleted successfully",
+        });
+        setSelectedPayment(null);
+        refetch();
+      } else {
+        Toast.show({
+          type: "error",
+          text1: res?.message || "Failed to delete payment",
+        });
+      }
+    } catch (error: any) {
+      Toast.show({
+        type: "error",
+        text1: error?.message || "Failed to delete payment",
+      });
+    }
   };
 
   useFocusEffect(
@@ -467,6 +460,15 @@ export default function LoanDetailScreen() {
           </TouchableOpacity>
         </View>
       </ScreenContainer>
+
+      <ConfirmationModal
+        visible={isDeleteModalVisible}
+        onClose={() => setIsDeleteModalVisible(false)}
+        onConfirm={handleConfirmDelete}
+        title="Delete Payment"
+        message="Are you sure you want to delete this payment?"
+        isLoading={deletePayment.isPending}
+      />
     </View>
   );
 }
