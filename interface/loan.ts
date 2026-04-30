@@ -30,12 +30,16 @@ export interface CreateLoanPaymentPayload {
     loan_id: string;
     amount: number;
     remark?: string;
+    date?: string;
+    time?: string;
 }
 
 export interface UpdateLoanPaymentPayload {
     payment_id: string;
     amount: number;
     remark?: string;
+    date?: string;
+    time?: string;
 }
 
 export interface LoanPayment {
@@ -43,6 +47,8 @@ export interface LoanPayment {
     loan_id: string
     amount: number
     remark?: string
+    date?: string;
+    time?: string;
     created_at: string
 }
 
