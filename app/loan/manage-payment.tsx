@@ -138,7 +138,6 @@ export default function ManagePaymentScreen() {
         options={{
           headerShown: true,
           title: isEditing ? "Edit Payment" : "Add Payment",
-          animation: "none",
           headerLeft: () => (
             <TouchableOpacity
               onPress={() => router.navigate(`/loan/${params.loanId}`)}

@@ -383,7 +383,7 @@ export default function Subscription() {
             </TouchableOpacity>
           )}
 
-          <TouchableOpacity
+          {/* <TouchableOpacity
             onPress={() => setShowLearnMore(true)}
             className="items-center justify-center py-2"
             style={{ marginBottom: Math.max(insets.bottom, 20) }}
@@ -391,7 +391,7 @@ export default function Subscription() {
             <Text className="text-sm font-medium text-muted-foreground border-b border-muted-foreground/30">
               Learn more about purchases
             </Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
 
         {/* Transfer Modal */}

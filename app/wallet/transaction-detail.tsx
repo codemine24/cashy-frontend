@@ -334,7 +334,6 @@ export default function TransactionDetailScreen() {
         options={{
           headerShown: true,
           title: "Transaction Details",
-          animation: "none",
           headerStyle: {
             backgroundColor: isLoading
               ? isDark

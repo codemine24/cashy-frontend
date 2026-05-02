@@ -148,7 +148,6 @@ export default function ProfileScreen() {
         <Stack.Screen
           options={{
             title: t("profile.title"),
-            animation: "none",
             headerLeft: () => (
               <TouchableOpacity
                 onPress={() => router.navigate("/settings")}

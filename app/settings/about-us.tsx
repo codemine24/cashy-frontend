@@ -38,7 +38,6 @@ export default function AboutUsScreen() {
           options={{
             headerShown: true,
             title: "About Us",
-            animation: "none",
             headerBackTitle: "Back",
             headerLeft: () => (
               <TouchableOpacity

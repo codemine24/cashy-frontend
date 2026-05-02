@@ -100,7 +100,6 @@ export default function SearchTransactionsScreen() {
         options={{
           headerShown: true,
           headerBackVisible: false,
-          animation: "none",
           headerTitle: () => (
             <View className="flex-row items-center flex-1 mr-4">
               <TouchableOpacity

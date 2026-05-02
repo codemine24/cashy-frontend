@@ -116,7 +116,7 @@ export default function SettingsScreen() {
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
-        router.navigate("/(tabs)");
+        router.push("/(tabs)");
         return true;
       };
 

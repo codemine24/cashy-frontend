@@ -200,7 +200,6 @@ export default function MembersScreen() {
       <Stack.Screen
         options={{
           title: t("members.title"),
-          animation: "none",
           headerBackTitle: "Back",
           headerLeft: () => (
             <TouchableOpacity

@@ -350,7 +350,6 @@ export default function AddTransactionScreen() {
           options={{
             headerShown: true,
             title: screenTitle,
-            animation: "none",
             headerLeft: () => (
               <TouchableOpacity
                 onPress={() => router.back()}
