@@ -2,7 +2,6 @@ import { useCreateSubscription } from "@/api/subscription";
 import { ScreenContainer } from "@/components/screen-container";
 import { ComparisonTable } from "@/components/subscription/comparison-table";
 import { FAQSection } from "@/components/subscription/faq-section";
-import LearnMoreModal from "@/components/subscription/learn-more-modal";
 import SuccessScreen from "@/components/subscription/success-screen";
 import TransferModal from "@/components/subscription/transfer-modal";
 import { useAuth } from "@/context/auth-context";
@@ -257,7 +256,7 @@ export default function Subscription() {
       <ScreenContainer edges={[]} className="bg-background relative">
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 260 + insets.bottom }}
+          contentContainerStyle={{ paddingBottom: 360 + insets.bottom }}
           className="px-5 pt-6"
         >
           {/* Header area */}
@@ -404,10 +403,10 @@ export default function Subscription() {
         />
 
         {/* Learn More Modal */}
-        <LearnMoreModal
+        {/* <LearnMoreModal
           showLearnMore={showLearnMore}
           setShowLearnMore={setShowLearnMore}
-        />
+        /> */}
       </ScreenContainer>
     </View>
   );
