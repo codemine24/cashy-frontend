@@ -94,7 +94,7 @@ export default function SettingsScreen() {
   const { authState, setAuthState } = useAuth();
   const { t } = useTranslation();
   const { isPremium } = useIsPremium();
-  const { setColorScheme } = useTheme();
+  const { resetTheme } = useTheme();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const handleLogout = async () => {
@@ -103,7 +103,7 @@ export default function SettingsScreen() {
     setAuthState({ isAuthenticated: false, user: null });
 
     // Reset theme to light theme after logout
-    setColorScheme("light");
+    resetTheme();
     navigation.dispatch(
       CommonActions.reset({ index: 0, routes: [{ name: "login-type" }] }),
     );

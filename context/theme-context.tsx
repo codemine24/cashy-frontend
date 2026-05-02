@@ -1,34 +1,28 @@
+import { ThemeLoadingSkeleton } from "@/components/theme-loading-skeleton";
 import { themes, type ThemeName } from "@/constants/themes";
-import { getUserInfo } from "@/utils/auth";
+import { getUserInfo, setUserInfo } from "@/utils/auth";
 import { useColorScheme } from "nativewind";
 import React, {
-    createContext,
-    useCallback,
-    useContext,
-    useEffect,
-    useMemo,
-    useState,
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
 } from "react";
-import { StyleProp, View, ViewStyle } from "react-native";
+import { AppState, StyleProp, View, ViewStyle } from "react-native";
 
 // ─── Context type ────────────────────────────────────────────────────
 interface ThemeContextValue {
-  /** The active theme name (e.g. "default") */
   themeName: ThemeName;
-  /** Switch to a different named theme */
   setThemeName: (name: ThemeName) => void;
-  /** Current color scheme: "light" | "dark" */
   colorScheme: "light" | "dark";
-  /** Toggle between light and dark */
-  toggleColorScheme: () => void;
-  /** Explicitly set color scheme */
+  toggleColorScheme: () => Promise<void>;
   setColorScheme: (scheme: "light" | "dark") => void;
-  /** Whether the current color scheme is dark */
   isDark: boolean;
-  /** CSS variable style object – apply on a root View inside the navigation tree */
   themeVars: StyleProp<ViewStyle>;
-  /** Apply a user theme preference (LIGHT | DARK | SYSTEM) */
-  applyUserTheme: (theme: "LIGHT" | "DARK") => void;
+  applyUserTheme: (theme: "LIGHT" | "DARK") => Promise<void>;
+  resetTheme: () => void;
 }
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
@@ -42,33 +36,51 @@ function resolveUserTheme(pref: "LIGHT" | "DARK"): any {
 // ─── Provider (context only – no View wrapper) ──────────────────────
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   const [themeName, setThemeName] = useState<ThemeName>("default");
-  const { colorScheme, setColorScheme } = useColorScheme();
+  const [userTheme, setUserTheme] = useState<"light" | "dark" | null>(null);
+  const { setColorScheme } = useColorScheme();
 
-  const resolvedScheme = colorScheme ?? "light";
+  const resolvedScheme = userTheme ?? "light";
 
-  // On mount, read the stored user preference and apply it
-  useEffect(() => {
-    const loadStoredTheme = async () => {
+  const toggleColorScheme = useCallback(async () => {
+    const newScheme = resolvedScheme === "dark" ? "light" : "dark";
+    setColorScheme(newScheme);
+    setUserTheme(newScheme);
+
+    // Persist the user's theme preference
+    try {
       const user = await getUserInfo();
-      if (user?.theme) {
-        const scheme = resolveUserTheme(user.theme);
-        setColorScheme(scheme);
+      if (user) {
+        const pref = newScheme === "dark" ? "DARK" : "LIGHT";
+        await setUserInfo({ ...user, theme: pref });
       }
-    };
-    loadStoredTheme();
-  }, [setColorScheme]);
-
-  const toggleColorScheme = useCallback(() => {
-    setColorScheme(resolvedScheme === "dark" ? "light" : "dark");
+    } catch (error) {
+      console.warn("Failed to persist theme preference:", error);
+    }
   }, [resolvedScheme, setColorScheme]);
 
   const applyUserTheme = useCallback(
-    (pref: "LIGHT" | "DARK") => {
+    async (pref: "LIGHT" | "DARK") => {
       const scheme = resolveUserTheme(pref);
       setColorScheme(scheme);
+      setUserTheme(scheme);
+
+      // Persist the user's theme preference
+      try {
+        const user = await getUserInfo();
+        if (user) {
+          await setUserInfo({ ...user, theme: pref });
+        }
+      } catch (error) {
+        console.warn("Failed to persist theme preference:", error);
+      }
     },
     [setColorScheme],
   );
+
+  const resetTheme = useCallback(() => {
+    setUserTheme("light");
+    setColorScheme("light");
+  }, [setColorScheme]);
 
   const themeVars = useMemo(
     () => themes[themeName][resolvedScheme],
@@ -85,6 +97,7 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
       isDark: resolvedScheme === "dark",
       themeVars,
       applyUserTheme,
+      resetTheme,
     }),
     [
       themeName,
@@ -93,8 +106,54 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
       setColorScheme,
       themeVars,
       applyUserTheme,
+      resetTheme,
     ],
   );
+
+  // On mount, read the stored user preference and apply it
+  useEffect(() => {
+    const loadStoredTheme = async () => {
+      try {
+        const user = await getUserInfo();
+        if (user?.theme) {
+          const scheme = resolveUserTheme(user.theme);
+          setUserTheme(scheme);
+          setColorScheme(scheme);
+        } else {
+          // Default to light if no user preference
+          const defaultScheme = "light";
+          setUserTheme(defaultScheme);
+          setColorScheme(defaultScheme);
+        }
+      } catch (error) {
+        console.warn("Failed to load user theme:", error);
+        // Default to light on error
+        const defaultScheme = "light";
+        setUserTheme(defaultScheme);
+        setColorScheme(defaultScheme);
+      }
+    };
+    loadStoredTheme();
+  }, [setColorScheme]);
+
+  // Prevent system theme changes - always use user preference
+  useEffect(() => {
+    if (!userTheme) return;
+
+    // Re-apply user theme when app comes to foreground or system tries to override
+    const subscription = AppState.addEventListener("change", (nextAppState) => {
+      if (nextAppState === "active") {
+        setColorScheme(userTheme);
+      }
+    });
+
+    return () => subscription?.remove();
+  }, [userTheme, setColorScheme]);
+
+  // Don't render anything until user theme is loaded
+  if (!userTheme) {
+    return <ThemeLoadingSkeleton />;
+  }
 
   return (
     <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
