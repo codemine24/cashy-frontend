@@ -1,10 +1,17 @@
 import { ScreenContainer } from "@/components/screen-container";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { CommonActions } from "@react-navigation/native";
-import { Stack, useNavigation, useRouter } from "expo-router";
-import { useState } from "react";
+import { Stack, useFocusEffect, useNavigation, useRouter } from "expo-router";
+import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import {
+  BackHandler,
+  Image,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 import { PremiumBadge } from "@/components/premium-badge";
 import { PremiumUpSellCard } from "@/components/premium-upsell-card";
@@ -106,21 +113,21 @@ export default function SettingsScreen() {
     await handleLogout();
   };
 
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     const onBackPress = () => {
-  //       router.navigate("/(tabs)");
-  //       return true;
-  //     };
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        router.navigate("/(tabs)");
+        return true;
+      };
 
-  //     const subscription = BackHandler.addEventListener(
-  //       "hardwareBackPress",
-  //       onBackPress,
-  //     );
+      const subscription = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress,
+      );
 
-  //     return () => subscription.remove();
-  //   }, [router]),
-  // );
+      return () => subscription.remove();
+    }, [router]),
+  );
 
   return (
     <ScreenContainer edges={["left", "right"]} className="bg-background">

@@ -934,7 +934,7 @@ export default function BookDetailScreen() {
             className="flex-1 bg-success"
             disabled={isWalletViewer(authState.user?.id, book.data)}
           >
-            <Text className="text-success-foreground font-bold text-[14px] tracking-widest">
+            <Text className="text-white font-bold text-[14px] tracking-widest">
               {t("wallets.cashIn").toUpperCase()}
             </Text>
           </Button>
@@ -949,7 +949,7 @@ export default function BookDetailScreen() {
             className="flex-1 bg-destructive"
             disabled={isWalletViewer(authState.user?.id, book.data)}
           >
-            <Text className="text-success-foreground font-bold text-[14px]">
+            <Text className="text-white font-bold text-[14px]">
               {t("wallets.cashOut").toUpperCase()}
             </Text>
           </Button>
