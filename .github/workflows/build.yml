@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch: # Still allows you to run it manually if needed
+  # workflow_dispatch: Still allows you to run it manually if needed
 
 jobs:
   build:
@@ -20,8 +20,8 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          distribution: "temurin"
+          java-version: "17"
 
       - name: Setup Expo
         uses: expo/expo-github-action@v8
