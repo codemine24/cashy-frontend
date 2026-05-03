@@ -316,7 +316,19 @@ export default function LoanDetailScreen() {
                   </Text>
                 </View>
                 <View className="items-end justify-center">
-                  <Text className="text-base font-bold mb-2 text-green-600">
+                  <Text
+                    className={`text-base font-bold mb-2 ${
+                      item.type === "RECEIVE" && loan?.type === "GIVEN"
+                        ? "text-green-600"
+                        : item.type === "GIVE" && loan?.type === "TAKEN"
+                          ? "text-green-600"
+                          : item.type === "RECEIVE" && loan?.type === "TAKEN"
+                            ? "text-red-600"
+                            : item.type === "GIVE" && loan?.type === "GIVEN"
+                              ? "text-red-600"
+                              : ""
+                    }`}
+                  >
                     {formatCurrency(item.amount)}
                   </Text>
                 </View>
@@ -438,43 +450,86 @@ export default function LoanDetailScreen() {
           }}
           className="flex-row gap-3 px-4 pt-3 pb-2 bg-background border-t border-border"
         >
-          {/* First button - Add Payment for Lent, Borrow More for Borrowed */}
-          <TouchableOpacity
-            onPress={() => {
-              router.push({
-                pathname: "/loan/receive-payment",
-                params: { loanId: id!, loanType: loan?.type },
-              });
-            }}
-            className="flex-1 rounded-xl py-4 items-center justify-center bg-success"
-            activeOpacity={0.8}
-          >
-            <Text
-              className="text-white font-bold text-[14px] tracking-widest text-center w-full"
-              numberOfLines={1}
-            >
-              {loan?.type === "GIVEN" ? "ADD PAYMENT" : "BORROW MORE"}
-            </Text>
-          </TouchableOpacity>
+          {/* Dynamic button order based on loan type */}
+          {loan?.type === "GIVEN" ? (
+            <>
+              {/* GIVEN loans: ADD PAYMENT (left, green), INCREASE LOAN (right, red) */}
+              <TouchableOpacity
+                onPress={() => {
+                  router.push({
+                    pathname: "/loan/receive-payment",
+                    params: { loanId: id!, loanType: loan?.type },
+                  });
+                }}
+                className="flex-1 rounded-xl py-4 items-center justify-center bg-success"
+                activeOpacity={0.8}
+              >
+                <Text
+                  className="text-white font-bold text-[14px] tracking-widest text-center w-full"
+                  numberOfLines={1}
+                >
+                  ADD PAYMENT
+                </Text>
+              </TouchableOpacity>
 
-          {/* Second button - Increase Loan for Lent, Pay Back for Borrowed */}
-          <TouchableOpacity
-            onPress={() => {
-              router.push({
-                pathname: "/loan/given-payment",
-                params: { loanId: id!, loanType: loan?.type },
-              });
-            }}
-            className="flex-1 rounded-xl py-4 items-center justify-center bg-destructive"
-            activeOpacity={0.8}
-          >
-            <Text
-              className="text-white font-bold text-[14px] tracking-widest text-center w-full"
-              numberOfLines={1}
-            >
-              {loan?.type === "GIVEN" ? "INCREASE LOAN" : "PAY BACK"}
-            </Text>
-          </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  router.push({
+                    pathname: "/loan/given-payment",
+                    params: { loanId: id!, loanType: loan?.type },
+                  });
+                }}
+                className="flex-1 rounded-xl py-4 items-center justify-center bg-destructive"
+                activeOpacity={0.8}
+              >
+                <Text
+                  className="text-white font-bold text-[14px] tracking-widest text-center w-full"
+                  numberOfLines={1}
+                >
+                  INCREASE LOAN
+                </Text>
+              </TouchableOpacity>
+            </>
+          ) : (
+            <>
+              {/* TAKEN loans: PAY BACK (left, green), BORROW MORE (right, red) */}
+              <TouchableOpacity
+                onPress={() => {
+                  router.push({
+                    pathname: "/loan/given-payment",
+                    params: { loanId: id!, loanType: loan?.type },
+                  });
+                }}
+                className="flex-1 rounded-xl py-4 items-center justify-center bg-success"
+                activeOpacity={0.8}
+              >
+                <Text
+                  className="text-white font-bold text-[14px] tracking-widest text-center w-full"
+                  numberOfLines={1}
+                >
+                  PAY BACK
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => {
+                  router.push({
+                    pathname: "/loan/receive-payment",
+                    params: { loanId: id!, loanType: loan?.type },
+                  });
+                }}
+                className="flex-1 rounded-xl py-4 items-center justify-center bg-destructive"
+                activeOpacity={0.8}
+              >
+                <Text
+                  className="text-white font-bold text-[14px] tracking-widest text-center w-full"
+                  numberOfLines={1}
+                >
+                  BORROW MORE
+                </Text>
+              </TouchableOpacity>
+            </>
+          )}
         </View>
       </ScreenContainer>
 

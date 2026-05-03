@@ -6,20 +6,20 @@ import { ChevronLeft } from "@/lib/icons";
 import { formatDateToUTC, formatTimeToUTC } from "@/utils";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import {
-    Stack,
-    useFocusEffect,
-    useLocalSearchParams,
-    useRouter,
+  Stack,
+  useFocusEffect,
+  useLocalSearchParams,
+  useRouter,
 } from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
-    BackHandler,
-    KeyboardAvoidingView,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  BackHandler,
+  KeyboardAvoidingView,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import Toast from "react-native-toast-message";
 
@@ -266,7 +266,9 @@ export default function GivenPaymentScreen() {
               <Button
                 onPress={handleAction}
                 disabled={isPending}
-                className="rounded-xl py-4 items-center justify-center w-full bg-destructive"
+                className={`rounded-xl py-4 items-center justify-center w-full ${
+                  isLentLoan ? "bg-destructive" : "bg-success"
+                }`}
                 activeOpacity={0.8}
               >
                 <Text
