@@ -16,6 +16,7 @@ interface LoanCardProps {
 export const LoanCard = ({ loan, index, onEdit, onDelete }: LoanCardProps) => {
   const router = useRouter();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
+  const loanType = loan.type === "GIVEN" ? "Received" : "Paid";
 
   const showMenu = !!(onEdit || onDelete);
 
@@ -82,7 +83,7 @@ export const LoanCard = ({ loan, index, onEdit, onDelete }: LoanCardProps) => {
         <View className="flex-row items-center">
           <View className="items-end mr-1">
             <Text className={`font-semibold ${getAmountColor()}`}>
-              {formatNumber(loan.amount)}
+             {formatNumber(Math.max(loan.amount - loan.paid_amount, 0))}
             </Text>
           </View>
 
@@ -145,12 +146,9 @@ export const LoanCard = ({ loan, index, onEdit, onDelete }: LoanCardProps) => {
       </View>
 
       {/* Bottom: Progress Bar */}
-      <View className="flex-row items-center justify-between mb-1">
-        <Text className="text-xs text-muted-foreground">
-          {formatNumber(Math.max(loan.amount - loan.paid_amount, 0))} left
-        </Text>
-        <Text className="text-xs text-muted-foreground font-medium">
-          {Math.min(Math.round((loan.paid_amount / loan.amount) * 100), 100)}%
+      <View className="flex-row items-center mb-1">
+        <Text className="text-sm text-muted-foreground">
+          {Math.min(Math.round((loan.paid_amount / loan.amount) * 100), 100)}% {loanType} of {formatNumber(loan.amount)}
         </Text>
       </View>
       <View className="w-full h-1 bg-gray-300 dark:bg-gray-600 rounded-full overflow-hidden">

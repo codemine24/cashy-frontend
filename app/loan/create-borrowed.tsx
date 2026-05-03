@@ -64,7 +64,7 @@ export default function CreateBorrowedScreen() {
   const isEditing = !!params.editId;
 
   const screenTitle = isEditing ? "Edit Borrowed Loan" : "New Borrowed Loan";
-  const buttonText = isEditing ? "UPDATE BORROWED LOAN" : "+ ADD BORROWED LOAN";
+  const buttonText = isEditing ? "UPDATE BORROWED LOAN" : "ADD BORROWED LOAN";
 
   // Form setup
   const form = useForm<CreateLoanFormValues>({
