@@ -54,8 +54,8 @@ export default function GivenPaymentScreen() {
   const submitButtonText = isLentLoan
     ? "Increase Loan"
     : params.paymentId
-      ? "Update Payment"
-      : "Pay Back";
+      ? "UPDATE PAYMENT"
+      : "PAY BACK";
 
   const addPaymentMutation = useAddPayment();
   const updatePaymentMutation = useUpdatePayment();
@@ -179,15 +179,12 @@ export default function GivenPaymentScreen() {
         keyboardVerticalOffset={keyboardOffset}
         style={{ flex: 1 }}
       >
-        <View
-          style={{ flex: 1 }}
-          className={`bg-background ${keyboardOffset > 0 ? "pb-0" : "pb-8"}`}
-        >
+        <View style={{ flex: 1 }} className="bg-background">
           <ScrollView
             contentContainerStyle={{
               paddingHorizontal: 20,
               paddingTop: 16,
-              paddingBottom: 24,
+              paddingBottom: 32,
             }}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
@@ -260,26 +257,31 @@ export default function GivenPaymentScreen() {
                 </Text>
               </TouchableOpacity>
             </View>
-
-            {/* Submit Button */}
-            <View className="mt-8">
-              <Button
-                onPress={handleAction}
-                disabled={isPending}
-                className={`rounded-xl py-4 items-center justify-center w-full ${
-                  isLentLoan ? "bg-destructive" : "bg-success"
-                }`}
-                activeOpacity={0.8}
-              >
-                <Text
-                  className="text-white font-bold text-base tracking-wider text-center w-full"
-                  numberOfLines={1}
-                >
-                  {isPending ? "Processing..." : submitButtonText}
-                </Text>
-              </Button>
-            </View>
           </ScrollView>
+
+          {/* Submit Button - Sticks above keyboard */}
+          <View
+            className="px-5 pt-3 pb-2 bg-background border-t border-border"
+            style={{
+              marginBottom: Math.min(20, 20), // Using fixed margin like wallet screen
+            }}
+          >
+            <Button
+              onPress={handleAction}
+              disabled={isPending}
+              className={`rounded-xl py-4 items-center justify-center w-full ${
+                isLentLoan ? "bg-destructive" : "bg-success"
+              } ${isPending ? "opacity-50" : "opacity-100"}`}
+              activeOpacity={0.8}
+            >
+              <Text
+                className="text-white font-bold text-base tracking-wider text-center w-full uppercase"
+                numberOfLines={1}
+              >
+                {isPending ? "Processing..." : submitButtonText}
+              </Text>
+            </Button>
+          </View>
         </View>
       </KeyboardAvoidingView>
 
