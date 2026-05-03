@@ -60,7 +60,7 @@ export default function AddTransactionScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{
-    bookId: string;
+    walletId: string;
     type: string;
     editId?: string;
     editAmount?: string;
@@ -79,7 +79,7 @@ export default function AddTransactionScreen() {
     currentAttachments?: string;
   }>();
 
-  const bookId = params.bookId!;
+  const walletId = params.walletId!;
   const initialType = (params.type as "IN" | "OUT") || "OUT";
   const isEditing = !!params.editId;
 
@@ -266,7 +266,7 @@ export default function AddTransactionScreen() {
             .map((a) => a.name),
         }
       : {
-          book_id: bookId,
+          wallet_id: walletId,
           type,
           amount: parseFloat(amount),
           category_id: !isDeposit
@@ -330,7 +330,7 @@ export default function AddTransactionScreen() {
         text2: response?.message,
       });
 
-      router.replace(`/wallet/${bookId}` as any);
+      router.replace(`/wallet/${walletId}` as any);
     } catch (error: any) {
       Toast.show({
         type: "error",
@@ -424,7 +424,7 @@ export default function AddTransactionScreen() {
                       router.push({
                         pathname: "/wallet/select-category",
                         params: {
-                          bookId: bookId,
+                          walletId: walletId,
                           type: type,
                           currentSelectedId: selectedCategory,
                           currentAmount: amount,

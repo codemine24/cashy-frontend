@@ -1,4 +1,4 @@
-import { useBooks, useDeleteBook } from "@/api/wallet";
+import { useDeleteWallet, useWallets } from "@/api/wallet";
 import { ScreenContainer } from "@/components/screen-container";
 import { WalletsSkeleton } from "@/components/skeletons/wallets-skeleton";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,7 @@ import { CrossIcon } from "@/icons/cross-icon";
 import { FilterIcon } from "@/icons/filter-icon";
 import { PlusIcon } from "@/icons/plus-icon";
 import { SearchIcon } from "@/icons/search-icon";
-import { Book } from "@/interface/wallet";
+import { Wallet } from "@/interface/wallet";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -44,7 +44,7 @@ export default function HomeScreen() {
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(searchQuery, 400);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [bookToDelete, setBookToDelete] = useState<Book | null>(null);
+  const [bookToDelete, setBookToDelete] = useState<Wallet | null>(null);
   const [showExitModal, setShowExitModal] = useState(false);
 
   const [tempSortBy, setTempSortBy] = useState<SortOption>("updated_at");
@@ -60,13 +60,13 @@ export default function HomeScreen() {
     data: booksData,
     isLoading,
     refetch,
-  } = useBooks({
+  } = useWallets({
     search: debouncedSearchQuery.trim() || undefined,
     sort: sortBy,
     sort_order: sortOrder,
   });
 
-  const deleteBookMutation = useDeleteBook();
+  const deleteBookMutation = useDeleteWallet();
 
   const { showSkeleton, refreshControlProps } =
     usePullToRefreshSkeletonWithSearch(async () => {
@@ -76,8 +76,8 @@ export default function HomeScreen() {
   // Show skeleton when initially loading or refreshing
   const finalShowSkeleton = isLoading || showSkeleton;
 
-  const handleDeleteBook = (book: Book) => {
-    setBookToDelete(book);
+  const handleDeleteBook = (wallet: Wallet) => {
+    setBookToDelete(wallet);
     setShowDeleteModal(true);
   };
 
@@ -110,15 +110,15 @@ export default function HomeScreen() {
     }
   };
 
-  const handleRename = (book: Book) => {
-    setEditingBook({ id: book.id, name: book.name });
+  const handleRename = (wallet: Wallet) => {
+    setEditingBook({ id: wallet.id, name: wallet.name });
     setShowCreateModal(true);
   };
 
-  const handleAddMember = (book: Book) => {
+  const handleAddMember = (wallet: Wallet) => {
     router.push({
       pathname: "/wallet/members",
-      params: { bookId: book.id, bookName: book.name },
+      params: { walletId: wallet.id, walletName: wallet.name },
     } as any);
   };
 
@@ -202,9 +202,9 @@ export default function HomeScreen() {
               </View>
             ) : null
           }
-          renderItem={({ item: book, index }) => (
+          renderItem={({ item: wallet, index }) => (
             <WalletCard
-              book={book}
+              wallet={wallet}
               index={index}
               onRename={handleRename}
               onAddMember={handleAddMember}

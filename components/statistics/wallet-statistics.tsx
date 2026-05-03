@@ -1,5 +1,5 @@
 import { useWalletStats } from "@/api/statistics";
-import { useBooks } from "@/api/wallet";
+import { useWallets } from "@/api/wallet";
 import { Period } from "@/app/(tabs)/statistics";
 import { DateRangeModal } from "@/components/date-range-modal";
 import { H3, P, Span } from "@/components/ui/typography";
@@ -25,10 +25,11 @@ import { StatisticsSkeleton } from "../skeletons/statistics-skeleton";
 import { colors, ExpenseByCategoryChart } from "./expense-by-category-chart";
 import { IncomeVsExpenseChart } from "./income-vs-expense-chart";
 import { TopSourcesChart } from "./top-sources-chart";
+import { Wallet } from "@/interface/wallet";
 
 export function WalletStatistics() {
   const router = useRouter();
-  const { book_id } = useLocalSearchParams<{ book_id?: string }>();
+  const { wallet_id } = useLocalSearchParams<{ wallet_id?: string }>();
   const [period, setPeriod] = useState<Period>("all_time");
   const { isDark } = useTheme();
   const [refreshing, setRefreshing] = useState(false);
@@ -37,16 +38,16 @@ export function WalletStatistics() {
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const activeBookId = book_id || "all";
+  const activeBookId = wallet_id || "all";
 
-  const { data: booksData } = useBooks();
+  const { data: walletsData } = useWallets();
   const {
     data: walletStatsResponse,
     isLoading: isStatsLoading,
     refetch,
   } = useWalletStats({
     ...(period !== "all_time" && { period }),
-    book_id: activeBookId === "all" ? undefined : activeBookId,
+    wallet_id: activeBookId === "all" ? undefined : activeBookId,
     ...(period === "custom" && {
       from_date: startDate?.toISOString().split("T")[0],
       to_date: endDate?.toISOString().split("T")[0],
@@ -66,7 +67,7 @@ export function WalletStatistics() {
     top_sources: [],
   };
 
-  const books = booksData?.data || [];
+  const wallets = walletsData?.data || [];
 
   const handleGeneratePdf = async () => {
     try {
@@ -78,7 +79,7 @@ export function WalletStatistics() {
         queryParams.append("period", period);
       }
       if (activeBookId !== "all") {
-        queryParams.append("book_id", activeBookId);
+        queryParams.append("wallet_id", activeBookId);
       }
       if (period === "custom" && startDate && endDate) {
         queryParams.append("from_date", startDate.toISOString().split("T")[0]);
@@ -139,7 +140,7 @@ export function WalletStatistics() {
     const bookName =
       activeBookId === "all"
         ? "all wallets"
-        : books.find((b: any) => b.id === activeBookId)?.name || "wallet";
+        : wallets.find((b: any) => b.id === activeBookId)?.name || "wallet";
     return bookName;
   };
 
@@ -172,7 +173,7 @@ export function WalletStatistics() {
             contentContainerStyle={{ gap: 12 }}
           >
             <Pressable
-              onPress={() => router.setParams({ book_id: "all" })}
+              onPress={() => router.setParams({ wallet_id: "all" })}
               className={cn(
                 "px-5 py-2.5 rounded-full border shadow-sm",
                 activeBookId === "all"
@@ -193,13 +194,13 @@ export function WalletStatistics() {
                 All Wallets
               </P>
             </Pressable>
-            {books.map((book: any) => (
+            {wallets.map((wallet: Wallet) => (
               <Pressable
-                key={book.id}
-                onPress={() => router.setParams({ book_id: book.id })}
+                key={wallet.id}
+                onPress={() => router.setParams({ wallet_id: wallet.id })}
                 className={cn(
                   "px-5 py-2.5 rounded-full border shadow-sm",
-                  activeBookId === book.id
+                  activeBookId === wallet.id
                     ? "bg-muted border-muted-foreground/20"
                     : isDark
                       ? "bg-card border-border"
@@ -209,13 +210,13 @@ export function WalletStatistics() {
                 <P
                   className={cn(
                     "text-sm font-semibold",
-                    activeBookId === book.id
+                    activeBookId === wallet.id
                       ? "text-foreground"
                       : "text-muted-foreground",
                   )}
                   numberOfLines={1}
                 >
-                  {book.name}
+                  {wallet.name}
                 </P>
               </Pressable>
             ))}

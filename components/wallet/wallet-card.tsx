@@ -1,10 +1,10 @@
 import { useAuth } from "@/context/auth-context";
-import { Book } from "@/interface/wallet";
+import { Wallet } from "@/interface/wallet";
 import { Edit3, MoreVertical, Trash2, UserPlus } from "@/lib/icons";
 import {
-  formatNumber,
-  formatUpdateDate,
-  getWalletColorCombination,
+    formatNumber,
+    formatUpdateDate,
+    getWalletColorCombination,
 } from "@/utils";
 import { isOwner } from "@/utils/is-owner";
 import { useRouter } from "expo-router";
@@ -13,15 +13,15 @@ import { Text, TouchableOpacity, View } from "react-native";
 import Popover from "react-native-popover-view";
 
 interface WalletCardProps {
-  book: Book;
+  wallet: Wallet;
   index: number;
-  onRename?: (book: Book) => void;
-  onAddMember?: (book: Book) => void;
-  onDelete?: (book: Book) => void;
+  onRename?: (wallet: Wallet) => void;
+  onAddMember?: (wallet: Wallet) => void;
+  onDelete?: (wallet: Wallet) => void;
 }
 
 export const WalletCard = ({
-  book,
+  wallet,
   index,
   onRename,
   onAddMember,
@@ -30,17 +30,17 @@ export const WalletCard = ({
   const router = useRouter();
   const { authState } = useAuth();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
-  const isCurrentUserOwner = isOwner(authState.user?.id, book.created_by);
+  const isCurrentUserOwner = isOwner(authState.user?.id, wallet.created_by);
 
   // Get color combination based on wallet index for repeating color pattern
   const colors = getWalletColorCombination(index);
 
-  const handleAction = (action?: (book: Book) => void) => {
+  const handleAction = (action?: (wallet: Wallet) => void) => {
     setIsMenuVisible(false);
     if (action) {
       // Small timeout to allow popover to close before opening other modals
       setTimeout(() => {
-        action(book);
+        action(wallet);
       }, 100);
     }
   };
@@ -50,7 +50,7 @@ export const WalletCard = ({
 
   return (
     <TouchableOpacity
-      onPress={() => router.push(`/wallet/${book.id}` as any)}
+      onPress={() => router.push(`/wallet/${wallet.id}` as any)}
       className="bg-card rounded-2xl p-3 mt-3 border border-border active:opacity-70 flex-row items-center justify-between"
     >
       {/* Left: Icon and Name/Date */}
@@ -64,15 +64,15 @@ export const WalletCard = ({
             style={{ color: colors.text }}
             numberOfLines={1}
           >
-            {book.name.slice(0, 1)}
+            {wallet.name.slice(0, 1)}
           </Text>
         </View>
         <View className="flex-1 mr-4">
           <Text className="text-foreground font-bold text-lg" numberOfLines={1}>
-            {book.name}
+            {wallet.name}
           </Text>
           <Text className="text-sm text-muted-foreground mt-0.5">
-            {formatUpdateDate(book.updated_at)}
+            {formatUpdateDate(wallet.updated_at)}
           </Text>
         </View>
       </View>
@@ -81,10 +81,10 @@ export const WalletCard = ({
       <View className="flex-row items-center">
         <Text
           className={`font-semibold mr-1 ${
-            book.balance > 0 ? "text-green-600" : "text-red-600"
+            wallet.balance > 0 ? "text-green-600" : "text-red-600"
           }`}
         >
-          {formatNumber(book.balance)}
+          {formatNumber(wallet.balance)}
         </Text>
 
         {showMenu && (

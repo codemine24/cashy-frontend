@@ -1,8 +1,8 @@
 import {
-  useBook,
-  useLeaveBook,
+  useLeaveWallet,
   useRemoveMember,
-  useShareBook,
+  useShareWallet,
+  useWallet,
 } from "@/api/wallet";
 import { MemberCard } from "@/components/memeber/member-card";
 import { ScreenContainer } from "@/components/screen-container";
@@ -38,11 +38,11 @@ import Toast from "react-native-toast-message";
 export default function MembersScreen() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-  const params = useLocalSearchParams<{ bookId: string; bookName?: string }>();
+  const params = useLocalSearchParams<{ walletId: string; bookName?: string }>();
   const router = useRouter();
-  const bookId = params.bookId;
+  const walletId = params.walletId;
 
-  const { data: bookData, isLoading: bookLoading } = useBook(bookId);
+  const { data: bookData, isLoading: bookLoading } = useWallet(walletId);
   const { authState } = useAuth();
   const currentUserId = authState.user?.id;
   const isOwnerUser = isOwner(currentUserId, bookData?.data?.created_by);
@@ -62,7 +62,7 @@ export default function MembersScreen() {
         (m: any) => m.role === "OWNER" || m.id === currentUserId,
       );
   const removeMemberMutation = useRemoveMember();
-  const leaveBookMutation = useLeaveBook();
+  const leaveWalletMutation = useLeaveWallet();
 
   const [modalVisible, setModalVisible] = useState(false);
   const [editingMember, setEditingMember] = useState<Member | null>(null);
@@ -75,7 +75,7 @@ export default function MembersScreen() {
   const [role, setRole] = useState<"EDITOR" | "VIEWER" | "ADMIN">("VIEWER");
 
   // Mock API Mutations (replace with real if defined)
-  const addMemberMutation = useShareBook();
+  const addMemberMutation = useShareWallet();
 
   const handleOpenAddModal = () => {
     setEditingMember(null);
@@ -100,7 +100,7 @@ export default function MembersScreen() {
     if (!memberToDelete) return;
     try {
       const response = await removeMemberMutation.mutateAsync({
-        book_id: bookId,
+        wallet_id: walletId,
         user_id: memberToDelete.id,
       });
       if (response.success) {
@@ -119,11 +119,11 @@ export default function MembersScreen() {
 
   const handleLeaveBookConfirm = async () => {
     try {
-      const response = await leaveBookMutation.mutateAsync(bookId);
+      const response = await leaveWalletMutation.mutateAsync(walletId);
       if (response.success) {
         Toast.show({
           type: "success",
-          text1: "Successfully left the book",
+          text1: "Successfully left the wallet",
         });
         router.replace("/(tabs)");
       }
@@ -152,7 +152,7 @@ export default function MembersScreen() {
     }
 
     const payload = {
-      book_id: bookId,
+      wallet_id: walletId,
       email: email.trim(),
       role,
     };
@@ -182,7 +182,7 @@ export default function MembersScreen() {
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
-        router.navigate(`/wallet/${bookId}`);
+        router.navigate(`/wallet/${walletId}`);
         return true;
       };
 
@@ -192,7 +192,7 @@ export default function MembersScreen() {
       );
 
       return () => subscription.remove();
-    }, [router, bookId]),
+    }, [router, walletId]),
   );
 
   return (
@@ -203,7 +203,7 @@ export default function MembersScreen() {
           headerBackTitle: "Back",
           headerLeft: () => (
             <TouchableOpacity
-              onPress={() => router.navigate(`/wallet/${bookId}`)}
+              onPress={() => router.navigate(`/wallet/${walletId}`)}
               style={{ marginRight: 4 }}
             >
               <ChevronLeft size={26} className="text-foreground" />
@@ -312,11 +312,11 @@ export default function MembersScreen() {
         visible={showLeaveModal}
         onClose={() => setShowLeaveModal(false)}
         onConfirm={handleLeaveBookConfirm}
-        title="Leave Book"
-        message="Are you sure you want to leave this book? You will no longer have access to its transactions."
+        title="Leave Wallet"
+        message="Are you sure you want to leave this wallet? You will no longer have access to its transactions."
         confirmText="Leave"
         cancelText="Cancel"
-        isLoading={leaveBookMutation.isPending}
+        isLoading={leaveWalletMutation.isPending}
       />
     </>
   );

@@ -128,7 +128,7 @@ function InfoRow({
 export default function TransactionDetailScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{
-    bookId: string;
+    walletId: string;
     transactionId: string;
   }>();
 
@@ -174,7 +174,7 @@ export default function TransactionDetailScreen() {
     router.push({
       pathname: "/wallet/add-transaction",
       params: {
-        bookId: params.bookId,
+        walletId: params.walletId,
         type: transaction?.type,
         editId: params.transactionId,
         editAmount: transaction?.amount?.toString(),
@@ -193,7 +193,7 @@ export default function TransactionDetailScreen() {
     router.push({
       pathname: "/wallet/add-transaction",
       params: {
-        bookId: params.bookId,
+        walletId: params.walletId,
         type: transaction?.type,
         editAmount: transaction?.amount?.toString(),
         editRemark: transaction?.remark || "",
@@ -315,7 +315,7 @@ export default function TransactionDetailScreen() {
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
-        router.navigate(`/wallet/${params.bookId}`);
+        router.navigate(`/wallet/${params.walletId}`);
         return true;
       };
 
@@ -325,7 +325,7 @@ export default function TransactionDetailScreen() {
       );
 
       return () => subscription.remove();
-    }, [router, params.bookId]),
+    }, [router, params.walletId]),
   );
 
   return (
@@ -351,7 +351,7 @@ export default function TransactionDetailScreen() {
           },
           headerLeft: () => (
             <TouchableOpacity
-              onPress={() => router.navigate(`/wallet/${params.bookId}`)}
+              onPress={() => router.navigate(`/wallet/${params.walletId}`)}
               style={{ marginRight: 4 }}
             >
               <ChevronLeft size={26} className="text-white" />
@@ -465,7 +465,7 @@ export default function TransactionDetailScreen() {
               <InfoRow
                 icon={<BookOpen size={16} className="text-muted-foreground" />}
                 label="Wallet"
-                value={transaction?.book?.name || "—"}
+                value={transaction?.wallet?.name || "—"}
               />
 
               {/* Section: Activity */}

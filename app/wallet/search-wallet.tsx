@@ -1,8 +1,8 @@
-import { useBooks, useDeleteBook } from "@/api/wallet";
+import { useDeleteWallet, useWallets } from "@/api/wallet";
 import { CreateWalletModal } from "@/components/wallet/create-wallet-modal";
 import { WalletCard } from "@/components/wallet/wallet-card";
 import { useDebounce } from "@/hooks/use-debounce";
-import { Book } from "@/interface/wallet";
+import { Wallet } from "@/interface/wallet";
 import { ArrowLeft, Search, X } from "@/lib/icons";
 import { Stack, useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
@@ -24,7 +24,7 @@ export default function SearchWalletScreen() {
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedQuery = useDebounce(searchQuery, 300);
   const inputRef = useRef<TextInput>(null);
-  const deleteBookMutation = useDeleteBook();
+  const deleteBookMutation = useDeleteWallet();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -39,10 +39,10 @@ export default function SearchWalletScreen() {
     name: string;
   } | null>(null);
 
-  const handleDeleteBook = (book: Book) => {
+  const handleDeleteBook = (wallet: Wallet) => {
     Alert.alert(
       "Delete Wallet",
-      `Are you sure you want to delete "${book.name}"? This action cannot be undone and will remove all associated transactions.`,
+      `Are you sure you want to delete "${wallet.name}"? This action cannot be undone and will remove all associated transactions.`,
       [
         { text: "Cancel", style: "cancel" },
         {
@@ -50,7 +50,7 @@ export default function SearchWalletScreen() {
           style: "destructive",
           onPress: async () => {
             try {
-              const res: any = await deleteBookMutation.mutateAsync(book.id);
+              const res: any = await deleteBookMutation.mutateAsync(wallet.id);
               if (res?.success) {
                 Toast.show({
                   type: "success",
@@ -76,20 +76,20 @@ export default function SearchWalletScreen() {
       ],
     );
   };
-  const handleRename = (book: Book) => {
-    setEditingBook({ id: book.id, name: book.name });
+  const handleRename = (wallet: Wallet) => {
+    setEditingBook({ id: wallet.id, name: wallet.name });
     setShowCreateModal(true);
   };
 
-  const handleAddMember = (book: Book) => {
+  const handleAddMember = (wallet: Wallet) => {
     router.push({
       pathname: "/wallet/members",
-      params: { bookId: book.id, bookName: book.name },
+      params: { walletId: wallet.id, bookName: wallet.name },
     } as any);
   };
 
   // API-based search using the debounced query
-  const { data: booksData, isLoading } = useBooks({
+  const { data: booksData, isLoading } = useWallets({
     search: debouncedQuery.trim() || undefined,
     sort: "updated_at",
     sort_order: "desc",
@@ -161,9 +161,9 @@ export default function SearchWalletScreen() {
             keyExtractor={(item) => item.id}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ paddingBottom: 40 }}
-            renderItem={({ item: book, index }) => (
+            renderItem={({ item: wallet, index }) => (
               <WalletCard
-                book={book}
+                wallet={wallet}
                 index={index}
                 onRename={handleRename}
                 onAddMember={handleAddMember}
@@ -174,7 +174,7 @@ export default function SearchWalletScreen() {
         )}
       </View>
 
-      {/* Create / Edit Book Modal */}
+      {/* Create / Edit Wallet Modal */}
       <CreateWalletModal
         visible={showCreateModal}
         onClose={() => {

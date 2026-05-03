@@ -23,7 +23,7 @@ export default function SelectCategoryScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{
-    bookId: string;
+    walletId: string;
     type?: string;
     currentSelectedId?: string;
     currentAmount?: string;
@@ -52,7 +52,7 @@ export default function SelectCategoryScreen() {
     router.navigate({
       pathname: "/wallet/add-transaction",
       params: {
-        bookId: params.bookId,
+        walletId: params.walletId,
         type: params.type || params.editType,
         currentSelectedId: params.currentSelectedId,
         currentAmount: params.currentAmount,
@@ -86,7 +86,7 @@ export default function SelectCategoryScreen() {
               onPress={() =>
                 router.push({
                   pathname: "/wallet/manage-categories",
-                  params: { bookId: params.bookId },
+                  params: { walletId: params.walletId },
                 })
               }
             >

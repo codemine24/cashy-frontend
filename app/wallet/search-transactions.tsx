@@ -17,7 +17,7 @@ import {
 
 export default function SearchTransactionsScreen() {
   const router = useRouter();
-  const { bookId } = useLocalSearchParams();
+  const { walletId } = useLocalSearchParams();
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedQuery = useDebounce(searchQuery, 400);
   const inputRef = useRef<TextInput>(null);
@@ -31,7 +31,7 @@ export default function SearchTransactionsScreen() {
   }, []);
 
   const { data: transactionsData, isLoading, refetch } = useTransactions({
-    book_id: bookId as string,
+    wallet_id: walletId as string,
     search: debouncedQuery.trim() || undefined,
     limit: 50,
   });
@@ -88,7 +88,7 @@ export default function SearchTransactionsScreen() {
     router.push({
       pathname: "/wallet/transaction-detail",
       params: {
-        bookId: item.book_id,
+        walletId: item.wallet_id,
         transactionId: item.id,
       },
     });
