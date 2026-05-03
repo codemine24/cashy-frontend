@@ -1,4 +1,5 @@
 import { useAddPayment, useUpdatePayment } from "@/api/loan";
+import { Button } from "@/components/ui/button";
 import { useKeyboardVisible } from "@/hooks/use-keyboard-visible";
 import { useKeyboardOffset } from "@/hooks/useKeyboardOffset";
 import { ChevronLeft } from "@/lib/icons";
@@ -38,7 +39,9 @@ export default function ManagePaymentScreen() {
 
   const [amount, setAmount] = useState(params.amount || "");
   const [remark, setRemark] = useState(params.remark || "");
-  const [date, setDate] = useState(params.editDate ? new Date(params.editDate) : new Date());
+  const [date, setDate] = useState(
+    params.editDate ? new Date(params.editDate) : new Date(),
+  );
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const amountInputRef = useRef<TextInput>(null);
@@ -77,6 +80,7 @@ export default function ManagePaymentScreen() {
         response = await updatePaymentMutation.mutateAsync({
           payment_id: params.paymentId!,
           amount: parseFloat(amount),
+          type: "RECEIVE",
           remark: remark || undefined,
           date: formatDateToUTC(date),
           time: formatTimeToUTC(date),
@@ -85,6 +89,7 @@ export default function ManagePaymentScreen() {
         response = await addPaymentMutation.mutateAsync({
           loan_id: params.loanId,
           amount: parseFloat(amount),
+          type: "RECEIVE",
           remark: remark || undefined,
           date: formatDateToUTC(date),
           time: formatTimeToUTC(date),
@@ -271,7 +276,7 @@ export default function ManagePaymentScreen() {
           }}
           className="px-5 pt-3 pb-2 bg-background border-t border-border"
         >
-          <TouchableOpacity
+          <Button
             onPress={handleAction}
             disabled={isPending}
             className={`rounded-xl py-4 items-center justify-center w-full bg-primary ${isPending ? "opacity-50" : "opacity-100"}`}
@@ -289,7 +294,7 @@ export default function ManagePaymentScreen() {
                   ? "Update Payment"
                   : "Add Payment"}
             </Text>
-          </TouchableOpacity>
+          </Button>
         </View>
       </KeyboardAvoidingView>
     </View>

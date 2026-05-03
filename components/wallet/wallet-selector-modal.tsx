@@ -1,7 +1,6 @@
 import { useWallets } from "@/api/wallet";
 import ApplyButton from "@/components/ui/modal/apply-button";
 import BottomSheetModalWrapper from "@/components/ui/modal/bottom-sheet-modal-wrapper";
-import RadioButton from "@/components/ui/radio-button";
 import { Check } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";

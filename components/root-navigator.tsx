@@ -1,8 +1,8 @@
 import { ThemeVarsProvider, useTheme } from "@/context/theme-context";
 import {
-    DarkTheme,
-    DefaultTheme,
-    ThemeProvider as NavThemeProvider,
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider as NavThemeProvider,
 } from "@react-navigation/native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -234,6 +234,32 @@ export const RootNavigator = () => {
                   options={{
                     headerShown: true,
                     animation: "simple_push",
+                    headerStyle: {
+                      backgroundColor: isDark ? "#0f172a" : "#f8fafc",
+                    },
+                    contentStyle: {
+                      backgroundColor: isDark ? "#0f172a" : "#f8fafc",
+                    },
+                  }}
+                />
+                <Stack.Screen
+                  name="loan/receive-payment"
+                  options={{
+                    headerShown: true,
+                    ...slideTransitionOptions,
+                    headerStyle: {
+                      backgroundColor: isDark ? "#0f172a" : "#f8fafc",
+                    },
+                    contentStyle: {
+                      backgroundColor: isDark ? "#0f172a" : "#f8fafc",
+                    },
+                  }}
+                />
+                <Stack.Screen
+                  name="loan/given-payment"
+                  options={{
+                    headerShown: true,
+                    ...slideTransitionOptions,
                     headerStyle: {
                       backgroundColor: isDark ? "#0f172a" : "#f8fafc",
                     },
