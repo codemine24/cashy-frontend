@@ -151,6 +151,40 @@ export const useTransaction = (id: string) => {
   });
 };
 
+interface TransferTransactionPayload {
+  from_wallet_id: string;
+  to_wallet_id: string;
+  amount: number;
+  remark?: string;
+  category_id?: string;
+  date?: string;
+  time?: string;
+}
+
+export const useTransferTransaction = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (payload: TransferTransactionPayload) => {
+      try {
+        const response = await apiClient.post(
+          `${TRANSACTION_API_URL}/transfer`,
+          payload,
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+          },
+        );
+        return response.data;
+      } catch (error) {
+        throwApiError(error);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: keys.all });
+      queryClient.invalidateQueries({ queryKey: ["wallets"] });
+    },
+  });
+};
+
 export const useCreateTransaction = () => {
   const queryClient = useQueryClient();
   return useMutation({

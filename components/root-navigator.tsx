@@ -1,14 +1,21 @@
 import { ThemeVarsProvider, useTheme } from "@/context/theme-context";
 import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider as NavThemeProvider,
+    DarkTheme,
+    DefaultTheme,
+    ThemeProvider as NavThemeProvider,
 } from "@react-navigation/native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { View } from "react-native";
 import { ErrorBoundary } from "./error-boundary";
 import { RootProvider } from "./root-provider";
+
+// Simple slide transition options
+const slideTransitionOptions = {
+  animation: "default" as const,
+  gestureEnabled: true,
+  gestureDirection: "horizontal" as const,
+};
 
 export const RootNavigator = () => {
   const { isDark } = useTheme();
@@ -174,7 +181,20 @@ export const RootNavigator = () => {
                   name="wallet/search-transactions"
                   options={{
                     headerShown: true,
-                    animation: "simple_push",
+                    ...slideTransitionOptions,
+                    headerStyle: {
+                      backgroundColor: isDark ? "#0f172a" : "#f8fafc",
+                    },
+                    contentStyle: {
+                      backgroundColor: isDark ? "#0f172a" : "#f8fafc",
+                    },
+                  }}
+                />
+                <Stack.Screen
+                  name="wallet/transfer-transaction"
+                  options={{
+                    headerShown: true,
+                    ...slideTransitionOptions,
                     headerStyle: {
                       backgroundColor: isDark ? "#0f172a" : "#f8fafc",
                     },

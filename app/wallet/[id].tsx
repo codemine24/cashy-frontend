@@ -45,6 +45,7 @@ import {
   useRouter,
 } from "expo-router";
 import * as Sharing from "expo-sharing";
+import { ArrowDownUp } from "lucide-react-native";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -523,24 +524,36 @@ export default function BookDetailScreen() {
                 );
               }
               return (
-                <TouchableOpacity
-                  onPress={() =>
-                    router.push({
-                      pathname: "/wallet/members",
-                      params: { walletId: id, walletName: wallet.data.name },
-                    })
-                  }
-                  style={{
-                    marginRight: 4,
-                    padding: 6,
-                  }}
-                >
-                  {isOwner(authState.user?.id, wallet.data.created_by) ? (
-                    <UserPlus size={22} className="text-foreground" />
-                  ) : (
-                    <User size={22} className="text-foreground" />
-                  )}
-                </TouchableOpacity>
+                <View className="flex-row items-center gap-3">
+                  <TouchableOpacity
+                    onPress={() =>
+                      router.push({
+                        pathname: "/wallet/transfer-transaction",
+                        params: { walletId: id, walletName: wallet.data.name },
+                      })
+                    }
+                  >
+                    <ArrowDownUp size={24} className="text-foreground" />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() =>
+                      router.push({
+                        pathname: "/wallet/members",
+                        params: { walletId: id, walletName: wallet.data.name },
+                      })
+                    }
+                    style={{
+                      marginRight: 4,
+                      padding: 6,
+                    }}
+                  >
+                    {isOwner(authState.user?.id, wallet.data.created_by) ? (
+                      <UserPlus size={22} className="text-foreground" />
+                    ) : (
+                      <User size={22} className="text-foreground" />
+                    )}
+                  </TouchableOpacity>
+                </View>
               );
             },
           }}
@@ -681,7 +694,8 @@ export default function BookDetailScreen() {
                               key={member.id || index}
                               className={`px-3 py-2 flex-row items-center justify-between ${
                                 index !==
-                                Math.min(wallet.data.others_member.length, 2) - 1
+                                Math.min(wallet.data.others_member.length, 2) -
+                                  1
                                   ? "border-b border-border"
                                   : ""
                               }`}
@@ -731,7 +745,10 @@ export default function BookDetailScreen() {
                           onPress={() =>
                             router.push({
                               pathname: "/wallet/members",
-                              params: { walletId: id, walletName: wallet.data.name },
+                              params: {
+                                walletId: id,
+                                walletName: wallet.data.name,
+                              },
                             })
                           }
                           className="px-3 py-1 border-t border-border items-center"
