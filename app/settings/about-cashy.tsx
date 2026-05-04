@@ -6,12 +6,12 @@ import {
   ChevronLeft,
   ChevronRight,
   FileText,
-  Info,
   ShieldCheck,
   Trash2,
   Users,
 } from "@/lib/icons";
 import { clearUserInfo, removeAccessToken } from "@/utils/auth";
+import { getCurrentVersion } from "@/utils/updateService";
 import { CommonActions } from "@react-navigation/native";
 import { Stack, useFocusEffect, useNavigation, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
@@ -81,6 +81,8 @@ export default function AboutScreen() {
   const { setAuthState } = useAuth();
   const deleteAccountMutation = useDeleteUser();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const currentVersion = getCurrentVersion();
+  console.log(currentVersion)
 
   const handlePrivacyPolicy = () => {
     // Show privacy policy in a modal or navigate to a dedicated screen
@@ -225,17 +227,6 @@ export default function AboutScreen() {
             </TouchableOpacity>
           </View>
         </ScrollView>
-
-        {/* Version Section */}
-        <View className="px-6 py-4 items-center border-t border-border">
-          <View className="flex-row items-center gap-2">
-            <Info size={16} className="text-muted-foreground" />
-            <Text className="text-sm text-muted-foreground">Version 1.1.7</Text>
-          </View>
-          <Text className="text-xs text-muted-foreground mt-1">
-            © 2024 Cashy Expense Manager
-          </Text>
-        </View>
 
         <ConfirmationModal
           visible={showDeleteModal}

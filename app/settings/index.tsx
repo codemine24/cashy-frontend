@@ -29,6 +29,7 @@ import {
 import { clearUserInfo, removeAccessToken } from "@/utils/auth";
 import { makeImageUrl } from "@/utils/helper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { getCurrentVersion } from "@/utils/updateService";
 
 // ─── Reusable row component ───────────────────────────────────────────────
 function SettingsRow({
@@ -96,6 +97,9 @@ export default function SettingsScreen() {
   const { isPremium } = useIsPremium();
   const { resetTheme } = useTheme();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const currentVersion = getCurrentVersion();
+
+  console.log(currentVersion)
 
   const handleLogout = async () => {
     await removeAccessToken();
@@ -240,6 +244,22 @@ export default function SettingsScreen() {
                 {t("settings.logOut")}{" "}
               </Text>
             </TouchableOpacity>
+          </View>
+
+          {/* Version Section */}
+          <View className="px-6 py-4 items-center">
+            <View className="flex-row items-center gap-2">
+              <Info size={16} className="text-muted-foreground" />
+              <Text className="text-sm text-muted-foreground">
+                Version {currentVersion.version}
+              </Text>
+            </View>
+            <Text className="text-xs text-muted-foreground mt-1">
+              © {new Date().getFullYear()} Codemine Technology Ltd.
+            </Text>
+            <Text className="text-xs text-muted-foreground mt-1">
+              All rights reserved
+            </Text>
           </View>
         </ScrollView>
       </View>
