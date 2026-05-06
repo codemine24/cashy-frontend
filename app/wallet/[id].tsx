@@ -601,8 +601,8 @@ export default function BookDetailScreen() {
             ListHeaderComponent={
               <>
                 {/* Header Card */}
-                {isStatsLoading ? (
-                  <View className="bg-card rounded-2xl p-4 border border-border shadow-sm animate-pulse">
+                {isStatsLoading && (
+                  <View className="bg-card rounded-2xl p-4 mb-4 border border-border shadow-sm animate-pulse">
                     <View className="flex-row justify-between items-center border-b border-border pb-4 mb-4">
                       <View className="w-1/4 h-5 bg-muted rounded-md" />
                       <View className="w-1/3 h-6 bg-muted rounded-md" />
@@ -617,8 +617,14 @@ export default function BookDetailScreen() {
                         <View className="w-1/4 h-5 bg-muted rounded-md" />
                       </View>
                     </View>
+
+                    <View className="flex-1 items-center mt-3">
+                      <View className="h-5 w-1/2 justify-center bg-muted rounded-md" />
+                    </View>
                   </View>
-                ) : (
+                ) }
+                
+                {!isStatsLoading && (
                   <View className="bg-card mt-2 rounded-2xl mb-4 shadow-sm border border-border">
                     <View className="px-3 py-3 flex-row justify-between items-center border-b border-border">
                       <Text className="text-foreground font-bold text-[14px]">
