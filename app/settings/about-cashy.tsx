@@ -6,6 +6,7 @@ import {
   ChevronLeft,
   ChevronRight,
   FileText,
+  Info,
   ShieldCheck,
   Trash2,
   Users,
@@ -226,6 +227,16 @@ export default function AboutScreen() {
           </View>
         </ScrollView>
 
+        {/* Version Section */}
+        <View className="px-6 py-4 items-center border-t border-border">
+          <View className="flex-row items-center gap-2">
+            <Info size={16} className="text-muted-foreground" />
+            <Text className="text-sm text-muted-foreground">Version 1.1.7</Text>
+          </View>
+          <Text className="text-xs text-muted-foreground mt-1">
+            © 2024 Cashy Expense Manager
+          </Text>
+        </View>
 
         <ConfirmationModal
           visible={showDeleteModal}

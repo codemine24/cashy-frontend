@@ -1,21 +1,15 @@
 import { ScreenContainer } from "@/components/screen-container";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { CommonActions } from "@react-navigation/native";
-import { Stack, useFocusEffect, useNavigation, useRouter } from "expo-router";
-import { useCallback, useState } from "react";
+import { Stack, useNavigation, useRouter } from "expo-router";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  BackHandler,
-  Image,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 import { PremiumBadge } from "@/components/premium-badge";
 import { PremiumUpSellCard } from "@/components/premium-upsell-card";
 import { useAuth } from "@/context/auth-context";
+import { useTheme } from "@/context/theme-context";
 import { useIsPremium } from "@/hooks/use-is-premium";
 import {
   ChevronLeft,
@@ -93,12 +87,16 @@ export default function SettingsScreen() {
   const { authState, setAuthState } = useAuth();
   const { t } = useTranslation();
   const { isPremium } = useIsPremium();
+  const { setColorScheme } = useTheme();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const handleLogout = async () => {
     await removeAccessToken();
     await clearUserInfo();
     setAuthState({ isAuthenticated: false, user: null });
+
+    // Reset theme to light theme after logout
+    setColorScheme("light");
     navigation.dispatch(
       CommonActions.reset({ index: 0, routes: [{ name: "login-type" }] }),
     );
@@ -108,21 +106,21 @@ export default function SettingsScreen() {
     await handleLogout();
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      const onBackPress = () => {
-        router.navigate("/(tabs)");
-        return true;
-      };
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     const onBackPress = () => {
+  //       router.navigate("/(tabs)");
+  //       return true;
+  //     };
 
-      const subscription = BackHandler.addEventListener(
-        "hardwareBackPress",
-        onBackPress,
-      );
+  //     const subscription = BackHandler.addEventListener(
+  //       "hardwareBackPress",
+  //       onBackPress,
+  //     );
 
-      return () => subscription.remove();
-    }, [router]),
-  );
+  //     return () => subscription.remove();
+  //   }, [router]),
+  // );
 
   return (
     <ScreenContainer edges={["left", "right"]} className="bg-background">
@@ -131,7 +129,6 @@ export default function SettingsScreen() {
           options={{
             headerShown: true,
             title: t("settings.more"),
-            animation: "none",
             headerBackTitle: t("common.back"),
             headerLeft: () => (
               <TouchableOpacity

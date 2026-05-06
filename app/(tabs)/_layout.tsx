@@ -102,7 +102,6 @@ export default function TabLayout() {
   const [activeIndex, setActiveIndex] = useState(0);
   const pagerRef = useRef<PagerView>(null);
   const pathname = usePathname();
-  const isSettings = pathname === "/settings";
 
   const handleTabPress = useCallback((i: number) => {
     pagerRef.current?.setPage(i);
@@ -133,7 +132,7 @@ export default function TabLayout() {
 
   return (
     <View style={{ flex: 1 }}>
-      {!isSettings && <TabHeader />}
+      <TabHeader />
 
       <PagerView
         ref={pagerRef}

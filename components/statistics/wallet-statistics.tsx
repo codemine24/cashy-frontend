@@ -2,7 +2,7 @@ import { useWalletStats } from "@/api/statistics";
 import { useBooks } from "@/api/wallet";
 import { Period } from "@/app/(tabs)/statistics";
 import { DateRangeModal } from "@/components/date-range-modal";
-import { H3, P } from "@/components/ui/typography";
+import { H3, P, Span } from "@/components/ui/typography";
 import { useTheme } from "@/context/theme-context";
 import { formatCurrency } from "@/utils";
 import { getAccessToken } from "@/utils/auth";
@@ -133,6 +133,26 @@ export function WalletStatistics() {
     } finally {
       setIsGenerating(false);
     }
+  };
+
+  const getBookName = () => {
+    const bookName =
+      activeBookId === "all"
+        ? "all wallets"
+        : books.find((b: any) => b.id === activeBookId)?.name || "wallet";
+    return bookName;
+  };
+
+  const getPeriod = () => {
+    let periodText = "";
+    if (period === "all_time") periodText = "all time";
+    else if (period === "today") periodText = "today";
+    else if (period === "last_7_days") periodText = "the last 7 days";
+    else if (period === "last_30_days") periodText = "the last 30 days";
+    else if (period === "custom" && startDate && endDate) {
+      periodText = `${startDate.toLocaleDateString()} to ${endDate.toLocaleDateString()}`;
+    }
+    return periodText;
   };
 
   return (
@@ -453,26 +473,9 @@ export function WalletStatistics() {
                     <View className="w-2.5 h-2.5 rounded-full bg-[#FF6B6B]" />
                   </View>
                   <P className="text-[11px] text-muted-foreground mb-4">
-                    {(() => {
-                      const bookName =
-                        activeBookId === "all"
-                          ? "all wallets"
-                          : books.find((b: any) => b.id === activeBookId)
-                              ?.name || "wallet";
-
-                      let periodText = "";
-                      if (period === "all_time") periodText = "all time";
-                      else if (period === "today") periodText = "today";
-                      else if (period === "last_7_days")
-                        periodText = "the last 7 days";
-                      else if (period === "last_30_days")
-                        periodText = "the last 30 days";
-                      else if (period === "custom" && startDate && endDate) {
-                        periodText = `${startDate.toLocaleDateString()} to ${endDate.toLocaleDateString()}`;
-                      }
-
-                      return `Generate a detailed PDF report of transactions from ${bookName} for ${periodText}`;
-                    })()}
+                    Generate a detailed PDF report of transactions from{" "}
+                    <Span className="text-primary">{getBookName()}</Span> for{" "}
+                    <Span className="text-primary">{getPeriod()}</Span>
                   </P>
                   <Pressable
                     className={cn(
