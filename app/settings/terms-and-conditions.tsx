@@ -78,7 +78,6 @@ export default function TermsAndConditionsScreen() {
         options={{
           headerShown: true,
           title: "Terms & Conditions",
-          animation: "none",
           headerBackTitle: "Back",
           headerLeft: () => (
             <TouchableOpacity
@@ -107,7 +106,7 @@ export default function TermsAndConditionsScreen() {
         {/* External Link */}
         <View
           className="px-4 py-3 border-t border-border bg-card"
-          style={{ paddingBottom: Math.min(insets.bottom + 6, 32) }}
+          style={{ paddingBottom: Math.max(insets.bottom + 6, 42) }}
         >
           <TouchableOpacity onPress={() => Linking.openURL(TERMS_URL)}>
             <Text className="text-primary text-sm text-center font-medium">

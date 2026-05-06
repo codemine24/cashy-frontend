@@ -2,6 +2,7 @@ import {
     ArrowLeft,
     ArrowRight,
     ArrowUpDown,
+    ArrowDownUp,
     Bell,
     BookIcon,
     BookOpen,
@@ -64,6 +65,7 @@ function interopIcon(icon: any) {
 
 interopIcon(ArrowLeft);
 interopIcon(ArrowRight);
+interopIcon(ArrowDownUp); 
 interopIcon(Check);
 interopIcon(Camera);
 interopIcon(ChevronDown);
@@ -114,6 +116,7 @@ export {
     ArrowLeft,
     ArrowRight,
     ArrowUpDown,
+    ArrowDownUp,
     Bell,
     BookIcon,
     BookOpen,

@@ -1,16 +1,16 @@
-import { Book } from "@/interface/wallet";
+import { Wallet } from "@/interface/wallet";
 import apiClient from "@/lib/api-client";
 import { throwApiError } from "@/utils/throw-api-error";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-const BOOK_API_URL = "/book";
+const BOOK_API_URL = "/wallet";
 const keys = {
-  all: ["books"],
+  all: ["wallets"],
   list: () => [...keys.all, "list"],
   detail: (id: string) => [...keys.all, "detail", id],
 };
 
-export const useBooks = (
+export const useWallets = (
   searchParams: { search?: string; sort?: string; sort_order?: string } = {},
 ) => {
   // Filter out empty/undefined params
@@ -21,7 +21,7 @@ export const useBooks = (
 
   return useQuery({
     queryKey: [...keys.list(), params],
-    queryFn: async (): Promise<{ data: Book[] } | undefined> => {
+    queryFn: async (): Promise<{ data: Wallet[] } | undefined> => {
       try {
         const response = await apiClient.get(BOOK_API_URL, { params });
         return response.data;
@@ -32,10 +32,10 @@ export const useBooks = (
   });
 };
 
-export const useBook = (id: string) => {
+export const useWallet = (id: string) => {
   return useQuery({
     queryKey: keys.detail(id),
-    queryFn: async (): Promise<{ data: Book } | undefined> => {
+    queryFn: async (): Promise<{ data: Wallet } | undefined> => {
       try {
         const response = await apiClient.get(`${BOOK_API_URL}/${id}`);
         return response.data;
@@ -47,7 +47,7 @@ export const useBook = (id: string) => {
   });
 };
 
-export const useCreateBook = () => {
+export const useCreateWallet = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (name: string) => {
@@ -65,7 +65,7 @@ export const useCreateBook = () => {
   });
 };
 
-export const useUpdateBook = () => {
+export const useUpdateWallet = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, name }: { id: string; name: string }) => {
@@ -85,7 +85,7 @@ export const useUpdateBook = () => {
   });
 };
 
-export const useDeleteBook = () => {
+export const useDeleteWallet = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
@@ -105,21 +105,21 @@ export const useDeleteBook = () => {
   });
 };
 
-export const useShareBook = () => {
+export const useShareWallet = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({
-      book_id,
+      wallet_id,
       email,
       role,
     }: {
-      book_id: string;
+      wallet_id: string;
       email: string;
       role: string;
     }) => {
       try {
         const response = await apiClient.post(`${BOOK_API_URL}/share`, {
-          book_id,
+          wallet_id,
           email,
           role,
         });
@@ -138,16 +138,16 @@ export const useRemoveMember = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({
-      book_id,
+      wallet_id,
       user_id,
     }: {
-      book_id: string;
+      wallet_id: string;
       user_id: string;
     }) => {
       try {
         const response = await apiClient.delete(
           `${BOOK_API_URL}/remove-member`,
-          { data: { book_id, user_id } },
+          { data: { wallet_id, user_id } },
         );
         return response.data;
       } catch (error) {
@@ -159,7 +159,7 @@ export const useRemoveMember = () => {
     },
   });
 };
-export const useLeaveBook = () => {
+export const useLeaveWallet = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {

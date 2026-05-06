@@ -3,19 +3,19 @@ import { CategoryModal } from "@/components/category/category-modal";
 import { Button } from "@/components/ui/button";
 import { Check, ChevronLeft, Plus, Settings, X } from "@/lib/icons";
 import {
-  Stack,
-  useFocusEffect,
-  useLocalSearchParams,
-  useRouter,
+    Stack,
+    useFocusEffect,
+    useLocalSearchParams,
+    useRouter,
 } from "expo-router";
 import React, { useCallback, useState } from "react";
 import {
-  ActivityIndicator,
-  BackHandler,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    BackHandler,
+    ScrollView,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -23,8 +23,9 @@ export default function SelectCategoryScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{
-    bookId: string;
+    walletId: string;
     type?: string;
+    source?: string;
     currentSelectedId?: string;
     currentAmount?: string;
     editId?: string;
@@ -47,12 +48,17 @@ export default function SelectCategoryScreen() {
   const categories = categoriesResponse?.data || [];
 
   const handleSelect = (categoryId: string, categoryName: string) => {
-    // Navigate back to add-transaction and pass the selected category info as params
-    // Preserve all existing edit parameters if we're in edit mode
+    // Determine the target screen based on source parameter
+    const targetScreen =
+      params.source === "transfer"
+        ? "/wallet/transfer-transaction"
+        : "/wallet/add-transaction";
+
+    // Navigate back to the appropriate screen and pass the selected category info as params
     router.navigate({
-      pathname: "/wallet/add-transaction",
+      pathname: targetScreen,
       params: {
-        bookId: params.bookId,
+        walletId: params.walletId,
         type: params.type || params.editType,
         currentSelectedId: params.currentSelectedId,
         currentAmount: params.currentAmount,
@@ -80,14 +86,13 @@ export default function SelectCategoryScreen() {
         options={{
           headerShown: true,
           title: "Choose Category",
-          animation: "none",
           headerBackTitle: "Back",
           headerRight: () => (
             <TouchableOpacity
               onPress={() =>
                 router.push({
                   pathname: "/wallet/manage-categories",
-                  params: { bookId: params.bookId },
+                  params: { walletId: params.walletId },
                 })
               }
             >
@@ -156,7 +161,8 @@ export default function SelectCategoryScreen() {
               <View
                 className={`h-6 w-6 rounded-full border-2 items-center justify-center ${!params.currentSelectedId || params.currentSelectedId === "" ? "border-primary bg-primary" : "border-border"}`}
               >
-                {(!params.currentSelectedId || params.currentSelectedId === "") && (
+                {(!params.currentSelectedId ||
+                  params.currentSelectedId === "") && (
                   <Check size={14} className="text-foreground" />
                 )}
               </View>

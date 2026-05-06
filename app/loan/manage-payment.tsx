@@ -1,7 +1,10 @@
 import { useAddPayment, useUpdatePayment } from "@/api/loan";
+import { Button } from "@/components/ui/button";
 import { useKeyboardVisible } from "@/hooks/use-keyboard-visible";
 import { useKeyboardOffset } from "@/hooks/useKeyboardOffset";
 import { ChevronLeft } from "@/lib/icons";
+import { formatDateToUTC, formatTimeToUTC } from "@/utils";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import {
   Stack,
   useFocusEffect,
@@ -31,10 +34,16 @@ export default function ManagePaymentScreen() {
     paymentId?: string;
     amount?: string;
     remark?: string;
+    editDate?: string;
   }>();
 
   const [amount, setAmount] = useState(params.amount || "");
   const [remark, setRemark] = useState(params.remark || "");
+  const [date, setDate] = useState(
+    params.editDate ? new Date(params.editDate) : new Date(),
+  );
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
   const amountInputRef = useRef<TextInput>(null);
 
   const addPaymentMutation = useAddPayment();
@@ -71,13 +80,19 @@ export default function ManagePaymentScreen() {
         response = await updatePaymentMutation.mutateAsync({
           payment_id: params.paymentId!,
           amount: parseFloat(amount),
+          type: "RECEIVE",
           remark: remark || undefined,
+          date: formatDateToUTC(date),
+          time: formatTimeToUTC(date),
         });
       } else {
         response = await addPaymentMutation.mutateAsync({
           loan_id: params.loanId,
           amount: parseFloat(amount),
+          type: "RECEIVE",
           remark: remark || undefined,
+          date: formatDateToUTC(date),
+          time: formatTimeToUTC(date),
         });
       }
 
@@ -128,7 +143,6 @@ export default function ManagePaymentScreen() {
         options={{
           headerShown: true,
           title: isEditing ? "Edit Payment" : "Add Payment",
-          animation: "none",
           headerLeft: () => (
             <TouchableOpacity
               onPress={() => router.navigate(`/loan/${params.loanId}`)}
@@ -177,6 +191,64 @@ export default function ManagePaymentScreen() {
               </View>
             </View>
 
+            {/* Date & Time */}
+            <View className="mb-5">
+              <Text className="text-sm font-semibold text-foreground mb-2">
+                Date & Time
+              </Text>
+              <View className="flex-row gap-3">
+                <TouchableOpacity
+                  onPress={() => setShowDatePicker(true)}
+                  className="flex-1 bg-card rounded-xl px-4 py-3.5 border border-border flex-row items-center justify-between"
+                >
+                  <Text className="text-foreground text-base font-medium">
+                    {date.toLocaleDateString()}
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={() => setShowTimePicker(true)}
+                  className="flex-1 bg-card rounded-xl px-4 py-3.5 border border-border flex-row items-center justify-between"
+                >
+                  <Text className="text-foreground text-base font-medium">
+                    {date.toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              {showDatePicker && (
+                <DateTimePicker
+                  value={date}
+                  mode="date"
+                  display="default"
+                  maximumDate={new Date()}
+                  onChange={(event, selectedDate) => {
+                    setShowDatePicker(false);
+                    if (selectedDate) {
+                      setDate(selectedDate);
+                    }
+                  }}
+                />
+              )}
+
+              {showTimePicker && (
+                <DateTimePicker
+                  value={date}
+                  mode="time"
+                  display="default"
+                  onChange={(event, selectedTime) => {
+                    setShowTimePicker(false);
+                    if (selectedTime) {
+                      setDate(selectedTime);
+                    }
+                  }}
+                />
+              )}
+            </View>
+
             {/* Remark input */}
             <View className="mb-6">
               <Text className="text-sm font-semibold text-foreground mb-2">
@@ -204,7 +276,7 @@ export default function ManagePaymentScreen() {
           }}
           className="px-5 pt-3 pb-2 bg-background border-t border-border"
         >
-          <TouchableOpacity
+          <Button
             onPress={handleAction}
             disabled={isPending}
             className={`rounded-xl py-4 items-center justify-center w-full bg-primary ${isPending ? "opacity-50" : "opacity-100"}`}
@@ -222,7 +294,7 @@ export default function ManagePaymentScreen() {
                   ? "Update Payment"
                   : "Add Payment"}
             </Text>
-          </TouchableOpacity>
+          </Button>
         </View>
       </KeyboardAvoidingView>
     </View>

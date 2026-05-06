@@ -1,6 +1,6 @@
 export interface Transaction {
   id: string;
-  book_id: string;
+  wallet_id: string;
   category_id: string | null;
   category?: string;
   entry_by_id: string;
@@ -12,7 +12,7 @@ export interface Transaction {
   updated_at: string;
 }
 
-export interface Book {
+export interface Wallet {
   id: string;
   name: string;
   balance: number;
@@ -22,9 +22,14 @@ export interface Book {
   created_at: string;
   updated_at: string;
   created_by: string;
-  others_member: { id: string, name: string, email: string, avatar: string; role: "OWNER" | "EDITOR" | "VIEWER" }[];
+  others_member: {
+    id: string;
+    name: string;
+    email: string;
+    avatar: string;
+    role: "OWNER" | "EDITOR" | "VIEWER";
+  }[];
   transactions?: Transaction[];
-
 }
 
 export interface Member {

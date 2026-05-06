@@ -10,53 +10,62 @@ export enum LoanStatus {
 }
 
 export interface CreateLoanPayload {
-    person_name: string;
-    amount: number;
-    type: "GIVEN" | "TAKEN";
-    remark?: string;
-    contact_number?: string;
+  person_name: string;
+  amount: number;
+  type: "GIVEN" | "TAKEN";
+  remark?: string;
+  contact_number?: string;
 }
 
 export interface UpdateLoanPayload {
-    person_name?: string;
-    amount?: number;
-    type?: "GIVEN" | "TAKEN";
-    remark?: string;
-    contact_number?: string;
-    status?: "ONGOING" | "PAID" | "OVERDUE";
+  person_name?: string;
+  amount?: number;
+  type?: "GIVEN" | "TAKEN";
+  remark?: string;
+  contact_number?: string;
+  status?: "ONGOING" | "PAID" | "OVERDUE";
 }
 
 export interface CreateLoanPaymentPayload {
-    loan_id: string;
-    amount: number;
-    remark?: string;
+  loan_id: string;
+  amount: number;
+  type: "RECEIVE" | "GIVE";
+  remark?: string;
+  date?: string;
+  time?: string;
 }
 
 export interface UpdateLoanPaymentPayload {
-    payment_id: string;
-    amount: number;
-    remark?: string;
+  payment_id: string;
+  amount: number;
+  type?: "RECEIVE" | "GIVE";
+  remark?: string;
+  date?: string;
+  time?: string;
 }
 
 export interface LoanPayment {
-    id: string
-    loan_id: string
-    amount: number
-    remark?: string
-    created_at: string
+  id: string;
+  loan_id: string;
+  amount: number;
+  type: "RECEIVE" | "GIVE";
+  remark?: string;
+  date?: string;
+  time?: string;
+  created_at: string;
 }
 
 export interface Loan {
-  id: string
-  user_id: string
-  person_name: string
-  amount: number
-  paid_amount: number
-  type: LoanType
-  status: LoanStatus
+  id: string;
+  user_id: string;
+  person_name: string;
+  amount: number;
+  paid_amount: number;
+  type: LoanType;
+  status: LoanStatus;
   remark?: string;
   contact_number?: string;
   created_at: string;
-  updated_at: string
-  payments?: LoanPayment[]
+  updated_at: string;
+  payments?: LoanPayment[];
 }

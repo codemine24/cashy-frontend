@@ -1,10 +1,17 @@
 import { ScreenContainer } from "@/components/screen-container";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { CommonActions } from "@react-navigation/native";
-import { Stack, useNavigation, useRouter } from "expo-router";
-import { useState } from "react";
+import { Stack, useFocusEffect, useNavigation, useRouter } from "expo-router";
+import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import {
+  BackHandler,
+  Image,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 import { PremiumBadge } from "@/components/premium-badge";
 import { PremiumUpSellCard } from "@/components/premium-upsell-card";
@@ -22,6 +29,7 @@ import {
 import { clearUserInfo, removeAccessToken } from "@/utils/auth";
 import { makeImageUrl } from "@/utils/helper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { getCurrentVersion } from "@/utils/updateService";
 
 // ─── Reusable row component ───────────────────────────────────────────────
 function SettingsRow({
@@ -76,7 +84,7 @@ function SettingsRow({
 
 // ─── Divider ─────────────────────────────────────────────────────────────
 function Divider() {
-  return <View className="h-px bg-border ml-16" />;
+  return <View className="h-px bg-border" />;
 }
 
 // ─── Main screen ─────────────────────────────────────────────────────────
@@ -87,8 +95,9 @@ export default function SettingsScreen() {
   const { authState, setAuthState } = useAuth();
   const { t } = useTranslation();
   const { isPremium } = useIsPremium();
-  const { setColorScheme } = useTheme();
+  const { resetTheme } = useTheme();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const currentVersion = getCurrentVersion();
 
   const handleLogout = async () => {
     await removeAccessToken();
@@ -96,7 +105,7 @@ export default function SettingsScreen() {
     setAuthState({ isAuthenticated: false, user: null });
 
     // Reset theme to light theme after logout
-    setColorScheme("light");
+    resetTheme();
     navigation.dispatch(
       CommonActions.reset({ index: 0, routes: [{ name: "login-type" }] }),
     );
@@ -106,21 +115,21 @@ export default function SettingsScreen() {
     await handleLogout();
   };
 
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     const onBackPress = () => {
-  //       router.navigate("/(tabs)");
-  //       return true;
-  //     };
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        router.push("/(tabs)");
+        return true;
+      };
 
-  //     const subscription = BackHandler.addEventListener(
-  //       "hardwareBackPress",
-  //       onBackPress,
-  //     );
+      const subscription = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress,
+      );
 
-  //     return () => subscription.remove();
-  //   }, [router]),
-  // );
+      return () => subscription.remove();
+    }, [router]),
+  );
 
   return (
     <ScreenContainer edges={["left", "right"]} className="bg-background">
@@ -233,6 +242,22 @@ export default function SettingsScreen() {
                 {t("settings.logOut")}{" "}
               </Text>
             </TouchableOpacity>
+          </View>
+
+          {/* Version Section */}
+          <View className="px-6 py-4 items-center">
+            <View className="flex-row items-center gap-2">
+              <Info size={16} className="text-muted-foreground" />
+              <Text className="text-sm text-muted-foreground">
+                Version {currentVersion.version}
+              </Text>
+            </View>
+            <Text className="text-xs text-muted-foreground mt-1">
+              © {new Date().getFullYear()} Codemine Technology Ltd.
+            </Text>
+            <Text className="text-xs text-muted-foreground mt-1">
+              All rights reserved
+            </Text>
           </View>
         </ScrollView>
       </View>

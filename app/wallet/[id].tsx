@@ -1,4 +1,4 @@
-import { useBook } from "@/api/wallet";
+import { useWallet } from "@/api/wallet";
 import { ScreenContainer } from "@/components/screen-container";
 
 import { useGetCategories } from "@/api/category";
@@ -7,7 +7,7 @@ import {
   useDeleteTransaction,
   useInfiniteTransactions,
 } from "@/api/transaction";
-import { BookDetailSkeleton } from "@/components/skeletons/book-detail-skeleton";
+import { WalletDetailSkeleton } from "@/components/skeletons/wallet-detail-skeleton";
 import { Button } from "@/components/ui/button";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { ReportModal, ReportType } from "@/components/wallet/report-modal";
@@ -24,6 +24,7 @@ import { useDebounce } from "@/hooks/use-debounce";
 import { usePullToRefreshSkeletonWithSearch } from "@/hooks/use-pull-to-refresh-skeleton";
 import { SearchIcon } from "@/icons/search-icon";
 import {
+  ArrowDownUp,
   ChevronLeft,
   ChevronRight,
   Copy,
@@ -66,12 +67,12 @@ interface Transaction {
   id: string;
   amount: string;
   attachment: any[];
-  book: {
+  wallet: {
     created_at: string;
     name: string;
     updated_at: string;
   };
-  book_id: string;
+  wallet_id: string;
   category?: {
     title: string;
   };
@@ -104,7 +105,7 @@ export default function BookDetailScreen() {
     useState<TransactionFilterValues>(DEFAULT_FILTERS);
   const _filterParams = useMemo(() => buildFilterParams(filters), [filters]);
 
-  const { data: book, isLoading, refetch } = useBook(id!);
+  const { data: wallet, isLoading, refetch } = useWallet(id!);
 
   const {
     data: txPages,
@@ -114,7 +115,7 @@ export default function BookDetailScreen() {
     isFetchingNextPage,
     refetch: refetchTransactions,
   } = useInfiniteTransactions({
-    book_id: id!,
+    wallet_id: id!,
     limit: 10,
     ..._filterParams,
     search: debouncedQuery.trim() || undefined,
@@ -125,7 +126,7 @@ export default function BookDetailScreen() {
     isLoading: isStatsLoading,
     refetch: refetchWalletStats,
   } = useWalletStats({
-    book_id: id!,
+    wallet_id: id!,
     ..._filterParams,
     ...(debouncedQuery.trim() && { search_term: debouncedQuery.trim() }),
   });
@@ -160,15 +161,15 @@ export default function BookDetailScreen() {
   // Fetch categories for the filter
   const { data: categoriesData } = useGetCategories();
 
-  // Build members list from book data for the filter
+  // Build members list from wallet data for the filter
   const filterMembers: MemberOption[] = useMemo(() => {
-    if (!book?.data?.others_member) return [];
-    return book.data.others_member.map((m: any) => ({
+    if (!wallet?.data?.others_member) return [];
+    return wallet.data.others_member.map((m: any) => ({
       id: m.id,
       name: m.name || "",
       email: m.email || "",
     }));
-  }, [book?.data?.others_member]);
+  }, [wallet?.data?.others_member]);
 
   // Build categories list for the filter
   const filterCategories: CategoryOption[] = useMemo(() => {
@@ -190,7 +191,7 @@ export default function BookDetailScreen() {
         new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
     );
 
-    let runningBalance = book?.data?.balance ?? 0;
+    let runningBalance = wallet?.data?.balance ?? 0;
     const annotated = sorted.map((t: any) => {
       const current = runningBalance;
       const amountValue =
@@ -219,7 +220,7 @@ export default function BookDetailScreen() {
     });
 
     return groups;
-  }, [allTransactions, book?.data?.balance]);
+  }, [allTransactions, wallet?.data?.balance]);
 
   // Convert grouped transactions to SectionList format
   const sections = useMemo(
@@ -271,7 +272,7 @@ export default function BookDetailScreen() {
         }
       });
 
-      const url = `${baseUrl}/transaction/book/${id}/export-pdf?${queryParams.toString()}`;
+      const url = `${baseUrl}/transaction/wallet/${id}/export-pdf?${queryParams.toString()}`;
 
       if (Platform.OS === "web") {
         window.open(url, "_blank");
@@ -341,15 +342,15 @@ export default function BookDetailScreen() {
             ),
           }}
         />
-        <BookDetailSkeleton />
+        <WalletDetailSkeleton />
       </>
     );
   }
 
-  if (!book) {
+  if (!wallet) {
     return (
       <ScreenContainer className="p-4 items-center justify-center">
-        <Text className="text-foreground">Book not found</Text>
+        <Text className="text-foreground">Wallet not found</Text>
         <TouchableOpacity onPress={() => router.back()} className="mt-4">
           <Text className="text-primary font-semibold">Go Back</Text>
         </TouchableOpacity>
@@ -362,7 +363,7 @@ export default function BookDetailScreen() {
     router.push({
       pathname: "/wallet/add-transaction",
       params: {
-        bookId: id,
+        walletId: id,
         type: selectedTransaction.type,
         editId: selectedTransaction.id,
         editAmount: selectedTransaction.amount?.toString(),
@@ -383,7 +384,7 @@ export default function BookDetailScreen() {
     router.push({
       pathname: "/wallet/add-transaction",
       params: {
-        bookId: id,
+        walletId: id,
         type: selectedTransaction.type,
         editAmount: selectedTransaction.amount?.toString(),
         editRemark: selectedTransaction.remark || "",
@@ -434,7 +435,7 @@ export default function BookDetailScreen() {
     router.push({
       pathname: "/wallet/transaction-detail",
       params: {
-        bookId: id,
+        walletId: id,
         transactionId: item.id,
       },
     });
@@ -446,8 +447,7 @@ export default function BookDetailScreen() {
         {/* header */}
         <Stack.Screen
           options={{
-            title: selectedTransaction ? "1 Selected" : book.data.name,
-            animation: "none",
+            title: selectedTransaction ? "1 Selected" : wallet.data.name,
             headerLeft: () => {
               if (selectedTransaction) {
                 return (
@@ -476,9 +476,9 @@ export default function BookDetailScreen() {
                       onPress={handleEdit}
                       className="p-2"
                       hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                      disabled={isWalletViewer(authState.user?.id, book.data)}
+                      disabled={isWalletViewer(authState.user?.id, wallet.data)}
                       style={{
-                        opacity: isWalletViewer(authState.user?.id, book.data)
+                        opacity: isWalletViewer(authState.user?.id, wallet.data)
                           ? 0.4
                           : 1,
                       }}
@@ -489,9 +489,9 @@ export default function BookDetailScreen() {
                       onPress={handleDuplicate}
                       className="p-2"
                       hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                      disabled={isWalletViewer(authState.user?.id, book.data)}
+                      disabled={isWalletViewer(authState.user?.id, wallet.data)}
                       style={{
-                        opacity: isWalletViewer(authState.user?.id, book.data)
+                        opacity: isWalletViewer(authState.user?.id, wallet.data)
                           ? 0.4
                           : 1,
                       }}
@@ -506,12 +506,12 @@ export default function BookDetailScreen() {
                           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                           disabled={isWalletViewer(
                             authState.user?.id,
-                            book.data,
+                            wallet.data,
                           )}
                           style={{
                             opacity: isWalletViewer(
                               authState.user?.id,
-                              book.data,
+                              wallet.data,
                             )
                               ? 0.4
                               : 1,
@@ -524,24 +524,36 @@ export default function BookDetailScreen() {
                 );
               }
               return (
-                <TouchableOpacity
-                  onPress={() =>
-                    router.push({
-                      pathname: "/wallet/members",
-                      params: { bookId: id, bookName: book.data.name },
-                    })
-                  }
-                  style={{
-                    marginRight: 4,
-                    padding: 6,
-                  }}
-                >
-                  {isOwner(authState.user?.id, book.data.created_by) ? (
-                    <UserPlus size={22} className="text-foreground" />
-                  ) : (
-                    <User size={22} className="text-foreground" />
-                  )}
-                </TouchableOpacity>
+                <View className="flex-row items-center gap-3">
+                  <TouchableOpacity
+                    onPress={() =>
+                      router.push({
+                        pathname: "/wallet/transfer-fund",
+                        params: { walletId: id, walletName: wallet.data.name },
+                      })
+                    }
+                  >
+                    <ArrowDownUp size={24} className="text-foreground" />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() =>
+                      router.push({
+                        pathname: "/wallet/members",
+                        params: { walletId: id, walletName: wallet.data.name },
+                      })
+                    }
+                    style={{
+                      marginRight: 4,
+                      padding: 6,
+                    }}
+                  >
+                    {isOwner(authState.user?.id, wallet.data.created_by) ? (
+                      <UserPlus size={22} className="text-foreground" />
+                    ) : (
+                      <User size={22} className="text-foreground" />
+                    )}
+                  </TouchableOpacity>
+                </View>
               );
             },
           }}
@@ -589,8 +601,8 @@ export default function BookDetailScreen() {
             ListHeaderComponent={
               <>
                 {/* Header Card */}
-                {isStatsLoading ? (
-                  <View className="bg-card rounded-2xl p-4 border border-border shadow-sm animate-pulse">
+                {isStatsLoading && (
+                  <View className="bg-card rounded-2xl p-4 mb-4 border border-border shadow-sm animate-pulse">
                     <View className="flex-row justify-between items-center border-b border-border pb-4 mb-4">
                       <View className="w-1/4 h-5 bg-muted rounded-md" />
                       <View className="w-1/3 h-6 bg-muted rounded-md" />
@@ -605,8 +617,14 @@ export default function BookDetailScreen() {
                         <View className="w-1/4 h-5 bg-muted rounded-md" />
                       </View>
                     </View>
+
+                    <View className="flex-1 items-center mt-3">
+                      <View className="h-5 w-1/2 justify-center bg-muted rounded-md" />
+                    </View>
                   </View>
-                ) : (
+                ) }
+                
+                {!isStatsLoading && (
                   <View className="bg-card mt-2 rounded-2xl mb-4 shadow-sm border border-border">
                     <View className="px-3 py-3 flex-row justify-between items-center border-b border-border">
                       <Text className="text-foreground font-bold text-[14px]">
@@ -656,8 +674,8 @@ export default function BookDetailScreen() {
                 )}
 
                 {/* Members Section */}
-                {book?.data?.others_member?.length > 1 &&
-                  isOwner(authState.user?.id, book.data.created_by) && (
+                {wallet?.data?.others_member?.length > 1 &&
+                  isOwner(authState.user?.id, wallet.data.created_by) && (
                     <View className="bg-card rounded-2xl mb-4 border border-border shadow-sm">
                       {/* Header */}
                       <View className="px-3 py-2 flex-row items-center justify-between border-b border-border">
@@ -670,7 +688,7 @@ export default function BookDetailScreen() {
                       </View>
 
                       {/* Member rows */}
-                      {book.data.others_member
+                      {wallet.data.others_member
                         .slice(0, 2)
                         .map((member: any, index: number) => {
                           const name = member.name || "No name";
@@ -682,7 +700,8 @@ export default function BookDetailScreen() {
                               key={member.id || index}
                               className={`px-3 py-2 flex-row items-center justify-between ${
                                 index !==
-                                Math.min(book.data.others_member.length, 2) - 1
+                                Math.min(wallet.data.others_member.length, 2) -
+                                  1
                                   ? "border-b border-border"
                                   : ""
                               }`}
@@ -727,37 +746,40 @@ export default function BookDetailScreen() {
                         })}
 
                       {/* More indicator */}
-                      {book.data.others_member.length > 2 && (
+                      {wallet.data.others_member.length > 2 && (
                         <TouchableOpacity
                           onPress={() =>
                             router.push({
                               pathname: "/wallet/members",
-                              params: { bookId: id, bookName: book.data.name },
+                              params: {
+                                walletId: id,
+                                walletName: wallet.data.name,
+                              },
                             })
                           }
                           className="px-3 py-1 border-t border-border items-center"
                         >
                           <Text className="text-primary text-[10px] font-semibold">
-                            +{book.data.others_member.length - 2} more members
+                            +{wallet.data.others_member.length - 2} more members
                           </Text>
                         </TouchableOpacity>
                       )}
                     </View>
                   )}
 
-                {book?.data?.others_member?.length &&
-                  !isOwner(authState.user?.id, book.data.created_by) && (
+                {wallet?.data?.others_member?.length &&
+                  !isOwner(authState.user?.id, wallet.data.created_by) && (
                     <View className="bg-card rounded-xl mb-6 border border-border shadow-sm py-2">
                       <Text className="text-muted-foreground text-[11px] mt-0.5 text-center">
                         You&apos;ve been added by{" "}
                         {
-                          book.data.others_member.find(
+                          wallet.data.others_member.find(
                             (member: any) => member.role === "OWNER",
                           )?.email
                         }{" "}
                         as{" "}
                         {
-                          book.data.others_member.find(
+                          wallet.data.others_member.find(
                             (member: any) => member.id === authState.user?.id,
                           )?.role
                         }
@@ -928,13 +950,13 @@ export default function BookDetailScreen() {
             onPress={() => {
               router.push({
                 pathname: "/wallet/add-transaction",
-                params: { bookId: id, type: "IN" },
+                params: { walletId: id, type: "IN" },
               });
             }}
             className="flex-1 bg-success"
-            disabled={isWalletViewer(authState.user?.id, book.data)}
+            disabled={isWalletViewer(authState.user?.id, wallet.data)}
           >
-            <Text className="text-success-foreground font-bold text-[14px] tracking-widest">
+            <Text className="text-white font-bold text-[14px] tracking-widest">
               {t("wallets.cashIn").toUpperCase()}
             </Text>
           </Button>
@@ -943,13 +965,13 @@ export default function BookDetailScreen() {
             onPress={() => {
               router.push({
                 pathname: "/wallet/add-transaction",
-                params: { bookId: id, type: "OUT" },
+                params: { walletId: id, type: "OUT" },
               });
             }}
             className="flex-1 bg-destructive"
-            disabled={isWalletViewer(authState.user?.id, book.data)}
+            disabled={isWalletViewer(authState.user?.id, wallet.data)}
           >
-            <Text className="text-success-foreground font-bold text-[14px]">
+            <Text className="text-white font-bold text-[14px]">
               {t("wallets.cashOut").toUpperCase()}
             </Text>
           </Button>

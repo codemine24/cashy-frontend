@@ -14,7 +14,7 @@ const keys = {
 export const useWalletStats = (
   params: {
     period?: "all_time" | "today" | "last_7_days" | "last_30_days" | "custom";
-    book_id?: string;
+    wallet_id?: string;
     from_date?: string;
     to_date?: string;
     search_term?: string;

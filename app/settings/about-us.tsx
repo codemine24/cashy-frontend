@@ -38,7 +38,6 @@ export default function AboutUsScreen() {
           options={{
             headerShown: true,
             title: "About Us",
-            animation: "none",
             headerBackTitle: "Back",
             headerLeft: () => (
               <TouchableOpacity
@@ -91,6 +90,9 @@ export default function AboutUsScreen() {
               </Text>
               <Text className="text-foreground text-sm leading-relaxed">
                 • Multiple wallet support for different accounts
+              </Text>
+              <Text className="text-foreground text-sm leading-relaxed">
+                • Loan management with detailed tracking
               </Text>
               <Text className="text-foreground text-sm leading-relaxed">
                 • Detailed transaction history and reports

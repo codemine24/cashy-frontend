@@ -111,7 +111,7 @@ export function buildFilterParams(filters: TransactionFilterValues) {
 interface TransactionFiltersProps {
   filters: TransactionFilterValues;
   onApplyFilters: (filters: TransactionFilterValues) => void;
-  /** Pass book.data.others_member or similar */
+  /** Pass wallet.data.others_member or similar */
   members: MemberOption[];
   /** Pass category list from useGetCategories */
   categories: CategoryOption[];

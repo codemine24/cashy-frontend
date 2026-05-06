@@ -55,7 +55,7 @@ export function ExpenseByCategoryChart({ data }: { data: any[] }) {
           const d = `M ${x1} ${y1} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2}`;
 
           // Always use distinct colors from our palette, ignore API color
-          const sliceColor = colors[i % colors.length];
+          const sliceColor = cat.color || colors[i % colors.length];
 
           return (
             <Path
