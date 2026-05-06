@@ -81,8 +81,6 @@ export default function AboutScreen() {
   const { setAuthState } = useAuth();
   const deleteAccountMutation = useDeleteUser();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const currentVersion = getCurrentVersion();
-  console.log(currentVersion)
 
   const handlePrivacyPolicy = () => {
     // Show privacy policy in a modal or navigate to a dedicated screen

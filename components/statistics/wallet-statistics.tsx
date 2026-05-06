@@ -351,7 +351,7 @@ export function WalletStatistics() {
                       <View className="flex-1 gap-y-1">
                         {walletStats.expense_by_category.map(
                           (cat: any, i: number) => {
-                            const labelColor = colors[i % colors.length];
+                            const labelColor = cat.color || colors[i % colors.length];
 
                             return (
                               <View

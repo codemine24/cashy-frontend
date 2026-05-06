@@ -99,8 +99,6 @@ export default function SettingsScreen() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const currentVersion = getCurrentVersion();
 
-  console.log(currentVersion)
-
   const handleLogout = async () => {
     await removeAccessToken();
     await clearUserInfo();
