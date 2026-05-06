@@ -218,14 +218,6 @@ export default function AddTransactionScreen() {
 
   // ── Attachment picker ──────────────────────────────────────────────────────
   const pickAttachments = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== "granted") {
-      Alert.alert(
-        "Permission required",
-        "Please allow access to your photo library to add attachments.",
-      );
-      return;
-    }
 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
