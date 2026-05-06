@@ -2,7 +2,7 @@
   "expo": {
     "name": "Cashy",
     "slug": "cashy",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/playstore-icon.png",
     "scheme": "cashy-expense-manager",
@@ -10,7 +10,7 @@
     "newArchEnabled": true,
     "android": {
       "package": "com.codemine.cashy",
-      "versionCode": 2026050702,
+      "versionCode": 2026050703,
       "softwareKeyboardLayoutMode": "pan",
       "backgroundColor": "#ffffff",
       "adaptiveIcon": {
@@ -18,10 +18,7 @@
         "foregroundImage": "./assets/images/playstore-icon.png",
         "monochromeImage": "./assets/images/playstore-icon.png"
       },
-      "permissions": [
-        "INTERNET",
-        "READ_EXTERNAL_STORAGE"
-      ],
+      "permissions": ["INTERNET"],
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
     },

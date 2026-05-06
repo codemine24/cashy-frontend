@@ -36,7 +36,6 @@ import { useAuth } from "@/context/auth-context";
 import { useTheme } from "@/context/theme-context";
 import { makeImageUrl } from "@/utils/helper";
 import { File as ExpoFile, Paths } from "expo-file-system";
-import * as MediaLibrary from "expo-media-library";
 import * as Sharing from "expo-sharing";
 import Toast from "react-native-toast-message";
 
@@ -267,50 +266,35 @@ export default function TransactionDetailScreen() {
     }
   };
 
-  const handleDownload = async () => {
-    if (!selectedImage) return;
+const handleDownload = async () => {
+  if (!selectedImage) return;
 
-    try {
-      setIsDownloading(true);
+  try {
+    setIsDownloading(true);
 
-      const permission = await MediaLibrary.requestPermissionsAsync();
+    // 1. Download to temporary cache (Does NOT require permissions)
+    const downloadRes = await ExpoFile.downloadFileAsync(
+      selectedImage,
+      Paths.cache,
+      { idempotent: true }
+    );
 
-      if (!permission.granted) {
-        Toast.show({
-          type: "error",
-          text1: "Permission required",
-          text2: "Allow media access to download files",
-        });
-        return;
-      }
+    if (!downloadRes) throw new Error("Download failed");
 
-      const downloadRes = await ExpoFile.downloadFileAsync(
-        selectedImage,
-        Paths.cache,
-        { idempotent: true },
-      );
-
-      if (!downloadRes) throw new Error("Download failed");
-
-      const asset = await MediaLibrary.createAssetAsync(downloadRes.uri);
-
-      await MediaLibrary.createAlbumAsync("WalletApp", asset, false);
-
-      Toast.show({
-        type: "success",
-        text1: "Download successful",
-        text2: "Saved to gallery",
-      });
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
-      Toast.show({
-        type: "error",
-        text1: "Download failed",
-      });
-    } finally {
-      setIsDownloading(false);
+    // 2. Use Sharing to let the user "Save Image" or "Send"
+    // This uses the system UI, so you don't need MediaLibrary permissions
+    const available = await Sharing.isAvailableAsync();
+    if (available) {
+      await Sharing.shareAsync(downloadRes.uri);
+    } else {
+      Toast.show({ type: "error", text1: "Action not supported on this device" });
     }
-  };
+  } catch (error: any) {
+    Toast.show({ type: "error", text1: "Failed to process image" });
+  } finally {
+    setIsDownloading(false);
+  }
+};
 
   useFocusEffect(
     useCallback(() => {
