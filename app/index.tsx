@@ -26,19 +26,25 @@ export default function WelcomeScreen() {
   const { isModalSkipped } = useAppUpdateContext();
 
   useEffect(() => {
-    // if (authReady && authState.isAuthenticated && !isForceUpdate && isModalSkipped) {
-    //   router.replace("/(tabs)");
-    // }
-
+    if (isChecking) return;
     if (hasUpdate && isForceUpdate) return;
 
-    if (hasUpdate && !isModalSkipped) return;
-
-    if (authReady && authState.isAuthenticated) {
-      router.replace("/(tabs)");
+    if (authReady && authState.isAuthenticated && !hasUpdate) {
+      return router.replace("/(tabs)");
     }
 
-  }, [authReady, authState.isAuthenticated, hasUpdate, isForceUpdate, isModalSkipped, router]);
+    if (authReady && authState.isAuthenticated && hasUpdate && isModalSkipped) {
+      router.replace("/(tabs)");
+    } 
+  }, [
+    isChecking,
+    authReady,
+    authState.isAuthenticated,
+    hasUpdate,
+    isForceUpdate,
+    isModalSkipped,
+    router,
+  ]);
 
   useEffect(() => {
     if (!isModalSkipped) {

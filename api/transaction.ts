@@ -12,12 +12,12 @@ const TRANSACTION_API_URL = "/transaction";
 const keys = {
   all: ["transactions"],
   list: () => [...keys.all, "list"],
-  infinite: (bookId: string) => [...keys.all, "infinite", bookId],
+  infinite: (walletId: string) => [...keys.all, "infinite", walletId],
   detail: (id: string) => [...keys.all, "detail", id],
 };
 
 interface GetTransactionsParams {
-  book_id: string;
+  wallet_id: string;
   search?: string;
   page?: number;
   limit?: number;
@@ -39,7 +39,7 @@ export const useTransactions = (searchParams: GetTransactionsParams) => {
     queryFn: async () => {
       try {
         const response = await apiClient.get(
-          `${TRANSACTION_API_URL}/book/${searchParams.book_id}`,
+          `${TRANSACTION_API_URL}/wallet/${searchParams.wallet_id}`,
           { params },
         );
         return response.data;
@@ -51,7 +51,7 @@ export const useTransactions = (searchParams: GetTransactionsParams) => {
 };
 
 interface InfiniteTransactionsParams {
-  book_id: string;
+  wallet_id: string;
   search?: string;
   sort?: string;
   limit?: number;
@@ -67,7 +67,7 @@ interface InfiniteTransactionsParams {
 
 export const useInfiniteTransactions = (params: InfiniteTransactionsParams) => {
   return useInfiniteQuery({
-    queryKey: [...keys.infinite(params.book_id), params],
+    queryKey: [...keys.infinite(params.wallet_id), params],
     queryFn: async ({ pageParam = 1 }) => {
       try {
         const queryParams: Record<string, string> = {
@@ -119,7 +119,7 @@ export const useInfiniteTransactions = (params: InfiniteTransactionsParams) => {
           queryParams.category_ids = params.category_ids.join(",");
 
         const response = await apiClient.get(
-          `${TRANSACTION_API_URL}/book/${params.book_id}`,
+          `${TRANSACTION_API_URL}/wallet/${params.wallet_id}`,
           { params: queryParams },
         );
 
@@ -151,6 +151,40 @@ export const useTransaction = (id: string) => {
   });
 };
 
+interface TransferTransactionPayload {
+  from_wallet_id: string;
+  to_wallet_id: string;
+  amount: number;
+  remark?: string;
+  category_id?: string;
+  date?: string;
+  time?: string;
+}
+
+export const useTransferTransaction = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (payload: TransferTransactionPayload) => {
+      try {
+        const response = await apiClient.post(
+          `${TRANSACTION_API_URL}/transfer`,
+          payload,
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+          },
+        );
+        return response.data;
+      } catch (error) {
+        throwApiError(error);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: keys.all });
+      queryClient.invalidateQueries({ queryKey: ["wallets"] });
+    },
+  });
+};
+
 export const useCreateTransaction = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -166,7 +200,7 @@ export const useCreateTransaction = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: keys.all });
-      queryClient.invalidateQueries({ queryKey: ["books"] });
+      queryClient.invalidateQueries({ queryKey: ["wallets"] });
       queryClient.invalidateQueries({ queryKey: ["statistics"] });
     },
   });
@@ -195,7 +229,7 @@ export const useUpdateTransaction = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: keys.all });
-      queryClient.invalidateQueries({ queryKey: ["books"] });
+      queryClient.invalidateQueries({ queryKey: ["wallets"] });
       queryClient.invalidateQueries({ queryKey: ["statistics"] });
     },
   });
@@ -214,7 +248,7 @@ export const useDeleteTransaction = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: keys.all });
-      queryClient.invalidateQueries({ queryKey: ["books"] });
+      queryClient.invalidateQueries({ queryKey: ["wallets"] });
       queryClient.invalidateQueries({ queryKey: ["statistics"] });
     },
   });

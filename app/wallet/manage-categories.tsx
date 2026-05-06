@@ -111,7 +111,6 @@ export default function ManageCategoriesScreen() {
         options={{
           headerShown: true,
           title: "Manage Categories",
-          animation: "none",
           headerBackTitle: "Back",
           headerLeft: () => (
             <TouchableOpacity

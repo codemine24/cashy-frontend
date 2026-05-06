@@ -64,7 +64,7 @@ export default function CreateLentScreen() {
   const isEditing = !!params.editId;
 
   const screenTitle = isEditing ? "Edit Lent Loan" : "New Lent Loan";
-  const buttonText = isEditing ? "UPDATE LENT LOAN" : "+ ADD LENT LOAN";
+  const buttonText = isEditing ? "UPDATE LENT LOAN" : "ADD LENT LOAN";
 
   // Form setup
   const form = useForm<CreateLoanFormValues>({
@@ -226,7 +226,6 @@ export default function CreateLentScreen() {
         options={{
           headerShown: true,
           title: screenTitle,
-          animation: "none",
           headerLeft: () => (
             <TouchableOpacity
               onPress={() => router.navigate("/loans?tab=GIVEN")}

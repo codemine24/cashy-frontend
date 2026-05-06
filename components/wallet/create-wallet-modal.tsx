@@ -1,4 +1,4 @@
-import { useCreateBook, useUpdateBook } from "@/api/wallet";
+import { useCreateWallet, useUpdateWallet } from "@/api/wallet";
 import React, { useRef, useState } from "react";
 import { Text, TextInput, View } from "react-native";
 import Toast from "react-native-toast-message";
@@ -17,8 +17,8 @@ export function CreateWalletModal({
   editBook,
 }: CreateBookModalProps) {
   const [bookName, setBookName] = useState(editBook?.name || "");
-  const createBookMutation = useCreateBook();
-  const updateBookMutation = useUpdateBook();
+  const createBookMutation = useCreateWallet();
+  const updateBookMutation = useUpdateWallet();
   const inputRef = useRef<TextInput>(null);
 
   // Keep internal state synced when editBook changes while open
@@ -105,7 +105,7 @@ export function CreateWalletModal({
       }
     >
       <View className="flex-col gap-2">
-        {/* Book name input */}
+        {/* Wallet name input */}
         <Text className="text-sm font-normal text-foreground">
           Enter Wallet Name
         </Text>

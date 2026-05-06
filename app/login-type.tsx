@@ -17,6 +17,7 @@ export default function LoginTypeScreen() {
   const router = useRouter();
   const { authReady, authState, setAuthState } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [isGoogleSigningIn, setIsGoogleSigningIn] = useState(false);
   const { applyUserTheme } = useTheme();
   const googleLoginMutation = useGoogleLogin();
 
@@ -38,10 +39,11 @@ export default function LoginTypeScreen() {
   }, [authReady, router, authState.isAuthenticated]);
 
   const signInWithGoogle = async () => {
-    if (loading) return;
+    if (loading || isGoogleSigningIn) return;
 
     try {
       setLoading(true);
+      setIsGoogleSigningIn(true);
 
       await GoogleSignin.signOut();
       // Check if device supports Google Play Services
@@ -101,6 +103,7 @@ export default function LoginTypeScreen() {
       });
     } finally {
       setLoading(false);
+      setIsGoogleSigningIn(false);
     }
   };
 
@@ -131,7 +134,7 @@ export default function LoginTypeScreen() {
         <TouchableOpacity
           onPress={signInWithGoogle}
           activeOpacity={0.85}
-          disabled={loading}
+          disabled={loading || isGoogleSigningIn}
           className="w-full flex-row items-center justify-center gap-3 rounded-xl py-4 border border-border disabled:opacity-50"
         >
           <GoogleIcon width={24} height={24} />
@@ -139,7 +142,9 @@ export default function LoginTypeScreen() {
             className="text-base font-semibold tracking-widest text-primary"
             numberOfLines={1}
           >
-            {loading ? "Logging in..." : "Continue with Google"}
+            {isGoogleSigningIn
+              ? "Signing in with Google..."
+              : "Continue with Google"}
           </Text>
         </TouchableOpacity>
 

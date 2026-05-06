@@ -60,7 +60,7 @@ export default function TransferModal({
               }}
               className="bg-amber-500 py-4 rounded-xl items-center justify-center shadow-lg"
             >
-              <Text className="text-white font-bold text-lg">
+              <Text className="text-white font-bold text-center text-lg">
                 Transfer to this account
               </Text>
             </TouchableOpacity>

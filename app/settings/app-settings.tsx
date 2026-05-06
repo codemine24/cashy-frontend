@@ -298,7 +298,6 @@ export default function AppSettingsScreen() {
         <Stack.Screen
           options={{
             title: t("settings.appSettings"),
-            animation: "none",
             headerLeft: () => (
               <TouchableOpacity
                 onPress={() => router.navigate("/settings")}

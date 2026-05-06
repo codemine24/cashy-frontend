@@ -49,7 +49,6 @@ export default function ContactUsScreen() {
           options={{
             headerShown: true,
             title: "Contact Us",
-            animation: "none",
             headerBackTitle: "Back",
             headerLeft: () => (
               <TouchableOpacity

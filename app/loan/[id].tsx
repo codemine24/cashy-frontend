@@ -1,10 +1,10 @@
 import { useDeletePayment, useGetLoanDetail } from "@/api/loan";
 import { ScreenContainer } from "@/components/screen-container";
+import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { usePullToRefreshSkeleton } from "@/hooks/use-pull-to-refresh-skeleton";
 import { CallIcon } from "@/icons/call-icon";
 import { WhatsappIcon } from "@/icons/whatsapp-icon";
 import { LoanPayment } from "@/interface/loan";
-import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { ChevronLeft, Edit3, Trash2, X } from "@/lib/icons";
 import { formatCurrency } from "@/utils";
 import {
@@ -59,13 +59,6 @@ export default function LoanDetailScreen() {
         new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
     );
   }, [loanData?.data?.payments]);
-
-  const openAddPayment = () => {
-    router.push({
-      pathname: "/loan/manage-payment",
-      params: { loanId: id! },
-    });
-  };
 
   const handleEditPayment = () => {
     if (!selectedPayment) return;
@@ -233,7 +226,6 @@ export default function LoanDetailScreen() {
           title: selectedPayment
             ? "1 Selected"
             : loanData?.data?.person_name || "Loan Details",
-          animation: "none",
           headerBackTitle: "Back",
           headerLeft: () => {
             if (selectedPayment) {
@@ -324,7 +316,19 @@ export default function LoanDetailScreen() {
                   </Text>
                 </View>
                 <View className="items-end justify-center">
-                  <Text className="text-base font-bold mb-2 text-green-600">
+                  <Text
+                    className={`text-base font-bold mb-2 ${
+                      item.type === "RECEIVE" && loan?.type === "GIVEN"
+                        ? "text-green-600"
+                        : item.type === "GIVE" && loan?.type === "TAKEN"
+                          ? "text-green-600"
+                          : item.type === "RECEIVE" && loan?.type === "TAKEN"
+                            ? "text-red-600"
+                            : item.type === "GIVE" && loan?.type === "GIVEN"
+                              ? "text-red-600"
+                              : ""
+                    }`}
+                  >
                     {formatCurrency(item.amount)}
                   </Text>
                 </View>
@@ -444,20 +448,88 @@ export default function LoanDetailScreen() {
           style={{
             marginBottom: Math.min(insets.bottom, 28),
           }}
-          className="px-4 pt-3 pb-2 bg-background border-t border-border"
+          className="flex-row gap-3 px-4 pt-3 pb-2 bg-background border-t border-border"
         >
-          <TouchableOpacity
-            onPress={openAddPayment}
-            className="rounded-xl py-4 items-center justify-center w-full bg-primary"
-            activeOpacity={0.8}
-          >
-            <Text
-              className="text-white font-bold text-base tracking-wider text-center w-full"
-              numberOfLines={1}
-            >
-              ADD PAYMENT
-            </Text>
-          </TouchableOpacity>
+          {/* Dynamic button order based on loan type */}
+          {loan?.type === "GIVEN" ? (
+            <>
+              {/* GIVEN loans: ADD PAYMENT (left, green), INCREASE LOAN (right, red) */}
+              <TouchableOpacity
+                onPress={() => {
+                  router.push({
+                    pathname: "/loan/receive-payment",
+                    params: { loanId: id!, loanType: loan?.type },
+                  });
+                }}
+                className="flex-1 rounded-xl py-4 items-center justify-center bg-success"
+                activeOpacity={0.8}
+              >
+                <Text
+                  className="text-white font-bold text-[14px] tracking-widest text-center w-full"
+                  numberOfLines={1}
+                >
+                  ADD PAYMENT
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => {
+                  router.push({
+                    pathname: "/loan/given-payment",
+                    params: { loanId: id!, loanType: loan?.type },
+                  });
+                }}
+                className="flex-1 rounded-xl py-4 items-center justify-center bg-destructive"
+                activeOpacity={0.8}
+              >
+                <Text
+                  className="text-white font-bold text-[14px] tracking-widest text-center w-full"
+                  numberOfLines={1}
+                >
+                  INCREASE LOAN
+                </Text>
+              </TouchableOpacity>
+            </>
+          ) : (
+            <>
+              {/* TAKEN loans: PAY BACK (left, green), BORROW MORE (right, red) */}
+              <TouchableOpacity
+                onPress={() => {
+                  router.push({
+                    pathname: "/loan/given-payment",
+                    params: { loanId: id!, loanType: loan?.type },
+                  });
+                }}
+                className="flex-1 rounded-xl py-4 items-center justify-center bg-success"
+                activeOpacity={0.8}
+              >
+                <Text
+                  className="text-white font-bold text-[14px] tracking-widest text-center w-full"
+                  numberOfLines={1}
+                >
+                  PAY BACK
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => {
+                  router.push({
+                    pathname: "/loan/receive-payment",
+                    params: { loanId: id!, loanType: loan?.type },
+                  });
+                }}
+                className="flex-1 rounded-xl py-4 items-center justify-center bg-destructive"
+                activeOpacity={0.8}
+              >
+                <Text
+                  className="text-white font-bold text-[14px] tracking-widest text-center w-full"
+                  numberOfLines={1}
+                >
+                  BORROW MORE
+                </Text>
+              </TouchableOpacity>
+            </>
+          )}
         </View>
       </ScreenContainer>
 

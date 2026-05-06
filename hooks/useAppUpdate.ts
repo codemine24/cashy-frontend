@@ -11,6 +11,8 @@ export function useAppUpdate() {
     useState<UpdateCheckResult | null>(null);
   const [isChecking, setIsChecking] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [hasUpdate, setHasUpdate] = useState(false);
+  const [isForceUpdate, setIsForceUpdate] = useState(false);
   const { isModalSkipped, skipModal } = useAppUpdateContext();
 
   const checkUpdates = useCallback(async () => {
@@ -23,14 +25,12 @@ export function useAppUpdate() {
 
     try {
       const result = await checkForUpdates();
-      console.log("result", result);
       setUpdateCheckResult(result);
 
       if (result.hasUpdate && result.versionInfo) {
-        console.log("Update available, showing modal");
         setShowModal(true);
-      } else {
-        console.log("No update available");
+        setHasUpdate(true);
+        setIsForceUpdate(result.versionInfo.is_force_update);
       }
     } catch (error) {
       console.error("Failed to check updates:", error);
@@ -52,12 +52,10 @@ export function useAppUpdate() {
     skipModal();
   };
 
-  const isForceUpdate = updateCheckResult?.versionInfo?.is_force_update;
-
   return {
     isChecking,
     showModal,
-    hasUpdate: updateCheckResult?.hasUpdate,
+    hasUpdate,
     versionInfo: updateCheckResult?.versionInfo,
     isForceUpdate,
     checkUpdates,
