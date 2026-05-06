@@ -32,12 +32,8 @@ export default function WalletSelectorModal({
     }
   }, [visible, selectedWalletId]);
 
-  console.log("wallets", wallets?.data);
-
   const filteredWallets =
     wallets?.data?.filter((wallet) => wallet.id !== excludeWalletId) || [];
-
-  console.log("filteredWallets", filteredWallets.length);
 
   const handleApply = () => {
     if (tempSelectedWalletId) {
@@ -94,11 +90,9 @@ export default function WalletSelectorModal({
             ItemSeparatorComponent={() => <View className="h-2" />}
           />
         ) : (
-          <View className="flex-1 justify-center items-center py-8">
-            <Text className="text-muted-foreground text-center">
-              No wallets available
-            </Text>
-          </View>
+          <Text className="text-muted-foreground text-center py-8">
+            No wallets available
+          </Text>
         )}
       </View>
     </BottomSheetModalWrapper>

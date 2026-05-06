@@ -24,6 +24,7 @@ import { useDebounce } from "@/hooks/use-debounce";
 import { usePullToRefreshSkeletonWithSearch } from "@/hooks/use-pull-to-refresh-skeleton";
 import { SearchIcon } from "@/icons/search-icon";
 import {
+  ArrowDownUp,
   ChevronLeft,
   ChevronRight,
   Copy,
@@ -45,7 +46,6 @@ import {
   useRouter,
 } from "expo-router";
 import * as Sharing from "expo-sharing";
-import { ArrowDownUp } from "lucide-react-native";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -528,7 +528,7 @@ export default function BookDetailScreen() {
                   <TouchableOpacity
                     onPress={() =>
                       router.push({
-                        pathname: "/wallet/transfer-transaction",
+                        pathname: "/wallet/transfer-fund",
                         params: { walletId: id, walletName: wallet.data.name },
                       })
                     }

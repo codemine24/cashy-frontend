@@ -10,13 +10,6 @@ import { View } from "react-native";
 import { ErrorBoundary } from "./error-boundary";
 import { RootProvider } from "./root-provider";
 
-// Simple slide transition options
-const slideTransitionOptions = {
-  animation: "default" as const,
-  gestureEnabled: true,
-  gestureDirection: "horizontal" as const,
-};
-
 export const RootNavigator = () => {
   const { isDark } = useTheme();
 
@@ -181,7 +174,7 @@ export const RootNavigator = () => {
                   name="wallet/search-transactions"
                   options={{
                     headerShown: true,
-                    ...slideTransitionOptions,
+                    animation: "simple_push",
                     headerStyle: {
                       backgroundColor: isDark ? "#0f172a" : "#f8fafc",
                     },
@@ -191,10 +184,10 @@ export const RootNavigator = () => {
                   }}
                 />
                 <Stack.Screen
-                  name="wallet/transfer-transaction"
+                  name="wallet/transfer-fund"
                   options={{
                     headerShown: true,
-                    ...slideTransitionOptions,
+                    animation: "simple_push",
                     headerStyle: {
                       backgroundColor: isDark ? "#0f172a" : "#f8fafc",
                     },
@@ -246,7 +239,7 @@ export const RootNavigator = () => {
                   name="loan/receive-payment"
                   options={{
                     headerShown: true,
-                    ...slideTransitionOptions,
+                    animation: "simple_push",
                     headerStyle: {
                       backgroundColor: isDark ? "#0f172a" : "#f8fafc",
                     },
@@ -259,7 +252,7 @@ export const RootNavigator = () => {
                   name="loan/given-payment"
                   options={{
                     headerShown: true,
-                    ...slideTransitionOptions,
+                    animation: "simple_push",
                     headerStyle: {
                       backgroundColor: isDark ? "#0f172a" : "#f8fafc",
                     },
