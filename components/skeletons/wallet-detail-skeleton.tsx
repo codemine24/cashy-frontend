@@ -5,7 +5,7 @@ import { View } from "react-native";
 export function WalletDetailSkeleton() {
   return (
     <ScreenContainer className="px-4 bg-background">
-      <View className="mt-4 gap-6">
+      <View className="gap-6">
         {/* Header Card Skeleton */}
         <View className="bg-card rounded-2xl p-4 border border-border shadow-sm animate-pulse">
           <View className="flex-row justify-between items-center border-b border-border pb-4 mb-4">

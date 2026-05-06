@@ -11,7 +11,6 @@ import {
   Users,
 } from "@/lib/icons";
 import { clearUserInfo, removeAccessToken } from "@/utils/auth";
-import { getCurrentVersion } from "@/utils/updateService";
 import { CommonActions } from "@react-navigation/native";
 import { Stack, useFocusEffect, useNavigation, useRouter } from "expo-router";
 import { useCallback, useState } from "react";

@@ -84,7 +84,7 @@ function SettingsRow({
 
 // ─── Divider ─────────────────────────────────────────────────────────────
 function Divider() {
-  return <View className="h-px bg-border ml-16" />;
+  return <View className="h-px bg-border" />;
 }
 
 // ─── Main screen ─────────────────────────────────────────────────────────

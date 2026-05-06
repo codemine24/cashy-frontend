@@ -2,7 +2,7 @@
   "expo": {
     "name": "Cashy",
     "slug": "cashy",
-    "version": "1.1.12",
+    "version": "1.2.1",
     "orientation": "portrait",
     "icon": "./assets/images/playstore-icon.png",
     "scheme": "cashy-expense-manager",
@@ -10,7 +10,7 @@
     "newArchEnabled": true,
     "android": {
       "package": "com.codemine.cashy",
-      "versionCode": 2026050402,
+      "versionCode": 2026050701,
       "softwareKeyboardLayoutMode": "pan",
       "backgroundColor": "#ffffff",
       "adaptiveIcon": {
