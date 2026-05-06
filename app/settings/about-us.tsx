@@ -92,6 +92,9 @@ export default function AboutUsScreen() {
                 • Multiple wallet support for different accounts
               </Text>
               <Text className="text-foreground text-sm leading-relaxed">
+                • Loan management with detailed tracking
+              </Text>
+              <Text className="text-foreground text-sm leading-relaxed">
                 • Detailed transaction history and reports
               </Text>
               <Text className="text-foreground text-sm leading-relaxed">
