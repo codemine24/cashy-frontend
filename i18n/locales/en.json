@@ -138,7 +138,9 @@
     "contactUs": "Contact Us",
     "contactUsSubtitle": "Get in touch with our team",
     "deleteAccount": "Delete Account",
-    "deleteAccountSubtitle": "Request to permanently delete your account"
+    "deleteAccountSubtitle": "Request to permanently delete your account",
+    "appVersion": "App Version",
+    "appVersionSubtitle": "Version {{version}}"
   },
   "profile": {
     "title": "Your Profile",

@@ -35,7 +35,7 @@ export function LoanStatisticsContent({
   return (
     <>
       {/* Summary Cards */}
-      <View className="mb-6 mt-1">
+      <View className="mb-4 mt-1">
         <View className="flex-row gap-2">
           <View
             className={`${isDark ? "bg-card" : "bg-white"} flex-1 border border-border rounded-2xl shadow-sm p-3`}
@@ -51,7 +51,7 @@ export function LoanStatisticsContent({
             <P className="text-[10px] text-muted-foreground mb-1">
               Total Borrowed
             </P>
-            <P className="text-base font-bold text-red-600" numberOfLines={1}>
+            <P className="text-base font-bold text-destructive" numberOfLines={1}>
               {formatCurrency(taken.total, { showSymbol: false })}
             </P>
           </View>
@@ -62,9 +62,8 @@ export function LoanStatisticsContent({
               Net Balance
             </P>
             <P
-              className={`text-base font-bold ${
-                balance >= 0 ? "text-green-600" : "text-red-600"
-              }`}
+              className={`text-base font-bold ${balance >= 0 ? "text-success" : "text-destructive"
+                }`}
               numberOfLines={1}
             >
               {formatCurrency(balance, { showSymbol: false })}
@@ -159,7 +158,7 @@ export function LoanStatisticsContent({
               <P className="text-[10px] text-muted-foreground mb-1">
                 Remaining
               </P>
-              <P className="text-sm font-bold text-red-600" numberOfLines={1}>
+              <P className="text-sm font-bold text-destructive" numberOfLines={1}>
                 {formatCurrency(taken.remaining, { showSymbol: false })}
               </P>
             </View>

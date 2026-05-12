@@ -103,7 +103,7 @@ export default function ContactUsScreen() {
               className="flex-row items-center p-4 bg-muted/50 rounded-xl mb-3"
             >
               <View className="w-10 h-10 bg-red-100 rounded-xl items-center justify-center mr-4">
-                <Text className="text-red-600 font-bold">🐛</Text>
+                <Text className="text-destructive font-bold">🐛</Text>
               </View>
               <View className="flex-1">
                 <Text className="text-foreground font-semibold">

@@ -317,17 +317,16 @@ export default function LoanDetailScreen() {
                 </View>
                 <View className="items-end justify-center">
                   <Text
-                    className={`text-base font-bold mb-2 ${
-                      item.type === "RECEIVE" && loan?.type === "GIVEN"
-                        ? "text-green-600"
+                    className={`text-base font-bold mb-2 ${item.type === "RECEIVE" && loan?.type === "GIVEN"
+                        ? "text-success"
                         : item.type === "GIVE" && loan?.type === "TAKEN"
-                          ? "text-green-600"
+                          ? "text-success"
                           : item.type === "RECEIVE" && loan?.type === "TAKEN"
-                            ? "text-red-600"
+                            ? "text-destructive"
                             : item.type === "GIVE" && loan?.type === "GIVEN"
-                              ? "text-red-600"
+                              ? "text-destructive"
                               : ""
-                    }`}
+                      }`}
                   >
                     {formatCurrency(item.amount)}
                   </Text>

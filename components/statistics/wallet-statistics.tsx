@@ -282,7 +282,7 @@ export function WalletStatistics() {
         ) : (
           <>
             {/* Summary Cards */}
-            <View className="mb-6">
+            <View className="mb-4">
               <View className="flex-row gap-2">
                 <View
                   className={`${isDark ? "bg-card" : "bg-white"} flex-1 border border-border rounded-2xl shadow-sm p-3`}
@@ -290,7 +290,7 @@ export function WalletStatistics() {
                   <P className="text-[10px] text-muted-foreground mb-1">
                     Total In
                   </P>
-                  <P className="text-base font-bold text-green-600">
+                  <P className="text-base font-bold text-success">
                     {walletStats.in?.toLocaleString() || "0"}
                   </P>
                 </View>
@@ -300,7 +300,7 @@ export function WalletStatistics() {
                   <P className="text-[10px] text-muted-foreground mb-1">
                     Total Out
                   </P>
-                  <P className="text-base font-bold text-red-600">
+                  <P className="text-base font-bold text-destructive">
                     {walletStats.out?.toLocaleString() || "0"}
                   </P>
                 </View>
@@ -312,8 +312,8 @@ export function WalletStatistics() {
                   </P>
                   <P
                     className={`text-base font-bold ${(walletStats.in || 0) - (walletStats.out || 0) >= 0
-                      ? "text-green-600"
-                      : "text-red-600"
+                      ? "text-success"
+                      : "text-destructive"
                       }`}
                   >
                     {(
@@ -326,8 +326,8 @@ export function WalletStatistics() {
 
             <View>
               {/* Grid of smaller charts */}
-              <View className="mb-8">
-                <View className="flex-col gap-y-6">
+              <View className="mb-4">
+                <View className="flex-col gap-y-4">
                   {/* Expense by Category Chart */}
                   <View
                     className={`${isDark ? "bg-card" : "bg-white"} border border-border p-4 pb-6 rounded-3xl shadow-sm`}
@@ -462,7 +462,7 @@ export function WalletStatistics() {
               </View>
 
               {/* Export Expense Report Section */}
-              <View className="mb-8">
+              <View className="mb-4">
                 <View
                   className={`${isDark ? "bg-card" : "bg-white"} border border-border p-4 rounded-3xl shadow-sm`}
                 >

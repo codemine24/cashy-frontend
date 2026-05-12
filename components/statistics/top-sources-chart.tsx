@@ -5,11 +5,10 @@ import { View } from "react-native";
 import Svg, { G, Path } from "react-native-svg";
 
 export const colors = [
-  "#02929A", // Teal
   "#4ECDC4", // Turquoise
-  "#45B7D1", // Blue
+  "#F76C6C", // Orange
+  "#8A80F9", // Purple
   "#FFA07A", // Light Salmon
-  "#98D8C8", // Mint
 ];
 
 export function TopSourcesChart({ data }: { data: any[] }) {

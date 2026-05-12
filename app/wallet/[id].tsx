@@ -2,7 +2,6 @@ import { useWallet } from "@/api/wallet";
 import { ScreenContainer } from "@/components/screen-container";
 
 import { useGetCategories } from "@/api/category";
-import { useWalletStats } from "@/api/statistics";
 import {
   useDeleteTransaction,
   useInfiniteTransactions,
@@ -101,8 +100,7 @@ export default function BookDetailScreen() {
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedQuery = useDebounce(searchQuery, 400);
 
-  const [filters, setFilters] =
-    useState<TransactionFilterValues>(DEFAULT_FILTERS);
+  const [filters, setFilters] = useState<TransactionFilterValues>(DEFAULT_FILTERS);
   const _filterParams = useMemo(() => buildFilterParams(filters), [filters]);
 
   const { data: wallet, isLoading, refetch } = useWallet(id!);
@@ -121,34 +119,22 @@ export default function BookDetailScreen() {
     search: debouncedQuery.trim() || undefined,
   });
 
-  const {
-    data: walletStatsResponse,
-    isLoading: isStatsLoading,
-    refetch: refetchWalletStats,
-  } = useWalletStats({
-    wallet_id: id!,
-    ..._filterParams,
-    ...(debouncedQuery.trim() && { search_term: debouncedQuery.trim() }),
-  });
-
   // Flatten all pages into a single transaction list
   const allTransactions = useMemo(
     () =>
       txPages?.pages.flatMap((page) => page?.data?.transactions ?? []) ?? [],
     [txPages],
   );
-  // const netBalance = useMemo(() => {
-  //   return txPages?.pages?.reduce((acc, tx) => {
-  //     console.log('tx________________________', tx);
-  //     if (tx.type === "IN") {
-  //       return acc + parseFloat(tx.amount);
-  //     } else {
-  //       return acc - parseFloat(tx.amount);
-  //     }
-  //   }, 0);
-  // }, [allTransactions]);
-
-  // console.log('allTransactions________________________', netBalance);
+  const netBalance = useMemo(() => {
+    const balance = txPages?.pages?.[0].data?.balance;
+    const inBalance = txPages?.pages?.[0].data?.in;
+    const outBalance = txPages?.pages?.[0].data?.out;
+    return {
+      balance: balance?.toFixed(2),
+      inBalance: inBalance?.toFixed(2),
+      outBalance: outBalance?.toFixed(2),
+    };
+  }, [txPages]);
 
   const [reportModalVisible, setReportModalVisible] = useState(false);
   const [selectedReport, setSelectedReport] = useState<ReportType>("all");
@@ -161,11 +147,7 @@ export default function BookDetailScreen() {
 
   const { showSkeleton, refreshControlProps } =
     usePullToRefreshSkeletonWithSearch(async () => {
-      await Promise.all([
-        refetch(),
-        refetchTransactions(),
-        refetchWalletStats(),
-      ]);
+      await Promise.all([refetch(), refetchTransactions()]);
     }, searchQuery.trim());
   const [selectedTransaction, setSelectedTransaction] =
     useState<Transaction | null>(null);
@@ -539,7 +521,7 @@ export default function BookDetailScreen() {
                 <View className="flex-row items-center gap-3">
                   {!isWalletViewer(authState.user?.id, wallet.data) && (
                     <TouchableOpacity
-                      disabled={((walletStatsResponse?.data.in || 0) - (walletStatsResponse?.data.out || 0)) <= 0}
+                      disabled={netBalance?.balance <= 0}
                       className="disabled:opacity-30"
                       onPress={() =>
                         router.push({
@@ -617,7 +599,7 @@ export default function BookDetailScreen() {
             ListHeaderComponent={
               <>
                 {/* Header Card */}
-                {isStatsLoading && (
+                {transactionsLoading && (
                   <View className="bg-card rounded-2xl p-4 mb-4 border border-border shadow-sm animate-pulse">
                     <View className="flex-row justify-between items-center border-b border-border pb-4 mb-4">
                       <View className="w-1/4 h-5 bg-muted rounded-md" />
@@ -640,17 +622,14 @@ export default function BookDetailScreen() {
                   </View>
                 )}
 
-                {!isStatsLoading && (
+                {!transactionsLoading && (
                   <View className="bg-card mt-2 rounded-2xl mb-4 shadow-sm border border-border">
                     <View className="px-3 py-3 flex-row justify-between items-center border-b border-border">
                       <Text className="text-foreground font-bold text-[14px]">
                         {t("wallets.netBalance")}
                       </Text>
                       <Text className="text-foreground font-bold text-[14px]">
-                        {formatNumber(
-                          (walletStatsResponse?.data?.in || 0) -
-                          (walletStatsResponse?.data?.out || 0),
-                        )}
+                        {formatNumber(netBalance.balance)}
                       </Text>
                     </View>
                     <View className="px-3 py-3">
@@ -659,7 +638,7 @@ export default function BookDetailScreen() {
                           {t("wallets.totalIn")} (+)
                         </Text>
                         <Text className="text-success font-semibold text-[12px]">
-                          {formatNumber(walletStatsResponse?.data?.in)}
+                          {formatNumber(netBalance.inBalance)}
                         </Text>
                       </View>
                       <View className="flex-row justify-between items-center">
@@ -667,7 +646,7 @@ export default function BookDetailScreen() {
                           {t("wallets.totalOut")} (-)
                         </Text>
                         <Text className="text-destructive font-semibold text-[12px]">
-                          {formatNumber(walletStatsResponse?.data?.out)}
+                          {formatNumber(netBalance.outBalance)}
                         </Text>
                       </View>
                     </View>
@@ -863,7 +842,7 @@ export default function BookDetailScreen() {
                                   ? { color: item.category.color }
                                   : { color: "#ef4444" }
                               }
-                              className={`text-[10px] font-semibold  tracking-wider`}
+                              className={`text-[10px] font-semibold tracking-wider`}
                             >
                               {item.category?.icon}{" "}
                               {item.category?.title || t("wallets.cashOut")}

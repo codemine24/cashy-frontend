@@ -121,7 +121,7 @@ export default function NotificationsScreen() {
             </View>
           ) : isError ? (
             <View className="flex-1 items-center justify-center p-4">
-              <Text className="text-red-500 mb-4 text-center">
+              <Text className="text-destructive mb-4 text-center">
                 Failed to load notifications
               </Text>
               <TouchableOpacity
@@ -157,14 +157,12 @@ export default function NotificationsScreen() {
                 const isRead = !!item.is_read;
                 return (
                   <View
-                    className={`flex-row  bg-card rounded-2xl p-3 border border-border active:opacity-70 ${
-                      isRead ? "opacity-70" : ""
-                    }`}
+                    className={`flex-row  bg-card rounded-2xl p-3 border border-border active:opacity-70 ${isRead ? "opacity-70" : ""
+                      }`}
                   >
                     <View
-                      className={`size-10 rounded-full items-center justify-center mr-4 ${
-                        isRead ? "bg-background" : "bg-primary/10"
-                      }`}
+                      className={`size-10 rounded-full items-center justify-center mr-4 ${isRead ? "bg-background" : "bg-primary/10"
+                        }`}
                     >
                       {getNotificationIcon(item.title)}
                     </View>

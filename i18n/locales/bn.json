@@ -152,6 +152,8 @@
     "contactUs": "যোগাযোগ করুন",
     "contactUsSubtitle": "আপনার সম্পস্যা জানান",
     "deleteAccount": "ডিলিট একাউন্ট",
-    "deleteAccountSubtitle": "আপনার একাউন্ট স্থায়ীভাবে ডিলিট করুন"
+    "deleteAccountSubtitle": "আপনার একাউন্ট স্থায়ীভাবে ডিলিট করুন",
+    "appVersion": "অ্যাপ ভার্সন",
+    "appVersionSubtitle": "ভার্সন {{version}}"
   }
 }

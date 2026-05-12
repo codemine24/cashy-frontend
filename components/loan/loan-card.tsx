@@ -37,10 +37,10 @@ export const LoanCard = ({ loan, index, onEdit, onDelete }: LoanCardProps) => {
   const getAmountColor = () => {
     if (loan.type === "GIVEN") {
       // Lent loans - green when positive (someone owes you money)
-      return "text-green-600";
+      return "text-success";
     } else {
       // Borrowed loans - red when positive (you owe someone money)
-      return "text-red-600";
+      return "text-destructive";
     }
   };
 
@@ -83,7 +83,7 @@ export const LoanCard = ({ loan, index, onEdit, onDelete }: LoanCardProps) => {
         <View className="flex-row items-center">
           <View className="items-end mr-1">
             <Text className={`font-semibold ${getAmountColor()}`}>
-             {formatNumber(Math.max(loan.amount - loan.paid_amount, 0))}
+              {formatNumber(Math.max(loan.amount - loan.paid_amount, 0))}
             </Text>
           </View>
 
@@ -133,8 +133,8 @@ export const LoanCard = ({ loan, index, onEdit, onDelete }: LoanCardProps) => {
                     onPress={() => handleAction(onDelete)}
                     className="flex-row items-center mt-1"
                   >
-                    <Trash2 size={20} className="text-red-500" />
-                    <Text className="ml-4 text-[16px] text-red-500">
+                    <Trash2 size={20} className="text-destructive" />
+                    <Text className="ml-4 text-[16px] text-destructive">
                       Delete Loan
                     </Text>
                   </TouchableOpacity>
