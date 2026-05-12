@@ -8,6 +8,7 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { View } from "react-native";
 import { ErrorBoundary } from "./error-boundary";
+import { OfflineBanner } from "./offline-banner";
 import { RootProvider } from "./root-provider";
 
 export const RootNavigator = () => {
@@ -304,6 +305,7 @@ export const RootNavigator = () => {
             </ErrorBoundary>
           </RootProvider>
         </ThemeVarsProvider>
+        <OfflineBanner />
       </View>
     </NavThemeProvider>
   );

@@ -40,14 +40,12 @@ function TabButton({
   return (
     <TouchableOpacity
       onPress={onPress}
-      className={`flex-1 py-2.5 rounded-md items-center justify-center ${
-        active ? "bg-primary" : ""
-      }`}
+      className={`flex-1 py-2.5 rounded-md items-center justify-center ${active ? "bg-primary" : ""
+        }`}
     >
       <Text
-        className={`font-semibold text-sm ${
-          active ? "text-white" : "text-muted-foreground"
-        }`}
+        className={`font-semibold text-sm ${active ? "text-white" : "text-muted-foreground"
+          }`}
       >
         {label}
       </Text>
@@ -170,7 +168,7 @@ export default function LoansScreen() {
     return (
       <ScreenContainer className="p-4 pb-0 bg-background">
         <View className="bg-surface rounded-xl p-8 items-center border border-border">
-          <Text className="text-lg font-semibold mb-2">
+          <Text className="text-lg font-semibold mb-2 text-foreground">
             Something went wrong
           </Text>
 

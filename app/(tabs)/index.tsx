@@ -60,6 +60,7 @@ export default function HomeScreen() {
     data: booksData,
     isLoading,
     refetch,
+    error,
   } = useWallets({
     search: debouncedSearchQuery.trim() || undefined,
     sort: sortBy,
@@ -137,6 +138,25 @@ export default function HomeScreen() {
       return () => subscription.remove();
     }, []),
   );
+
+  if (error) {
+    return (
+      <ScreenContainer className="p-4 pb-0 bg-background">
+        <View className="bg-surface rounded-xl p-8 items-center border border-border">
+          <Text className="text-lg font-semibold mb-2 text-foreground">
+            Something went wrong
+          </Text>
+
+          <TouchableOpacity
+            onPress={() => refetch()}
+            className="bg-primary px-6 py-2 rounded-lg"
+          >
+            <Text className="text-primary-foreground font-semibold">Retry</Text>
+          </TouchableOpacity>
+        </View>
+      </ScreenContainer>
+    );
+  }
 
   return (
     <>

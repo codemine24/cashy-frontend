@@ -128,6 +128,7 @@ export function WalletStatistics() {
     data: walletStatsResponse,
     isLoading: isStatsLoading,
     refetch,
+    error,
   } = useWalletStats({
     stats_for: statsFor,
     ...(period !== "all_time" && { period }),
@@ -239,6 +240,23 @@ export function WalletStatistics() {
     }
     return periodText;
   };
+
+  if (error) {
+    return (
+      <View className="bg-surface rounded-xl p-8 items-center border border-border">
+        <Text className="text-lg font-semibold mb-2 text-foreground">
+          Something went wrong
+        </Text>
+
+        <TouchableOpacity
+          onPress={() => refetch()}
+          className="bg-primary px-6 py-2 rounded-lg"
+        >
+          <Text className="text-primary-foreground font-semibold">Retry</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   return (
     <>
