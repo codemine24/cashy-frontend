@@ -46,7 +46,8 @@ import {
     X,
     Power,
     RotateCcw,
-    Phone
+    Phone,
+    Facebook
 } from "lucide-react-native";
 import { cssInterop } from "nativewind";
 
@@ -83,6 +84,7 @@ interopIcon(BookIcon);
 interopIcon(MoreVertical);
 interopIcon(Edit3);
 interopIcon(FileText);
+interopIcon(Facebook);
 interopIcon(LayoutList);
 interopIcon(Trash2);
 interopIcon(Download);
@@ -132,6 +134,7 @@ export {
     Download,
     Edit3,
     FileText,
+    Facebook,
     Globe,
     HandCoins,
     Info,

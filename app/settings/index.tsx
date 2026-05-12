@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import {
   BackHandler,
   Image,
+  Linking,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -21,6 +22,7 @@ import { useIsPremium } from "@/hooks/use-is-premium";
 import {
   ChevronLeft,
   ChevronRight,
+  Facebook,
   Info,
   LogOut,
   Settings,
@@ -223,6 +225,18 @@ export default function SettingsScreen() {
             />
           </View>
 
+          {/* ── Join Facebook ── */}
+          <View className="bg-card rounded-2xl border border-border px-4 mb-4">
+            <SettingsRow
+              iconBgClass="bg-[#1877F2]/10"
+              icon={<Facebook size={22} className="text-[#1877F2]" />}
+              title="Follow our Facebook page"
+              subtitle="Get the latest news and updates from Cashy"
+              onPress={() =>
+                Linking.openURL("https://www.facebook.com/cashyDailyExpense")
+              }
+            />
+          </View>
           {/* ── Logout ── */}
           <View
             className="bg-card rounded-2xl border border-border px-4"

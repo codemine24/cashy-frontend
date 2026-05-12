@@ -166,7 +166,7 @@ export default function AboutScreen() {
           }}
         >
           {/* ── About options group ── */}
-          <View className="bg-card rounded-2xl border border-border px-4 my-6">
+          <View className="bg-card rounded-2xl border border-border px-4 mb-6">
             <AboutRow
               iconBgClass="bg-blue-500/10"
               icon={<ShieldCheck size={22} className="text-blue-500" />}

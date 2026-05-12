@@ -214,21 +214,13 @@ export function CategoryModal({
   return (
     <BottomSheetModalWrapper
       visible={visible}
-      title={isEditing ? "Rename Category" : "New Category"}
+      title={isEditing ? "Edit Category" : "New Category"}
       onClose={handleClose}
       footer={
         <ApplyButton
           onApply={handleSave}
           applyDisabled={isPending}
-          title={
-            isPending
-              ? isEditing
-                ? "RENAMING..."
-                : "ADDING..."
-              : isEditing
-                ? "RENAME CATEGORY"
-                : "ADD NEW CATEGORY"
-          }
+          title={isPending ? "SAVING..." : (isEditing ? "SAVE CATEGORY" : "ADD NEW CATEGORY")}
         />
       }
     >

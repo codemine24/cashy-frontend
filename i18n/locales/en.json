@@ -147,7 +147,7 @@
     "fullName": "Full Name",
     "email": "Email",
     "contactNumber": "Contact Number",
-    "locked": "locked",
+    "locked": "Locked",
     "emailLocked": "Email cannot be changed after registration.",
     "changeAvatar": "Tap the camera icon to change avatar",
     "saveChanges": "Save Changes",
