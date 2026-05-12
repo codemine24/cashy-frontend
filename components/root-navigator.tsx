@@ -280,8 +280,8 @@ export const RootNavigator = () => {
                   "settings/subscription",
                   "settings/profile",
                   "settings/about-cashy",
-                  "settings/privacy-policy",
-                  "settings/terms-and-conditions",
+                  "privacy-policy",
+                  "terms-and-conditions",
                   "settings/about-us",
                   "settings/contact-us",
                 ].map((name) => (

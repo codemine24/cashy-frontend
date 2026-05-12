@@ -1,0 +1,178 @@
+import { ScreenContainer } from "@/components/screen-container";
+import { useAuth } from "@/context/auth-context";
+import { ChevronLeft } from "@/lib/icons";
+import { Stack, useFocusEffect, useRouter } from "expo-router";
+import { useCallback } from "react";
+import {
+  BackHandler,
+  Linking,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+const PRIVACY_URL =
+  "https://doc-hosting.flycricket.io/cashy-expense-manager-privacy-policy/86803ed8-d454-48f2-9db5-74c73745e367/privacy";
+
+const PRIVACY_POLICY = `
+Privacy Policy
+
+This privacy policy applies to the Cashy: Expense Manager app (hereby referred to as "Application") for mobile devices that was created by Codemine Technologies (hereby referred to as "Service Provider") as a Freemium service. This service is intended for use "AS IS".
+
+Information Collection and Use
+
+The Application collects information when you download and use it to provide the expense management service. This information includes both personal information you provide and technical information collected automatically.
+
+The detailed list of collected data fields is provided in the section below.
+
+The Application does not gather precise information about the location of your mobile device.
+
+The Application does not use Artificial Intelligence (AI) technologies to process your data or provide features.
+
+The Service Provider may use the information you provided to contact you from time to time to provide you with important information, required notices and marketing promotions.
+
+For a better experience, while using the Application, the Service Provider may require you to provide us with certain personally identifiable information. The Application collects the following specific data fields:
+
+**Personal Information:**
+• Email address - for account authentication and communication
+• Name - for user identification and personalization
+• Contact number - optional field for account recovery and notifications
+
+**App Preferences:**
+• Language - to display the app in your preferred language
+• Currency - to display monetary amounts in your local currency
+• Theme - to apply your preferred visual theme (light/dark mode)
+• Push notification settings - to manage notification preferences
+
+**Account & Device Information:**
+• Avatar/profile picture - optional profile image
+• Purchase token - for processing in-app purchases and subscriptions
+• Package name - for app identification and version management
+
+**Technical Information:**
+• Device's Internet Protocol address (IP address)
+• Operating system and device information
+• App usage analytics (pages visited, time spent, usage patterns)
+
+The information that the Service Provider request will be retained by them and used as described in this privacy policy. All personal data is stored securely and used only for the purposes described.
+
+Third Party Access
+
+Only aggregated, anonymized data is periodically transmitted to external services to aid the Service Provider in improving the Application and their service. The Service Provider may share your information with third parties in the ways that are described in this privacy statement.
+
+The Service Provider may disclose User Provided and Automatically Collected Information:
+
+• as required by law, such as to comply with a subpoena, or similar legal process;
+• when they believe in good faith that disclosure is necessary to protect their rights, protect your safety or the safety of others, investigate fraud, or respond to a government request;
+• with their trusted services providers who work on their behalf, do not have an independent use of the information we disclose to them, and have agreed to adhere to the rules set forth in this privacy statement.
+
+Opt-Out Rights
+
+You can stop all collection of information by the Application easily by uninstalling it. You may use the standard uninstall processes as may be available as part of your mobile device or via the mobile application marketplace or network.
+
+Data Retention Policy
+
+The Service Provider will retain User Provided data for as long as you use the Application and for a reasonable time thereafter. If you'd like them to delete User Provided Data that you have provided via the Application, please contact them at codemine24@gmail.com and they will respond in a reasonable time.
+
+Children
+
+The Service Provider does not use the Application to knowingly solicit data from or market to children under the age of 13.
+
+The Service Provider does not knowingly collect personally identifiable information from children. The Service Provider encourages all children to never submit any personally identifiable information through the Application and/or Services. The Service Provider encourage parents and legal guardians to monitor their children's Internet usage and to help enforce this Policy by instructing their children never to provide personally identifiable information through the Application and/or Services without their permission. If you have reason to believe that a child has provided personally identifiable information to the Service Provider through the Application and/or Services, please contact the Service Provider (codemine24@gmail.com) so that they will be able to take the necessary actions. You must also be at least 16 years of age to consent to the processing of your personally identifiable information in your country (in some countries we may allow your parent or guardian to do so on your behalf).
+
+Security
+
+The Service Provider is concerned about safeguarding the confidentiality of your information. The Service Provider provides physical, electronic, and procedural safeguards to protect information the Service Provider processes and maintains.
+
+Changes
+
+This Privacy Policy may be updated from time to time for any reason. The Service Provider will notify you of any changes to the Privacy Policy by updating this page with the new Privacy Policy. You are advised to consult this Privacy Policy regularly for any changes, as continued use is deemed approval of all changes.
+
+This privacy policy is effective as of 2026-03-31
+
+Your Consent
+
+By using the Application, you are consenting to the processing of your information as set forth in this Privacy Policy now and as amended by us.
+
+Contact Us
+
+If you have any questions regarding privacy while using the Application, or have questions about the practices, please contact the Service Provider via email at codemine24@gmail.com.
+
+This privacy policy was last updated on 2026-04-17 and is specific to Cashy: Expense Manager.
+`;
+
+export default function PrivacyPolicyScreen() {
+  const router = useRouter();
+  const insets = useSafeAreaInsets();
+  const { authState } = useAuth()
+  console.log("AuthState", authState.isAuthenticated)
+
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        const url = authState.isAuthenticated ? "/settings/about-cashy" : "/login-type";
+        router.navigate(url);
+        return true;
+      };
+
+      const subscription = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress,
+      );
+
+      return () => subscription.remove();
+    }, [router, authState.isAuthenticated]),
+  );
+
+  return (
+    <ScreenContainer edges={["left", "right"]} className="bg-background">
+      <View className="flex-1 border-t border-border">
+        <Stack.Screen
+          options={{
+            headerShown: true,
+            title: "Privacy Policy",
+            headerBackTitle: "Back",
+            headerLeft: () => (
+              <TouchableOpacity
+                onPress={() => {
+                  const url = authState.isAuthenticated ? "/settings/about-cashy" : "/login-type";
+                  router.navigate(url);
+                }}
+                style={{ marginRight: 4 }}
+              >
+                <ChevronLeft size={26} className="text-foreground" />
+              </TouchableOpacity>
+            ),
+          }}
+        />
+
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{
+            paddingHorizontal: 20,
+            paddingTop: 12,
+            paddingBottom: 40,
+          }}
+        >
+          <Text className="text-foreground text-sm leading-relaxed">
+            {PRIVACY_POLICY.trim()}
+          </Text>
+        </ScrollView>
+
+        {/* External Link */}
+        <View
+          className="px-4 py-4 border-t border-border bg-card"
+          style={{ paddingBottom: Math.max(insets.bottom + 6, 42) }}
+        >
+          <TouchableOpacity onPress={() => Linking.openURL(PRIVACY_URL)}>
+            <Text className="text-primary text-sm text-center font-medium">
+              read this doc on web browser
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </ScreenContainer>
+  );
+}

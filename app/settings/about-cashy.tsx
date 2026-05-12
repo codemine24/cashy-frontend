@@ -83,11 +83,11 @@ export default function AboutScreen() {
 
   const handlePrivacyPolicy = () => {
     // Show privacy policy in a modal or navigate to a dedicated screen
-    router.push("/settings/privacy-policy" as any);
+    router.push("/privacy-policy" as any);
   };
 
   const handleTermsAndConditions = () => {
-    router.push("/settings/terms-and-conditions" as any);
+    router.push("/terms-and-conditions" as any);
   };
 
   const handleAboutUs = () => {
