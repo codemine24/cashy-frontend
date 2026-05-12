@@ -525,16 +525,18 @@ export default function BookDetailScreen() {
               }
               return (
                 <View className="flex-row items-center gap-3">
-                  <TouchableOpacity
-                    onPress={() =>
-                      router.push({
-                        pathname: "/wallet/transfer-fund",
-                        params: { walletId: id, walletName: wallet.data.name },
-                      })
-                    }
-                  >
-                    <ArrowDownUp size={24} className="text-foreground" />
-                  </TouchableOpacity>
+                  {!isWalletViewer(authState.user?.id, wallet.data) && (
+                    <TouchableOpacity
+                      onPress={() =>
+                        router.push({
+                          pathname: "/wallet/transfer-fund",
+                          params: { walletId: id, walletName: wallet.data.name },
+                        })
+                      }
+                    >
+                      <ArrowDownUp size={24} className="text-foreground" />
+                    </TouchableOpacity>
+                  )}
                   <TouchableOpacity
                     onPress={() =>
                       router.push({
@@ -622,8 +624,8 @@ export default function BookDetailScreen() {
                       <View className="h-5 w-1/2 justify-center bg-muted rounded-md" />
                     </View>
                   </View>
-                ) }
-                
+                )}
+
                 {!isStatsLoading && (
                   <View className="bg-card mt-2 rounded-2xl mb-4 shadow-sm border border-border">
                     <View className="px-3 py-3 flex-row justify-between items-center border-b border-border">
@@ -633,7 +635,7 @@ export default function BookDetailScreen() {
                       <Text className="text-foreground font-bold text-[14px]">
                         {formatNumber(
                           (walletStatsResponse?.data?.in || 0) -
-                            (walletStatsResponse?.data?.out || 0),
+                          (walletStatsResponse?.data?.out || 0),
                         )}
                       </Text>
                     </View>
@@ -698,13 +700,12 @@ export default function BookDetailScreen() {
                           return (
                             <View
                               key={member.id || index}
-                              className={`px-3 py-2 flex-row items-center justify-between ${
-                                index !==
+                              className={`px-3 py-2 flex-row items-center justify-between ${index !==
                                 Math.min(wallet.data.others_member.length, 2) -
-                                  1
-                                  ? "border-b border-border"
-                                  : ""
-                              }`}
+                                1
+                                ? "border-b border-border"
+                                : ""
+                                }`}
                             >
                               <View className="flex-row items-center flex-1">
                                 {/* Avatar */}
@@ -820,9 +821,8 @@ export default function BookDetailScreen() {
                       }
                     }}
                     onLongPress={() => setSelectedTransaction(item)}
-                    className={`px-4 py-4 flex-row justify-between ${
-                      selectedTransaction?.id === item.id ? "bg-primary/10" : ""
-                    } ${index !== data.length - 1 ? "border-b border-border" : ""}`}
+                    className={`px-4 py-4 flex-row justify-between ${selectedTransaction?.id === item.id ? "bg-primary/10" : ""
+                      } ${index !== data.length - 1 ? "border-b border-border" : ""}`}
                   >
                     <View className="flex-1 mr-3">
                       <View className="flex-row items-center justify-between mb-2">
@@ -866,7 +866,7 @@ export default function BookDetailScreen() {
                       <Text className="text-sm text-muted-foreground">
                         {Math.abs(
                           new Date(item.created_at).getTime() -
-                            new Date(item.updated_at).getTime(),
+                          new Date(item.updated_at).getTime(),
                         ) < 30000
                           ? "Created: "
                           : "Updated: "}{" "}
@@ -883,11 +883,10 @@ export default function BookDetailScreen() {
                     </View>
                     <View className="items-end justify-center">
                       <Text
-                        className={`text-base font-bold mb-2 ${
-                          item.type === "IN"
-                            ? "text-success"
-                            : "text-destructive"
-                        }`}
+                        className={`text-base font-bold mb-2 ${item.type === "IN"
+                          ? "text-success"
+                          : "text-destructive"
+                          }`}
                       >
                         {formatNumber(item.amount)}
                       </Text>
