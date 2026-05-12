@@ -137,6 +137,18 @@ export default function BookDetailScreen() {
       txPages?.pages.flatMap((page) => page?.data?.transactions ?? []) ?? [],
     [txPages],
   );
+  // const netBalance = useMemo(() => {
+  //   return txPages?.pages?.reduce((acc, tx) => {
+  //     console.log('tx________________________', tx);
+  //     if (tx.type === "IN") {
+  //       return acc + parseFloat(tx.amount);
+  //     } else {
+  //       return acc - parseFloat(tx.amount);
+  //     }
+  //   }, 0);
+  // }, [allTransactions]);
+
+  // console.log('allTransactions________________________', netBalance);
 
   const [reportModalVisible, setReportModalVisible] = useState(false);
   const [selectedReport, setSelectedReport] = useState<ReportType>("all");
@@ -527,6 +539,8 @@ export default function BookDetailScreen() {
                 <View className="flex-row items-center gap-3">
                   {!isWalletViewer(authState.user?.id, wallet.data) && (
                     <TouchableOpacity
+                      disabled={((walletStatsResponse?.data.in || 0) - (walletStatsResponse?.data.out || 0)) <= 0}
+                      className="disabled:opacity-30"
                       onPress={() =>
                         router.push({
                           pathname: "/wallet/transfer-fund",
