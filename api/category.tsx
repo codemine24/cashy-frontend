@@ -14,9 +14,13 @@ const keys = {
   list: () => [...keys.all, "list"],
 }
 
-export const useGetCategories = (searchParams: { search?: string, sort?: string, sort_order?: string } = {}) => {
+export const useGetCategories = (searchParams: { wallet_id?: string, search?: string, sort?: string, sort_order?: string, page?: number, size?: number } = {}) => {
 
   const params: Record<string, string> = {};
+  params.size = (searchParams.size || 100).toString();
+  params.page = (searchParams.page || 1).toString();
+
+  if (searchParams.wallet_id) params.wallet_id = searchParams.wallet_id;
   if (searchParams.search) params.search_term = searchParams.search;
   if (searchParams.sort) params.sort = searchParams.sort;
   if (searchParams.sort_order) params.sort_order = searchParams.sort_order;

@@ -114,7 +114,7 @@ export function WalletStatistics() {
   const { isDark } = useTheme();
   const { wallet_id } = useLocalSearchParams<{ wallet_id?: string }>();
   const [period, setPeriod] = useState<Period>("all_time");
-  const [statsFor, setStatsFor] = useState<"all" | "personal" | "shared">("all");
+  const [statsFor, setStatsFor] = useState<"all" | "personal" | "shared">("personal");
   const [refreshing, setRefreshing] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [startDate, setStartDate] = useState<Date | null>(null);

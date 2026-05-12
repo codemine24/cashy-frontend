@@ -153,7 +153,7 @@ export default function BookDetailScreen() {
     useState<Transaction | null>(null);
 
   // Fetch categories for the filter
-  const { data: categoriesData } = useGetCategories();
+  const { data: categoriesData } = useGetCategories({ wallet_id: id! });
 
   // Build members list from wallet data for the filter
   const filterMembers: MemberOption[] = useMemo(() => {
