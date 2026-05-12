@@ -250,7 +250,7 @@ export function WalletStatistics() {
         }
       >
         {/* Filter Row: Wallet · Period · Stats For */}
-        <View className="flex-row gap-2 mb-5">
+        <View className="flex-row gap-2 mb-4">
           <DropdownSelect
             label="Stats For"
             value={statsFor}

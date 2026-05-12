@@ -1,10 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import {
   Animated,
-  Keyboard,
-  KeyboardEvent,
   ModalProps,
-  Platform,
   Modal as RNModal,
   TouchableOpacity,
   View,
@@ -25,24 +22,6 @@ export function BottomSheetModal({
 }: BottomSheetModalProps) {
   const slideAnimation = useRef(new Animated.Value(100)).current;
   const backdropOpacity = useRef(new Animated.Value(0)).current;
-  const [keyboardHeight, setKeyboardHeight] = React.useState(0);
-
-  useEffect(() => {
-    const showEvt = Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow";
-    const hideEvt = Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide";
-    
-    const showSub = Keyboard.addListener(showEvt, (e: KeyboardEvent) => {
-      setKeyboardHeight(e.endCoordinates.height);
-    });
-    const hideSub = Keyboard.addListener(hideEvt, () => {
-      setKeyboardHeight(0);
-    });
-    
-    return () => {
-      showSub.remove();
-      hideSub.remove();
-    };
-  }, []);
 
   useEffect(() => {
     if (visible) {
@@ -107,7 +86,7 @@ export function BottomSheetModal({
       </Animated.View>
 
       <View
-        style={{ flex: 1, justifyContent: "flex-end", paddingBottom: keyboardHeight }}
+        style={{ flex: 1, justifyContent: "flex-end", paddingBottom: 2 }}
       >
         <Animated.View
           className="bg-background rounded-t-3xl"
