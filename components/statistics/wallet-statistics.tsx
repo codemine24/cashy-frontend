@@ -311,11 +311,10 @@ export function WalletStatistics() {
                     Net Balance
                   </P>
                   <P
-                    className={`text-base font-bold ${
-                      (walletStats.in || 0) - (walletStats.out || 0) >= 0
-                        ? "text-green-600"
-                        : "text-red-600"
-                    }`}
+                    className={`text-base font-bold ${(walletStats.in || 0) - (walletStats.out || 0) >= 0
+                      ? "text-green-600"
+                      : "text-red-600"
+                      }`}
                   >
                     {(
                       (walletStats.in || 0) - (walletStats.out || 0)
@@ -372,9 +371,14 @@ export function WalletStatistics() {
                                     {cat.category}
                                   </P>
                                 </View>
-                                <P className="text-[10px] text-muted-foreground font-bold ml-1">
-                                  {Math.round(cat.percentage)}%
-                                </P>
+                                <View className="flex-row items-center gap-1">
+                                  <P className="text-[10px] text-muted-foreground font-bold ml-1">
+                                    {cat.amount}
+                                  </P>
+                                  <P className="text-[10px] text-muted-foreground font-bold ml-1">
+                                    ({Math.round(cat.percentage)}%)
+                                  </P>
+                                </View>
                               </View>
                             );
                           },

@@ -35,7 +35,7 @@ export default function WelcomeScreen() {
 
     if (authReady && authState.isAuthenticated && hasUpdate && isModalSkipped) {
       router.replace("/(tabs)");
-    } 
+    }
   }, [
     isChecking,
     authReady,
@@ -78,7 +78,7 @@ export default function WelcomeScreen() {
           disabled={isChecking}
           onPress={() => {
             try {
-              router.push("/login-type");
+              router.push("/auth");
             } catch (error) {
               console.error("Navigation error:", error);
             }

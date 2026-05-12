@@ -77,6 +77,12 @@ const COMMON_ICONS = [
   "🥦",
   "💄",
   "💎",
+  "💖",
+  "🎁",
+  "❤️",
+  "🧕",
+  "🩱",
+  "👑",
   // Home & Rent
   "🏠",
   "🏢",
@@ -93,7 +99,6 @@ const COMMON_ICONS = [
   "💰",
   "💳",
   "🏧",
-  "🏦",
   "🏦",
   // Work, Tech & Others
   "💼",
