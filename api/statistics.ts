@@ -22,6 +22,7 @@ export const useWalletStats = (
     category_ids?: string[];
     member_id?: string;
     type?: string;
+    stats_for?: string;
   } = {},
 ) => {
   return useQuery({
@@ -46,7 +47,7 @@ export const useWalletStats = (
         if (Array.isArray(params.category_ids)) {
           queryParams.category_ids = params.category_ids.join(",");
         }
-
+        
         const response = await apiClient.get(`${STATISTICS_API_URL}/wallet`, {
           params: queryParams,
         });
