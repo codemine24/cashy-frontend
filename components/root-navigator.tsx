@@ -76,6 +76,37 @@ export const RootNavigator = () => {
                   }}
                 />
                 <Stack.Screen
+                  name="pin-verify"
+                  options={{
+                    animation: "simple_push",
+                    contentStyle: {
+                      backgroundColor: isDark ? "#0f172a" : "#f8fafc",
+                    },
+                  }}
+                />
+                <Stack.Screen
+                  name="pin-setup"
+                  options={{
+                    animation: "simple_push",
+                    contentStyle: {
+                      backgroundColor: isDark ? "#0f172a" : "#f8fafc",
+                    },
+                  }}
+                />
+                <Stack.Screen
+                  name="pin-forgot"
+                  options={{
+                    headerShown: true,
+                    animation: "simple_push",
+                    headerStyle: {
+                      backgroundColor: isDark ? "#0f172a" : "#f8fafc",
+                    },
+                    contentStyle: {
+                      backgroundColor: isDark ? "#0f172a" : "#f8fafc",
+                    },
+                  }}
+                />
+                <Stack.Screen
                   name="(tabs)"
                   options={{
                     animation: "simple_push",
@@ -281,6 +312,10 @@ export const RootNavigator = () => {
                   "settings/subscription",
                   "settings/profile",
                   "settings/about-cashy",
+                  "settings/security",
+                  "settings/setup-pin",
+                  "settings/verify-pin",
+                  "settings/change-pin",
                   "privacy-policy",
                   "terms-and-conditions",
                   "settings/about-us",

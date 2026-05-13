@@ -9,5 +9,6 @@ export interface User {
     theme: "LIGHT" | "DARK";
     language: string;
     currency: string;
-    push_notification: boolean;
+    pin: string;
+    is_pin_enabled: boolean;
 }

@@ -9,6 +9,7 @@ import { useAppUpdate } from "@/hooks/useAppUpdate";
 import { useRouter } from "expo-router";
 import { useEffect } from "react";
 import { View } from "react-native";
+import { getPinGateRoute } from "@/utils/pin-gate";
 
 export default function WelcomeScreen() {
   const router = useRouter();
@@ -30,15 +31,16 @@ export default function WelcomeScreen() {
     if (hasUpdate && isForceUpdate) return;
 
     if (authReady && authState.isAuthenticated && !hasUpdate) {
-      return router.replace("/(tabs)");
+      return router.replace(getPinGateRoute(authState.user) as any);
     }
 
     if (authReady && authState.isAuthenticated && hasUpdate && isModalSkipped) {
-      router.replace("/(tabs)");
+      router.replace(getPinGateRoute(authState.user) as any);
     }
   }, [
     isChecking,
     authReady,
+    authState.user,
     authState.isAuthenticated,
     hasUpdate,
     isForceUpdate,

@@ -15,13 +15,16 @@ import {
     Clock,
     Copy,
     Crown,
+    Delete,
     Download,
     Edit3,
     FileText,
     Globe,
     HandCoins,
     Info,
+    KeyRound,
     LayoutList,
+    Lock,
     LogOut,
     Mail,
     Menu,
@@ -72,6 +75,9 @@ interopIcon(Camera);
 interopIcon(ChevronDown);
 interopIcon(ChevronRight);
 interopIcon(ChevronLeft);
+interopIcon(Delete);
+interopIcon(KeyRound);
+interopIcon(Lock);
 interopIcon(Mail);
 interopIcon(Moon);
 interopIcon(ShieldCheck);
@@ -131,6 +137,7 @@ export {
     Clock,
     Copy,
     Crown,
+    Delete,
     Download,
     Edit3,
     FileText,
@@ -138,7 +145,9 @@ export {
     Globe,
     HandCoins,
     Info,
+    KeyRound,
     LayoutList,
+    Lock,
     LogOut,
     Mail,
     Menu,

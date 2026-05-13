@@ -26,6 +26,7 @@ import {
   Info,
   LogOut,
   Settings,
+  ShieldCheck,
   User,
 } from "@/lib/icons";
 import { clearUserInfo, removeAccessToken } from "@/utils/auth";
@@ -222,6 +223,14 @@ export default function SettingsScreen() {
                 t("settings.aboutUs")
               }
               onPress={() => router.push("/settings/about-cashy" as any)}
+            />
+            <Divider />
+            <SettingsRow
+              iconBgClass="bg-emerald-500/10"
+              icon={<ShieldCheck size={22} className="text-emerald-500" />}
+              title="Security"
+              subtitle="PIN lock, verify & reset PIN"
+              onPress={() => router.push("/settings/security" as any)}
             />
           </View>
 
