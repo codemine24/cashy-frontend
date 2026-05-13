@@ -10,6 +10,7 @@ import { useRouter } from "expo-router";
 import { useEffect } from "react";
 import { View } from "react-native";
 import { getPinGateRoute } from "@/utils/pin-gate";
+import { AppLaunchLoading } from "@/components/ui/app-launch-loading";
 
 export default function WelcomeScreen() {
   const router = useRouter();
@@ -66,8 +67,8 @@ export default function WelcomeScreen() {
     );
   }
 
-  if (!authReady) {
-    return null;
+  if (isChecking || !authReady || authState.isAuthenticated) {
+    return <AppLaunchLoading />;
   }
 
   return (

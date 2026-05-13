@@ -5,7 +5,7 @@ import { H2, Muted } from "@/components/ui/typography";
 import { useAuth } from "@/context/auth-context";
 import { useTheme } from "@/context/theme-context";
 import { PasteIcon } from "@/icons/paste-icon";
-import { ChevronLeft, KeyRound } from "@/lib/icons";
+import { KeyRound } from "@/lib/icons";
 import { setUserInfo } from "@/utils/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFocusEffect, useRouter } from "expo-router";
@@ -174,8 +174,8 @@ export default function PinForgotScreen() {
                   keyboardType="email-address"
                   autoCapitalize="none"
                   className={`border rounded-xl p-4 text-foreground ${emailForm.formState.errors.email
-                      ? "border-destructive"
-                      : "border-border"
+                    ? "border-destructive"
+                    : "border-border"
                     }`}
                 />
                 <InputError error={emailForm.formState.errors.email?.message} />
@@ -202,8 +202,8 @@ export default function PinForgotScreen() {
               <View>
                 <View
                   className={`flex-row items-center border rounded-xl ${otpForm.formState.errors.otp
-                      ? "border-destructive"
-                      : "border-border"
+                    ? "border-destructive"
+                    : "border-border"
                     }`}
                 >
                   <TextInput
