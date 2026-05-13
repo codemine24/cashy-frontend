@@ -92,26 +92,9 @@ export const useInfiniteTransactions = (params: InfiniteTransactionsParams) => {
           queryParams.to_date = formatDateToUTC(toDate);
         }
 
-        // Convert single date to UTC date range to handle timezone differences
+        // Send single date directly as query param
         if (params.date) {
-          const localDate = new Date(params.date);
-
-          // Get the start and end of the local day
-          const startOfDay = new Date(localDate);
-          startOfDay.setHours(0, 0, 0, 0);
-
-          const endOfDay = new Date(localDate);
-          endOfDay.setHours(23, 59, 59, 999);
-
-          // Convert both to UTC
-          const utcStart = formatDateToUTC(startOfDay);
-          const utcEnd = formatDateToUTC(endOfDay);
-
-          // Use date range instead of single date
-          queryParams.from_date = utcStart;
-          queryParams.to_date = utcEnd;
-          // Remove the single date parameter to avoid conflicts
-          delete queryParams.date;
+          queryParams.date = params.date;
         }
 
         if (params.member_id) queryParams.member_id = params.member_id;
