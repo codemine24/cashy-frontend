@@ -6,11 +6,13 @@ import {
   ChevronLeft,
   ChevronRight,
   FileText,
+  Info,
   ShieldCheck,
   Trash2,
   Users,
 } from "@/lib/icons";
 import { clearUserInfo, removeAccessToken } from "@/utils/auth";
+import { getCurrentVersion } from "@/utils/updateService";
 import { CommonActions } from "@react-navigation/native";
 import { Stack, useFocusEffect, useNavigation, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
@@ -36,7 +38,7 @@ function AboutRow({
   iconBgClass: string;
   title: string;
   subtitle?: string;
-  onPress: () => void;
+  onPress?: () => void;
 }) {
   return (
     <TouchableOpacity
@@ -62,7 +64,7 @@ function AboutRow({
       </View>
 
       {/* Arrow */}
-      <ChevronRight size={18} className="text-muted-foreground" />
+      {onPress && <ChevronRight size={18} className="text-muted-foreground" />}
     </TouchableOpacity>
   );
 }
@@ -80,14 +82,15 @@ export default function AboutScreen() {
   const { setAuthState } = useAuth();
   const deleteAccountMutation = useDeleteUser();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const currentVersion = getCurrentVersion();
 
   const handlePrivacyPolicy = () => {
     // Show privacy policy in a modal or navigate to a dedicated screen
-    router.push("/settings/privacy-policy" as any);
+    router.push("/privacy-policy" as any);
   };
 
   const handleTermsAndConditions = () => {
-    router.push("/settings/terms-and-conditions" as any);
+    router.push("/terms-and-conditions" as any);
   };
 
   const handleAboutUs = () => {
@@ -163,7 +166,7 @@ export default function AboutScreen() {
           }}
         >
           {/* ── About options group ── */}
-          <View className="bg-card rounded-2xl border border-border px-4 my-6">
+          <View className="bg-card rounded-2xl border border-border px-4 mb-6">
             <AboutRow
               iconBgClass="bg-blue-500/10"
               icon={<ShieldCheck size={22} className="text-blue-500" />}
@@ -195,6 +198,13 @@ export default function AboutScreen() {
               subtitle={t("about.contactUsSubtitle")}
               onPress={handleContactUs}
             />
+            <Divider />
+            <AboutRow
+              iconBgClass="bg-green-500/10"
+              icon={<Info size={22} className="text-green-500" />}
+              title={t("about.appVersion")}
+              subtitle={t("about.appVersionSubtitle", { version: currentVersion.version })}
+            />
           </View>
 
           {/* ── Account Deletion Section ── */}
@@ -205,8 +215,8 @@ export default function AboutScreen() {
               className="flex-row items-center py-4"
             >
               {/* Icon bubble */}
-              <View className="w-11 h-11 rounded-xl items-center justify-center mr-4 bg-red-500/10">
-                <Trash2 size={22} className="text-red-500" />
+              <View className="w-11 h-11 rounded-xl items-center justify-center mr-4 bg-destructive/10">
+                <Trash2 size={22} className="text-destructive" />
               </View>
 
               {/* Text */}

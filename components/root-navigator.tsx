@@ -8,6 +8,7 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { View } from "react-native";
 import { ErrorBoundary } from "./error-boundary";
+import { OfflineBanner } from "./offline-banner";
 import { RootProvider } from "./root-provider";
 
 export const RootNavigator = () => {
@@ -69,6 +70,37 @@ export const RootNavigator = () => {
                   name="auth"
                   options={{
                     animation: "simple_push",
+                    contentStyle: {
+                      backgroundColor: isDark ? "#0f172a" : "#f8fafc",
+                    },
+                  }}
+                />
+                <Stack.Screen
+                  name="pin-verify"
+                  options={{
+                    animation: "simple_push",
+                    contentStyle: {
+                      backgroundColor: isDark ? "#0f172a" : "#f8fafc",
+                    },
+                  }}
+                />
+                <Stack.Screen
+                  name="pin-setup"
+                  options={{
+                    animation: "simple_push",
+                    contentStyle: {
+                      backgroundColor: isDark ? "#0f172a" : "#f8fafc",
+                    },
+                  }}
+                />
+                <Stack.Screen
+                  name="pin-forgot"
+                  options={{
+                    headerShown: true,
+                    animation: "simple_push",
+                    headerStyle: {
+                      backgroundColor: isDark ? "#0f172a" : "#f8fafc",
+                    },
                     contentStyle: {
                       backgroundColor: isDark ? "#0f172a" : "#f8fafc",
                     },
@@ -280,8 +312,12 @@ export const RootNavigator = () => {
                   "settings/subscription",
                   "settings/profile",
                   "settings/about-cashy",
-                  "settings/privacy-policy",
-                  "settings/terms-and-conditions",
+                  "settings/security",
+                  "settings/setup-pin",
+                  "settings/verify-pin",
+                  "settings/change-pin",
+                  "privacy-policy",
+                  "terms-and-conditions",
                   "settings/about-us",
                   "settings/contact-us",
                 ].map((name) => (
@@ -304,6 +340,7 @@ export const RootNavigator = () => {
             </ErrorBoundary>
           </RootProvider>
         </ThemeVarsProvider>
+        <OfflineBanner />
       </View>
     </NavThemeProvider>
   );

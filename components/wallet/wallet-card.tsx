@@ -2,9 +2,9 @@ import { useAuth } from "@/context/auth-context";
 import { Wallet } from "@/interface/wallet";
 import { Edit3, MoreVertical, Trash2, UserPlus } from "@/lib/icons";
 import {
-    formatNumber,
-    formatUpdateDate,
-    getWalletColorCombination,
+  formatNumber,
+  formatUpdateDate,
+  getWalletColorCombination,
 } from "@/utils";
 import { isOwner } from "@/utils/is-owner";
 import { useRouter } from "expo-router";
@@ -80,9 +80,8 @@ export const WalletCard = ({
       {/* Right: Amount and Options Menu */}
       <View className="flex-row items-center">
         <Text
-          className={`font-semibold mr-1 ${
-            wallet.balance > 0 ? "text-green-600" : "text-red-600"
-          }`}
+          className={`font-semibold mr-1 ${wallet.balance > 0 ? "text-success" : "text-destructive"
+            }`}
         >
           {formatNumber(wallet.balance)}
         </Text>
@@ -149,8 +148,8 @@ export const WalletCard = ({
                   disabled={!isCurrentUserOwner}
                   style={{ opacity: isCurrentUserOwner ? 1 : 0.4 }}
                 >
-                  <Trash2 size={20} className="text-red-500" />
-                  <Text className="ml-4 text-[16px] text-red-500">
+                  <Trash2 size={20} className="text-destructive" />
+                  <Text className="ml-4 text-[16px] text-destructive">
                     Delete Wallet
                   </Text>
                 </TouchableOpacity>

@@ -6,16 +6,16 @@ import { InputError } from "@/components/ui/input-error";
 import WalletSelectorModal from "@/components/wallet/wallet-selector-modal";
 import { useKeyboardVisible } from "@/hooks/use-keyboard-visible";
 import { useKeyboardOffset } from "@/hooks/useKeyboardOffset";
+import { Wallet } from "@/interface/wallet";
 import { ChevronLeft, ChevronRight } from "@/lib/icons";
-import { formatDateToUTC, formatTimeToUTC } from "@/utils";
+import { formatDateToUTC, formatNumber, formatTimeToUTC } from "@/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
-  Alert,
-  BackHandler,
+  InteractionManager,
   KeyboardAvoidingView,
   ScrollView,
   Text,
@@ -49,6 +49,7 @@ type TransferFormData = z.infer<typeof transferSchema>;
 // ─── Component ───────────────────────────────────────────────────────────────
 export default function TransferTransactionScreen() {
   const router = useRouter();
+  const amountInputRef = useRef<TextInput>(null);
   const params = useLocalSearchParams<{
     walletId: string;
     selectedCategoryId?: string;
@@ -77,7 +78,7 @@ export default function TransferTransactionScreen() {
     watch,
     setError,
     clearErrors,
-    formState: { errors, isDirty },
+    formState: { errors },
   } = useForm<TransferFormData>({
     resolver: zodResolver(transferSchema),
     defaultValues: {
@@ -95,6 +96,17 @@ export default function TransferTransactionScreen() {
       ? parseFloat(wallet.data.balance.toString())
       : 0;
   }, [wallet?.data.balance]);
+
+  useEffect(() => {
+    const interaction = InteractionManager.runAfterInteractions(() => {
+      const timer = setTimeout(() => {
+        amountInputRef.current?.focus();
+      }, 400);
+      return () => clearTimeout(timer);
+    });
+
+    return () => interaction.cancel();
+  }, []);
 
   // Validate amount against wallet balance with optimized dependencies
   useEffect(() => {
@@ -122,35 +134,6 @@ export default function TransferTransactionScreen() {
   }, [watchedAmount, walletBalance, setError, clearErrors]);
 
   const watchedToWallet = watch("to_wallet_id");
-
-  // Handle back button
-  useEffect(() => {
-    const backAction = () => {
-      if (isDirty) {
-        Alert.alert(
-          "Discard Changes",
-          "You have unsaved changes. Are you sure you want to go back?",
-          [
-            { text: "Cancel", style: "cancel" },
-            {
-              text: "Discard",
-              style: "destructive",
-              onPress: () => router.back(),
-            },
-          ],
-        );
-        return true;
-      }
-      router.back();
-      return true;
-    };
-
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction,
-    );
-    return () => backHandler.remove();
-  }, [isDirty, router]);
 
   // Handle category selection from params
   useEffect(() => {
@@ -186,7 +169,7 @@ export default function TransferTransactionScreen() {
         category_id: data.category_id,
         date: data.date,
         time: data.time,
-      };
+      }
 
       const res = await transferMutation.mutateAsync(payload);
 
@@ -272,7 +255,7 @@ export default function TransferTransactionScreen() {
                       </View>
                       <View className="items-end">
                         <Text className="text-foreground font-bold text-2xl">
-                          {wallet?.data.balance}
+                          {formatNumber(Number(wallet?.data.balance || 0))}
                         </Text>
                       </View>
                     </View>
@@ -293,7 +276,7 @@ export default function TransferTransactionScreen() {
                     >
                       {watchedToWallet && wallets?.data
                         ? wallets.data.find((w) => w.id === watchedToWallet)
-                            ?.name || "Selected Wallet"
+                          ?.name || "Selected Wallet"
                         : "Select destination wallet"}
                     </Text>
                     <ChevronRight size={20} className="text-muted-foreground" />
@@ -320,6 +303,7 @@ export default function TransferTransactionScreen() {
                             value={value}
                             onChangeText={onChange}
                             onBlur={onBlur}
+                            ref={amountInputRef}
                             placeholder="0.00"
                             placeholderTextColor="#A1A1AA"
                             keyboardType="decimal-pad"
@@ -438,7 +422,7 @@ export default function TransferTransactionScreen() {
 
           {/* Submit Button */}
           <View
-            className="px-5 pt-3 pb-2 mt-8 bg-background border-t border-border"
+            className="px-5 pt-3 pb-2 bg-background border-t border-border"
             style={{
               marginBottom: isKeyboardVisible ? 0 : Math.min(insets.bottom, 20),
             }}
@@ -460,12 +444,12 @@ export default function TransferTransactionScreen() {
       <WalletSelectorModal
         visible={showWalletSelector}
         onClose={() => setShowWalletSelector(false)}
-        onApply={(walletId) => {
-          setValue("to_wallet_id", walletId);
+        onApply={(wallet: Wallet) => {
+          setValue("to_wallet_id", wallet.id);
+          setValue("remark", `Transfer to ${wallet.name} from ${wallets?.data?.find((w) => w.id === walletId)?.name}`)
           setShowWalletSelector(false);
         }}
         excludeWalletId={walletId}
-        selectedWalletId={watchedToWallet}
       />
 
       {/* Date Picker */}

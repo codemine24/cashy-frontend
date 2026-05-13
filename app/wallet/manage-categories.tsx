@@ -202,7 +202,7 @@ export default function ManageCategoriesScreen() {
                       >
                         <Edit3 size={18} className="text-foreground" />
                         <Text className="text-foreground font-semibold text-sm ml-2">
-                          Rename
+                          Edit
                         </Text>
                       </TouchableOpacity>
                       <TouchableOpacity

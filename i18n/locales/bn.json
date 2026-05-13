@@ -132,7 +132,7 @@
     "fullName": "নামের",
     "email": "ইমেইল",
     "contactNumber": "ফোন নাম্বার",
-    "locked": "পরিবর্তনঅযোগ্য",
+    "locked": "পরিবর্তন করা যাবে না",
     "emailLocked": "ইমেইল পরিবর্তনযোগ্য নয়।",
     "changeAvatar": "ছবি পরিবর্তন করতে ক্যামেরা আইকনে ক্লিক করুন",
     "saveChanges": "সেভ করুন ",
@@ -152,6 +152,8 @@
     "contactUs": "যোগাযোগ করুন",
     "contactUsSubtitle": "আপনার সম্পস্যা জানান",
     "deleteAccount": "ডিলিট একাউন্ট",
-    "deleteAccountSubtitle": "আপনার একাউন্ট স্থায়ীভাবে ডিলিট করুন"
+    "deleteAccountSubtitle": "আপনার একাউন্ট স্থায়ীভাবে ডিলিট করুন",
+    "appVersion": "অ্যাপ ভার্সন",
+    "appVersionSubtitle": "ভার্সন {{version}}"
   }
 }

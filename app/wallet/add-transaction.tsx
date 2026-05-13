@@ -18,7 +18,6 @@ import {
 import React, { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
-  Alert,
   BackHandler,
   Image,
   InteractionManager,
@@ -218,14 +217,6 @@ export default function AddTransactionScreen() {
 
   // ── Attachment picker ──────────────────────────────────────────────────────
   const pickAttachments = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== "granted") {
-      Alert.alert(
-        "Permission required",
-        "Please allow access to your photo library to add attachments.",
-      );
-      return;
-    }
 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
@@ -252,32 +243,32 @@ export default function AddTransactionScreen() {
   const buildFormData = (isUpdate = false) => {
     const dataPayload = isUpdate
       ? {
-          amount: parseFloat(amount),
-          category_id: !isDeposit
-            ? selectedCategory === "other" || !selectedCategory
-              ? undefined
-              : selectedCategory
-            : undefined,
-          remark,
-          date: formatDateToUTC(date),
-          time: formatTimeToUTC(date),
-          attachment: attachments
-            .filter((a) => a.isExisting)
-            .map((a) => a.name),
-        }
+        amount: parseFloat(amount),
+        category_id: !isDeposit
+          ? selectedCategory === "other" || !selectedCategory
+            ? undefined
+            : selectedCategory
+          : undefined,
+        remark,
+        date: formatDateToUTC(date),
+        time: formatTimeToUTC(date),
+        attachment: attachments
+          .filter((a) => a.isExisting)
+          .map((a) => a.name),
+      }
       : {
-          wallet_id: walletId,
-          type,
-          amount: parseFloat(amount),
-          category_id: !isDeposit
-            ? selectedCategory === "other" || !selectedCategory
-              ? undefined
-              : selectedCategory
-            : undefined,
-          remark,
-          date: formatDateToUTC(date),
-          time: formatTimeToUTC(date),
-        };
+        wallet_id: walletId,
+        type,
+        amount: parseFloat(amount),
+        category_id: !isDeposit
+          ? selectedCategory === "other" || !selectedCategory
+            ? undefined
+            : selectedCategory
+          : undefined,
+        remark,
+        date: formatDateToUTC(date),
+        time: formatTimeToUTC(date),
+      };
 
     const formData = new FormData();
     formData.append("data", JSON.stringify(dataPayload));

@@ -7,6 +7,7 @@ import { useAuth } from "@/context/auth-context";
 import { useTheme } from "@/context/theme-context";
 import { PasteIcon } from "@/icons/paste-icon";
 import { ChevronLeft } from "@/lib/icons";
+import { getPinGateRoute } from "@/utils/pin-gate";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -149,7 +150,8 @@ export default function AuthScreen() {
           theme: response?.data?.theme,
           language: response?.data?.language,
           currency: response?.data?.currency,
-          push_notification: response?.data?.push_notification,
+          is_pin_enabled: response?.data?.is_pin_enabled,
+          pin: response?.data?.pin,
         },
       });
 
@@ -157,7 +159,7 @@ export default function AuthScreen() {
       const userTheme = response?.data?.theme ?? "LIGHT";
       applyUserTheme(userTheme);
 
-      router.replace("/(tabs)");
+      router.replace(getPinGateRoute(response?.data) as any);
     } catch (error: any) {
       Toast.show({
         type: "error",

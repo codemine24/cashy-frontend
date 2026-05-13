@@ -74,7 +74,8 @@ export default function LoginTypeScreen() {
               theme: result?.data?.theme,
               language: result?.data?.language,
               currency: result?.data?.currency,
-              push_notification: result?.data?.push_notification,
+              is_pin_enabled: result?.data?.is_pin_enabled,
+              pin: result?.data?.pin,
             },
           });
 
@@ -148,10 +149,17 @@ export default function LoginTypeScreen() {
           </Text>
         </TouchableOpacity>
 
-        <View className="flex-1 mt-3">
-          <Muted className="text-center text-xs">
-            By continuing, you agree to our Terms of Service and Privacy Policy
+        <View className="flex-1 flex-row gap-1 justify-center mt-3">
+          <Muted className="text-center text-sm">
+            By continuing, you agree to our
           </Muted>
+          <TouchableOpacity onPress={() => router.push("/terms-and-conditions")}>
+            <Text className="text-primary text-sm underline">Terms of Conditions</Text>
+          </TouchableOpacity>
+          <Muted className="text-center text-sm">and</Muted>
+          <TouchableOpacity onPress={() => router.push("/privacy-policy")}>
+            <Text className="text-primary text-sm underline">Privacy Policy</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </SafeAreaView>

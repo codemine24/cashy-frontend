@@ -2,7 +2,7 @@
   "expo": {
     "name": "Cashy",
     "slug": "cashy",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/images/playstore-icon.png",
     "scheme": "cashy-expense-manager",
@@ -10,7 +10,7 @@
     "newArchEnabled": true,
     "android": {
       "package": "com.codemine.cashy",
-      "versionCode": 2026050702,
+      "versionCode": 2026051401,
       "softwareKeyboardLayoutMode": "pan",
       "backgroundColor": "#ffffff",
       "adaptiveIcon": {
@@ -18,15 +18,29 @@
         "foregroundImage": "./assets/images/playstore-icon.png",
         "monochromeImage": "./assets/images/playstore-icon.png"
       },
-      "permissions": [
-        "INTERNET",
-        "READ_EXTERNAL_STORAGE"
+      "permissions": ["INTERNET"],
+      "blockedPermissions": [
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.READ_MEDIA_IMAGES",
+        "android.permission.READ_MEDIA_VIDEO",
+        "android.permission.READ_MEDIA_AUDIO",
+        "android.permission.READ_MEDIA_VISUAL_USER_SELECTED",
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
       ],
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
     },
     "plugins": [
       "expo-router",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app needs to access your photos to add attachments to transactions.",
+          "cameraPermission": "The app needs to access your camera to take photos for attachments."
+        }
+      ],
       [
         "expo-splash-screen",
         {

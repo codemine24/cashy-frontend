@@ -5,7 +5,7 @@ import { P } from "@/components/ui/typography";
 import { useTheme } from "@/context/theme-context";
 import { cn } from "@/utils/cn";
 import { useCallback, useState } from "react";
-import { Pressable, RefreshControl, ScrollView, View } from "react-native";
+import { Pressable, RefreshControl, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { StatisticsSkeleton } from "../skeletons/statistics-skeleton";
 import { LoanStatisticsContent } from "./loan-statistics-content";
 
@@ -21,6 +21,7 @@ export function LoanStatistics() {
     data: loanSummaryResponse,
     isLoading,
     refetch,
+    error,
   } = useLoanStats({
     ...(period !== "all_time" && { period }),
     ...(period === "custom" && {
@@ -41,6 +42,23 @@ export function LoanStatistics() {
     balance: 0,
     status_breakdown: { ongoing: 0, paid: 0 },
   };
+
+  if (error) {
+    return (
+      <View className="bg-surface rounded-xl p-8 items-center border border-border">
+        <Text className="text-lg font-semibold mb-2 text-foreground">
+          Something went wrong
+        </Text>
+
+        <TouchableOpacity
+          onPress={() => refetch()}
+          className="bg-primary px-6 py-2 rounded-lg"
+        >
+          <Text className="text-primary-foreground font-semibold">Retry</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   return (
     <>

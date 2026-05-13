@@ -18,6 +18,8 @@ import {
   Pressable,
   RefreshControl,
   ScrollView,
+  Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 import Toast from "react-native-toast-message";
@@ -25,13 +27,94 @@ import { StatisticsSkeleton } from "../skeletons/statistics-skeleton";
 import { colors, ExpenseByCategoryChart } from "./expense-by-category-chart";
 import { IncomeVsExpenseChart } from "./income-vs-expense-chart";
 import { TopSourcesChart } from "./top-sources-chart";
+import { ChevronDown } from "@/lib/icons";
 import { Wallet } from "@/interface/wallet";
+import ApplyButton from "../ui/modal/apply-button";
+import BottomSheetModalWrapper from "../ui/modal/bottom-sheet-modal-wrapper";
+import RadioButton from "../ui/radio-button";
+
+// ─── Reusable inline dropdown ────────────────────────────────────────────────
+type DropdownOption = { label: string; value: string };
+
+function DropdownSelect({
+  label,
+  value,
+  options,
+  onChange,
+  isDark,
+}: {
+  label: string;
+  value: string;
+  options: DropdownOption[];
+  onChange: (v: string) => void;
+  isDark: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const [draft, setDraft] = useState(value);
+  const selected = options.find((o) => o.value === value);
+
+  // Sync draft when modal opens
+  const handleOpen = () => {
+    setDraft(value);
+    setOpen(true);
+  };
+
+  const hasChanged = draft !== value;
+
+  return (
+    <View className="flex-1">
+      {/* Trigger chip — same style as FilterChip */}
+      <TouchableOpacity
+        onPress={handleOpen}
+        activeOpacity={0.7}
+        className={`flex-row items-center gap-1.5 p-3 rounded-full border ${isDark ? "bg-card border-border" : "bg-white border-border/60"
+          }`}
+      >
+        <Text
+          className="text-foreground text-xs font-semibold flex-1"
+          numberOfLines={1}
+        >
+          {selected?.label ?? label}
+        </Text>
+        <ChevronDown size={13} className="text-muted-foreground" />
+      </TouchableOpacity>
+
+      {/* Bottom-sheet modal */}
+      <BottomSheetModalWrapper
+        visible={open}
+        title={label}
+        onClose={() => setOpen(false)}
+        footer={
+          <ApplyButton
+            onApply={() => {
+              onChange(draft);
+              setOpen(false);
+            }}
+            applyDisabled={!hasChanged}
+          />
+        }
+      >
+        <View className="flex-col gap-3">
+          {options.map((opt) => (
+            <RadioButton
+              key={opt.value}
+              label={opt.label}
+              selected={draft === opt.value}
+              onPress={() => setDraft(opt.value)}
+            />
+          ))}
+        </View>
+      </BottomSheetModalWrapper>
+    </View>
+  );
+}
 
 export function WalletStatistics() {
   const router = useRouter();
+  const { isDark } = useTheme();
   const { wallet_id } = useLocalSearchParams<{ wallet_id?: string }>();
   const [period, setPeriod] = useState<Period>("all_time");
-  const { isDark } = useTheme();
+  const [statsFor, setStatsFor] = useState<"all" | "personal" | "shared">("personal");
   const [refreshing, setRefreshing] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [startDate, setStartDate] = useState<Date | null>(null);
@@ -45,7 +128,9 @@ export function WalletStatistics() {
     data: walletStatsResponse,
     isLoading: isStatsLoading,
     refetch,
+    error,
   } = useWalletStats({
+    stats_for: statsFor,
     ...(period !== "all_time" && { period }),
     wallet_id: activeBookId === "all" ? undefined : activeBookId,
     ...(period === "custom" && {
@@ -156,6 +241,23 @@ export function WalletStatistics() {
     return periodText;
   };
 
+  if (error) {
+    return (
+      <View className="bg-surface rounded-xl p-8 items-center border border-border">
+        <Text className="text-lg font-semibold mb-2 text-foreground">
+          Something went wrong
+        </Text>
+
+        <TouchableOpacity
+          onPress={() => refetch()}
+          className="bg-primary px-6 py-2 rounded-lg"
+        >
+          <Text className="text-primary-foreground font-semibold">Retry</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   return (
     <>
       <ScrollView
@@ -165,114 +267,56 @@ export function WalletStatistics() {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        {/* Wallet Filter Chips */}
-        <View className="mb-4">
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ gap: 12 }}
-          >
-            <Pressable
-              onPress={() => router.setParams({ wallet_id: "all" })}
-              className={cn(
-                "px-5 py-2.5 rounded-full border shadow-sm",
-                activeBookId === "all"
-                  ? "bg-muted border-muted-foreground/20"
-                  : isDark
-                    ? "bg-card border-border"
-                    : "bg-white border-border/50",
-              )}
-            >
-              <P
-                className={cn(
-                  "text-sm font-semibold",
-                  activeBookId === "all"
-                    ? "text-foreground"
-                    : "text-muted-foreground",
-                )}
-              >
-                All Wallets
-              </P>
-            </Pressable>
-            {wallets.map((wallet: Wallet) => (
-              <Pressable
-                key={wallet.id}
-                onPress={() => router.setParams({ wallet_id: wallet.id })}
-                className={cn(
-                  "px-5 py-2.5 rounded-full border shadow-sm",
-                  activeBookId === wallet.id
-                    ? "bg-muted border-muted-foreground/20"
-                    : isDark
-                      ? "bg-card border-border"
-                      : "bg-white border-border/50",
-                )}
-              >
-                <P
-                  className={cn(
-                    "text-sm font-semibold",
-                    activeBookId === wallet.id
-                      ? "text-foreground"
-                      : "text-muted-foreground",
-                  )}
-                  numberOfLines={1}
-                >
-                  {wallet.name}
-                </P>
-              </Pressable>
-            ))}
-          </ScrollView>
-        </View>
-
-        {/* Period Tabs */}
-        <View className="mb-4 border-b border-border/30">
-          <View className="flex-row items-center justify-around">
-            {(
-              [
-                "all_time",
-                "today",
-                "last_7_days",
-                "last_30_days",
-                "custom",
-              ] as Period[]
-            ).map((p) => (
-              <Pressable
-                key={p}
-                onPress={() => {
-                  if (p === "custom") {
-                    setShowDatePicker(true);
-                  } else {
-                    setPeriod(p);
-                    setStartDate(null);
-                    setEndDate(null);
-                  }
-                }}
-                className="py-1 px-1 items-center flex-col flex-1"
-              >
-                <P
-                  className={cn(
-                    "text-xs font-medium mb-3",
-                    period === p ? "text-foreground" : "text-muted-foreground",
-                  )}
-                  numberOfLines={1}
-                >
-                  {p === "all_time"
-                    ? "All Time"
-                    : p === "today"
-                      ? "Today"
-                      : p === "last_7_days"
-                        ? "Last 7 Days"
-                        : p === "last_30_days"
-                          ? "Last 30 Days"
-                          : p === "custom" && startDate && endDate
-                            ? `${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`
-                            : "Date Range"}
-                </P>
-                {period === p && (
-                  <View className="h-[3px] bg-primary w-16 rounded-t-full" />
-                )}
-              </Pressable>
-            ))}
-          </View>
+        {/* Filter Row: Wallet · Period · Stats For */}
+        <View className="flex-row gap-2 mb-4">
+          <DropdownSelect
+            label="Stats For"
+            value={statsFor}
+            options={[
+              { label: "All", value: "all" },
+              { label: "Personal", value: "personal" },
+              { label: "Shared", value: "shared" },
+            ]}
+            onChange={(v) => setStatsFor(v as "all" | "personal" | "shared")}
+            isDark={isDark}
+          />
+          <DropdownSelect
+            label="Wallet"
+            value={activeBookId}
+            options={[
+              { label: "All Wallets", value: "all" },
+              ...wallets.map((w: Wallet) => ({ label: w.name, value: w.id })),
+            ]}
+            onChange={(v) => router.setParams({ wallet_id: v })}
+            isDark={isDark}
+          />
+          <DropdownSelect
+            label="Period"
+            value={period}
+            options={[
+              { label: "All Time", value: "all_time" },
+              { label: "Today", value: "today" },
+              { label: "Last 7 Days", value: "last_7_days" },
+              { label: "Last 30 Days", value: "last_30_days" },
+              {
+                label:
+                  period === "custom" && startDate && endDate
+                    ? `${startDate.toLocaleDateString()} – ${endDate.toLocaleDateString()}`
+                    : "Date Range",
+                value: "custom",
+              },
+            ]}
+            onChange={(v) => {
+              if (v === "custom") {
+                setShowDatePicker(true);
+              } else {
+                setPeriod(v as Period);
+                setStartDate(null);
+                setEndDate(null);
+              }
+            }}
+            isDark={isDark}
+          />
         </View>
 
         {isStatsLoading || refreshing ? (
@@ -282,7 +326,7 @@ export function WalletStatistics() {
         ) : (
           <>
             {/* Summary Cards */}
-            <View className="mb-6">
+            <View className="mb-4">
               <View className="flex-row gap-2">
                 <View
                   className={`${isDark ? "bg-card" : "bg-white"} flex-1 border border-border rounded-2xl shadow-sm p-3`}
@@ -290,7 +334,7 @@ export function WalletStatistics() {
                   <P className="text-[10px] text-muted-foreground mb-1">
                     Total In
                   </P>
-                  <P className="text-base font-bold text-green-600">
+                  <P className="text-base font-bold text-success">
                     {walletStats.in?.toLocaleString() || "0"}
                   </P>
                 </View>
@@ -300,7 +344,7 @@ export function WalletStatistics() {
                   <P className="text-[10px] text-muted-foreground mb-1">
                     Total Out
                   </P>
-                  <P className="text-base font-bold text-red-600">
+                  <P className="text-base font-bold text-destructive">
                     {walletStats.out?.toLocaleString() || "0"}
                   </P>
                 </View>
@@ -311,11 +355,10 @@ export function WalletStatistics() {
                     Net Balance
                   </P>
                   <P
-                    className={`text-base font-bold ${
-                      (walletStats.in || 0) - (walletStats.out || 0) >= 0
-                        ? "text-green-600"
-                        : "text-red-600"
-                    }`}
+                    className={`text-base font-bold ${(walletStats.in || 0) - (walletStats.out || 0) >= 0
+                      ? "text-success"
+                      : "text-destructive"
+                      }`}
                   >
                     {(
                       (walletStats.in || 0) - (walletStats.out || 0)
@@ -327,8 +370,8 @@ export function WalletStatistics() {
 
             <View>
               {/* Grid of smaller charts */}
-              <View className="mb-8">
-                <View className="flex-col gap-y-6">
+              <View className="mb-4">
+                <View className="flex-col gap-y-4">
                   {/* Expense by Category Chart */}
                   <View
                     className={`${isDark ? "bg-card" : "bg-white"} border border-border p-4 pb-6 rounded-3xl shadow-sm`}
@@ -372,9 +415,14 @@ export function WalletStatistics() {
                                     {cat.category}
                                   </P>
                                 </View>
-                                <P className="text-[10px] text-muted-foreground font-bold ml-1">
-                                  {Math.round(cat.percentage)}%
-                                </P>
+                                <View className="flex-row items-center gap-1">
+                                  <P className="text-[10px] text-muted-foreground font-bold ml-1">
+                                    {cat.amount}
+                                  </P>
+                                  <P className="text-[10px] text-muted-foreground font-bold ml-1">
+                                    ({Math.round(cat.percentage)}%)
+                                  </P>
+                                </View>
                               </View>
                             );
                           },
@@ -458,7 +506,7 @@ export function WalletStatistics() {
               </View>
 
               {/* Export Expense Report Section */}
-              <View className="mb-8">
+              <View className="mb-4">
                 <View
                   className={`${isDark ? "bg-card" : "bg-white"} border border-border p-4 rounded-3xl shadow-sm`}
                 >

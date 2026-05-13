@@ -70,7 +70,7 @@ export default function ContactUsScreen() {
           }}
         >
           {/* Contact Options */}
-          <View className="bg-card rounded-2xl border border-border p-6 mb-6">
+          <View className="bg-card rounded-2xl border border-border p-6 mb-4">
             <Text className="text-lg font-semibold text-foreground mb-4">
               How to Reach Us
             </Text>
@@ -78,7 +78,7 @@ export default function ContactUsScreen() {
             {/* Email */}
             <TouchableOpacity
               onPress={handleEmailPress}
-              className="flex-row items-center p-4 bg-muted/50 rounded-xl mb-3"
+              className="flex-row items-center bg-muted/50 rounded-xl mb-3"
             >
               <View className="w-10 h-10 bg-primary/10 rounded-xl items-center justify-center mr-4">
                 <Mail size={20} className="text-primary" />
@@ -93,17 +93,17 @@ export default function ContactUsScreen() {
           </View>
 
           {/* Quick Contact Topics */}
-          <View className="bg-card rounded-2xl border border-border p-6 mb-6">
+          <View className="bg-card rounded-2xl border border-border p-6 mb-4">
             <Text className="text-lg font-semibold text-foreground mb-4">
               Quick Contact Topics
             </Text>
 
             <TouchableOpacity
               onPress={() => handleSubjectPress("Bug Report - Cashy App")}
-              className="flex-row items-center p-4 bg-muted/50 rounded-xl mb-3"
+              className="flex-row items-center bg-muted/50 rounded-xl mb-6"
             >
               <View className="w-10 h-10 bg-red-100 rounded-xl items-center justify-center mr-4">
-                <Text className="text-red-600 font-bold">🐛</Text>
+                <Text className="text-destructive font-bold">🐛</Text>
               </View>
               <View className="flex-1">
                 <Text className="text-foreground font-semibold">
@@ -117,7 +117,7 @@ export default function ContactUsScreen() {
 
             <TouchableOpacity
               onPress={() => handleSubjectPress("Feature Request - Cashy App")}
-              className="flex-row items-center p-4 bg-muted/50 rounded-xl mb-3"
+              className="flex-row items-center bg-muted/50 rounded-xl mb-6"
             >
               <View className="w-10 h-10 bg-blue-100 rounded-xl items-center justify-center mr-4">
                 <Text className="text-blue-600 font-bold">💡</Text>
@@ -134,7 +134,7 @@ export default function ContactUsScreen() {
 
             <TouchableOpacity
               onPress={() => handleSubjectPress("General Inquiry - Cashy App")}
-              className="flex-row items-center p-4 bg-muted/50 rounded-xl mb-3"
+              className="flex-row items-center bg-muted/50 rounded-xl mb-3"
             >
               <View className="w-10 h-10 bg-green-100 rounded-xl items-center justify-center mr-4">
                 <Text className="text-green-600 font-bold">💬</Text>
@@ -151,7 +151,7 @@ export default function ContactUsScreen() {
           </View>
 
           {/* Response Time */}
-          <View className="bg-card rounded-2xl border border-border p-6 mb-6">
+          <View className="bg-card rounded-2xl border border-border p-6 mb-4">
             <Text className="text-lg font-semibold text-foreground mb-4">
               Response Time
             </Text>

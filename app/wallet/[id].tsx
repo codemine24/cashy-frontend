@@ -2,7 +2,6 @@ import { useWallet } from "@/api/wallet";
 import { ScreenContainer } from "@/components/screen-container";
 
 import { useGetCategories } from "@/api/category";
-import { useWalletStats } from "@/api/statistics";
 import {
   useDeleteTransaction,
   useInfiniteTransactions,
@@ -101,8 +100,7 @@ export default function BookDetailScreen() {
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedQuery = useDebounce(searchQuery, 400);
 
-  const [filters, setFilters] =
-    useState<TransactionFilterValues>(DEFAULT_FILTERS);
+  const [filters, setFilters] = useState<TransactionFilterValues>(DEFAULT_FILTERS);
   const _filterParams = useMemo(() => buildFilterParams(filters), [filters]);
 
   const { data: wallet, isLoading, refetch } = useWallet(id!);
@@ -121,22 +119,22 @@ export default function BookDetailScreen() {
     search: debouncedQuery.trim() || undefined,
   });
 
-  const {
-    data: walletStatsResponse,
-    isLoading: isStatsLoading,
-    refetch: refetchWalletStats,
-  } = useWalletStats({
-    wallet_id: id!,
-    ..._filterParams,
-    ...(debouncedQuery.trim() && { search_term: debouncedQuery.trim() }),
-  });
-
   // Flatten all pages into a single transaction list
   const allTransactions = useMemo(
     () =>
       txPages?.pages.flatMap((page) => page?.data?.transactions ?? []) ?? [],
     [txPages],
   );
+  const netBalance = useMemo(() => {
+    const balance = txPages?.pages?.[0].data?.balance;
+    const inBalance = txPages?.pages?.[0].data?.in;
+    const outBalance = txPages?.pages?.[0].data?.out;
+    return {
+      balance: balance?.toFixed(2),
+      inBalance: inBalance?.toFixed(2),
+      outBalance: outBalance?.toFixed(2),
+    };
+  }, [txPages]);
 
   const [reportModalVisible, setReportModalVisible] = useState(false);
   const [selectedReport, setSelectedReport] = useState<ReportType>("all");
@@ -149,17 +147,13 @@ export default function BookDetailScreen() {
 
   const { showSkeleton, refreshControlProps } =
     usePullToRefreshSkeletonWithSearch(async () => {
-      await Promise.all([
-        refetch(),
-        refetchTransactions(),
-        refetchWalletStats(),
-      ]);
+      await Promise.all([refetch(), refetchTransactions()]);
     }, searchQuery.trim());
   const [selectedTransaction, setSelectedTransaction] =
     useState<Transaction | null>(null);
 
   // Fetch categories for the filter
-  const { data: categoriesData } = useGetCategories();
+  const { data: categoriesData } = useGetCategories({ wallet_id: id! });
 
   // Build members list from wallet data for the filter
   const filterMembers: MemberOption[] = useMemo(() => {
@@ -525,16 +519,20 @@ export default function BookDetailScreen() {
               }
               return (
                 <View className="flex-row items-center gap-3">
-                  <TouchableOpacity
-                    onPress={() =>
-                      router.push({
-                        pathname: "/wallet/transfer-fund",
-                        params: { walletId: id, walletName: wallet.data.name },
-                      })
-                    }
-                  >
-                    <ArrowDownUp size={24} className="text-foreground" />
-                  </TouchableOpacity>
+                  {!isWalletViewer(authState.user?.id, wallet.data) && (
+                    <TouchableOpacity
+                      disabled={netBalance?.balance <= 0}
+                      className="disabled:opacity-30"
+                      onPress={() =>
+                        router.push({
+                          pathname: "/wallet/transfer-fund",
+                          params: { walletId: id, walletName: wallet.data.name },
+                        })
+                      }
+                    >
+                      <ArrowDownUp size={24} className="text-foreground" />
+                    </TouchableOpacity>
+                  )}
                   <TouchableOpacity
                     onPress={() =>
                       router.push({
@@ -601,7 +599,7 @@ export default function BookDetailScreen() {
             ListHeaderComponent={
               <>
                 {/* Header Card */}
-                {isStatsLoading && (
+                {transactionsLoading && (
                   <View className="bg-card rounded-2xl p-4 mb-4 border border-border shadow-sm animate-pulse">
                     <View className="flex-row justify-between items-center border-b border-border pb-4 mb-4">
                       <View className="w-1/4 h-5 bg-muted rounded-md" />
@@ -622,19 +620,16 @@ export default function BookDetailScreen() {
                       <View className="h-5 w-1/2 justify-center bg-muted rounded-md" />
                     </View>
                   </View>
-                ) }
-                
-                {!isStatsLoading && (
+                )}
+
+                {!transactionsLoading && (
                   <View className="bg-card mt-2 rounded-2xl mb-4 shadow-sm border border-border">
                     <View className="px-3 py-3 flex-row justify-between items-center border-b border-border">
                       <Text className="text-foreground font-bold text-[14px]">
                         {t("wallets.netBalance")}
                       </Text>
                       <Text className="text-foreground font-bold text-[14px]">
-                        {formatNumber(
-                          (walletStatsResponse?.data?.in || 0) -
-                            (walletStatsResponse?.data?.out || 0),
-                        )}
+                        {formatNumber(netBalance.balance)}
                       </Text>
                     </View>
                     <View className="px-3 py-3">
@@ -643,7 +638,7 @@ export default function BookDetailScreen() {
                           {t("wallets.totalIn")} (+)
                         </Text>
                         <Text className="text-success font-semibold text-[12px]">
-                          {formatNumber(walletStatsResponse?.data?.in)}
+                          {formatNumber(netBalance.inBalance)}
                         </Text>
                       </View>
                       <View className="flex-row justify-between items-center">
@@ -651,7 +646,7 @@ export default function BookDetailScreen() {
                           {t("wallets.totalOut")} (-)
                         </Text>
                         <Text className="text-destructive font-semibold text-[12px]">
-                          {formatNumber(walletStatsResponse?.data?.out)}
+                          {formatNumber(netBalance.outBalance)}
                         </Text>
                       </View>
                     </View>
@@ -698,13 +693,12 @@ export default function BookDetailScreen() {
                           return (
                             <View
                               key={member.id || index}
-                              className={`px-3 py-2 flex-row items-center justify-between ${
-                                index !==
+                              className={`px-3 py-2 flex-row items-center justify-between ${index !==
                                 Math.min(wallet.data.others_member.length, 2) -
-                                  1
-                                  ? "border-b border-border"
-                                  : ""
-                              }`}
+                                1
+                                ? "border-b border-border"
+                                : ""
+                                }`}
                             >
                               <View className="flex-row items-center flex-1">
                                 {/* Avatar */}
@@ -820,9 +814,8 @@ export default function BookDetailScreen() {
                       }
                     }}
                     onLongPress={() => setSelectedTransaction(item)}
-                    className={`px-4 py-4 flex-row justify-between ${
-                      selectedTransaction?.id === item.id ? "bg-primary/10" : ""
-                    } ${index !== data.length - 1 ? "border-b border-border" : ""}`}
+                    className={`px-4 py-4 flex-row justify-between ${selectedTransaction?.id === item.id ? "bg-primary/10" : ""
+                      } ${index !== data.length - 1 ? "border-b border-border" : ""}`}
                   >
                     <View className="flex-1 mr-3">
                       <View className="flex-row items-center justify-between mb-2">
@@ -849,7 +842,7 @@ export default function BookDetailScreen() {
                                   ? { color: item.category.color }
                                   : { color: "#ef4444" }
                               }
-                              className={`text-[10px] font-semibold  tracking-wider`}
+                              className={`text-[10px] font-semibold tracking-wider`}
                             >
                               {item.category?.icon}{" "}
                               {item.category?.title || t("wallets.cashOut")}
@@ -866,7 +859,7 @@ export default function BookDetailScreen() {
                       <Text className="text-sm text-muted-foreground">
                         {Math.abs(
                           new Date(item.created_at).getTime() -
-                            new Date(item.updated_at).getTime(),
+                          new Date(item.updated_at).getTime(),
                         ) < 30000
                           ? "Created: "
                           : "Updated: "}{" "}
@@ -883,11 +876,10 @@ export default function BookDetailScreen() {
                     </View>
                     <View className="items-end justify-center">
                       <Text
-                        className={`text-base font-bold mb-2 ${
-                          item.type === "IN"
-                            ? "text-success"
-                            : "text-destructive"
-                        }`}
+                        className={`text-base font-bold mb-2 ${item.type === "IN"
+                          ? "text-success"
+                          : "text-destructive"
+                          }`}
                       >
                         {formatNumber(item.amount)}
                       </Text>

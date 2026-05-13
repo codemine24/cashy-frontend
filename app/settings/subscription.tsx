@@ -35,7 +35,6 @@ export default function Subscription() {
     productId: string;
     price: string;
   } | null>(null);
-  const [showLearnMore, setShowLearnMore] = useState(false);
 
   const insets = useSafeAreaInsets();
   const { mutateAsync: createSubscription } = useCreateSubscription();
@@ -283,11 +282,10 @@ export default function Subscription() {
             <TouchableOpacity
               activeOpacity={0.8}
               onPress={() => setSelectedPlan("free")}
-              className={`flex-1 rounded-2xl border-2 p-4 pt-5 ${
-                selectedPlan === "free"
+              className={`flex-1 rounded-2xl border-2 p-4 pt-5 ${selectedPlan === "free"
                   ? "border-foreground bg-card"
                   : "border-border bg-card/50"
-              }`}
+                }`}
             >
               <Text className="text-lg font-semibold text-center text-foreground mb-2">
                 Free
@@ -325,11 +323,10 @@ export default function Subscription() {
                 <TouchableOpacity
                   activeOpacity={0.8}
                   onPress={() => setSelectedPlan("lifetime")}
-                  className={`flex-1 rounded-2xl border-2 p-4 pt-5 relative ${
-                    selectedPlan === "lifetime"
+                  className={`flex-1 rounded-2xl border-2 p-4 pt-5 relative ${selectedPlan === "lifetime"
                       ? "border-amber-500 bg-amber-500/10"
                       : "border-border bg-card/50"
-                  }`}
+                    }`}
                 >
                   <View className="absolute -top-3.5 self-center bg-amber-500 px-3 py-1 rounded-full">
                     <Text className="text-[10px] font-bold text-white tracking-wider">
@@ -365,9 +362,8 @@ export default function Subscription() {
               activeOpacity={0.8}
               onPress={handleBuy}
               disabled={isProcessing}
-              className={`rounded-full py-4 items-center justify-center relative overflow-hidden ${
-                isProcessing ? "bg-amber-500/70" : "bg-amber-500"
-              }`}
+              className={`rounded-full py-4 items-center justify-center relative overflow-hidden ${isProcessing ? "bg-amber-500/70" : "bg-amber-500"
+                }`}
               style={{ marginBottom: 12 }}
             >
               {isProcessing ? (

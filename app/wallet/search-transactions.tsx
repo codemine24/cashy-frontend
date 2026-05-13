@@ -237,8 +237,8 @@ export default function SearchTransactionsScreen() {
                   >
                     <View className="flex-1 mr-2">
                       <View className="flex-row items-center mb-1">
-                        <View className={`px-2 py-[2px] rounded-lg ${item.type === "IN" ? "bg-green-600/10" : "bg-red-600/10"}`}>
-                          <Text className={`text-[10px] font-bold tracking-wider ${item.type === "IN" ? "text-green-600" : "text-red-600"}`}>
+                        <View className={`px-2 py-[2px] rounded-lg ${item.type === "IN" ? "bg-success/10" : "bg-destructive/10"}`}>
+                          <Text className={`text-[10px] font-bold tracking-wider ${item.type === "IN" ? "text-success" : "text-destructive"}`}>
                             {item.type === "IN" ? "CASH IN" : "CASH OUT"}
                           </Text>
                         </View>

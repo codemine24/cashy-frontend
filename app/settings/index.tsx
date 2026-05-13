@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import {
   BackHandler,
   Image,
+  Linking,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -21,15 +22,16 @@ import { useIsPremium } from "@/hooks/use-is-premium";
 import {
   ChevronLeft,
   ChevronRight,
+  Facebook,
   Info,
   LogOut,
   Settings,
+  ShieldCheck,
   User,
 } from "@/lib/icons";
 import { clearUserInfo, removeAccessToken } from "@/utils/auth";
 import { makeImageUrl } from "@/utils/helper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { getCurrentVersion } from "@/utils/updateService";
 
 // ─── Reusable row component ───────────────────────────────────────────────
 function SettingsRow({
@@ -97,7 +99,6 @@ export default function SettingsScreen() {
   const { isPremium } = useIsPremium();
   const { resetTheme } = useTheme();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const currentVersion = getCurrentVersion();
 
   const handleLogout = async () => {
     await removeAccessToken();
@@ -107,7 +108,7 @@ export default function SettingsScreen() {
     // Reset theme to light theme after logout
     resetTheme();
     navigation.dispatch(
-      CommonActions.reset({ index: 0, routes: [{ name: "login-type" }] }),
+      CommonActions.reset({ index: 0, routes: [{ name: "/login-type" }] }),
     );
   };
 
@@ -223,8 +224,28 @@ export default function SettingsScreen() {
               }
               onPress={() => router.push("/settings/about-cashy" as any)}
             />
+            <Divider />
+            <SettingsRow
+              iconBgClass="bg-emerald-500/10"
+              icon={<ShieldCheck size={22} className="text-emerald-500" />}
+              title="Security"
+              subtitle="PIN lock, verify & reset PIN"
+              onPress={() => router.push("/settings/security" as any)}
+            />
           </View>
 
+          {/* ── Join Facebook ── */}
+          <View className="bg-card rounded-2xl border border-border px-4 mb-4">
+            <SettingsRow
+              iconBgClass="bg-[#1877F2]/10"
+              icon={<Facebook size={22} className="text-[#1877F2]" />}
+              title="Follow our Facebook page"
+              subtitle="Get the latest news and updates from Cashy"
+              onPress={() =>
+                Linking.openURL("https://www.facebook.com/cashyDailyExpense")
+              }
+            />
+          </View>
           {/* ── Logout ── */}
           <View
             className="bg-card rounded-2xl border border-border px-4"
@@ -242,22 +263,6 @@ export default function SettingsScreen() {
                 {t("settings.logOut")}{" "}
               </Text>
             </TouchableOpacity>
-          </View>
-
-          {/* Version Section */}
-          <View className="px-6 py-4 items-center">
-            <View className="flex-row items-center gap-2">
-              <Info size={16} className="text-muted-foreground" />
-              <Text className="text-sm text-muted-foreground">
-                Version {currentVersion.version}
-              </Text>
-            </View>
-            <Text className="text-xs text-muted-foreground mt-1">
-              © {new Date().getFullYear()} Codemine Technology Ltd.
-            </Text>
-            <Text className="text-xs text-muted-foreground mt-1">
-              All rights reserved
-            </Text>
           </View>
         </ScrollView>
       </View>

@@ -21,16 +21,14 @@ export default function ApplyButton({
         onPress={onApply}
         disabled={applyDisabled}
         activeOpacity={0.7}
-        className={`w-full py-4 rounded-xl items-center ${
-          applyDisabled ? "bg-primary/30" : "bg-primary"
-        }`}
+        className={`w-full py-4 rounded-xl items-center ${applyDisabled ? "bg-primary/30" : "bg-primary"
+          }`}
       >
         <Text
-          className={`font-bold text-[15px] ${
-            applyDisabled ? "text-white/50" : "text-white"
-          }`}
+          className={`font-bold text-[15px] ${applyDisabled ? "text-white/50" : "text-white"
+            }`}
         >
-          Apply
+          {title || "APPLY"}
         </Text>
       </TouchableOpacity>
     </View>

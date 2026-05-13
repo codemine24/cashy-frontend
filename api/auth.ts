@@ -42,7 +42,8 @@ export const useVerifyOtp = () => {
         theme: data?.data?.theme ?? "LIGHT",
         language: data?.data?.language ?? "en",
         currency: data?.data?.currency ?? "USD",
-        push_notification: data?.data?.push_notification ?? true,
+        is_pin_enabled: data?.data?.is_pin_enabled,
+        pin: data?.data?.pin,
       });
     },
   });
@@ -71,7 +72,8 @@ export const useGoogleLogin = () => {
         theme: data?.data?.theme ?? "LIGHT",
         language: data?.data?.language ?? "en",
         currency: data?.data?.currency ?? "USD",
-        push_notification: data?.data?.push_notification ?? true,
+        is_pin_enabled: data?.data?.is_pin_enabled,
+        pin: data?.data?.pin,
       });
     },
   });

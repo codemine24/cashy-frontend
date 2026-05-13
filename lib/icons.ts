@@ -15,13 +15,16 @@ import {
     Clock,
     Copy,
     Crown,
+    Delete,
     Download,
     Edit3,
     FileText,
     Globe,
     HandCoins,
     Info,
+    KeyRound,
     LayoutList,
+    Lock,
     LogOut,
     Mail,
     Menu,
@@ -46,7 +49,8 @@ import {
     X,
     Power,
     RotateCcw,
-    Phone
+    Phone,
+    Facebook
 } from "lucide-react-native";
 import { cssInterop } from "nativewind";
 
@@ -71,6 +75,9 @@ interopIcon(Camera);
 interopIcon(ChevronDown);
 interopIcon(ChevronRight);
 interopIcon(ChevronLeft);
+interopIcon(Delete);
+interopIcon(KeyRound);
+interopIcon(Lock);
 interopIcon(Mail);
 interopIcon(Moon);
 interopIcon(ShieldCheck);
@@ -83,6 +90,7 @@ interopIcon(BookIcon);
 interopIcon(MoreVertical);
 interopIcon(Edit3);
 interopIcon(FileText);
+interopIcon(Facebook);
 interopIcon(LayoutList);
 interopIcon(Trash2);
 interopIcon(Download);
@@ -129,13 +137,17 @@ export {
     Clock,
     Copy,
     Crown,
+    Delete,
     Download,
     Edit3,
     FileText,
+    Facebook,
     Globe,
     HandCoins,
     Info,
+    KeyRound,
     LayoutList,
+    Lock,
     LogOut,
     Mail,
     Menu,

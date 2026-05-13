@@ -24,6 +24,21 @@ type UpdateProfilePayload = {
   };
 };
 
+type SetupPinPayload = {
+  pin: string;
+  confirm_pin: string;
+};
+
+type VerifyPinPayload = {
+  pin: string;
+};
+
+type ChangePinPayload = {
+  old_pin: string;
+  new_pin: string;
+  confirm_pin: string;
+};
+
 export const useGetAllUsers = (
   searchParams: {
     search?: string;
@@ -53,11 +68,12 @@ export const useGetAllUsers = (
 };
 
 const updateProfile = async (payload: UpdateProfilePayload) => {
-  const { avatar, ...data } = payload;
+  try {
+    const { avatar, ...data } = payload;
 
-  const formData = new FormData();
+    const formData = new FormData();
 
-  // wrapped in a "data" key as a JSON string
+    // wrapped in a "data" key as a JSON string
   formData.append("data", JSON.stringify(data));
 
   if (avatar) {
@@ -76,6 +92,9 @@ const updateProfile = async (payload: UpdateProfilePayload) => {
   );
 
   return response.data;
+  }catch(error){
+    throwApiError(error)
+  }
 };
 
 export const useDeleteUser = () => {
@@ -90,5 +109,46 @@ export const useDeleteUser = () => {
 export const useUpdateProfile = () => {
   return useMutation({
     mutationFn: updateProfile,
+  });
+};
+
+export const useSetupPin = () => {
+  return useMutation({
+    mutationFn: async (payload: SetupPinPayload) => {
+      try {
+        const response = await apiClient.post(`${USER_API_URL}/setup-pin`, payload);
+        return response.data;
+      } catch (error) {
+        throwApiError(error)
+      }
+    },
+  });
+};
+
+export const useVerifyPin = () => {
+  return useMutation({
+    mutationFn: async (payload: VerifyPinPayload) => {
+      try {
+        const response = await apiClient.post(`${USER_API_URL}/verify-pin`, payload);
+        console.log(response, 'response data')
+        return response.data;
+      } catch (error) {
+        throwApiError(error)
+      }
+    },
+  });
+};
+
+export const useChangePin = () => {
+  return useMutation({
+    mutationFn: async (payload: ChangePinPayload) => {
+      try {
+        const response = await apiClient.post(`${USER_API_URL}/change-pin`, payload);
+        console.log(response.data, 'respo')
+        return response.data;
+      } catch (error) {
+        throwApiError(error)
+      }
+    },
   });
 };
