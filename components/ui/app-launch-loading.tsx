@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Image } from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -8,7 +8,6 @@ import Animated, {
   withSequence,
   Easing,
 } from "react-native-reanimated";
-import { Wallet } from "@/lib/icons";
 import { H1, Muted } from "./typography";
 
 export function AppLaunchLoading() {
@@ -40,14 +39,11 @@ export function AppLaunchLoading() {
   }));
 
   return (
-    <View style={styles.container} className="bg-background">
+    <View style={styles.container}>
       <View className="items-center justify-center">
-        <Animated.View style={[styles.iconContainer, animatedIconStyle]} className="bg-primary/10">
-          <Wallet size={48} className="text-primary" />
-        </Animated.View>
-
-        <H1 className="mt-8 text-4xl font-bold tracking-tighter">Cashy</H1>
-        <Muted className="mt-2 text-sm font-medium">Launching your finance hub...</Muted>
+        <Animated.Image source={require("@/assets/images/logo.png")} style={[styles.iconContainer, animatedIconStyle]} />
+        <H1 className="mt-8 text-4xl font-bold tracking-tighter uppercase text-foreground">Cashy</H1>
+        <Muted className="mt-2 text-sm font-medium text-foreground">Loading...</Muted>
       </View>
 
       <View style={styles.footer}>
@@ -68,9 +64,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   iconContainer: {
-    width: 100,
-    height: 100,
-    borderRadius: 30,
+    width: 80,
+    height: 80,
     alignItems: "center",
     justifyContent: "center",
   },

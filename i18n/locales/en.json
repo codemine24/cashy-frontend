@@ -62,7 +62,8 @@
     "termsAndConditions": "T&C",
     "aboutUs": "About us",
     "profileInfo": "Name, Avatar, Email",
-    "deleteAccount": "Delete Account"
+    "deleteAccount": "Delete Account",
+    "security": "Security"
   },
   "auth": {
     "welcome": "Welcome!",

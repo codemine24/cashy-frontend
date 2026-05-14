@@ -228,7 +228,7 @@ export default function SettingsScreen() {
             <SettingsRow
               iconBgClass="bg-emerald-500/10"
               icon={<ShieldCheck size={22} className="text-emerald-500" />}
-              title="Security"
+              title={t("settings.security")}
               subtitle="PIN lock, verify & reset PIN"
               onPress={() => router.push("/settings/security" as any)}
             />
