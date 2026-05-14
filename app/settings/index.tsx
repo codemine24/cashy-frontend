@@ -1,7 +1,6 @@
 import { ScreenContainer } from "@/components/screen-container";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
-import { CommonActions } from "@react-navigation/native";
-import { Stack, useFocusEffect, useNavigation, useRouter } from "expo-router";
+import { Stack, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -93,7 +92,6 @@ function Divider() {
 export default function SettingsScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const navigation = useNavigation();
   const { authState, setAuthState } = useAuth();
   const { t } = useTranslation();
   const { isPremium } = useIsPremium();
@@ -107,9 +105,10 @@ export default function SettingsScreen() {
 
     // Reset theme to light theme after logout
     resetTheme();
-    navigation.dispatch(
-      CommonActions.reset({ index: 0, routes: [{ name: "login-type" }] }),
-    );
+    router.replace("/login-type" as any);
+    // navigation.dispatch(
+    //   CommonActions.reset({ index: 0, routes: [{ name: "/login-type" }] }),
+    // );
   };
 
   const handleLogoutConfirm = async () => {

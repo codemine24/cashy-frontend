@@ -7,7 +7,7 @@ import { useTheme } from "@/context/theme-context";
 import { GoogleIcon } from "@/icons/google-icon";
 import { Mail } from "@/lib/icons";
 import { getPinGateRoute } from "@/utils/pin-gate";
-import { GoogleSignin } from "@react-native-google-signin/google-signin";
+// import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
@@ -16,103 +16,96 @@ import Toast from "react-native-toast-message";
 
 export default function LoginTypeScreen() {
   const router = useRouter();
-  const { authReady, authState, setAuthState } = useAuth();
+  const { setAuthState } = useAuth();
   const [loading, setLoading] = useState(false);
   const [isGoogleSigningIn, setIsGoogleSigningIn] = useState(false);
   const { applyUserTheme } = useTheme();
-  const googleLoginMutation = useGoogleLogin();
+  // const googleLoginMutation = useGoogleLogin();
 
-  useEffect(() => {
-    GoogleSignin.configure({
-      webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID || "",
-      offlineAccess: true,
-      hostedDomain: "",
-      forceCodeForRefreshToken: true,
-      accountName: "",
-    });
-  }, []);
-
-  // If user already logged in, redirect
   // useEffect(() => {
-  //   if (authReady && authState.isAuthenticated) {
-  //     router.replace("/(tabs)");
+  //   GoogleSignin.configure({
+  //     webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID || "",
+  //     offlineAccess: true,
+  //     hostedDomain: "",
+  //     forceCodeForRefreshToken: true,
+  //     accountName: "",
+  //   });
+  // }, []);
+
+  // const signInWithGoogle = async () => {
+  //   if (loading || isGoogleSigningIn) return;
+
+  //   try {
+  //     setLoading(true);
+  //     setIsGoogleSigningIn(true);
+
+  //     await GoogleSignin.signOut();
+  //     // Check if device supports Google Play Services
+  //     await GoogleSignin.hasPlayServices();
+
+  //     // Open Google Sign-In modal
+  //     const userInfo = await GoogleSignin.signIn();
+  //     const idToken = userInfo?.data?.idToken;
+
+  //     if (idToken) {
+  //       const result = await googleLoginMutation.mutateAsync(idToken);
+  //       if (result?.success) {
+  //         Toast.show({
+  //           type: "success",
+  //           text1: result?.message || "Verified!",
+  //         });
+
+  //         setAuthState({
+  //           isAuthenticated: true,
+  //           user: {
+  //             id: result?.data?.id,
+  //             name: result?.data?.name,
+  //             email: result?.data?.email,
+  //             contact_number: result?.data?.contact_number,
+  //             role: result?.data?.role,
+  //             avatar: result?.data?.avatar,
+  //             status: result?.data?.status,
+  //             theme: result?.data?.theme,
+  //             language: result?.data?.language,
+  //             currency: result?.data?.currency,
+  //             is_pin_enabled: result?.data?.is_pin_enabled,
+  //             pin: result?.data?.pin,
+  //           },
+  //         });
+
+  //         // Apply theme immediately on login
+  //         const userTheme = result?.data?.theme ?? "LIGHT";
+  //         applyUserTheme(userTheme);
+
+  //         console.log("user from google login", result?.data);
+
+  //         console.log("pin enabled", result?.data?.is_pin_enabled);
+  //         console.log("pin", result?.data?.pin);
+
+  //         router.replace(getPinGateRoute(result?.data) as any);
+  //       } else {
+  //         Toast.show({
+  //           type: "error",
+  //           text1: result?.data?.message || "Login failed",
+  //         });
+  //       }
+  //     } else {
+  //       Toast.show({
+  //         type: "error",
+  //         text1: "No ID token found",
+  //       });
+  //     }
+  //   } catch (err) {
+  //     console.error("Google login error:", err);
+  //     Toast.show({
+  //       type: "error",
+  //       text1: err instanceof Error ? err.message : "Login failed",
+  //     });
+  //   } finally {
+  //     setLoading(false);
+  //     setIsGoogleSigningIn(false);
   //   }
-  // }, [authReady, router, authState.isAuthenticated]);
-
-  const signInWithGoogle = async () => {
-    if (loading || isGoogleSigningIn) return;
-
-    try {
-      setLoading(true);
-      setIsGoogleSigningIn(true);
-
-      await GoogleSignin.signOut();
-      // Check if device supports Google Play Services
-      await GoogleSignin.hasPlayServices();
-
-      // Open Google Sign-In modal
-      const userInfo = await GoogleSignin.signIn();
-      const idToken = userInfo?.data?.idToken;
-
-      if (idToken) {
-        const result = await googleLoginMutation.mutateAsync(idToken);
-        if (result?.success) {
-          Toast.show({
-            type: "success",
-            text1: result?.message || "Verified!",
-          });
-
-          setAuthState({
-            isAuthenticated: true,
-            user: {
-              id: result?.data?.id,
-              name: result?.data?.name,
-              email: result?.data?.email,
-              contact_number: result?.data?.contact_number,
-              role: result?.data?.role,
-              avatar: result?.data?.avatar,
-              status: result?.data?.status,
-              theme: result?.data?.theme,
-              language: result?.data?.language,
-              currency: result?.data?.currency,
-              is_pin_enabled: result?.data?.is_pin_enabled,
-              pin: result?.data?.pin,
-            },
-          });
-
-          // Apply theme immediately on login
-          const userTheme = result?.data?.theme ?? "LIGHT";
-          applyUserTheme(userTheme);
-
-          console.log("user from google login", result?.data);
-
-          console.log("pin enabled", result?.data?.is_pin_enabled);
-          console.log("pin", result?.data?.pin);
-
-          router.replace(getPinGateRoute(result?.data) as any);
-        } else {
-          Toast.show({
-            type: "error",
-            text1: result?.data?.message || "Login failed",
-          });
-        }
-      } else {
-        Toast.show({
-          type: "error",
-          text1: "No ID token found",
-        });
-      }
-    } catch (err) {
-      console.error("Google login error:", err);
-      Toast.show({
-        type: "error",
-        text1: err instanceof Error ? err.message : "Login failed",
-      });
-    } finally {
-      setLoading(false);
-      setIsGoogleSigningIn(false);
-    }
-  };
+  // };
 
   return (
     <SafeAreaView className="flex-1 bg-background">
@@ -139,7 +132,7 @@ export default function LoginTypeScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={signInWithGoogle}
+          // onPress={signInWithGoogle}
           activeOpacity={0.85}
           disabled={loading || isGoogleSigningIn}
           className="w-full flex-row items-center justify-center gap-3 rounded-xl py-4 border border-border disabled:opacity-50"
