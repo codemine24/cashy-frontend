@@ -3,12 +3,11 @@ import { throwApiError } from "@/utils/throw-api-error";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 export type CreateSubscriptionPayload = {
-  plan: "LIFETIME";
+  plan: "MONTHLY" | "YEARLY";
   price: string;
-  purchase_token?: string | null;
   product_id: string;
-  package_name: string;
-  transfer?: boolean;
+  rc_app_user_id: string;
+  expires_at: string;
 };
 
 export interface Subscription {
@@ -19,10 +18,8 @@ export interface Subscription {
   start_date: string;
   end_date: string | null;
   is_active: boolean;
-  purchase_token: string | null;
-  package_name: string;
   product_id: string;
-  transaction_id: string | null;
+  rc_app_user_id: string | null;
   created_at: string;
   updated_at: string;
 }

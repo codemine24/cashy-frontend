@@ -1,5 +1,6 @@
 import "@/i18n"; // ensure i18n is initialized
 import { User } from "@/interface/user";
+import { loginRevenueCat, logoutRevenueCat } from "@/lib/revenuecat";
 import { getAccessToken, getUserInfo, subscribeToAuthChanges } from "@/utils/auth";
 import i18n, { changeLanguage } from "i18next";
 import { createContext, useContext, useEffect, useState } from "react";
@@ -64,6 +65,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
     return () => unsubscribe();
   }, []);
+
+  // Keep RevenueCat's appUserID in sync with our auth user
+  useEffect(() => {
+    const userId = authState.user?.id;
+    if (userId) {
+      loginRevenueCat(userId).catch(() => {});
+    } else {
+      logoutRevenueCat().catch(() => {});
+    }
+  }, [authState.user?.id]);
 
   // Whenever authState changes (login, settings update), keep i18n in sync
   useEffect(() => {
