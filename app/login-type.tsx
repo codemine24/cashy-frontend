@@ -16,7 +16,7 @@ import Toast from "react-native-toast-message";
 
 export default function LoginTypeScreen() {
   const router = useRouter();
-  const { authReady, authState, setAuthState } = useAuth();
+  const { setAuthState } = useAuth();
   const [loading, setLoading] = useState(false);
   const [isGoogleSigningIn, setIsGoogleSigningIn] = useState(false);
   const { applyUserTheme } = useTheme();
@@ -31,13 +31,6 @@ export default function LoginTypeScreen() {
       accountName: "",
     });
   }, []);
-
-  // If user already logged in, redirect
-  // useEffect(() => {
-  //   if (authReady && authState.isAuthenticated) {
-  //     router.replace("/(tabs)");
-  //   }
-  // }, [authReady, router, authState.isAuthenticated]);
 
   const signInWithGoogle = async () => {
     if (loading || isGoogleSigningIn) return;
@@ -83,11 +76,6 @@ export default function LoginTypeScreen() {
           // Apply theme immediately on login
           const userTheme = result?.data?.theme ?? "LIGHT";
           applyUserTheme(userTheme);
-
-          console.log("user from google login", result?.data);
-
-          console.log("pin enabled", result?.data?.is_pin_enabled);
-          console.log("pin", result?.data?.pin);
 
           router.replace(getPinGateRoute(result?.data) as any);
         } else {
@@ -160,11 +148,11 @@ export default function LoginTypeScreen() {
             By continuing, you agree to our
           </Muted>
           <TouchableOpacity onPress={() => router.push("/terms-and-conditions")}>
-            <Text className="text-primary text-sm underline">Terms of Conditions</Text>
+            <Text className="text-primary text-xs underline">Terms of Conditions</Text>
           </TouchableOpacity>
-          <Muted className="text-center text-sm">and</Muted>
+          <Muted className="text-center text-xs">and</Muted>
           <TouchableOpacity onPress={() => router.push("/privacy-policy")}>
-            <Text className="text-primary text-sm underline">Privacy Policy</Text>
+            <Text className="text-primary text-xs underline">Privacy Policy</Text>
           </TouchableOpacity>
         </View>
       </View>

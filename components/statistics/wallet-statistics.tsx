@@ -153,6 +153,15 @@ export function WalletStatistics() {
   };
 
   const wallets = walletsData?.data || [];
+  const personalWallets = wallets?.filter(w => w.role === 'OWNER') || [];
+  const sharedWallets = wallets?.filter(w => w.role !== 'OWNER') || [];
+
+  // Wallet options based on Personal or Shared selected
+  const walletOptions = statsFor === "personal"
+    ? personalWallets
+    : statsFor === "shared"
+      ? sharedWallets
+      : wallets
 
   const handleGeneratePdf = async () => {
     try {
@@ -277,7 +286,11 @@ export function WalletStatistics() {
               { label: "Personal", value: "personal" },
               { label: "Shared", value: "shared" },
             ]}
-            onChange={(v) => setStatsFor(v as "all" | "personal" | "shared")}
+            onChange={(v) => {
+              // Reset wallet_id when statsFor changes
+              router.setParams({ wallet_id: "all" });
+              setStatsFor(v as "all" | "personal" | "shared")
+            }}
             isDark={isDark}
           />
           <DropdownSelect
@@ -285,7 +298,7 @@ export function WalletStatistics() {
             value={activeBookId}
             options={[
               { label: "All Wallets", value: "all" },
-              ...wallets.map((w: Wallet) => ({ label: w.name, value: w.id })),
+              ...walletOptions.map((w: Wallet) => ({ label: w.name, value: w.id })),
             ]}
             onChange={(v) => router.setParams({ wallet_id: v })}
             isDark={isDark}
@@ -417,7 +430,7 @@ export function WalletStatistics() {
                                 </View>
                                 <View className="flex-row items-center gap-1">
                                   <P className="text-[10px] text-muted-foreground font-bold ml-1">
-                                    {cat.amount}
+                                    {formatCurrency(cat.amount)}
                                   </P>
                                   <P className="text-[10px] text-muted-foreground font-bold ml-1">
                                     ({Math.round(cat.percentage)}%)
