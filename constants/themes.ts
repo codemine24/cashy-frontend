@@ -13,7 +13,7 @@ import { vars } from "nativewind";
 
 // ─── Default (Brand) theme ──────────────────────────────────────────
 const defaultLight = vars({
-  "--color-primary": "2 146 154",
+  "--color-primary": "38 182 167",
   "--color-primary-foreground": "255 255 255",
   "--color-secondary": "255 140 66",
   "--color-secondary-foreground": "255 255 255",
@@ -41,7 +41,7 @@ const defaultLight = vars({
 });
 
 const defaultDark = vars({
-  "--color-primary": "2 146 154",
+  "--color-primary": "38 182 167",
   "--color-primary-foreground": "255 255 255",
   "--color-secondary": "255 163 110",
   "--color-secondary-foreground": "255 255 255",

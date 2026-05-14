@@ -1,8 +1,18 @@
 import { Button } from "@/components/ui/button";
 import { InputError } from "@/components/ui/input-error";
+import { useKeyboardVisible } from "@/hooks/use-keyboard-visible";
+import { useKeyboardOffset } from "@/hooks/useKeyboardOffset";
 import { Mail, ShieldCheck, UserPlus } from "@/lib/icons";
 import { useEffect, useRef, useState } from "react";
-import { ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
+import {
+  KeyboardAvoidingView,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export type WalletMemberRole = "VIEWER" | "EDITOR" | "ADMIN";
 
@@ -11,7 +21,10 @@ type MemberFormProps = {
   initialEmail?: string;
   initialRole?: WalletMemberRole;
   isSubmitting?: boolean;
-  onSubmit: (payload: { email: string; role: WalletMemberRole }) => Promise<void> | void;
+  onSubmit: (payload: {
+    email: string;
+    role: WalletMemberRole;
+  }) => Promise<void> | void;
 };
 
 const ROLE_OPTIONS: {
@@ -68,6 +81,9 @@ export function MemberForm({
   const [email, setEmail] = useState(initialEmail);
   const [role, setRole] = useState<WalletMemberRole>(initialRole);
   const [emailError, setEmailError] = useState("");
+  const insets = useSafeAreaInsets();
+  const keyboardOffset = useKeyboardOffset();
+  const isKeyboardVisible = useKeyboardVisible();
 
   useEffect(() => {
     setEmail(initialEmail);
@@ -100,100 +116,111 @@ export function MemberForm({
   };
 
   return (
-    <View className="flex-1">
-      <ScrollView
-        className="flex-1"
-        contentContainerStyle={{
-          paddingHorizontal: 20,
-          paddingTop: 20,
-          paddingBottom: 112,
-        }}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
-      >
-        <View className="items-center mb-8">
-          <View className="w-16 h-16 rounded-2xl bg-primary/10 items-center justify-center mb-4">
-            {mode === "edit" ? (
-              <ShieldCheck size={32} className="text-primary" />
-            ) : (
-              <UserPlus size={32} className="text-primary" />
-            )}
+    <KeyboardAvoidingView
+      behavior="height"
+      keyboardVerticalOffset={keyboardOffset}
+      style={{ flex: 1 }}
+    >
+      <View className="flex-1">
+        <ScrollView
+          className="flex-1"
+          contentContainerStyle={{
+            paddingHorizontal: 20,
+            paddingTop: 20,
+            paddingBottom: 112,
+          }}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          <View className="items-center mb-8">
+            <View className="w-16 h-16 rounded-2xl bg-primary/10 items-center justify-center mb-4">
+              {mode === "edit" ? (
+                <ShieldCheck size={32} className="text-primary" />
+              ) : (
+                <UserPlus size={32} className="text-primary" />
+              )}
+            </View>
+            <Text className="text-2xl font-bold text-foreground">
+              {mode === "edit" ? "Edit Member Role" : "Add Member"}
+            </Text>
+            <Text className="text-sm text-muted-foreground text-center mt-2 px-4">
+              {mode === "edit"
+                ? "Adjust what this member can do in the wallet."
+                : "Invite someone by email and choose their access level."}
+            </Text>
           </View>
-          <Text className="text-2xl font-bold text-foreground">
-            {mode === "edit" ? "Edit Member Role" : "Add Member"}
-          </Text>
-          <Text className="text-sm text-muted-foreground text-center mt-2 px-4">
-            {mode === "edit"
-              ? "Adjust what this member can do in the wallet."
-              : "Invite someone by email and choose their access level."}
-          </Text>
-        </View>
 
-        <View>
-          <Text className="text-sm font-semibold text-foreground mb-2">Email</Text>
-          <View
-            className={`flex-row items-center rounded-xl border px-4 bg-card ${
-              emailError ? "border-destructive" : "border-border"
-            } ${mode === "edit" ? "opacity-70" : ""}`}
-          >
-            <Mail size={18} className="text-muted-foreground" />
-            <TextInput
-              ref={inputRef}
-              value={email}
-              onChangeText={(value) => {
-                setEmail(value);
-                if (emailError) setEmailError("");
-              }}
-              placeholder="member@example.com"
-              placeholderTextColor="#94a3b8"
-              editable={mode === "create" && !isSubmitting}
-              autoCapitalize="none"
-              autoCorrect={false}
-              keyboardType="email-address"
-              className="flex-1 py-4 ml-3 text-base text-foreground"
-            />
+          <View>
+            <Text className="text-sm font-semibold text-foreground mb-2">
+              Email
+            </Text>
+            <View
+              className={`flex-row items-center rounded-xl border px-4 bg-card ${
+                emailError ? "border-destructive" : "border-border"
+              } ${mode === "edit" ? "opacity-70" : ""}`}
+            >
+              <Mail size={18} className="text-muted-foreground" />
+              <TextInput
+                ref={inputRef}
+                value={email}
+                onChangeText={(value) => {
+                  setEmail(value);
+                  if (emailError) setEmailError("");
+                }}
+                placeholder="member@example.com"
+                placeholderTextColor="#94a3b8"
+                editable={mode === "create" && !isSubmitting}
+                autoCapitalize="none"
+                autoCorrect={false}
+                keyboardType="email-address"
+                className="flex-1 py-4 ml-3 text-base text-foreground"
+              />
+            </View>
+            <InputError error={emailError} />
           </View>
-          <InputError error={emailError} />
-        </View>
 
-        <Text className="text-sm font-semibold text-foreground mt-6 mb-3">Role</Text>
-        <View className="flex-row items-center gap-2">
-          {ROLE_OPTIONS.map((option) => {
-            const isActive = option.value === role;
-            return (
-              <TouchableOpacity
-                key={option.value}
-                onPress={() => setRole(option.value)}
-                activeOpacity={0.75}
-                disabled={isSubmitting}
-                className={`flex-1 rounded-xl border py-3.5 px-2 items-center ${
-                  isActive ? "bg-primary/10 border-primary" : "bg-card border-border"
-                }`}
-              >
-                <Text
-                  className={`text-sm font-semibold ${
-                    isActive ? "text-primary" : "text-foreground"
+          <Text className="text-sm font-semibold text-foreground mt-6 mb-3">
+            Role
+          </Text>
+          <View className="flex-row items-center gap-2">
+            {ROLE_OPTIONS.map((option) => {
+              const isActive = option.value === role;
+              return (
+                <TouchableOpacity
+                  key={option.value}
+                  onPress={() => setRole(option.value)}
+                  activeOpacity={0.75}
+                  disabled={isSubmitting}
+                  className={`flex-1 rounded-xl border py-3.5 px-2 items-center ${
+                    isActive
+                      ? "bg-primary/10 border-primary"
+                      : "bg-card border-border"
                   }`}
-                  numberOfLines={1}
                 >
-                  {option.label}
-                </Text>
-                {/* <Text
+                  <Text
+                    className={`text-sm font-semibold ${
+                      isActive ? "text-primary" : "text-foreground"
+                    }`}
+                    numberOfLines={1}
+                  >
+                    {option.label}
+                  </Text>
+                  {/* <Text
                   className="text-xs text-muted-foreground mt-0.5 text-center"
                   numberOfLines={1}
                 >
                   {option.summary}
                 </Text> */}
-              </TouchableOpacity>
-            );
-          })}
-        </View>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
 
-        <View className="rounded-xl bg-muted border border-border p-4 mt-5">
-          <Text className="text-xs font-bold text-muted-foreground uppercase mb-3">
-            {selectedRole?.label} can
-          </Text>
-              <View className="flex-col gap-2">
+          <View className="rounded-xl bg-muted border border-border p-4 mt-5">
+            <Text className="text-xs font-bold text-muted-foreground uppercase mb-3">
+              {selectedRole?.label} can
+            </Text>
+            <View className="flex-col gap-2">
               {(role === "VIEWER"
                 ? [
                     { icon: "✅", label: "View all transactions" },
@@ -221,10 +248,16 @@ export function MemberForm({
                 </View>
               ))}
             </View>
-        </View>
-      </ScrollView>
+          </View>
+        </ScrollView>
+      </View>
 
-      <View className="absolute bottom-0 left-0 right-0 bg-background px-5 pt-3 pb-6 border-t border-border">
+      <View
+        className="px-5 pt-3 pb-2 bg-background border-t border-border"
+        style={{
+          marginBottom: isKeyboardVisible ? 0 : Math.min(insets.bottom, 20),
+        }}
+      >
         <Button disabled={isSubmitting} onPress={handleSubmit}>
           {isSubmitting
             ? mode === "edit"
@@ -235,6 +268,6 @@ export function MemberForm({
               : "Add Member"}
         </Button>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }

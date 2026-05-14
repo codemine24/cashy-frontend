@@ -10,7 +10,7 @@
     "newArchEnabled": true,
     "android": {
       "package": "com.codemine.cashy",
-      "versionCode": 2026051501,
+      "versionCode": 2026051502,
       "softwareKeyboardLayoutMode": "pan",
       "backgroundColor": "#ffffff",
       "adaptiveIcon": {

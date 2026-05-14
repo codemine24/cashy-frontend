@@ -2,7 +2,17 @@ import { Button } from "@/components/ui/button";
 import { InputError } from "@/components/ui/input-error";
 import { Check, X } from "@/lib/icons";
 import { useEffect, useRef, useState } from "react";
-import { ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
+import {
+  KeyboardAvoidingView,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { useKeyboardVisible } from "@/hooks/use-keyboard-visible";
+import { useKeyboardOffset } from "@/hooks/useKeyboardOffset";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type CategoryFormProps = {
   mode: "create" | "edit";
@@ -10,7 +20,11 @@ type CategoryFormProps = {
   initialIcon?: string;
   initialColor?: string;
   isSubmitting?: boolean;
-  onSubmit: (payload: { title: string; icon: string; color: string }) => Promise<void> | void;
+  onSubmit: (payload: {
+    title: string;
+    icon: string;
+    color: string;
+  }) => Promise<void> | void;
 };
 
 export const COMMON_COLORS = [
@@ -123,6 +137,9 @@ export function CategoryForm({
   const [selectedIcon, setSelectedIcon] = useState(initialIcon || "📝");
   const [selectedColor, setSelectedColor] = useState(initialColor);
   const [error, setError] = useState("");
+  const insets = useSafeAreaInsets();
+  const keyboardOffset = useKeyboardOffset();
+  const isKeyboardVisible = useKeyboardVisible();
 
   useEffect(() => {
     setTitle(initialName);
@@ -156,134 +173,147 @@ export function CategoryForm({
   };
 
   return (
-    <View className="flex-1">
-      <ScrollView
-        className="flex-1"
-        contentContainerStyle={{
-          paddingHorizontal: 20,
-          paddingTop: 20,
-          paddingBottom: 112,
-        }}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
-      >
-        <View className="items-center mb-8">
-          <View
-            className={`w-16 h-16 rounded-2xl items-center justify-center border border-border ${
-              selectedColor ? "" : "bg-primary/10"
-            }`}
-            style={selectedColor ? { backgroundColor: selectedColor } : undefined}
-          >
-            <Text className="text-3xl">{selectedIcon}</Text>
-          </View>
-          <Text className="text-2xl font-bold text-foreground mt-4">
-            {mode === "edit" ? "Edit Category" : "New Category"}
-          </Text>
-          <Text className="text-sm text-muted-foreground text-center mt-2 px-4">
-            Choose an icon and color that makes this category easy to spot.
-          </Text>
-        </View>
-
-        <Text className="text-sm font-semibold text-foreground mb-2">
-          Category name
-        </Text>
-        <TextInput
-          ref={inputRef}
-          value={title}
-          onChangeText={(value) => {
-            setTitle(value);
-            if (error) setError("");
+    <KeyboardAvoidingView
+      behavior="height"
+      keyboardVerticalOffset={keyboardOffset}
+      style={{ flex: 1 }}
+    >
+      <View className="flex-1">
+        <ScrollView
+          className="flex-1"
+          contentContainerStyle={{
+            paddingHorizontal: 20,
+            paddingTop: 20,
+            paddingBottom: 112,
           }}
-          placeholder="e.g. Travel, Utilities, Groceries"
-          placeholderTextColor="#94a3b8"
-          editable={!isSubmitting}
-          returnKeyType="done"
-          onSubmitEditing={handleSubmit}
-          className={`rounded-xl px-4 py-4 border bg-card text-foreground text-base ${
-            error ? "border-destructive" : "border-border"
-          }`}
-        />
-        <InputError error={error} />
-
-        <Text className="text-sm font-semibold text-foreground mt-6 mb-3">
-          Icon
-        </Text>
-        <View className="bg-card rounded-xl border border-border">
-          <ScrollView
-            horizontal
-            keyboardShouldPersistTaps="handled"
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ padding: 12 }}
-          >
-            <View className="flex-row gap-2">
-              {COMMON_ICONS.map((icon, index) => {
-                const isSelected = selectedIcon === icon;
-                return (
-                  <TouchableOpacity
-                    key={`${icon}-${index}`}
-                    onPress={() => setSelectedIcon(icon)}
-                    disabled={isSubmitting}
-                    className={`w-12 h-12 items-center justify-center rounded-xl border ${
-                      isSelected
-                        ? "bg-primary/15 border-primary"
-                        : "bg-background border-border"
-                    }`}
-                  >
-                    <Text className="text-2xl">{icon}</Text>
-                  </TouchableOpacity>
-                );
-              })}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          <View className="items-center mb-8">
+            <View
+              className={`w-16 h-16 rounded-2xl items-center justify-center border border-border ${
+                selectedColor ? "" : "bg-primary/10"
+              }`}
+              style={
+                selectedColor ? { backgroundColor: selectedColor } : undefined
+              }
+            >
+              <Text className="text-3xl">{selectedIcon}</Text>
             </View>
-          </ScrollView>
-        </View>
+            <Text className="text-2xl font-bold text-foreground mt-4">
+              {mode === "edit" ? "Edit Category" : "New Category"}
+            </Text>
+            <Text className="text-sm text-muted-foreground text-center mt-2 px-4">
+              Choose an icon and color that makes this category easy to spot.
+            </Text>
+          </View>
 
-        <Text className="text-sm font-semibold text-foreground mt-6 mb-3">
-          Color
-        </Text>
-        <View className="bg-card rounded-xl border border-border">
-          <ScrollView
-            horizontal
-            keyboardShouldPersistTaps="handled"
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ padding: 12 }}
-          >
-            <View className="flex-row gap-3 items-center">
-              <TouchableOpacity
-                onPress={() => setSelectedColor("")}
-                disabled={isSubmitting}
-                className={`w-11 h-11 items-center justify-center rounded-full ${
-                  selectedColor === ""
-                    ? "border-2 border-primary"
-                    : "border border-border"
-                }`}
-              >
-                <X size={18} className="text-muted-foreground" />
-              </TouchableOpacity>
+          <Text className="text-sm font-semibold text-foreground mb-2">
+            Category name
+          </Text>
+          <TextInput
+            ref={inputRef}
+            value={title}
+            onChangeText={(value) => {
+              setTitle(value);
+              if (error) setError("");
+            }}
+            placeholder="e.g. Travel, Utilities, Groceries"
+            placeholderTextColor="#94a3b8"
+            editable={!isSubmitting}
+            returnKeyType="done"
+            onSubmitEditing={handleSubmit}
+            className={`rounded-xl px-4 py-4 border bg-card text-foreground text-base ${
+              error ? "border-destructive" : "border-border"
+            }`}
+          />
+          <InputError error={error} />
 
-              {COMMON_COLORS.map((color) => {
-                const isSelected = selectedColor === color;
-                return (
-                  <TouchableOpacity
-                    key={color}
-                    onPress={() => setSelectedColor(color)}
-                    disabled={isSubmitting}
-                    className={`w-11 h-11 items-center justify-center rounded-full ${
-                      isSelected
-                        ? "border-2 border-primary"
-                        : "border border-border"
-                    }`}
-                    style={{ backgroundColor: color }}
-                  >
-                    {isSelected ? <Check size={18} color="#ffffff" /> : null}
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-          </ScrollView>
-        </View>
-      </ScrollView>
+          <Text className="text-sm font-semibold text-foreground mt-6 mb-3">
+            Icon
+          </Text>
+          <View className="bg-card rounded-xl border border-border">
+            <ScrollView
+              horizontal
+              keyboardShouldPersistTaps="handled"
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ padding: 12 }}
+            >
+              <View className="flex-row gap-2">
+                {COMMON_ICONS.map((icon, index) => {
+                  const isSelected = selectedIcon === icon;
+                  return (
+                    <TouchableOpacity
+                      key={`${icon}-${index}`}
+                      onPress={() => setSelectedIcon(icon)}
+                      disabled={isSubmitting}
+                      className={`w-12 h-12 items-center justify-center rounded-xl border ${
+                        isSelected
+                          ? "bg-primary/15 border-primary"
+                          : "bg-background border-border"
+                      }`}
+                    >
+                      <Text className="text-2xl">{icon}</Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </ScrollView>
+          </View>
 
-      <View className="absolute bottom-0 left-0 right-0 bg-background px-5 pt-3 pb-6 border-t border-border">
+          <Text className="text-sm font-semibold text-foreground mt-6 mb-3">
+            Color
+          </Text>
+          <View className="bg-card rounded-xl border border-border">
+            <ScrollView
+              horizontal
+              keyboardShouldPersistTaps="handled"
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ padding: 12 }}
+            >
+              <View className="flex-row gap-3 items-center">
+                <TouchableOpacity
+                  onPress={() => setSelectedColor("")}
+                  disabled={isSubmitting}
+                  className={`w-11 h-11 items-center justify-center rounded-full ${
+                    selectedColor === ""
+                      ? "border-2 border-primary"
+                      : "border border-border"
+                  }`}
+                >
+                  <X size={18} className="text-muted-foreground" />
+                </TouchableOpacity>
+
+                {COMMON_COLORS.map((color) => {
+                  const isSelected = selectedColor === color;
+                  return (
+                    <TouchableOpacity
+                      key={color}
+                      onPress={() => setSelectedColor(color)}
+                      disabled={isSubmitting}
+                      className={`w-11 h-11 items-center justify-center rounded-full ${
+                        isSelected
+                          ? "border-2 border-primary"
+                          : "border border-border"
+                      }`}
+                      style={{ backgroundColor: color }}
+                    >
+                      {isSelected ? <Check size={18} color="#ffffff" /> : null}
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </ScrollView>
+          </View>
+        </ScrollView>
+      </View>
+
+      <View
+        className="px-5 pt-3 pb-2 bg-background border-t border-border"
+        style={{
+          marginBottom: isKeyboardVisible ? 0 : Math.min(insets.bottom, 20),
+        }}
+      >
         <Button disabled={isSubmitting} onPress={handleSubmit}>
           {isSubmitting
             ? "Saving..."
@@ -292,6 +322,6 @@ export function CategoryForm({
               : "Create Category"}
         </Button>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
