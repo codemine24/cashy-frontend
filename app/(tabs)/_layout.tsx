@@ -13,7 +13,7 @@ import WalletsScreen from "./index";
 import LoansScreen from "./loans";
 import StatisticsScreen from "./statistics";
 
-const ACTIVE_COLOR = "rgb(2, 146, 154)";
+const ACTIVE_COLOR = "rgb(38, 182, 167)";
 const INACTIVE_COLOR = "rgb(100, 116, 139)";
 
 const TABS = [
@@ -82,9 +82,10 @@ function BottomTabBar({
                   transform: [{ translateX: -30 }],
                   width: 60,
                   height: 2,
-                  backgroundColor: ACTIVE_COLOR,
+                  // backgroundColor: ACTIVE_COLOR,
                   borderRadius: 1,
                 }}
+                className="bg-primary"
               />
             )}
             {tab.icon(color)}
