@@ -108,7 +108,7 @@ export default function SettingsScreen() {
     // Reset theme to light theme after logout
     resetTheme();
     navigation.dispatch(
-      CommonActions.reset({ index: 0, routes: [{ name: "/login-type" }] }),
+      CommonActions.reset({ index: 0, routes: [{ name: "login-type" }] }),
     );
   };
 

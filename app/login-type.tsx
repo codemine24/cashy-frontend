@@ -6,6 +6,7 @@ import { useAuth } from "@/context/auth-context";
 import { useTheme } from "@/context/theme-context";
 import { GoogleIcon } from "@/icons/google-icon";
 import { Mail } from "@/lib/icons";
+import { getPinGateRoute } from "@/utils/pin-gate";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
@@ -32,11 +33,11 @@ export default function LoginTypeScreen() {
   }, []);
 
   // If user already logged in, redirect
-  useEffect(() => {
-    if (authReady && authState.isAuthenticated) {
-      router.replace("/(tabs)");
-    }
-  }, [authReady, router, authState.isAuthenticated]);
+  // useEffect(() => {
+  //   if (authReady && authState.isAuthenticated) {
+  //     router.replace("/(tabs)");
+  //   }
+  // }, [authReady, router, authState.isAuthenticated]);
 
   const signInWithGoogle = async () => {
     if (loading || isGoogleSigningIn) return;
@@ -83,7 +84,12 @@ export default function LoginTypeScreen() {
           const userTheme = result?.data?.theme ?? "LIGHT";
           applyUserTheme(userTheme);
 
-          router.replace("/(tabs)");
+          console.log("user from google login", result?.data);
+
+          console.log("pin enabled", result?.data?.is_pin_enabled);
+          console.log("pin", result?.data?.pin);
+
+          router.replace(getPinGateRoute(result?.data) as any);
         } else {
           Toast.show({
             type: "error",

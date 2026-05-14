@@ -9,7 +9,7 @@ import type { User } from "@/interface/user";
  * 3. PIN not enabled           → `/(tabs)`      (straight to the app)
  */
 export function getPinGateRoute(user: User | null): string {
-  if (!user) return "/(tabs)";
+  if (!user?.id) return "/(tabs)";
 
   if (user.is_pin_enabled) {
     return user.pin ? "/pin-verify" : "/pin-setup";
