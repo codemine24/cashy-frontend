@@ -141,6 +141,26 @@ export const RootNavigator = () => {
                     },
                   }}
                 />
+                {[
+                  "wallet/wallet-form",
+                  "wallet/member-form",
+                  "wallet/category-form",
+                ].map((name) => (
+                  <Stack.Screen
+                    key={name}
+                    name={name as any}
+                    options={{
+                      headerShown: true,
+                      animation: "simple_push",
+                      headerStyle: {
+                        backgroundColor: isDark ? "#0f172a" : "#f8fafc",
+                      },
+                      contentStyle: {
+                        backgroundColor: isDark ? "#0f172a" : "#f8fafc",
+                      },
+                    }}
+                  />
+                ))}
                 <Stack.Screen
                   name="wallet/select-category"
                   options={{

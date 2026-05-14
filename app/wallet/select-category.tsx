@@ -1,5 +1,4 @@
 import { useGetCategories } from "@/api/category";
-import { CategoryModal } from "@/components/category/category-modal";
 import { Button } from "@/components/ui/button";
 import { Check, ChevronLeft, Plus, Settings, X } from "@/lib/icons";
 import {
@@ -8,7 +7,7 @@ import {
     useLocalSearchParams,
     useRouter,
 } from "expo-router";
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 import {
     ActivityIndicator,
     BackHandler,
@@ -41,8 +40,6 @@ export default function SelectCategoryScreen() {
     attachments?: string | string[];
     currentAttachments?: string;
   }>();
-
-  const [modalVisible, setModalVisible] = useState(false);
 
   const { data: categoriesResponse, isLoading } = useGetCategories();
   const categories = categoriesResponse?.data || [];
@@ -211,7 +208,7 @@ export default function SelectCategoryScreen() {
 
         {/* Floating Action Button */}
         <Button
-          onPress={() => setModalVisible(true)}
+          onPress={() => router.push("/wallet/category-form" as any)}
           className="rounded-full py-4 absolute right-4"
           style={{ bottom: insets.bottom + 32 }}
         >
@@ -221,13 +218,6 @@ export default function SelectCategoryScreen() {
           </Text>
         </Button>
       </View>
-
-      {/* Add New Category Modal */}
-      <CategoryModal
-        visible={modalVisible}
-        onClose={() => setModalVisible(false)}
-        isEditing={false}
-      />
     </>
   );
 }

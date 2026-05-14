@@ -3,7 +3,6 @@ import { ScreenContainer } from "@/components/screen-container";
 import { WalletsSkeleton } from "@/components/skeletons/wallets-skeleton";
 import { Button } from "@/components/ui/button";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
-import { CreateWalletModal } from "@/components/wallet/create-wallet-modal";
 import SortWalletModal from "@/components/wallet/sort-wallet-modal";
 import { WalletCard } from "@/components/wallet/wallet-card";
 import { useDebounce } from "@/hooks/use-debounce";
@@ -33,11 +32,6 @@ export default function HomeScreen() {
   const { t } = useTranslation();
   const router = useRouter();
 
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [editingBook, setEditingBook] = useState<{
-    id: string;
-    name: string;
-  } | null>(null);
   const [showSortModal, setShowSortModal] = useState(false);
   const [sortBy, setSortBy] = useState<SortOption>("updated_at");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
@@ -112,8 +106,10 @@ export default function HomeScreen() {
   };
 
   const handleRename = (wallet: Wallet) => {
-    setEditingBook({ id: wallet.id, name: wallet.name });
-    setShowCreateModal(true);
+    router.push({
+      pathname: "/wallet/wallet-form",
+      params: { walletId: wallet.id, walletName: wallet.name },
+    } as any);
   };
 
   const handleAddMember = (wallet: Wallet) => {
@@ -237,7 +233,7 @@ export default function HomeScreen() {
       {/* Floating Action Button */}
 
       <Button
-        onPress={() => setShowCreateModal(true)}
+        onPress={() => router.push("/wallet/wallet-form" as any)}
         className="rounded-full py-4 absolute bottom-4 right-4"
       >
         <PlusIcon className="text-primary-foreground size-6" />
@@ -248,16 +244,6 @@ export default function HomeScreen() {
           {t("wallets.addWallet")}
         </Text>
       </Button>
-
-      {/* Create / Edit Wallet Modal */}
-      <CreateWalletModal
-        visible={showCreateModal}
-        onClose={() => {
-          setShowCreateModal(false);
-          setEditingBook(null);
-        }}
-        editBook={editingBook}
-      />
 
       {/* Sort Modal // */}
       <SortWalletModal

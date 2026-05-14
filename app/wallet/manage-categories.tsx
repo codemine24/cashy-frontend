@@ -1,5 +1,4 @@
 import { useDeleteCategory, useGetCategories } from "@/api/category";
-import { CategoryModal } from "@/components/category/category-modal";
 import { ManageCategoriesSkeleton } from "@/components/skeletons/manage-categories-skeleton";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { ChevronLeft, Edit3, MoreVertical, Trash2 } from "@/lib/icons";
@@ -18,42 +17,31 @@ import Toast from "react-native-toast-message";
 export default function ManageCategoriesScreen() {
   const router = useRouter();
 
-  // Modals & Forms State
-  const [modalVisible, setModalVisible] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editingCategoryId, setEditingCategoryId] = useState<string | null>(
-    null,
-  );
-  const [editingCategoryName, setEditingCategoryName] = useState("");
-  const [editingCategoryIcon, setEditingCategoryIcon] = useState("");
-  const [editingCategoryColor, setEditingCategoryColor] = useState("");
-
-  // Context Menu State
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
 
-  // Delete Modal State
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null);
 
-  // APIs
   const { data: categoriesResponse, isLoading } = useGetCategories();
   const categories = categoriesResponse?.data || [];
   const deleteCategoryMutation = useDeleteCategory();
 
-  // Open the modal for Editing
-  const openEditModal = (
+  const openEditScreen = (
     id: string,
     currentName: string,
     currentIcon?: string,
     currentColor?: string,
   ) => {
     setActiveMenuId(null);
-    setIsEditing(true);
-    setEditingCategoryId(id);
-    setEditingCategoryName(currentName);
-    setEditingCategoryIcon(currentIcon || "📝");
-    setEditingCategoryColor(currentColor || "");
-    setModalVisible(true);
+    router.push({
+      pathname: "/wallet/category-form",
+      params: {
+        categoryId: id,
+        name: currentName,
+        icon: currentIcon || "📝",
+        color: currentColor || "",
+      },
+    } as any);
   };
 
   const handleDeleteCategory = (id: string) => {
@@ -78,15 +66,6 @@ export default function ManageCategoriesScreen() {
         text2: e?.message || "Failed to delete category",
       });
     }
-  };
-
-  const handleClose = () => {
-    setEditingCategoryName("");
-    setEditingCategoryIcon("");
-    setEditingCategoryColor("");
-    setIsEditing(false);
-    setEditingCategoryId(null);
-    setModalVisible(false);
   };
 
   useFocusEffect(
@@ -191,7 +170,7 @@ export default function ManageCategoriesScreen() {
                     <View className="w-full bg-card rounded-xl border border-border overflow-hidden">
                       <TouchableOpacity
                         onPress={() =>
-                          openEditModal(
+                          openEditScreen(
                             cat.id,
                             cat.title,
                             cat.icon,
@@ -222,17 +201,6 @@ export default function ManageCategoriesScreen() {
           </ScrollView>
         )}
       </View>
-
-      {/* Reusable Category Form Modal */}
-      <CategoryModal
-        visible={modalVisible}
-        onClose={handleClose}
-        isEditing={isEditing}
-        initialName={editingCategoryName}
-        initialIcon={editingCategoryIcon}
-        initialColor={editingCategoryColor}
-        categoryId={editingCategoryId || undefined}
-      />
 
       <ConfirmationModal
         visible={showDeleteModal}

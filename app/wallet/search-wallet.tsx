@@ -1,5 +1,4 @@
 import { useDeleteWallet, useWallets } from "@/api/wallet";
-import { CreateWalletModal } from "@/components/wallet/create-wallet-modal";
 import { WalletCard } from "@/components/wallet/wallet-card";
 import { useDebounce } from "@/hooks/use-debounce";
 import { Wallet } from "@/interface/wallet";
@@ -32,12 +31,6 @@ export default function SearchWalletScreen() {
     }, 300);
     return () => clearTimeout(timer);
   }, []);
-
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [editingBook, setEditingBook] = useState<{
-    id: string;
-    name: string;
-  } | null>(null);
 
   const handleDeleteBook = (wallet: Wallet) => {
     Alert.alert(
@@ -77,8 +70,10 @@ export default function SearchWalletScreen() {
     );
   };
   const handleRename = (wallet: Wallet) => {
-    setEditingBook({ id: wallet.id, name: wallet.name });
-    setShowCreateModal(true);
+    router.push({
+      pathname: "/wallet/wallet-form",
+      params: { walletId: wallet.id, walletName: wallet.name },
+    } as any);
   };
 
   const handleAddMember = (wallet: Wallet) => {
@@ -174,15 +169,6 @@ export default function SearchWalletScreen() {
         )}
       </View>
 
-      {/* Create / Edit Wallet Modal */}
-      <CreateWalletModal
-        visible={showCreateModal}
-        onClose={() => {
-          setShowCreateModal(false);
-          setEditingBook(null);
-        }}
-        editBook={editingBook}
-      />
     </>
   );
 }
