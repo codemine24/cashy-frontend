@@ -1,7 +1,8 @@
 import { AuthProvider } from "@/context/auth-context";
 import { useTheme } from "@/context/theme-context";
+import { configureRevenueCat } from "@/lib/revenuecat";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Toast, { BaseToast, ErrorToast } from "react-native-toast-message";
 
 function ThemedToast() {
@@ -62,6 +63,10 @@ export const RootProvider = ({ children }: { children: React.ReactNode }) => {
         },
       }),
   );
+
+  useEffect(() => {
+    configureRevenueCat();
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
