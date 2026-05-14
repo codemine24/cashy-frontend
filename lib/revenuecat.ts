@@ -1,4 +1,4 @@
-import Purchases, { LOG_LEVEL } from "react-native-purchases";
+import Purchases, { LOG_LEVEL, LogInResult } from "react-native-purchases";
 
 // TODO: replace with your RevenueCat Android API key (and iOS key when needed)
 const REVENUECAT_ANDROID_API_KEY = "goog_rQMURicPvxtotROJXWqozuuCoCk";
@@ -20,10 +20,31 @@ export function configureRevenueCat() {
 
 export async function loginRevenueCat(userId: string) {
   if (!configured) configureRevenueCat();
-  await Purchases.logIn(userId);
+
+  try {
+    const logInResult: LogInResult = await Purchases.logIn(userId);
+
+    if (logInResult.created) {
+      console.log("New RevenueCat user created successfully!");
+    } else {
+      console.log("Logged into existing RevenueCat user successfully!");
+    }
+
+    console.log("Customer Info:", logInResult.customerInfo);
+
+    return { success: true, ...logInResult };
+  } catch (error) {
+    console.error("Failed to log in to RevenueCat:", error);
+    return { success: false, error };
+  }
 }
 
 export async function logoutRevenueCat() {
   if (!configured) return;
   await Purchases.logOut();
+}
+
+export async function getRevenueCatOfferings() {
+  if (!configured) configureRevenueCat();
+  return await Purchases.getOfferings();
 }

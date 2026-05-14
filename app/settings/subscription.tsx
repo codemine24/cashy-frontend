@@ -1,3 +1,4 @@
+import { getRevenueCatOfferings } from "@/lib/revenuecat";
 import { useCreateSubscription, useCreateTemporary } from "@/api/subscription";
 import { ScreenContainer } from "@/components/screen-container";
 import { ComparisonTable } from "@/components/subscription/comparison-table";
@@ -46,12 +47,12 @@ export default function Subscription() {
     let cancelled = false;
     (async () => {
       try {
-        const offerings = await Purchases.getOfferings();
-        console.log("Offerings monthly:", JSON.stringify(offerings, null, 2));
+        const offerings = await getRevenueCatOfferings();
+        console.log("Offerings:", JSON.stringify(offerings, null, 2));
         await createTemporary({
           offering_check: JSON.stringify(offerings),
         });
-        if (!cancelled) setOffering(offerings.current);
+        if (!cancelled && offerings) setOffering(offerings.current);
       } catch {
         // leave offering null; UI will show loader / disabled state
       } finally {
