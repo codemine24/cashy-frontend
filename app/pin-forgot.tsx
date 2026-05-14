@@ -136,14 +136,6 @@ export default function PinForgotScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-background">
-      {/* <View className="px-6 mt-4">
-        <TouchableOpacity
-          onPress={() => (step === "otp" ? setStep("email") : router.back())}
-          className="h-10 w-10 items-center justify-center rounded-full bg-muted"
-        >
-          <ChevronLeft size={26} className="text-foreground" />
-        </TouchableOpacity>
-      </View> */}
 
       <View className="flex-1 px-6">
         <View className="items-center mt-8 mb-8">
