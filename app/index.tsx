@@ -1,4 +1,5 @@
 import { ScreenWrapper } from "@/components/screen-wrapper";
+import { AppLaunchLoading } from "@/components/ui/app-launch-loading";
 import { Button } from "@/components/ui/button";
 import { UpdateModal } from "@/components/update-modal";
 import { OnboardingCarousel } from "@/components/welcome/onboarding-carousel";
@@ -6,11 +7,10 @@ import { WelcomeHeader } from "@/components/welcome/welcome-header";
 import { useAuth } from "@/context/auth-context";
 import { useAppUpdateContext } from "@/context/update-context";
 import { useAppUpdate } from "@/hooks/useAppUpdate";
+import { getPinGateRoute } from "@/utils/pin-gate";
 import { useRouter } from "expo-router";
 import { useEffect } from "react";
 import { View } from "react-native";
-import { getPinGateRoute } from "@/utils/pin-gate";
-import { AppLaunchLoading } from "@/components/ui/app-launch-loading";
 
 export default function WelcomeScreen() {
   const router = useRouter();
@@ -81,7 +81,7 @@ export default function WelcomeScreen() {
           disabled={isChecking}
           onPress={() => {
             try {
-              router.push("/login-type");
+              router.push("/auth");
             } catch (error) {
               console.error("Navigation error:", error);
             }

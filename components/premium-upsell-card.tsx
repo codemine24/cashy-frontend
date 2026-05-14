@@ -1,80 +1,77 @@
-import { productIds } from "@/app/settings/subscription";
 import { useTheme } from "@/context/theme-context";
-import { useIAP } from "expo-iap";
 import { useRouter } from "expo-router";
-import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { Animated, Easing, Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 
-function DiamondIcon() {
-  const { isDark } = useTheme();
-  const shimmerAnim = useRef(new Animated.Value(0)).current;
-  const scaleAnim = useRef(new Animated.Value(1)).current;
+// function DiamondIcon() {
+//   const { isDark } = useTheme();
+//   const shimmerAnim = useRef(new Animated.Value(0)).current;
+//   const scaleAnim = useRef(new Animated.Value(1)).current;
 
-  useEffect(() => {
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(shimmerAnim, {
-          toValue: 1,
-          duration: 1400,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
-        }),
-        Animated.timing(shimmerAnim, {
-          toValue: 0,
-          duration: 1400,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
-        }),
-      ]),
-    ).start();
+//   useEffect(() => {
+//     Animated.loop(
+//       Animated.sequence([
+//         Animated.timing(shimmerAnim, {
+//           toValue: 1,
+//           duration: 1400,
+//           easing: Easing.inOut(Easing.ease),
+//           useNativeDriver: true,
+//         }),
+//         Animated.timing(shimmerAnim, {
+//           toValue: 0,
+//           duration: 1400,
+//           easing: Easing.inOut(Easing.ease),
+//           useNativeDriver: true,
+//         }),
+//       ]),
+//     ).start();
 
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(scaleAnim, {
-          toValue: 1.08,
-          duration: 1400,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
-        }),
-        Animated.timing(scaleAnim, {
-          toValue: 1,
-          duration: 1400,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
-        }),
-      ]),
-    ).start();
-  }, [scaleAnim, shimmerAnim]);
+//     Animated.loop(
+//       Animated.sequence([
+//         Animated.timing(scaleAnim, {
+//           toValue: 1.08,
+//           duration: 1400,
+//           easing: Easing.inOut(Easing.ease),
+//           useNativeDriver: true,
+//         }),
+//         Animated.timing(scaleAnim, {
+//           toValue: 1,
+//           duration: 1400,
+//           easing: Easing.inOut(Easing.ease),
+//           useNativeDriver: true,
+//         }),
+//       ]),
+//     ).start();
+//   }, [scaleAnim, shimmerAnim]);
 
-  const outerOpacity = shimmerAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0.18, 0.35],
-  });
+//   const outerOpacity = shimmerAnim.interpolate({
+//     inputRange: [0, 1],
+//     outputRange: [0.18, 0.35],
+//   });
 
-  return (
-    <View className="items-center justify-center w-20 h-20">
-      <Animated.View
-        style={{
-          position: "absolute",
-          width: 80,
-          height: 80,
-          borderRadius: 40,
-          backgroundColor: isDark ? "#8B5CF6" : "#F59E0B", // Purple in dark, amber in light
-          opacity: outerOpacity,
-          transform: [{ scale: scaleAnim }],
-        }}
-      />
-      <View
-        className={`w-[62px] h-[62px] rounded-full items-center justify-center ${
-          isDark ? "bg-violet-600" : "bg-amber-500" // Theme-aware background
-        }`}
-      >
-        <Text className="text-[28px]">💎</Text>
-      </View>
-    </View>
-  );
-}
+//   return (
+//     <View className="items-center justify-center w-20 h-20">
+//       <Animated.View
+//         style={{
+//           position: "absolute",
+//           width: 80,
+//           height: 80,
+//           borderRadius: 40,
+//           backgroundColor: isDark ? "#8B5CF6" : "#F59E0B", // Purple in dark, amber in light
+//           opacity: outerOpacity,
+//           transform: [{ scale: scaleAnim }],
+//         }}
+//       />
+//       <View
+//         className={`w-[62px] h-[62px] rounded-full items-center justify-center ${
+//           isDark ? "bg-violet-600" : "bg-amber-500" // Theme-aware background
+//         }`}
+//       >
+//         <Text className="text-[28px]">💎</Text>
+//       </View>
+//     </View>
+//   );
+// }
 
 interface PremiumUpsellCardProps {
   features?: string[];
@@ -94,7 +91,7 @@ export function PremiumUpSellCard({
     t("premium.advanceAnalyticsReports"),
   ];
 
-  const { connected, products, fetchProducts } = useIAP();
+  // const { connected, products, fetchProducts } = useIAP();
 
   const handleUpgrade = () => {
     if (onUpgrade) {
@@ -104,14 +101,14 @@ export function PremiumUpSellCard({
     }
   };
 
-  useEffect(() => {
-    if (connected) {
-      fetchProducts({
-        skus: productIds,
-        type: "in-app",
-      });
-    }
-  }, [connected, fetchProducts]);
+  // useEffect(() => {
+  //   if (connected) {
+  //     fetchProducts({
+  //       skus: productIds,
+  //       type: "in-app",
+  //     });
+  //   }
+  // }, [connected, fetchProducts]);
 
   return (
     <View
@@ -135,9 +132,9 @@ export function PremiumUpSellCard({
         />
 
         {/* Icon */}
-        <View className="items-center mb-4">
+        {/* <View className="items-center mb-4">
           <DiamondIcon />
-        </View>
+        </View> */}
 
         {/* Title */}
         <Text
@@ -207,7 +204,7 @@ export function PremiumUpSellCard({
         </TouchableOpacity>
 
         {/* Price */}
-        {(() => {
+        {/* {(() => {
           const product = products.find((p) => p.id === "cashy_lifetime");
 
           if (!product) {
@@ -252,7 +249,7 @@ export function PremiumUpSellCard({
               </Text>
             </View>
           );
-        })()}
+        })()} */}
       </View>
     </View>
   );
