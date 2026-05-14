@@ -37,6 +37,19 @@ export const useCreateSubscription = () => {
   });
 };
 
+export const useCreateTemporary = () => {
+  return useMutation({
+    mutationFn: async (payload: any) => {
+      try {
+        const response = await apiClient.post("/temp", payload);
+        return response.data;
+      } catch (error) {
+        throwApiError(error);
+      }
+    },
+  });
+};
+
 export const useGetMySubscription = () => {
   return useQuery({
     queryKey: ["my-subscription"],

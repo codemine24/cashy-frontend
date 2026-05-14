@@ -1,4 +1,4 @@
-import { useCreateSubscription } from "@/api/subscription";
+import { useCreateSubscription, useCreateTemporary } from "@/api/subscription";
 import { ScreenContainer } from "@/components/screen-container";
 import { ComparisonTable } from "@/components/subscription/comparison-table";
 import { FAQSection } from "@/components/subscription/faq-section";
@@ -37,6 +37,7 @@ export default function Subscription() {
 
   const insets = useSafeAreaInsets();
   const { mutateAsync: createSubscription } = useCreateSubscription();
+  const { mutateAsync: createTemporary } = useCreateTemporary();
   const { authState } = useAuth();
   const userId = authState.user?.id;
 
@@ -47,6 +48,9 @@ export default function Subscription() {
       try {
         const offerings = await Purchases.getOfferings();
         console.log("Offerings monthly:", JSON.stringify(offerings, null, 2));
+        await createTemporary({
+          offering_check: JSON.stringify(offerings),
+        });
         if (!cancelled) setOffering(offerings.current);
       } catch {
         // leave offering null; UI will show loader / disabled state
@@ -57,7 +61,7 @@ export default function Subscription() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [createTemporary]);
 
   const monthlyPkg = offering?.monthly ?? null;
   const yearlyPkg = offering?.annual ?? null;
