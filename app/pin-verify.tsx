@@ -59,7 +59,7 @@ export default function PinVerifyScreen() {
     }
   };
 
-  const renderDot = (filled: boolean) => (
+  const Dot = ({ filled }: { filled: boolean }) => (
     <View
       className={`w-4 h-4 rounded-full border-2 mx-3 ${filled ? "bg-primary border-primary" : "border-muted-foreground/30"
         }`}
@@ -87,7 +87,7 @@ export default function PinVerifyScreen() {
 
         {/* PIN dots */}
         <View className="flex-row justify-center items-center mb-10">
-          {[...Array(4)].map((_, i) => renderDot(i < pin.length))}
+          {[...Array(4)].map((_, i) => <Dot key={i} filled={i < pin.length} />)}
         </View>
 
         {/* Number pad */}

@@ -51,10 +51,10 @@ export const WalletCard = ({
   return (
     <TouchableOpacity
       onPress={() => router.push(`/wallet/${wallet.id}` as any)}
-      className="bg-card rounded-2xl p-3 mt-3 border border-border active:opacity-70 flex-row items-center justify-between"
+      className="bg-card rounded-2xl pl-3 mt-3 border border-border active:opacity-70 flex-row items-stretch justify-between overflow-hidden"
     >
       {/* Left: Icon and Name/Date */}
-      <View className="flex-row items-center flex-1">
+      <View className="flex-row items-center flex-1 py-3">
         <View
           className="w-12 h-12 items-center justify-center rounded-2xl mr-4"
           style={{ backgroundColor: colors.bg }}
@@ -80,7 +80,7 @@ export const WalletCard = ({
       {/* Right: Amount and Options Menu */}
       <View className="flex-row items-center">
         <Text
-          className={`font-semibold mr-1 ${wallet.balance > 0 ? "text-success" : "text-destructive"
+          className={`font-semibold mr-3 ${wallet.balance > 0 ? "text-success" : "text-destructive"
             }`}
         >
           {formatNumber(wallet.balance)}
@@ -93,7 +93,7 @@ export const WalletCard = ({
             from={
               <TouchableOpacity
                 onPress={() => setIsMenuVisible(true)}
-                className="py-2 pl-2 rounded-full"
+                className="w-12 self-stretch justify-center items-center"
               >
                 <MoreVertical size={20} className="text-foreground" />
               </TouchableOpacity>

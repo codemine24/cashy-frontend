@@ -1,6 +1,5 @@
 import { ScreenContainer } from "@/components/screen-container";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
-import { CommonActions } from "@react-navigation/native";
 import { Stack, useFocusEffect, useNavigation, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -32,6 +31,7 @@ import {
 import { clearUserInfo, removeAccessToken } from "@/utils/auth";
 import { makeImageUrl } from "@/utils/helper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { CommonActions } from "@react-navigation/native";
 
 // ─── Reusable row component ───────────────────────────────────────────────
 function SettingsRow({
@@ -228,7 +228,7 @@ export default function SettingsScreen() {
             <SettingsRow
               iconBgClass="bg-emerald-500/10"
               icon={<ShieldCheck size={22} className="text-emerald-500" />}
-              title="Security"
+              title={t("settings.security")}
               subtitle="PIN lock, verify & reset PIN"
               onPress={() => router.push("/settings/security" as any)}
             />

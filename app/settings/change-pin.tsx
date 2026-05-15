@@ -97,7 +97,7 @@ export default function ChangePinScreen() {
     }
   };
 
-  const renderDot = (filled: boolean) => (
+  const Dot = ({ filled }: { filled: boolean }) => (
     <View
       className={`w-4 h-4 rounded-full border-2 mx-3 ${filled ? "bg-primary border-primary" : "border-muted-foreground/30"
         }`}
@@ -153,7 +153,7 @@ export default function ChangePinScreen() {
         </View>
 
         <View className="flex-row justify-center items-center mb-20">
-          {[...Array(4)].map((_, i) => renderDot(i < currentPin.length))}
+          {[...Array(4)].map((_, i) => <Dot key={i} filled={i < currentPin.length} />)}
         </View>
 
         <View className="flex-1 justify-end pb-10">
