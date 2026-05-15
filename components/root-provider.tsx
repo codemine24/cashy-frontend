@@ -64,9 +64,9 @@ export const RootProvider = ({ children }: { children: React.ReactNode }) => {
       }),
   );
 
-  // useEffect(() => {
-  //   configureRevenueCat();
-  // }, []);
+  useEffect(() => {
+    configureRevenueCat();
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
