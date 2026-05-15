@@ -132,23 +132,6 @@ export function MemberForm({
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <View className="items-center mb-8">
-            <View className="w-16 h-16 rounded-2xl bg-primary/10 items-center justify-center mb-4">
-              {mode === "edit" ? (
-                <ShieldCheck size={32} className="text-primary" />
-              ) : (
-                <UserPlus size={32} className="text-primary" />
-              )}
-            </View>
-            <Text className="text-2xl font-bold text-foreground">
-              {mode === "edit" ? "Edit Member Role" : "Add Member"}
-            </Text>
-            <Text className="text-sm text-muted-foreground text-center mt-2 px-4">
-              {mode === "edit"
-                ? "Adjust what this member can do in the wallet."
-                : "Invite someone by email and choose their access level."}
-            </Text>
-          </View>
 
           <View>
             <Text className="text-sm font-semibold text-foreground mb-2">
@@ -258,14 +241,17 @@ export function MemberForm({
           marginBottom: isKeyboardVisible ? 0 : Math.min(insets.bottom, 20),
         }}
       >
-        <Button disabled={isSubmitting} onPress={handleSubmit}>
+        <Button
+          disabled={isSubmitting}
+          onPress={handleSubmit}
+        >
           {isSubmitting
             ? mode === "edit"
-              ? "Saving..."
-              : "Adding..."
+              ? "SAVING..."
+              : "ADDING..."
             : mode === "edit"
-              ? "Save Role"
-              : "Add Member"}
+              ? "SAVE ROLE"
+              : "ADD MEMBER"}
         </Button>
       </View>
     </KeyboardAvoidingView>

@@ -189,24 +189,6 @@ export function CategoryForm({
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <View className="items-center mb-8">
-            <View
-              className={`w-16 h-16 rounded-2xl items-center justify-center border border-border ${
-                selectedColor ? "" : "bg-primary/10"
-              }`}
-              style={
-                selectedColor ? { backgroundColor: selectedColor } : undefined
-              }
-            >
-              <Text className="text-3xl">{selectedIcon}</Text>
-            </View>
-            <Text className="text-2xl font-bold text-foreground mt-4">
-              {mode === "edit" ? "Edit Category" : "New Category"}
-            </Text>
-            <Text className="text-sm text-muted-foreground text-center mt-2 px-4">
-              Choose an icon and color that makes this category easy to spot.
-            </Text>
-          </View>
 
           <Text className="text-sm font-semibold text-foreground mb-2">
             Category name
@@ -316,10 +298,10 @@ export function CategoryForm({
       >
         <Button disabled={isSubmitting} onPress={handleSubmit}>
           {isSubmitting
-            ? "Saving..."
+            ? "SAVING..."
             : mode === "edit"
-              ? "Save Category"
-              : "Create Category"}
+              ? "SAVE CATEGORY"
+              : "CREATE CATEGORY"}
         </Button>
       </View>
     </KeyboardAvoidingView>

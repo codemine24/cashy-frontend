@@ -75,19 +75,6 @@ export function WalletForm({
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <View className="items-center mb-8">
-            <View className="w-16 h-16 rounded-2xl bg-primary/10 items-center justify-center mb-4">
-              <Wallet size={32} className="text-primary" />
-            </View>
-            <Text className="text-2xl font-bold text-foreground">
-              {mode === "edit" ? "Rename Wallet" : "Add Wallet"}
-            </Text>
-            <Text className="text-sm text-muted-foreground text-center mt-2 px-4">
-              {mode === "edit"
-                ? "Update the wallet name shown across your records."
-                : "Create a wallet to group transactions, members, and reports."}
-            </Text>
-          </View>
 
           <View>
             <Text className="text-sm font-semibold text-foreground mb-2">
@@ -123,11 +110,11 @@ export function WalletForm({
         <Button disabled={isSubmitting} onPress={handleSubmit}>
           {isSubmitting
             ? mode === "edit"
-              ? "Saving..."
-              : "Creating..."
+              ? "SAVING..."
+              : "CREATING..."
             : mode === "edit"
-              ? "Save Changes"
-              : "Create Wallet"}
+              ? "SAVE CHANGES"
+              : "CREATE WALLET"}
         </Button>
       </View>
     </KeyboardAvoidingView>

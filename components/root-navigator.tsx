@@ -360,7 +360,7 @@ export const RootNavigator = () => {
             </ErrorBoundary>
           </RootProvider>
         </ThemeVarsProvider>
-        <OfflineBanner />
+        {/* <OfflineBanner /> */}
       </View>
     </NavThemeProvider>
   );
