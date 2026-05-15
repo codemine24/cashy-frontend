@@ -132,7 +132,6 @@ export function MemberForm({
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-
           <View>
             <Text className="text-sm font-semibold text-foreground mb-2">
               Email
@@ -206,23 +205,29 @@ export function MemberForm({
             <View className="flex-col gap-2">
               {(role === "VIEWER"
                 ? [
-                    { icon: "✅", label: "View all transactions" },
-                    { icon: "✅", label: "View balance & summary" },
+                    { icon: "✅", label: "View transactions & balance" },
+                    { icon: "✅", label: "View summary" },
                     { icon: "❌", label: "Add or edit transactions" },
-                    { icon: "❌", label: "Manage members" },
+                    { icon: "❌", label: "Fund transfer" },
+                    { icon: "❌", label: "Manage & invite members" },
+                    { icon: "❌", label: "Delete wallet" },
                   ]
                 : role === "EDITOR"
                   ? [
-                      { icon: "✅", label: "View all transactions" },
-                      { icon: "✅", label: "Add & edit transactions" },
-                      { icon: "✅", label: "Delete own transactions" },
-                      { icon: "❌", label: "Manage members" },
+                      { icon: "✅", label: "View transactions & balance" },
+                      { icon: "✅", label: "View summary" },
+                      { icon: "✅", label: "Add or edit transactions" },
+                      { icon: "✅", label: "Fund transfer" },
+                      { icon: "❌", label: "Manage & invite members" },
+                      { icon: "❌", label: "Delete wallet" },
                     ]
                   : [
-                      { icon: "✅", label: "View all transactions" },
-                      { icon: "✅", label: "Add & edit transactions" },
-                      { icon: "✅", label: "Delete any transactions" },
+                      { icon: "✅", label: "View transactions & balance" },
+                      { icon: "✅", label: "View summary" },
+                      { icon: "✅", label: "Add or edit transactions" },
+                      { icon: "✅", label: "Fund transfer" },
                       { icon: "✅", label: "Manage & invite members" },
+                      { icon: "❌", label: "Delete wallet" },
                     ]
               ).map((item, i) => (
                 <View key={i} className="flex-row items-center">
@@ -241,10 +246,7 @@ export function MemberForm({
           marginBottom: isKeyboardVisible ? 0 : Math.min(insets.bottom, 20),
         }}
       >
-        <Button
-          disabled={isSubmitting}
-          onPress={handleSubmit}
-        >
+        <Button disabled={isSubmitting} onPress={handleSubmit}>
           {isSubmitting
             ? mode === "edit"
               ? "SAVING..."
