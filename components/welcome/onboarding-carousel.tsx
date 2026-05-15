@@ -3,30 +3,32 @@ import { onboardingSlides, type OnboardingSlide } from "@/constants/onboarding";
 import { ChevronLeft, ChevronRight } from "@/lib/icons";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
-  Dimensions,
   FlatList,
+  LayoutChangeEvent,
   TouchableOpacity,
   View,
   ViewToken,
 } from "react-native";
-
-const { width: SCREEN_WIDTH } = Dimensions.get("window");
-const SLIDE_WIDTH = SCREEN_WIDTH;
-
-const SVG_WIDTH = SCREEN_WIDTH * 0.96;
-const SVG_HEIGHT = SVG_WIDTH * 1.45;
 
 const AUTO_SLIDE_INTERVAL = 4500;
 
 export function OnboardingCarousel() {
   const flatListRef = useRef<FlatList<OnboardingSlide>>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [carouselWidth, setCarouselWidth] = useState(0);
   const activeIndexRef = useRef(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const slideWidth = carouselWidth || 1;
+  const imageWidth = slideWidth * 1;
+  const imageHeight = imageWidth * 1.3;
 
   const scrollToIndex = useCallback((index: number) => {
     flatListRef.current?.scrollToIndex({ index, animated: true });
   }, []);
+
+  const handleLayout = (event: LayoutChangeEvent) => {
+    setCarouselWidth(event.nativeEvent.layout.width);
+  };
 
   const resetTimer = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);
@@ -38,7 +40,9 @@ export function OnboardingCarousel() {
 
   useEffect(() => {
     resetTimer();
-    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
   }, [resetTimer]);
 
   const onViewableItemsChanged = useCallback(
@@ -73,19 +77,17 @@ export function OnboardingCarousel() {
     const SvgImage = item.image;
 
     return (
-      <View style={{ width: SLIDE_WIDTH }} className="flex-1 items-center justify-center">
-        <View
-          className="overflow-hidden rounded-xl"
-          style={{ width: SVG_WIDTH, height: SVG_HEIGHT }}
-        >
-          <SvgImage width={SVG_WIDTH} height={SVG_HEIGHT} />
-        </View>
+      <View
+        style={{ width: slideWidth }}
+        className="flex-1 items-center justify-center"
+      >
+        <SvgImage width={imageWidth} height={imageHeight} />
       </View>
     );
   };
 
   return (
-    <View className="flex-1">
+    <View className="flex-1" onLayout={handleLayout}>
       {/* Carousel — swipe disabled */}
       <FlatList
         ref={flatListRef}
@@ -100,10 +102,11 @@ export function OnboardingCarousel() {
         onViewableItemsChanged={onViewableItemsChanged}
         viewabilityConfig={viewabilityConfig}
         getItemLayout={(_, index) => ({
-          length: SLIDE_WIDTH,
-          offset: SLIDE_WIDTH * index,
+          length: slideWidth,
+          offset: slideWidth * index,
           index,
         })}
+        extraData={slideWidth}
         className="flex-1"
       />
 
