@@ -1,7 +1,6 @@
 import {
   useLeaveWallet,
   useRemoveMember,
-  useShareWallet,
   useWallet,
 } from "@/api/wallet";
 import { MemberCard } from "@/components/memeber/member-card";
@@ -9,7 +8,6 @@ import { ScreenContainer } from "@/components/screen-container";
 import { MembersSkeleton } from "@/components/skeletons/members-skeleton";
 import { Button } from "@/components/ui/button";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
-import AddMemberModal from "@/components/wallet/add-member-modal";
 import { useAuth } from "@/context/auth-context";
 import { LeaveIcon } from "@/icons/leave-icon";
 import { PlusIcon } from "@/icons/plus-icon";
@@ -25,7 +23,6 @@ import {
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  Alert,
   BackHandler,
   FlatList,
   Text,
@@ -64,31 +61,27 @@ export default function MembersScreen() {
   const removeMemberMutation = useRemoveMember();
   const leaveWalletMutation = useLeaveWallet();
 
-  const [modalVisible, setModalVisible] = useState(false);
-  const [editingMember, setEditingMember] = useState<Member | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [memberToDelete, setMemberToDelete] = useState<Member | null>(null);
   const [showLeaveModal, setShowLeaveModal] = useState(false);
 
-  // Form states
-  const [searchValue, setSearchValue] = useState("");
-  const [role, setRole] = useState<"EDITOR" | "VIEWER" | "ADMIN">("VIEWER");
-
-  // Mock API Mutations (replace with real if defined)
-  const addMemberMutation = useShareWallet();
-
   const handleOpenAddModal = () => {
-    setEditingMember(null);
-    setSearchValue("");
-    setRole("VIEWER");
-    setModalVisible(true);
+    router.push({
+      pathname: "/wallet/member-form",
+      params: { walletId },
+    } as any);
   };
 
   const handleEditMember = (member: Member) => {
-    setEditingMember(member);
-    setSearchValue(member.email || member.user?.email || member.name || "");
-    setRole(member.role);
-    setModalVisible(true);
+    router.push({
+      pathname: "/wallet/member-form",
+      params: {
+        walletId,
+        memberId: member.id,
+        email: member.email || member.user?.email || member.name || "",
+        role: member.role,
+      },
+    } as any);
   };
 
   const handleRemoveMember = (member: Member) => {
@@ -131,50 +124,6 @@ export default function MembersScreen() {
       Toast.show({
         type: "error",
         text1: error?.message || "Failed to leave from this wallet",
-      });
-    }
-  };
-
-  const handleSubmitModal = async () => {
-    const email = editingMember
-      ? editingMember.email || editingMember.user?.email
-      : searchValue;
-
-    if (!email) {
-      Alert.alert("Error", "Please enter an email address.");
-      return;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email.trim())) {
-      Alert.alert("Error", "Please enter a valid email address.");
-      return;
-    }
-
-    const payload = {
-      wallet_id: walletId,
-      email: email.trim(),
-      role,
-    };
-
-    try {
-      const response = await addMemberMutation.mutateAsync(payload);
-
-      if (response.success) {
-        setModalVisible(false);
-        setTimeout(() => {
-          Toast.show({
-            type: "success",
-            text1: editingMember
-              ? "Member updated successfully"
-              : "Member added successfully",
-          });
-        }, 100);
-      }
-    } catch (error: any) {
-      Toast.show({
-        type: "error",
-        text1: error?.message || "Failed to add member",
       });
     }
   };
@@ -281,19 +230,6 @@ export default function MembersScreen() {
           </Text>
         </Button>
       )}
-
-      {/* Add / Edit Member Modal */}
-      <AddMemberModal
-        modalVisible={modalVisible}
-        setModalVisible={setModalVisible}
-        editingMember={editingMember}
-        handleSubmitModal={handleSubmitModal}
-        isPending={addMemberMutation.isPending}
-        searchValue={searchValue}
-        setSearchValue={setSearchValue}
-        role={role}
-        setRole={setRole}
-      />
 
       <ConfirmationModal
         visible={showDeleteModal}

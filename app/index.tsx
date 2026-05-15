@@ -7,14 +7,17 @@ import { WelcomeHeader } from "@/components/welcome/welcome-header";
 import { useAuth } from "@/context/auth-context";
 import { useAppUpdateContext } from "@/context/update-context";
 import { useAppUpdate } from "@/hooks/useAppUpdate";
-import { getPinGateRoute } from "@/utils/pin-gate";
 import { useRouter } from "expo-router";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { View } from "react-native";
 
 export default function WelcomeScreen() {
   const router = useRouter();
   const { authState, authReady } = useAuth();
+  const hasHandledAuthenticatedEntry = useRef(false);
+  const userId = authState.user?.id;
+  const isPinEnabled = authState.user?.is_pin_enabled;
+  const hasPin = !!authState.user?.pin;
   const {
     isChecking,
     showModal,
@@ -28,21 +31,34 @@ export default function WelcomeScreen() {
   const { isModalSkipped } = useAppUpdateContext();
 
   useEffect(() => {
+    if (!authState.isAuthenticated) {
+      hasHandledAuthenticatedEntry.current = false;
+      return;
+    }
+
+    if (hasHandledAuthenticatedEntry.current) return;
     if (isChecking) return;
     if (hasUpdate && isForceUpdate) return;
 
+    const gateRoute =
+      userId && isPinEnabled ? (hasPin ? "/pin-verify" : "/pin-setup") : "/(tabs)";
+
     if (authReady && authState.isAuthenticated && !hasUpdate) {
-      return router.replace(getPinGateRoute(authState.user) as any);
+      hasHandledAuthenticatedEntry.current = true;
+      return router.replace(gateRoute as any);
     }
 
     if (authReady && authState.isAuthenticated && hasUpdate && isModalSkipped) {
-      router.replace(getPinGateRoute(authState.user) as any);
+      hasHandledAuthenticatedEntry.current = true;
+      router.replace(gateRoute as any);
     }
   }, [
     isChecking,
     authReady,
-    authState.user,
     authState.isAuthenticated,
+    userId,
+    isPinEnabled,
+    hasPin,
     hasUpdate,
     isForceUpdate,
     isModalSkipped,
@@ -81,7 +97,7 @@ export default function WelcomeScreen() {
           disabled={isChecking}
           onPress={() => {
             try {
-              router.push("/auth");
+              router.push("/login-type");
             } catch (error) {
               console.error("Navigation error:", error);
             }

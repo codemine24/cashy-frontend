@@ -120,8 +120,7 @@ export default function AddTransactionScreen() {
     defaultValues: {
       amount: "",
       date: date.toISOString(),
-      time: date.toTimeString(),
-    },
+      time: date.toTimeString(), },
     mode: "onBlur",
   });
 

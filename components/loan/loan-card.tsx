@@ -47,11 +47,11 @@ export const LoanCard = ({ loan, index, onEdit, onDelete }: LoanCardProps) => {
   return (
     <TouchableOpacity
       onPress={() => router.push(`/loan/${loan.id}` as any)}
-      className="bg-card rounded-2xl p-3 mt-3 border border-border active:opacity-70"
+      className="bg-card rounded-2xl pl-3 pb-3 mt-3 border border-border active:opacity-70"
     >
       {/* Top: Icon and Name/Date */}
-      <View className="flex-row items-center justify-between mb-3">
-        <View className="flex-row items-center flex-1">
+      <View className="flex-row flex-1 items-stretch justify-between">
+        <View className="flex-row items-center flex-1 py-3">
           <View
             className="size-13 items-center justify-center rounded-2xl mr-4"
             style={{ backgroundColor: colors.bg }}
@@ -94,7 +94,7 @@ export const LoanCard = ({ loan, index, onEdit, onDelete }: LoanCardProps) => {
               from={
                 <TouchableOpacity
                   onPress={() => setIsMenuVisible(true)}
-                  className="py-2 pl-2 rounded-full"
+                  className="w-12 self-stretch justify-center items-center"
                 >
                   <MoreVertical size={20} className="text-foreground" />
                 </TouchableOpacity>
@@ -146,7 +146,8 @@ export const LoanCard = ({ loan, index, onEdit, onDelete }: LoanCardProps) => {
       </View>
 
       {/* Bottom: Progress Bar */}
-      <View className="flex-row items-center mb-1">
+   <View className="pr-3 flex-1">
+       <View className="flex-row items-center mb-2">
         <Text className="text-sm text-muted-foreground">
           {Math.min(Math.round((loan.paid_amount / loan.amount) * 100), 100)}% {loanType} of {formatNumber(loan.amount)}
         </Text>
@@ -159,6 +160,7 @@ export const LoanCard = ({ loan, index, onEdit, onDelete }: LoanCardProps) => {
           }}
         />
       </View>
+   </View>
     </TouchableOpacity>
   );
 };

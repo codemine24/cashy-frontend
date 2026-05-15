@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { View, StyleSheet, Image } from "react-native";
+import { View, StyleSheet } from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -43,7 +43,7 @@ export function AppLaunchLoading() {
       <View className="items-center justify-center">
         <Animated.Image source={require("@/assets/images/logo.png")} style={[styles.iconContainer, animatedIconStyle]} />
         <H1 className="mt-8 text-4xl font-bold tracking-tighter uppercase text-foreground">Cashy</H1>
-        <Muted className="mt-2 text-sm font-medium text-foreground">Loading...</Muted>
+        <Muted className="mt-2 text-sm font-medium">Getting ready...</Muted>
       </View>
 
       <View style={styles.footer}>
