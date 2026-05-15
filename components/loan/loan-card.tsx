@@ -154,7 +154,7 @@ export const LoanCard = ({ loan, index, onEdit, onDelete }: LoanCardProps) => {
       </View>
       <View className="w-full h-1 bg-gray-300 dark:bg-gray-600 rounded-full overflow-hidden">
         <View
-          className="h-full bg-green-500 rounded-full"
+          className="h-full bg-primary rounded-full"
           style={{
             width: `${Math.min((loan.paid_amount / loan.amount) * 100, 100)}%`,
           }}

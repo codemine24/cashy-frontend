@@ -187,12 +187,6 @@ export function MemberForm({
                   >
                     {option.label}
                   </Text>
-                  {/* <Text
-                  className="text-xs text-muted-foreground mt-0.5 text-center"
-                  numberOfLines={1}
-                >
-                  {option.summary}
-                </Text> */}
                 </TouchableOpacity>
               );
             })}
@@ -211,6 +205,7 @@ export function MemberForm({
                     { icon: "❌", label: "Fund transfer" },
                     { icon: "❌", label: "Manage & invite members" },
                     { icon: "❌", label: "Delete wallet" },
+                    { icon: "❌", label: "Can not transfer funds" },
                   ]
                 : role === "EDITOR"
                   ? [
@@ -218,6 +213,7 @@ export function MemberForm({
                       { icon: "✅", label: "View summary" },
                       { icon: "✅", label: "Add or edit transactions" },
                       { icon: "✅", label: "Fund transfer" },
+                      { icon: "✅", label: "Transfer funds between wallets" },
                       { icon: "❌", label: "Manage & invite members" },
                       { icon: "❌", label: "Delete wallet" },
                     ]
@@ -227,6 +223,7 @@ export function MemberForm({
                       { icon: "✅", label: "Add or edit transactions" },
                       { icon: "✅", label: "Fund transfer" },
                       { icon: "✅", label: "Manage & invite members" },
+                      { icon: "✅", label: "Transfer funds between wallets" },
                       { icon: "❌", label: "Delete wallet" },
                     ]
               ).map((item, i) => (

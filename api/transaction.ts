@@ -1,5 +1,4 @@
 import apiClient from "@/lib/api-client";
-import { formatDateToUTC } from "@/utils";
 import { throwApiError } from "@/utils/throw-api-error";
 import {
   useInfiniteQuery,
@@ -80,19 +79,13 @@ export const useInfiniteTransactions = (params: InfiniteTransactionsParams) => {
         if (params.type) queryParams.type = params.type;
         if (params.period) queryParams.period = params.period;
 
-        // Convert date parameters to UTC before sending
         if (params.from_date) {
-          const fromDate = new Date(params.from_date);
-          fromDate.setHours(0, 0, 0, 0);
-          queryParams.from_date = formatDateToUTC(fromDate);
+          queryParams.from_date = params.from_date;
         }
         if (params.to_date) {
-          const toDate = new Date(params.to_date);
-          toDate.setHours(23, 59, 59, 999);
-          queryParams.to_date = formatDateToUTC(toDate);
+          queryParams.to_date = params.to_date;
         }
 
-        // Send single date directly as query param
         if (params.date) {
           queryParams.date = params.date;
         }
