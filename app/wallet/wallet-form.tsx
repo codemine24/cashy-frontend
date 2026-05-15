@@ -2,6 +2,7 @@ import { useCreateWallet, useUpdateWallet } from "@/api/wallet";
 import { ScreenContainer } from "@/components/screen-container";
 import { WalletForm } from "@/components/wallet/wallet-form";
 import { ChevronLeft } from "@/lib/icons";
+import { recordWalletCreatedForReview } from "@/utils/review-tracker";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { TouchableOpacity } from "react-native";
 import Toast from "react-native-toast-message";
@@ -28,6 +29,7 @@ export default function WalletFormScreen() {
         });
       } else {
         await createWalletMutation.mutateAsync(name);
+        recordWalletCreatedForReview().catch(() => {});
       }
 
       Toast.show({

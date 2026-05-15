@@ -1,6 +1,7 @@
 import { AuthProvider } from "@/context/auth-context";
 import { useTheme } from "@/context/theme-context";
 import { configureRevenueCat } from "@/lib/revenuecat";
+import { recordAppOpenForReview } from "@/utils/review-tracker";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import Toast, { BaseToast, ErrorToast } from "react-native-toast-message";
@@ -64,8 +65,12 @@ export const RootProvider = ({ children }: { children: React.ReactNode }) => {
       }),
   );
 
+  // useEffect(() => {
+  //   configureRevenueCat();
+  // }, []);
+
   useEffect(() => {
-    configureRevenueCat();
+    recordAppOpenForReview().catch(() => {});
   }, []);
 
   return (

@@ -6,6 +6,7 @@ import { useKeyboardOffset } from "@/hooks/useKeyboardOffset";
 import { ChevronLeft, ChevronRight, Paperclip, X } from "@/lib/icons";
 import { formatDateToUTC, formatTimeToUTC } from "@/utils";
 import { makeImageUrl } from "@/utils/helper";
+import { recordTransactionCreatedAndMaybeRequestReview } from "@/utils/review-tracker";
 import { zodResolver } from "@hookform/resolvers/zod";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import * as ImagePicker from "expo-image-picker";
@@ -321,6 +322,12 @@ export default function AddTransactionScreen() {
       });
 
       router.replace(`/wallet/${walletId}` as any);
+
+      if (!isEditing) {
+        setTimeout(() => {
+          recordTransactionCreatedAndMaybeRequestReview().catch(() => {});
+        }, 900);
+      }
     } catch (error: any) {
       Toast.show({
         type: "error",
