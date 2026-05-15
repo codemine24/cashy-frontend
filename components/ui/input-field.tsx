@@ -20,6 +20,7 @@ interface InputFieldProps {
   | "telephoneNumber"
   | "postalCode";
   autoComplete?: "email" | "password" | "name" | "tel" | "postal-code";
+  placeholderTextColor?: string;
   className?: string;
   value: string;
   onChangeText: (text: string) => void;
@@ -39,6 +40,7 @@ export const InputField = ({
   value,
   onChangeText,
   onBlur,
+  placeholderTextColor,
 }: InputFieldProps) => {
   return (
     <View>
@@ -51,6 +53,7 @@ export const InputField = ({
         textContentType={textContentType}
         autoComplete={autoComplete}
         placeholderClassName={placeholderClassName}
+        placeholderTextColor={placeholderTextColor}
         className={cn(`border rounded-xl p-4 text-foreground`, className)}
         value={value}
         onChangeText={onChangeText}
