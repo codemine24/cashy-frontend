@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { InputError } from "@/components/ui/input-error";
 import { useKeyboardVisible } from "@/hooks/use-keyboard-visible";
 import { useKeyboardOffset } from "@/hooks/useKeyboardOffset";
-import { Wallet } from "@/lib/icons";
 import { useEffect, useRef, useState } from "react";
 import {
   KeyboardAvoidingView,
