@@ -158,7 +158,8 @@ export default function AuthScreen() {
       // Apply theme immediately on login
       const userTheme = response?.data?.theme ?? "LIGHT";
       applyUserTheme(userTheme);
-      router.replace(getPinGateRoute(response?.data?.user) as any);
+
+      router.replace(getPinGateRoute(response?.data) as any);
     } catch (error: any) {
       Toast.show({
         type: "error",

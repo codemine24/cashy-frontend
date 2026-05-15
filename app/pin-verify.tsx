@@ -1,27 +1,50 @@
 import { useVerifyPin } from "@/api/user";
-import { Button } from "@/components/ui/button";
 import { H2, Muted } from "@/components/ui/typography";
 import { useAuth } from "@/context/auth-context";
 import { Delete, ShieldCheck } from "@/lib/icons";
 import { useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useState } from "react";
 import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import {
+  ActivityIndicator,
+  Animated,
   BackHandler,
+  Modal,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Toast from "react-native-toast-message";
+
+const NUMBERS = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+const Dot = ({ filled, error }: { filled: boolean; error: boolean }) => (
+  <View
+    className={`w-4 h-4 rounded-full border-2 mx-3 ${
+      error
+        ? "border-destructive bg-destructive/80"
+        : filled
+        ? "bg-primary border-primary"
+        : "border-muted-foreground/30"
+    }`}
+  />
+);
 
 export default function PinVerifyScreen() {
   const router = useRouter();
   const { authState } = useAuth();
-  const verifyPinMutation = useVerifyPin();
+  const { mutateAsync, isPending } = useVerifyPin();
 
   const [pin, setPin] = useState("");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Block hardware back — user must verify PIN
+  const shakeAnim = useRef(new Animated.Value(0)).current;
+
+  // Block Android hardware back — user must verify PIN
   useFocusEffect(
     useCallback(() => {
       const sub = BackHandler.addEventListener("hardwareBackPress", () => true);
@@ -29,46 +52,90 @@ export default function PinVerifyScreen() {
     }, []),
   );
 
-  const handleNumberPress = (num: string) => {
-    if (pin.length < 4) setPin((p) => p + num);
-  };
+  const triggerShake = useCallback(() => {
+    shakeAnim.setValue(0);
+    Animated.sequence([
+      Animated.timing(shakeAnim, { toValue: 10,  duration: 60, useNativeDriver: true }),
+      Animated.timing(shakeAnim, { toValue: -10, duration: 60, useNativeDriver: true }),
+      Animated.timing(shakeAnim, { toValue: 8,   duration: 60, useNativeDriver: true }),
+      Animated.timing(shakeAnim, { toValue: -8,  duration: 60, useNativeDriver: true }),
+      Animated.timing(shakeAnim, { toValue: 4,   duration: 60, useNativeDriver: true }),
+      Animated.timing(shakeAnim, { toValue: 0,   duration: 60, useNativeDriver: true }),
+    ]).start();
+  }, [shakeAnim]);
 
-  const handleDelete = () => setPin((p) => p.slice(0, -1));
+  const handleVerify = useCallback(
+    async (currentPin: string) => {
+      setErrorMessage(null);
+      try {
+        const response = await mutateAsync({ pin: currentPin });
 
-  const handleVerify = async () => {
-    try {
-      const response = await verifyPinMutation.mutateAsync({ pin });
+        if (response.success) {
+          router.replace("/(tabs)");
+          return;
+        }
 
-      if (response.success) {
-        router.replace("/(tabs)");
-      } else {
-        Toast.show({
-          type: "error",
-          text1: "Incorrect PIN",
-          text2: response.message,
-        });
+        triggerShake();
+        setErrorMessage(response.message || "Incorrect PIN. Please try again.");
+        setPin("");
+      } catch (error: unknown) {
+        triggerShake();
+        setErrorMessage(
+          error instanceof Error
+            ? error.message
+            : "Incorrect PIN. Please try again.",
+        );
         setPin("");
       }
-    } catch (error: any) {
-      Toast.show({
-        type: "error",
-        text1: "Incorrect PIN",
-        text2: error?.message || "Please try again",
-      });
-      setPin("");
-    }
-  };
-
-  const Dot = ({ filled }: { filled: boolean }) => (
-    <View
-      className={`w-4 h-4 rounded-full border-2 mx-3 ${filled ? "bg-primary border-primary" : "border-muted-foreground/30"
-        }`}
-    />
+    },
+    [mutateAsync, router, triggerShake],
   );
+
+  // Auto-verify when 4 digits entered, with 0.5s debounce
+  useEffect(() => {
+    if (pin.length !== 4 || isPending) return;
+
+    const timer = setTimeout(() => handleVerify(pin), 500);
+    return () => clearTimeout(timer);
+  }, [handleVerify, isPending, pin]);
+
+  const handleNumberPress = useCallback(
+    (num: string) => {
+      if (isPending) return;
+      setErrorMessage(null);
+      setPin((prev) => (prev.length >= 4 ? prev : prev + num));
+    },
+    [isPending],
+  );
+
+  const handleDelete = useCallback(() => {
+    if (isPending) return;
+    setErrorMessage(null);
+    setPin((prev) => prev.slice(0, -1));
+  }, [isPending]);
 
   return (
     <SafeAreaView className="flex-1 bg-background">
+
+      {/* Full-screen loading overlay */}
+      <Modal
+        visible={isPending}
+        transparent
+        animationType="fade"
+        statusBarTranslucent
+      >
+        <View className="flex-1 bg-black/60 items-center justify-center">
+          <View className="bg-card rounded-2xl p-8 items-center gap-4 shadow-lg">
+            <ActivityIndicator size="large" className="text-primary" />
+            <Text className="text-card-foreground text-sm font-medium">
+              Verifying PIN…
+            </Text>
+          </View>
+        </View>
+      </Modal>
+
       <View className="flex-1 px-6 pt-10">
+
         {/* Header */}
         <View className="items-center mb-10">
           <View className="w-20 h-20 rounded-3xl bg-primary/10 items-center justify-center mb-6">
@@ -85,56 +152,74 @@ export default function PinVerifyScreen() {
           ) : null}
         </View>
 
-        {/* PIN dots */}
-        <View className="flex-row justify-center items-center mb-10">
-          {[...Array(4)].map((_, i) => <Dot key={i} filled={i < pin.length} />)}
+        {/* PIN dots with shake animation */}
+        <Animated.View
+          style={{ transform: [{ translateX: shakeAnim }] }}
+          className="flex-row justify-center items-center mb-6"
+        >
+          {[...Array(4)].map((_, i) => (
+            <Dot key={i} filled={i < pin.length} error={!!errorMessage} />
+          ))}
+        </Animated.View>
+
+        {/* Inline error message */}
+        <View className="items-center mb-6 h-6 justify-center">
+          {errorMessage ? (
+            <Text className="text-destructive text-sm text-center">
+              {errorMessage}
+            </Text>
+          ) : null}
         </View>
 
-        {/* Number pad */}
+        {/* Keypad */}
         <View className="flex-1 justify-end pb-10">
           <View className="flex-row flex-wrap justify-center gap-y-4">
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
+            {NUMBERS.map((num) => (
               <TouchableOpacity
                 key={num}
                 onPress={() => handleNumberPress(num.toString())}
                 className="w-1/3 items-center py-4"
+                disabled={isPending}
+                activeOpacity={0.7}
               >
                 <Text className="text-3xl font-semibold text-foreground">
                   {num}
                 </Text>
               </TouchableOpacity>
             ))}
+
             <View className="w-1/3" />
+
             <TouchableOpacity
               onPress={() => handleNumberPress("0")}
               className="w-1/3 items-center py-4"
+              disabled={isPending}
+              activeOpacity={0.7}
             >
               <Text className="text-3xl font-semibold text-foreground">0</Text>
             </TouchableOpacity>
+
             <TouchableOpacity
               onPress={handleDelete}
               className="w-1/3 items-center py-4"
+              disabled={isPending}
+              activeOpacity={0.7}
             >
               <Delete size={30} className="text-foreground" />
             </TouchableOpacity>
           </View>
 
-          <Button
-            className="mt-8"
-            disabled={pin.length !== 4 || verifyPinMutation.isPending}
-            onPress={handleVerify}
-          >
-            {verifyPinMutation.isPending ? "Verifying..." : "Verify PIN"}
-          </Button>
-
           {/* Forgot PIN */}
           <TouchableOpacity
             onPress={() => router.push("/pin-forgot")}
-            className="mt-5 items-center"
+            className="mt-8 items-center"
+            disabled={isPending}
+            activeOpacity={0.7}
           >
             <Muted className="text-sm underline">Forgot PIN?</Muted>
           </TouchableOpacity>
         </View>
+
       </View>
     </SafeAreaView>
   );
