@@ -1,4 +1,4 @@
-import { useCreateSubscription, useCreateTemporary } from "@/api/subscription";
+import { useCreateSubscription } from "@/api/subscription";
 import { ScreenContainer } from "@/components/screen-container";
 import { ComparisonTable } from "@/components/subscription/comparison-table";
 import { FAQSection } from "@/components/subscription/faq-section";
@@ -38,20 +38,14 @@ export default function Subscription() {
 
   const insets = useSafeAreaInsets();
   const { mutateAsync: createSubscription } = useCreateSubscription();
-  const { mutateAsync: createTemporary } = useCreateTemporary();
   const { authState } = useAuth();
   const userId = authState.user?.id;
 
   useEffect(() => {
-    console.log("in the offering use effect");
     let cancelled = false;
     (async () => {
       try {
         const offerings = await getRevenueCatOfferings();
-        console.log("Offerings:", JSON.stringify(offerings, null, 2));
-        await createTemporary({
-          offering_check: JSON.stringify(offerings),
-        });
         if (!cancelled && offerings) setOffering(offerings.current);
       } catch {
         // leave offering null; UI will show loader / disabled state
@@ -62,7 +56,7 @@ export default function Subscription() {
     return () => {
       cancelled = true;
     };
-  }, [createTemporary]);
+  }, []);
 
   const monthlyPkg = offering?.monthly ?? null;
   const yearlyPkg = offering?.annual ?? null;
@@ -199,7 +193,7 @@ export default function Subscription() {
               Upgrade to premium
             </Text>
             <Text className="text-sm font-medium text-muted-foreground text-center px-2">
-              Unlock every premium feature with a Monthly or Yearly plan.
+              Unlock all premium features with a Monthly or Yearly plan.
             </Text>
           </View>
           <ComparisonTable />
@@ -224,7 +218,11 @@ export default function Subscription() {
               label="Yearly"
               priceLine={yearlyPkg?.product.priceString}
               caption="per year"
-              badge="Best value"
+              badge={
+                monthlyPkg && yearlyPkg
+                  ? `Save ${yearlyPkg.product.currencyCode} ${monthlyPkg.product.price * 12 - yearlyPkg.product.price}`
+                  : ""
+              }
               loading={offeringLoading && !yearlyPkg}
               selected={selectedPlan === "YEARLY"}
               onPress={() => yearlyPkg && setSelectedPlan("YEARLY")}
@@ -331,210 +329,3 @@ function PlanCard({
     </TouchableOpacity>
   );
 }
-
-// const offeringCheck = {
-//   current: {
-//     twoMonth: null,
-//     annual: null,
-//     lifetime: null,
-//     weekly: null,
-
-//     monthly: {
-//       offeringIdentifier: "cashy_monthly",
-
-//       product: {
-//         presentedOfferingIdentifier: "cashy_monthly",
-
-//         subscriptionOptions: [
-//           {
-//             presentedOfferingContext: {
-//               placementIdentifier: null,
-//               targetingContext: null,
-//               offeringIdentifier: "cashy_monthly",
-//             },
-
-//             introPhase: null,
-//             freePhase: null,
-//             isPrepaid: false,
-//             presentedOfferingIdentifier: "cashy_monthly",
-
-//             fullPricePhase: {
-//               offerPaymentMode: null,
-//               billingCycleCount: 0,
-
-//               price: {
-//                 currencyCode: "BDT",
-//                 amountMicros: 49000000,
-//                 formatted: "BDT 49.00",
-//               },
-
-//               recurrenceMode: 1,
-
-//               billingPeriod: {
-//                 iso8601: "P1M",
-//                 value: 1,
-//                 unit: "MONTH",
-//               },
-//             },
-
-//             isBasePlan: true,
-
-//             billingPeriod: {
-//               iso8601: "P1M",
-//               value: 1,
-//               unit: "MONTH",
-//             },
-
-//             installmentsInfo: null,
-//             productId: "cashy_monthly",
-//             tags: [],
-
-//             pricingPhases: [
-//               {
-//                 offerPaymentMode: null,
-//                 billingCycleCount: 0,
-
-//                 price: {
-//                   currencyCode: "BDT",
-//                   amountMicros: 49000000,
-//                   formatted: "BDT 49.00",
-//                 },
-
-//                 recurrenceMode: 1,
-
-//                 billingPeriod: {
-//                   iso8601: "P1M",
-//                   value: 1,
-//                   unit: "MONTH",
-//                 },
-//               },
-//             ],
-
-//             storeProductId: "cashy_monthly:default",
-//             id: "default",
-//           },
-//         ],
-
-//         productType: "AUTO_RENEWABLE_SUBSCRIPTION",
-//         productCategory: "SUBSCRIPTION",
-//         subscriptionPeriod: "P1M",
-
-//         pricePerWeekString: "BDT11.28",
-//         priceString: "BDT 49.00",
-
-//         pricePerMonth: 49000000,
-//         currencyCode: "BDT",
-
-//         introPrice: null,
-
-//         pricePerWeek: 11276712,
-//         pricePerYear: 588000000,
-//         price: 49,
-
-//         pricePerMonthString: "BDT49.00",
-//         title: "MONTHLY (Cashy: Daily Expense Manager)",
-
-//         discounts: null,
-
-//         presentedOfferingContext: {
-//           placementIdentifier: null,
-//           targetingContext: null,
-//           offeringIdentifier: "cashy_monthly",
-//         },
-
-//         defaultOption: {
-//           presentedOfferingContext: {
-//             placementIdentifier: null,
-//             targetingContext: null,
-//             offeringIdentifier: "cashy_monthly",
-//           },
-
-//           introPhase: null,
-//           freePhase: null,
-//           isPrepaid: false,
-//           presentedOfferingIdentifier: "cashy_monthly",
-
-//           fullPricePhase: {
-//             offerPaymentMode: null,
-//             billingCycleCount: 0,
-
-//             price: {
-//               currencyCode: "BDT",
-//               amountMicros: 49000000,
-//               formatted: "BDT 49.00",
-//             },
-
-//             recurrenceMode: 1,
-
-//             billingPeriod: {
-//               iso8601: "P1M",
-//               value: 1,
-//               unit: "MONTH",
-//             },
-//           },
-
-//           isBasePlan: true,
-
-//           billingPeriod: {
-//             iso8601: "P1M",
-//             value: 1,
-//             unit: "MONTH",
-//           },
-
-//           installmentsInfo: null,
-//           productId: "cashy_monthly",
-//           tags: [],
-
-//           pricingPhases: [
-//             {
-//               offerPaymentMode: null,
-//               billingCycleCount: 0,
-
-//               price: {
-//                 currencyCode: "BDT",
-//                 amountMicros: 49000000,
-//                 formatted: "BDT 49.00",
-//               },
-
-//               recurrenceMode: 1,
-
-//               billingPeriod: {
-//                 iso8601: "P1M",
-//                 value: 1,
-//                 unit: "MONTH",
-//               },
-//             },
-//           ],
-
-//           storeProductId: "cashy_monthly:default",
-//           id: "default",
-//         },
-
-//         pricePerYearString: "BDT588.00",
-
-//         description:
-//           "Unlock unlimited wallets and loans, share with unlimited members, attach transaction images, and enjoy advanced financial management features for personal and business use.",
-
-//         identifier: "cashy_monthly:default",
-//       },
-
-//       packageType: "MONTHLY",
-
-//       presentedOfferingContext: {
-//         placementIdentifier: null,
-//         targetingContext: null,
-//         offeringIdentifier: "cashy_monthly",
-//       },
-
-//       identifier: "$rc_monthly",
-//     },
-
-//     sixMonth: null,
-//     metadata: {},
-//     threeMonth: null,
-//     serverDescription: "MONTHLY",
-
-//     availablePackages: [],
-//     identifier: "cashy_monthly",
-//   },
-// };

@@ -20,8 +20,9 @@
   },
   "premium": {
     "unlockPremiumFeatures": "Unlock Premium Features",
-    "oneTimePaymentLifetimeAccess": "One-time payment. Lifetime access. No subscription",
+    "oneTimePaymentLifetimeAccess": "Unlock all premium features with a Monthly or Yearly plan.",
     "unlimitedWallets": "Unlimited wallets",
+    "unlimitedLoans": "Unlimited loans",
     "shareWithUnlimitedMembers": "Share with unlimited members",
     "advanceAnalyticsReports": "Advance analytics & reports",
     "upgradeToPremium": "Upgrade to premium",
