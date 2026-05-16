@@ -11,16 +11,16 @@ export function FAQSection() {
       <Text className="text-xl font-bold text-foreground mb-3 px-1">FAQs</Text>
       <View className="bg-card rounded-3xl border border-border px-5">
         <FAQItem
-          question="Is the lifetime deal really a one-time payment?"
-          answer="Yes! You pay once and get access to all current and future Pro features forever. No subscriptions, no hidden fees ever."
+          question="Can i use Cashy for FREE?"
+          answer="Yes! Cashy is free to use with basic features. Pro features require a monthly or annual subscription."
         />
         <FAQItem
           question="How do I restore my purchase on a new device?"
-          answer="Your subscription is linked to your Store account (Apple or Google). Simply use the 'Restore Purchase' option in settings or log in with the same account to automatically sync your Pro status."
+          answer="Your subscription is linked to your Store account. Simply use the 'Restore Purchase' option in settings or log in with the same account to automatically sync your Pro status."
         />
         <FAQItem
-          question="Can I share my subscription with my family?"
-          answer="Yes, our Pro plan supports Family Sharing where applicable through the App Store or Play Store. You can also share specific wallets with other users directly."
+          question="Do you provide a refund?"
+          answer="Yes, we provide refunds for our Pro plan. You can request a refund within 14 days of your purchase through our support email."
         />
         <FAQItem
           isLast
