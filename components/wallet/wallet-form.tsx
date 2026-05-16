@@ -4,6 +4,7 @@ import { useKeyboardVisible } from "@/hooks/use-keyboard-visible";
 import { useKeyboardOffset } from "@/hooks/useKeyboardOffset";
 import { useEffect, useRef, useState } from "react";
 import {
+  InteractionManager,
   KeyboardAvoidingView,
   ScrollView,
   Text,
@@ -37,8 +38,14 @@ export function WalletForm({
   }, [initialName]);
 
   useEffect(() => {
-    const timer = setTimeout(() => inputRef.current?.focus(), 250);
-    return () => clearTimeout(timer);
+    const interaction = InteractionManager.runAfterInteractions(() => {
+      const timer = setTimeout(() => {
+        inputRef.current?.focus();
+      }, 400);
+      return () => clearTimeout(timer);
+    });
+
+    return () => interaction.cancel();
   }, []);
 
   const handleSubmit = async () => {
@@ -91,9 +98,8 @@ export function WalletForm({
               editable={!isSubmitting}
               returnKeyType="done"
               onSubmitEditing={handleSubmit}
-              className={`rounded-xl px-4 py-4 border bg-card text-foreground text-base ${
-                error ? "border-destructive" : "border-border"
-              }`}
+              className={`rounded-xl px-4 py-4 border bg-card text-foreground text-base ${error ? "border-destructive" : "border-border"
+                }`}
             />
             <InputError error={error} />
           </View>

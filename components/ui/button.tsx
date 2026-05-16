@@ -74,6 +74,7 @@ const Button = forwardRef<React.ElementRef<typeof TouchableOpacity>, ButtonProps
       >
         {typeof children === "string" ? (
           <Text
+            numberOfLines={1}
             className={cn(
               baseTextClasses,
               variantTextClasses[variant],

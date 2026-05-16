@@ -49,7 +49,7 @@ export default function NotificationsScreen() {
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
-        router.navigate(from === "loans" ? "/loans" : "/");
+        router.navigate(from === "loans" ? "/loans" : "/(tabs)");
         return true;
       };
 
@@ -81,7 +81,7 @@ export default function NotificationsScreen() {
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
-        router.navigate(from === "loans" ? "/loans" : "/");
+        router.navigate(from === "loans" ? "/loans" : "/(tabs)");
         return true;
       };
 
@@ -105,7 +105,7 @@ export default function NotificationsScreen() {
           animation: "none",
           headerLeft: () => (
             <TouchableOpacity
-              onPress={() => router.navigate(from === "loans" ? "/loans" : "/")}
+              onPress={() => router.navigate(from === "loans" ? "/loans" : "/(tabs)")}
               style={{ marginRight: 4 }}
             >
               <ChevronLeft size={26} className="text-foreground" />

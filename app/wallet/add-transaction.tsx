@@ -105,6 +105,7 @@ export default function AddTransactionScreen() {
       return () => subscription.remove();
     }, [router]),
   );
+
   const [amount, setAmount] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedCategoryName, setSelectedCategoryName] = useState("");
@@ -121,7 +122,8 @@ export default function AddTransactionScreen() {
     defaultValues: {
       amount: "",
       date: date.toISOString(),
-      time: date.toTimeString(), },
+      time: date.toTimeString(),
+    },
     mode: "onBlur",
   });
 
@@ -325,7 +327,7 @@ export default function AddTransactionScreen() {
 
       if (!isEditing) {
         setTimeout(() => {
-          recordTransactionCreatedAndMaybeRequestReview().catch(() => {});
+          recordTransactionCreatedAndMaybeRequestReview().catch(() => { });
         }, 900);
       }
     } catch (error: any) {
