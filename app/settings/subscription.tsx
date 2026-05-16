@@ -185,7 +185,7 @@ export default function Subscription() {
       <ScreenContainer edges={[]} className="bg-background relative">
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 420 + insets.bottom }}
+          contentContainerStyle={{ paddingBottom: 260 + insets.bottom }}
           className="px-5 pt-6"
         >
           <View className="items-center mb-6">
@@ -234,9 +234,8 @@ export default function Subscription() {
               activeOpacity={0.8}
               onPress={handleBuy}
               disabled={isProcessing || (!monthlyPkg && !yearlyPkg)}
-              className={`rounded-full py-4 items-center justify-center ${
-                isProcessing ? "bg-amber-500/70" : "bg-amber-500"
-              }`}
+              className={`rounded-full py-4 items-center justify-center ${isProcessing ? "bg-amber-500/70" : "bg-amber-500"
+                }`}
               style={{ marginBottom: 8 }}
             >
               {isProcessing ? (

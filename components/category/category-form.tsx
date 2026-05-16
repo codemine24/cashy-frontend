@@ -3,6 +3,7 @@ import { InputError } from "@/components/ui/input-error";
 import { Check, X } from "@/lib/icons";
 import { useEffect, useRef, useState } from "react";
 import {
+  InteractionManager,
   KeyboardAvoidingView,
   ScrollView,
   Text,
@@ -148,8 +149,14 @@ export function CategoryForm({
   }, [initialColor, initialIcon, initialName]);
 
   useEffect(() => {
-    const timer = setTimeout(() => inputRef.current?.focus(), 250);
-    return () => clearTimeout(timer);
+    const interaction = InteractionManager.runAfterInteractions(() => {
+      const timer = setTimeout(() => {
+        inputRef.current?.focus();
+      }, 400);
+      return () => clearTimeout(timer);
+    });
+
+    return () => interaction.cancel();
   }, []);
 
   const handleSubmit = async () => {
@@ -205,9 +212,8 @@ export function CategoryForm({
             editable={!isSubmitting}
             returnKeyType="done"
             onSubmitEditing={handleSubmit}
-            className={`rounded-xl px-4 py-4 border bg-card text-foreground text-base ${
-              error ? "border-destructive" : "border-border"
-            }`}
+            className={`rounded-xl px-4 py-4 border bg-card text-foreground text-base ${error ? "border-destructive" : "border-border"
+              }`}
           />
           <InputError error={error} />
 
@@ -229,11 +235,10 @@ export function CategoryForm({
                       key={`${icon}-${index}`}
                       onPress={() => setSelectedIcon(icon)}
                       disabled={isSubmitting}
-                      className={`w-12 h-12 items-center justify-center rounded-xl border ${
-                        isSelected
+                      className={`w-12 h-12 items-center justify-center rounded-xl border ${isSelected
                           ? "bg-primary/15 border-primary"
                           : "bg-background border-border"
-                      }`}
+                        }`}
                     >
                       <Text className="text-2xl">{icon}</Text>
                     </TouchableOpacity>
@@ -257,11 +262,10 @@ export function CategoryForm({
                 <TouchableOpacity
                   onPress={() => setSelectedColor("")}
                   disabled={isSubmitting}
-                  className={`w-11 h-11 items-center justify-center rounded-full ${
-                    selectedColor === ""
+                  className={`w-11 h-11 items-center justify-center rounded-full ${selectedColor === ""
                       ? "border-2 border-primary"
                       : "border border-border"
-                  }`}
+                    }`}
                 >
                   <X size={18} className="text-muted-foreground" />
                 </TouchableOpacity>
@@ -273,11 +277,10 @@ export function CategoryForm({
                       key={color}
                       onPress={() => setSelectedColor(color)}
                       disabled={isSubmitting}
-                      className={`w-11 h-11 items-center justify-center rounded-full ${
-                        isSelected
+                      className={`w-11 h-11 items-center justify-center rounded-full ${isSelected
                           ? "border-2 border-primary"
                           : "border border-border"
-                      }`}
+                        }`}
                       style={{ backgroundColor: color }}
                     >
                       {isSelected ? <Check size={18} color="#ffffff" /> : null}

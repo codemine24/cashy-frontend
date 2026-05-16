@@ -24,13 +24,12 @@ const NUMBERS = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
 const Dot = ({ filled, error }: { filled: boolean; error: boolean }) => (
   <View
-    className={`w-4 h-4 rounded-full border-2 mx-3 ${
-      error
-        ? "border-destructive bg-destructive/80"
-        : filled
+    className={`w-4 h-4 rounded-full border-2 mx-3 ${error
+      ? "border-destructive bg-destructive/80"
+      : filled
         ? "bg-primary border-primary"
         : "border-muted-foreground/30"
-    }`}
+      }`}
   />
 );
 
@@ -55,12 +54,12 @@ export default function PinVerifyScreen() {
   const triggerShake = useCallback(() => {
     shakeAnim.setValue(0);
     Animated.sequence([
-      Animated.timing(shakeAnim, { toValue: 10,  duration: 60, useNativeDriver: true }),
+      Animated.timing(shakeAnim, { toValue: 10, duration: 60, useNativeDriver: true }),
       Animated.timing(shakeAnim, { toValue: -10, duration: 60, useNativeDriver: true }),
-      Animated.timing(shakeAnim, { toValue: 8,   duration: 60, useNativeDriver: true }),
-      Animated.timing(shakeAnim, { toValue: -8,  duration: 60, useNativeDriver: true }),
-      Animated.timing(shakeAnim, { toValue: 4,   duration: 60, useNativeDriver: true }),
-      Animated.timing(shakeAnim, { toValue: 0,   duration: 60, useNativeDriver: true }),
+      Animated.timing(shakeAnim, { toValue: 8, duration: 60, useNativeDriver: true }),
+      Animated.timing(shakeAnim, { toValue: -8, duration: 60, useNativeDriver: true }),
+      Animated.timing(shakeAnim, { toValue: 4, duration: 60, useNativeDriver: true }),
+      Animated.timing(shakeAnim, { toValue: 0, duration: 60, useNativeDriver: true }),
     ]).start();
   }, [shakeAnim]);
 
@@ -95,7 +94,7 @@ export default function PinVerifyScreen() {
   useEffect(() => {
     if (pin.length !== 4 || isPending) return;
 
-    const timer = setTimeout(() => handleVerify(pin), 500);
+    const timer = setTimeout(() => handleVerify(pin), 100);
     return () => clearTimeout(timer);
   }, [handleVerify, isPending, pin]);
 

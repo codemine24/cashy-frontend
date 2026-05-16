@@ -65,9 +65,9 @@ export const RootProvider = ({ children }: { children: React.ReactNode }) => {
       }),
   );
 
-  // useEffect(() => {
-  //   configureRevenueCat();
-  // }, []);
+  useEffect(() => {
+    configureRevenueCat();
+  }, []);
 
   useEffect(() => {
     recordAppOpenForReview().catch(() => { });
