@@ -70,7 +70,7 @@ export const RootProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    recordAppOpenForReview().catch(() => {});
+    recordAppOpenForReview().catch(() => { });
   }, []);
 
   return (

@@ -143,16 +143,16 @@ export default function LoginTypeScreen() {
           </Text>
         </TouchableOpacity>
 
-        <View className="flex-row flex-wrap gap-1 justify-center mt-3 px-10">
+        <View className="flex-1 flex-row gap-1 justify-center mt-3">
           <Muted className="text-center text-sm">
             By continuing, you agree to our
           </Muted>
           <TouchableOpacity onPress={() => router.push("/terms-and-conditions")}>
-            <Text className="text-primary text-sm underline">Terms of Conditions</Text>
+            <Text className="text-primary text-xs underline">Terms of Conditions</Text>
           </TouchableOpacity>
-          <Muted className="text-center text-sm">and</Muted>
+          <Muted className="text-center text-xs">and</Muted>
           <TouchableOpacity onPress={() => router.push("/privacy-policy")}>
-            <Text className="text-primary text-sm underline">Privacy Policy</Text>
+            <Text className="text-primary text-xs underline">Privacy Policy</Text>
           </TouchableOpacity>
         </View>
       </View>
